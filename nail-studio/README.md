@@ -1,0 +1,85 @@
+# Bossa Nail Studio · site
+
+Site de uma página para uma manicure brasileira na Austrália, em português e inglês.
+É HTML, CSS e JavaScript puros: sem build, sem dependências. Dá para abrir o `index.html` direto no navegador.
+
+## O que tem no site
+
+- **Topo**: título, chamadas para agendar e uma cartela de cores interativa (toque numa cor).
+- **Tabela de serviços**: o "cartão" com categorias, duração e preço. A cliente toca nos serviços e monta o pedido.
+- **Seu pedido**: soma o total e o tempo, pede nome, dia, período e observações, e abre o WhatsApp com a mensagem pronta.
+- **Monte sua unha**: formato, cor, acabamento e tom de pele numa mão ilustrada. A inspiração vai junto no pedido.
+- **Sobre**, **protocolo de higiene**, **como agendar em 3 passos**, **dúvidas frequentes** e **contato**.
+- **Galeria** (aparece sozinha quando houver fotos).
+- Idioma automático (português para quem usa o celular em português, inglês para o resto), com botão PT/EN.
+- Barra de agendamento fixa no celular, prévia bonita do link no WhatsApp (`og-image.jpg`) e dados estruturados para o Google.
+
+## Como editar
+
+Tudo o que muda fica em **`assets/js/content.js`**:
+
+| O quê | Onde |
+| --- | --- |
+| Nome do estúdio | `brand.name` e `brand.tagline` |
+| WhatsApp que recebe os pedidos | `whatsapp` (só dígitos, com 61 na frente: `61412345678`) |
+| Cidade | `location.city` e `location.in` (ex.: `{ pt: 'na Gold Coast', en: 'on the Gold Coast' }`) |
+| Instagram | `instagram` (vazio esconde o link) |
+| Horários | `hours` |
+| Serviços e preços | `services` (e `categories` para as seções) |
+| Cores da cartela | `colors` |
+| Fotos | `gallery` e `aboutPhoto` (coloque os arquivos em `assets/img/`) |
+| Todos os textos | `text.pt` e `text.en` |
+
+Combos com `includes: ['id-a', 'id-b']` mostram sozinhos o selo "economize $X".
+
+Se a página ficar em branco depois de uma edição, quase sempre é uma vírgula ou aspa faltando no `content.js`. O site mostra um aviso vermelho no topo quando isso acontece.
+
+## Antes de mostrar para a cliente
+
+O conteúdo atual é de **exemplo**. Confirme e troque:
+
+- [ ] Serviços, descrições, durações e preços do cartão dela
+- [ ] Nome do estúdio (hoje "Bossa Nail Studio")
+- [ ] Número de WhatsApp (hoje `61400000000`, que não existe)
+- [ ] Cidade
+- [ ] Horários de atendimento
+- [ ] Formas de pagamento e política de cancelamento (na seção de dúvidas)
+- [ ] Protocolo de higiene (esterilização, lixas de uso único etc.)
+- [ ] Fotos dos trabalhos e uma foto dela, se ela quiser
+
+O endereço exato não aparece no site: ele vai junto com a confirmação do horário.
+
+## Ver no computador
+
+Abra o `index.html` no navegador, ou rode um servidor local nesta pasta:
+
+```bash
+python3 -m http.server 8000
+# abra http://localhost:8000
+```
+
+Para forçar um idioma: `index.html?lang=en` ou `index.html?lang=pt`.
+
+## Publicar
+
+Qualquer hospedagem de site estático serve. Publique a pasta `nail-studio/`:
+
+- **Netlify**: arraste a pasta em <https://app.netlify.com/drop>.
+- **Vercel**: importe o repositório e defina `nail-studio` como Root Directory.
+- **GitHub Pages**: Settings → Pages → publicar a partir da branch. O site fica em `.../nail-studio/`.
+
+Depois de publicar, troque no `index.html` o `og:image` pelo endereço completo
+(ex.: `https://seudominio.com/assets/img/og-image.jpg`). O WhatsApp só mostra a imagem da prévia com o endereço completo.
+
+## Estrutura
+
+```
+nail-studio/
+├── index.html              estrutura da página
+├── assets/css/styles.css   visual (cores e fontes no topo do arquivo)
+├── assets/js/content.js    conteúdo: serviços, preços, contato e textos
+├── assets/js/app.js        comportamento (pedido, idiomas, cartela, mão ilustrada)
+└── assets/img/             favicon, ícone do iPhone e imagem de prévia do link
+```
+
+Fontes: Bodoni Moda, Jost e DM Mono, do Google Fonts.
