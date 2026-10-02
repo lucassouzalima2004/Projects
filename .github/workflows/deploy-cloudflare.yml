@@ -61,7 +61,7 @@ jobs:
           api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects"
           auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
           if ! curl -fsS -o /dev/null -H "$auth" "$api/$PROJECT"; then
-            curl -sS --fail-with-body -o /dev/null -X POST -H "$auth" -H "Content-Type: application/json" \
+            curl -sS --fail-with-body -X POST -H "$auth" -H "Content-Type: application/json" \
               --data "{\"name\":\"$PROJECT\",\"production_branch\":\"${{ github.event.repository.default_branch }}\"}" "$api"
           fi
           domain=$(curl -fsS -H "$auth" "$api/$PROJECT" | jq -r '.result.subdomain')
