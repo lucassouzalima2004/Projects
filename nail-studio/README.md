@@ -62,14 +62,28 @@ Para forçar um idioma: `index.html?lang=en` ou `index.html?lang=pt`.
 
 ## Publicar
 
+### GitHub Pages (já configurado)
+
+O workflow `.github/workflows/deploy-pages.yml` publica o site sozinho a cada push que mexe em `nail-studio/`.
+Só precisa ligar o Pages uma vez:
+
+1. No GitHub, abra **Settings → Pages**.
+2. Em **Build and deployment → Source**, escolha **GitHub Actions**.
+3. Em **Actions → Deploy site (GitHub Pages)**, clique em **Run workflow** (ou faça um novo push).
+
+O site fica em `https://<usuario>.github.io/<repositorio>/nail-studio/`
+(neste repositório: <https://lucassouzalima2004.github.io/Projects/nail-studio/>).
+O workflow também troca o `og:image` pelo endereço completo, que é o que o WhatsApp exige para mostrar a imagem da prévia.
+
+### Outra hospedagem
+
 Qualquer hospedagem de site estático serve. Publique a pasta `nail-studio/`:
 
 - **Netlify**: arraste a pasta em <https://app.netlify.com/drop>.
 - **Vercel**: importe o repositório e defina `nail-studio` como Root Directory.
-- **GitHub Pages**: Settings → Pages → publicar a partir da branch. O site fica em `.../nail-studio/`.
 
-Depois de publicar, troque no `index.html` o `og:image` pelo endereço completo
-(ex.: `https://seudominio.com/assets/img/og-image.jpg`). O WhatsApp só mostra a imagem da prévia com o endereço completo.
+Nesses casos, troque no `index.html` o `og:image` pelo endereço completo
+(ex.: `https://seudominio.com/assets/img/og-image.jpg`).
 
 ## Estrutura
 
@@ -82,4 +96,7 @@ nail-studio/
 └── assets/img/             favicon, ícone do iPhone e imagem de prévia do link
 ```
 
-Fontes: Bodoni Moda, Jost e DM Mono, do Google Fonts.
+Fontes: Newsreader (títulos) e Figtree (textos), do Google Fonts, escolhidas para leitura fácil no celular.
+
+As animações (entrada das seções, título palavra por palavra, reflexo na cartela, unha "pintada" ao trocar a cor)
+são desligadas automaticamente para quem ativou "reduzir movimento" no celular ou no computador.

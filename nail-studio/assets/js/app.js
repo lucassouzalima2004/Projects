@@ -31,6 +31,66 @@
     set(k, v) { try { window.localStorage.setItem(k, v); } catch (e) { /* armazenamento indisponível */ } },
   };
 
+  /* ------------------------------------------------------------ motion helpers */
+  const motionOK = () => !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Reinicia uma animação CSS ligada a uma classe
+  function replay(el, cls) {
+    if (!el) return;
+    el.classList.remove(cls);
+    void el.offsetWidth;
+    el.classList.add(cls);
+  }
+
+  // Conta de um número até outro (preço e duração no pedido)
+  function tween(el, to, format) {
+    const from = el.dataset.value === undefined ? to : Number(el.dataset.value);
+    el.dataset.value = to;
+    cancelAnimationFrame(el._raf);
+    if (from === to || !motionOK()) {
+      el.innerHTML = format(to);
+      return;
+    }
+    const start = performance.now();
+    const step = (now) => {
+      const k = Math.min(1, (now - start) / 550);
+      const eased = 1 - Math.pow(1 - k, 3);
+      el.innerHTML = format(k < 1 ? Math.round(from + (to - from) * eased) : to);
+      if (k < 1) el._raf = requestAnimationFrame(step);
+    };
+    el._raf = requestAnimationFrame(step);
+  }
+
+  // Envolve cada palavra do título num <span class="word"> para a entrada palavra por palavra.
+  // A pontuação logo depois de um <em> fica grudada na palavra (não quebra de linha sozinha).
+  function splitWords(el) {
+    el.innerHTML = el.innerHTML.replace(/(<em>[^<]*<\/em>)([.,!?;:…]+)/g, '<span class="nowrap">$1$2</span>');
+    let w = 0;
+    const walk = (node) => {
+      Array.from(node.childNodes).forEach((n) => {
+        if (n.nodeType === 3) {
+          const frag = document.createDocumentFragment();
+          n.textContent.split(/(\s+)/).forEach((part) => {
+            if (!part) return;
+            if (/^\s+$/.test(part)) {
+              frag.appendChild(document.createTextNode(part));
+              return;
+            }
+            const span = document.createElement('span');
+            span.className = 'word';
+            span.style.setProperty('--w', w++);
+            span.textContent = part;
+            frag.appendChild(span);
+          });
+          n.replaceWith(frag);
+        } else if (n.nodeType === 1 && n.tagName !== 'BR') {
+          walk(n);
+        }
+      });
+    };
+    walk(el);
+  }
+
   /* ------------------------------------------------------------ state */
   const pick = (list, id) => (byId(list, id) ? id : list[0].id);
   const state = {
@@ -122,6 +182,7 @@
       const v = t(el.dataset.t);
       if (typeof v === 'string') el.innerHTML = fill(v).replace(/ · /g, '&nbsp;· ');
     });
+    splitWords($('#hero-title'));
     $$('[data-t-attr]').forEach((el) => {
       el.dataset.tAttr.split(';').forEach((pair) => {
         const [attr, key] = pair.split(':').map((s) => s.trim());
@@ -156,10 +217,12 @@
         const a = (i - mid) * step;
         return (
           `<button type="button" class="tip" data-color="${c.id}" aria-pressed="false" ` +
-          `style="--a:${a.toFixed(2)}deg;--d:${Math.abs(i - mid)};--c:${c.hex}">` +
+          `style="--a:${a.toFixed(2)}deg;--d:${Math.abs(i - mid)};--i:${i};--c:${c.hex}">` +
           `<svg viewBox="0 0 60 230" aria-hidden="true">` +
+          `<defs><clipPath id="tipclip-${i}"><path d="${TIP_PATH}"/></clipPath></defs>` +
           `<path class="tip__fill" d="${TIP_PATH}"/>` +
           `<path d="${TIP_PATH}" fill="url(#tipShade)"/>` +
+          `<g clip-path="url(#tipclip-${i})"><path class="tip__shine" d="M14 -10H44L16 240H-14Z" fill="url(#tipShine)"/></g>` +
           `<path d="M15.5 40C11 72 10.6 122 11.8 170" fill="none" stroke="url(#tipGloss)" stroke-width="5.5" stroke-linecap="round"/>` +
           `<ellipse cx="42" cy="60" rx="2.6" ry="9" fill="#fff" opacity=".3"/>` +
           `<path d="${TIP_PATH}" fill="none" stroke="rgba(38,17,27,.2)" stroke-width="1"/>` +
@@ -178,9 +241,13 @@
 
   function showFanCaption(id) {
     const c = byId(S.colors, id) || S.colors[0];
+    const caption = $('.fan__caption');
+    const changed = $('#fan-name').textContent !== c.name;
     $('#fan-code').textContent = colorCode(c.id);
     $('#fan-name').textContent = c.name;
     $('#fan-desc').textContent = L(c.desc);
+    if (changed && caption.dataset.ready) replay(caption, 'is-swapping');
+    caption.dataset.ready = '1';
   }
 
   function syncFan() {
@@ -280,7 +347,10 @@
       `<li class="svc">` +
       `<input type="checkbox" id="svc-${s.id}" value="${s.id}"${state.selected.has(s.id) ? ' checked' : ''}>` +
       `<label for="svc-${s.id}">` +
-      `<svg class="svc__check" viewBox="0 0 14 21" aria-hidden="true"><path class="shape" d="${CHECK_PATH}"/>` +
+      `<svg class="svc__check" viewBox="0 0 14 21" aria-hidden="true">` +
+      `<defs><clipPath id="ck-${s.id}"><path d="${CHECK_PATH}"/></clipPath></defs>` +
+      `<g clip-path="url(#ck-${s.id})"><rect class="paint" width="14" height="21"/></g>` +
+      `<path class="shape" d="${CHECK_PATH}"/>` +
       `<ellipse class="gloss" cx="4.3" cy="8.6" rx="1.1" ry="3.3"/></svg>` +
       `<span class="svc__main"><span class="svc__top"><span class="svc__name">${esc(L(s.name))}</span>` +
       `<span class="svc__leader" aria-hidden="true"></span></span>` +
@@ -324,8 +394,12 @@
     shownIds = new Set(items.map((s) => s.id));
 
     $('#sum-count').textContent = items.length ? countLabel(items.length) : '';
-    $('#sum-time').textContent = items.length ? duration(min) : '–';
-    $('#sum-total').innerHTML = (items.length && from ? `<small class="from">${esc(t('services.from'))}</small> ` : '') + money(price);
+    const totalEl = $('#sum-total');
+    const fromHTML = items.length && from ? `<small class="from">${esc(t('services.from'))}</small> ` : '';
+    const priceChanged = totalEl.dataset.value !== undefined && Number(totalEl.dataset.value) !== price;
+    tween(totalEl, price, (v) => fromHTML + money(v));
+    tween($('#sum-time'), min, (v) => (items.length ? duration(v) : '–'));
+    if (priceChanged && motionOK()) replay(totalEl, 'bump');
     $('#summary').classList.toggle('is-empty', !items.length);
 
     $('#sum-inspo').hidden = !state.inspiration;
@@ -445,35 +519,83 @@
     return `M${-h} 40L${-ht} ${-len + ht}A${ht} ${ht} 0 0 1 ${ht} ${-len + ht}L${h} 40Z`;
   }
 
-  function handSVG(d) {
+  const NUDE = '#F3D8D1';
+  // Ordem em que os dedos são "pintados": do mindinho ao polegar, da esquerda para a direita
+  const PAINT_ORDER = [4, 0, 1, 3, 2];
+  let handRenders = 0;
+
+  function nailGeo(fg, shape) {
+    const nw = fg.w * (fg.thumb ? 0.62 : 0.66);
+    const b = nw * (fg.thumb ? 1.05 : 1.16);
+    const e = nw * (FREE_EDGE[shape] ?? 0.45);
+    return { nw, b, total: b + e, h: nw / 2, cy: -fg.len + 3 + b, np: nailPath(shape, nw, b) };
+  }
+
+  // Gradientes que dependem da cor: cromado, olho de gato, baby boomer e glitter
+  function finishDefs(p, color) {
+    return (
+      `<linearGradient id="${p}chrome" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${shade(color, 0.45)}"/><stop offset=".22" stop-color="${tint(color, 0.55)}"/>` +
+      `<stop offset=".36" stop-color="#fff"/><stop offset=".48" stop-color="${tint(color, 0.2)}"/><stop offset=".66" stop-color="${shade(color, 0.35)}"/>` +
+      `<stop offset=".84" stop-color="${tint(color, 0.5)}"/><stop offset="1" stop-color="${shade(color, 0.5)}"/></linearGradient>` +
+      `<linearGradient id="${p}cat" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="${shade(color, 0.62)}"/><stop offset=".38" stop-color="${shade(color, 0.38)}"/>` +
+      `<stop offset=".5" stop-color="${tint(color, 0.55)}"/><stop offset=".57" stop-color="${tint(color, 0.2)}"/><stop offset=".68" stop-color="${shade(color, 0.4)}"/>` +
+      `<stop offset="1" stop-color="${shade(color, 0.66)}"/></linearGradient>` +
+      `<linearGradient id="${p}boomer" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${NUDE}"/><stop offset=".38" stop-color="${NUDE}"/><stop offset="1" stop-color="${color}"/></linearGradient>` +
+      `<pattern id="${p}glitter" width="16" height="16" patternUnits="userSpaceOnUse">` +
+      GLITTER.map(
+        (g) =>
+          `<circle cx="${g.x.toFixed(2)}" cy="${g.y.toFixed(2)}" r="${g.r.toFixed(2)}" fill="${g.k < 0.5 ? '#fff' : g.k < 0.8 ? tint(color, 0.6) : '#EBD8A0'}" opacity="${g.o.toFixed(2)}"/>`
+      ).join('') +
+      `</pattern>`
+    );
+  }
+
+  // Camadas de uma unha: base, efeito do acabamento, sombra lateral, brilho e contorno
+  function nailMarkup(p, pre, d, g, clip) {
     const color = (byId(S.colors, d.color) || S.colors[0]).hex;
+    let base;
+    let over = '';
+    switch (d.finish) {
+      case 'cromado': base = `url(#${p}chrome)`; break;
+      case 'olhodegato': base = `url(#${p}cat)`; over = `<path d="${g.np}" fill="url(#${p}glitter)" opacity=".35"/>`; break;
+      case 'babyboomer': base = `url(#${p}boomer)`; break;
+      case 'francesinha':
+        base = NUDE;
+        over = `<path d="M${-g.h - 4} ${-g.b * 0.72}Q0 ${-g.b * 1.2} ${g.h + 4} ${-g.b * 0.72}L${g.h + 4} ${-g.total - 6}L${-g.h - 4} ${-g.total - 6}Z" fill="${color}"/>`;
+        break;
+      case 'glitter': base = color; over = `<path d="${g.np}" fill="url(#${p}glitter)"/>`; break;
+      default: base = color;
+    }
+    const gloss =
+      d.finish !== 'fosco'
+        ? `<ellipse cx="${-g.h * 0.42}" cy="${-g.total * 0.52}" rx="${g.nw * 0.075}" ry="${g.total * 0.3}" fill="url(#${pre}gloss)"/>` +
+          `<ellipse cx="${g.h * 0.36}" cy="${-g.b * 0.3}" rx="${g.nw * 0.05}" ry="${g.nw * 0.1}" fill="#fff" opacity=".35"/>`
+        : `<ellipse cx="0" cy="${-g.total * 0.5}" rx="${g.nw * 0.4}" ry="${g.total * 0.4}" fill="#fff" opacity=".06"/>`;
+    return (
+      `<path d="${g.np}" fill="${base}"/>` +
+      `<g clip-path="url(#${clip})">${over}<path d="${g.np}" fill="url(#${pre}nside)"/>${gloss}</g>` +
+      `<path d="${g.np}" fill="none" stroke="#000" stroke-opacity=".14" stroke-width=".9"/>`
+    );
+  }
+
+  // mode: 'none' (desenho direto), 'paint' (nova cor por cima da antiga) ou 'grow' (novo formato)
+  function handSVG(d, prev, mode) {
+    const pre = `h${++handRenders}-`;
     const skin = S.skins[d.skin] || S.skins[0];
     const crease = shade(skin, 0.45);
-    const nude = '#F3D8D1';
+    const colorOf = (x) => (byId(S.colors, x.color) || S.colors[0]).hex;
 
     const defs = [
-      `<linearGradient id="h-side" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".2"/><stop offset=".22" stop-color="#000" stop-opacity="0"/>` +
+      `<linearGradient id="${pre}side" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".2"/><stop offset=".22" stop-color="#000" stop-opacity="0"/>` +
         `<stop offset=".36" stop-color="#fff" stop-opacity=".14"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/>` +
         `<stop offset=".74" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".24"/></linearGradient>`,
-      `<linearGradient id="h-back" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".16"/></linearGradient>`,
-      `<linearGradient id="h-nside" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".22"/><stop offset=".24" stop-color="#000" stop-opacity="0"/>` +
+      `<linearGradient id="${pre}nside" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".22"/><stop offset=".24" stop-color="#000" stop-opacity="0"/>` +
         `<stop offset=".76" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".26"/></linearGradient>`,
-      `<linearGradient id="h-gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".22" stop-color="#fff" stop-opacity=".8"/>` +
+      `<linearGradient id="${pre}gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".22" stop-color="#fff" stop-opacity=".8"/>` +
         `<stop offset=".7" stop-color="#fff" stop-opacity=".25"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>`,
-      `<linearGradient id="h-chrome" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${shade(color, 0.45)}"/><stop offset=".22" stop-color="${tint(color, 0.55)}"/>` +
-        `<stop offset=".36" stop-color="#fff"/><stop offset=".48" stop-color="${tint(color, 0.2)}"/><stop offset=".66" stop-color="${shade(color, 0.35)}"/>` +
-        `<stop offset=".84" stop-color="${tint(color, 0.5)}"/><stop offset="1" stop-color="${shade(color, 0.5)}"/></linearGradient>`,
-      `<linearGradient id="h-cat" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="${shade(color, 0.62)}"/><stop offset=".38" stop-color="${shade(color, 0.38)}"/>` +
-        `<stop offset=".5" stop-color="${tint(color, 0.55)}"/><stop offset=".57" stop-color="${tint(color, 0.2)}"/><stop offset=".68" stop-color="${shade(color, 0.4)}"/>` +
-        `<stop offset="1" stop-color="${shade(color, 0.66)}"/></linearGradient>`,
-      `<linearGradient id="h-boomer" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${nude}"/><stop offset=".38" stop-color="${nude}"/><stop offset="1" stop-color="${color}"/></linearGradient>`,
-      `<pattern id="h-glitter" width="16" height="16" patternUnits="userSpaceOnUse">` +
-        GLITTER.map(
-          (g) =>
-            `<circle cx="${g.x.toFixed(2)}" cy="${g.y.toFixed(2)}" r="${g.r.toFixed(2)}" fill="${g.k < 0.5 ? '#fff' : g.k < 0.8 ? tint(color, 0.6) : '#EBD8A0'}" opacity="${g.o.toFixed(2)}"/>`
-        ).join('') +
-        `</pattern>`,
+      finishDefs(`${pre}n-`, colorOf(d)),
     ];
+    if (mode === 'paint') defs.push(finishDefs(`${pre}o-`, colorOf(prev)));
 
     // Pele entre os dedos: um "U" atrás de cada par vizinho
     const centerAt = (fg, y) => fg.x + (fg.y - y) * Math.tan((fg.a * Math.PI) / 180);
@@ -488,50 +610,28 @@
     const back = `<path d="${webs}" fill="${skin}"/><path d="${webs}" fill="#000" opacity=".1"/>`;
 
     const fingers = FINGERS.map((fg, i) => {
-      const nw = fg.w * (fg.thumb ? 0.62 : 0.66);
-      const b = nw * (fg.thumb ? 1.05 : 1.16);
-      const cy = -fg.len + 3 + b;
-      const np = nailPath(d.shape, nw, b);
-      const e = nw * (FREE_EDGE[d.shape] ?? 0.45);
-      const total = b + e;
-      const h = nw / 2;
-      const clip = `h-clip-${i}`;
-      defs.push(`<clipPath id="${clip}"><path d="${np}"/></clipPath>`);
+      const g = nailGeo(fg, d.shape);
+      const clip = `${pre}clip-${i}`;
+      defs.push(`<clipPath id="${clip}"><path d="${g.np}"/></clipPath>`);
+
+      const fresh = nailMarkup(`${pre}n-`, pre, d, g, clip);
+      let nails = fresh;
+      if (mode === 'paint') nails = nailMarkup(`${pre}o-`, pre, prev, g, clip) + `<g class="paint" style="--i:${PAINT_ORDER[i]}">${fresh}</g>`;
+      else if (mode === 'grow') nails = `<g class="grow" style="--i:${PAINT_ORDER[i]}">${fresh}</g>`;
 
       const y1 = -fg.len + fg.len * 0.3;
       const y2 = -fg.len + fg.len * 0.6;
       const crease1 = `M${-fg.w * 0.2} ${y1}Q0 ${y1 + 3} ${fg.w * 0.2} ${y1}M${-fg.w * 0.13} ${y1 + 6}Q0 ${y1 + 8.5} ${fg.w * 0.13} ${y1 + 6}`;
       const crease2 = `M${-fg.w * 0.24} ${y2}Q0 ${y2 + 4} ${fg.w * 0.24} ${y2}M${-fg.w * 0.17} ${y2 + 7}Q0 ${y2 + 10} ${fg.w * 0.17} ${y2 + 7}M${-fg.w * 0.1} ${y2 + 13}Q0 ${y2 + 15} ${fg.w * 0.1} ${y2 + 13}`;
 
-      let base;
-      let over = '';
-      switch (d.finish) {
-        case 'cromado': base = 'url(#h-chrome)'; break;
-        case 'olhodegato': base = 'url(#h-cat)'; over = `<path d="${np}" fill="url(#h-glitter)" opacity=".35"/>`; break;
-        case 'babyboomer': base = 'url(#h-boomer)'; break;
-        case 'francesinha':
-          base = nude;
-          over = `<path d="M${-h - 4} ${-b * 0.72}Q0 ${-b * 1.2} ${h + 4} ${-b * 0.72}L${h + 4} ${-total - 6}L${-h - 4} ${-total - 6}Z" fill="${color}"/>`;
-          break;
-        case 'glitter': base = color; over = `<path d="${np}" fill="url(#h-glitter)"/>`; break;
-        default: base = color;
-      }
-      const glossy = d.finish !== 'fosco';
-      const gloss = glossy
-        ? `<ellipse cx="${-h * 0.42}" cy="${-total * 0.52}" rx="${nw * 0.075}" ry="${total * 0.3}" fill="url(#h-gloss)"/>` +
-          `<ellipse cx="${h * 0.36}" cy="${-b * 0.3}" rx="${nw * 0.05}" ry="${nw * 0.1}" fill="#fff" opacity=".35"/>`
-        : `<ellipse cx="0" cy="${-total * 0.5}" rx="${nw * 0.4}" ry="${total * 0.4}" fill="#fff" opacity=".06"/>`;
-
       return (
         `<g transform="translate(${fg.x} ${fg.y}) rotate(${fg.a})">` +
         `<path d="${fingerPath(fg.len, fg.w)}" fill="${skin}"/>` +
-        `<path d="${fingerPath(fg.len, fg.w)}" fill="url(#h-side)"/>` +
+        `<path d="${fingerPath(fg.len, fg.w)}" fill="url(#${pre}side)"/>` +
         `<path d="${crease1}${fg.thumb ? '' : crease2}" fill="none" stroke="${crease}" stroke-opacity=".35" stroke-width="1.4" stroke-linecap="round"/>` +
-        `<g transform="translate(0 ${cy.toFixed(2)})">` +
-        `<path d="M${-h - 1.5} ${-nw * 0.1}C${-h - 1.5} ${nw * 0.16} ${h + 1.5} ${nw * 0.16} ${h + 1.5} ${-nw * 0.1}" fill="none" stroke="${crease}" stroke-opacity=".35" stroke-width="2"/>` +
-        `<path d="${np}" fill="${base}"/>` +
-        `<g clip-path="url(#${clip})">${over}<path d="${np}" fill="url(#h-nside)"/>${gloss}</g>` +
-        `<path d="${np}" fill="none" stroke="#000" stroke-opacity=".14" stroke-width=".9"/>` +
+        `<g transform="translate(0 ${g.cy.toFixed(2)})">` +
+        `<path d="M${-g.h - 1.5} ${-g.nw * 0.1}C${-g.h - 1.5} ${g.nw * 0.16} ${g.h + 1.5} ${g.nw * 0.16} ${g.h + 1.5} ${-g.nw * 0.1}" fill="none" stroke="${crease}" stroke-opacity=".35" stroke-width="2"/>` +
+        nails +
         `</g></g>`
       );
     }).join('');
@@ -596,56 +696,89 @@
     });
   }
 
+  let lastDesign = null;
+
   function renderDesign() {
     const d = state.design;
+    const prev = lastDesign;
+    const animate = Boolean(prev) && motionOK();
+    let mode = 'none';
+    if (animate && prev.shape !== d.shape) mode = 'grow';
+    else if (animate && (prev.color !== d.color || prev.finish !== d.finish)) mode = 'paint';
+
+    const box = $('#hand');
+    const markup = handSVG(d, prev, mode);
+    if (animate && prev.skin !== d.skin) {
+      // Novo tom de pele: a mão nova aparece por cima da antiga, que sai logo depois
+      const old = $$('svg', box);
+      box.insertAdjacentHTML('beforeend', markup);
+      box.lastElementChild.classList.add('is-entering');
+      setTimeout(() => old.forEach((el) => el.remove()), 520);
+    } else {
+      box.innerHTML = markup;
+    }
+
     const color = byId(S.colors, d.color) || S.colors[0];
-    $('#hand').innerHTML = handSVG(d);
-    $('#design-combo').textContent = designText(d);
+    const combo = designText(d);
+    if (animate && $('#design-combo').textContent !== combo) replay($('.stage__caption'), 'is-swapping');
+    $('#design-combo').textContent = combo;
     $('#design-desc').textContent = L((byId(S.shapes, d.shape) || {}).desc);
     $('#opt-color-name').textContent = color.name;
     $('#opt-finish').style.setProperty('--c', color.hex);
+    lastDesign = Object.assign({}, d);
     renderAboutVisual();
     syncFan();
   }
 
   /* ------------------------------------------------------------ about visual */
   function bottleSVG(c) {
-    const dark = luminance(c.hex) < 0.3;
-    const ink = dark ? '#FBF8F7' : '#26111B';
     const brand = String(S.brand.name).toUpperCase();
     const spacing = brand.length > 9 ? '.12em' : '.34em';
     return (
-      `<svg viewBox="0 0 260 420" role="img" aria-label="${esc(brand + ' ' + colorCode(c.id) + ' ' + c.name)}">` +
+      `<svg viewBox="0 0 260 420" role="img">` +
       `<defs>` +
       `<linearGradient id="b-cap" x1="0" x2="1"><stop offset="0" stop-color="#12070d"/><stop offset=".26" stop-color="#3e2230"/><stop offset=".52" stop-color="#26111b"/><stop offset="1" stop-color="#0b0408"/></linearGradient>` +
       `<linearGradient id="b-liquid" x1="0" x2="1"><stop offset="0" stop-color="${shade(c.hex, 0.28)}"/><stop offset=".3" stop-color="${c.hex}"/><stop offset=".72" stop-color="${c.hex}"/><stop offset="1" stop-color="${shade(c.hex, 0.32)}"/></linearGradient>` +
       `<linearGradient id="b-glass" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".09" stop-color="#fff" stop-opacity=".06"/><stop offset=".9" stop-color="#fff" stop-opacity=".06"/><stop offset="1" stop-color="#fff" stop-opacity=".5"/></linearGradient>` +
       `<radialGradient id="b-shadow"><stop offset="0" stop-color="#26111b" stop-opacity=".28"/><stop offset="1" stop-color="#26111b" stop-opacity="0"/></radialGradient>` +
       `</defs>` +
-      `<ellipse cx="130" cy="402" rx="112" ry="12" fill="url(#b-shadow)"/>` +
+      `<ellipse class="bottle__shadow" cx="130" cy="402" rx="112" ry="12" fill="url(#b-shadow)"/>` +
+      `<g class="bottle__body">` +
       `<rect x="98" y="14" width="64" height="152" rx="12" fill="url(#b-cap)"/>` +
       `<rect x="109" y="26" width="6" height="128" rx="3" fill="#fff" opacity=".2"/>` +
-      `<rect x="104" y="162" width="52" height="26" rx="4" fill="${tint(c.hex, 0.55)}" opacity=".85"/>` +
+      `<rect class="neck" x="104" y="162" width="52" height="26" rx="4" fill="${tint(c.hex, 0.55)}" opacity=".85"/>` +
       `<rect x="104" y="162" width="52" height="26" rx="4" fill="url(#b-glass)"/>` +
       `<rect x="32" y="184" width="196" height="212" rx="40" fill="url(#b-liquid)"/>` +
       `<path d="M32 356h196v0c0 22-18 40-40 40H72c-22 0-40-18-40-40z" fill="#fff" opacity=".2"/>` +
       `<rect x="32" y="184" width="196" height="212" rx="40" fill="url(#b-glass)" stroke="#26111b" stroke-opacity=".16"/>` +
       `<path d="M56 214C50 262 50 318 56 352" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="9" stroke-linecap="round"/>` +
       `<path d="M206 222C210 262 210 300 206 334" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="4" stroke-linecap="round"/>` +
-      `<text x="130" y="258" text-anchor="middle" fill="${ink}" style="font-family:var(--font-body);font-size:11px;font-weight:500;letter-spacing:${spacing}">${esc(brand)}</text>` +
-      `<text x="130" y="300" text-anchor="middle" fill="${ink}" style="font-family:var(--font-display);font-size:34px;font-style:italic;font-weight:600">${esc(c.name)}</text>` +
-      `<text x="130" y="328" text-anchor="middle" fill="${ink}" opacity=".8" style="font-family:var(--font-mono);font-size:10px;letter-spacing:.1em">${colorCode(c.id)}</text>` +
-      `</svg>`
+      `<text class="bottle__brand" x="130" y="258" text-anchor="middle" style="font-family:var(--font-body);font-size:11px;font-weight:600;letter-spacing:${spacing}">${esc(brand)}</text>` +
+      `<text class="bottle__name" x="130" y="300" text-anchor="middle" style="font-family:var(--font-display);font-size:34px;font-style:italic;font-weight:600"></text>` +
+      `<text class="bottle__code" x="130" y="328" text-anchor="middle" opacity=".8" style="font-family:var(--font-body);font-size:11px;font-weight:600;letter-spacing:.08em"></text>` +
+      `</g></svg>`
     );
   }
 
+  // O vidro fica na página; trocar a cor só muda as cores (com transição suave)
   function renderAboutVisual() {
     const box = $('#about-visual');
     if (S.aboutPhoto) {
       if (!box.querySelector('img')) box.innerHTML = `<img src="${esc(S.aboutPhoto)}" alt="" loading="lazy" decoding="async">`;
       return;
     }
-    box.innerHTML = bottleSVG(byId(S.colors, state.design.color) || S.colors[0]);
+    const c = byId(S.colors, state.design.color) || S.colors[0];
+    if (!box.querySelector('svg')) box.innerHTML = bottleSVG(c);
+    const ink = luminance(c.hex) < 0.3 ? '#FBF8F7' : '#26111B';
+    const stops = $$('#b-liquid stop', box);
+    [shade(c.hex, 0.28), c.hex, c.hex, shade(c.hex, 0.32)].forEach((v, i) => {
+      if (stops[i]) stops[i].style.stopColor = v;
+    });
+    $('.neck', box).style.fill = tint(c.hex, 0.55);
+    $$('text', box).forEach((el) => (el.style.fill = ink));
+    $('.bottle__name', box).textContent = c.name;
+    $('.bottle__code', box).textContent = colorCode(c.id);
+    $('svg', box).setAttribute('aria-label', `${S.brand.name} ${colorCode(c.id)} ${c.name}`);
   }
 
   /* ------------------------------------------------------------ JSON-LD (Google) */
@@ -694,6 +827,7 @@
 
   const bar = $('#mbar');
   const seen = { heroOut: false, summaryIn: false, designIn: false, contactIn: false };
+  let barCount = 0;
 
   function updateBar() {
     const has = state.selected.size > 0;
@@ -705,7 +839,9 @@
     if (has) {
       const { items, price, from } = totals();
       $('#mbar-text').textContent = `${countLabel(items.length)} · ${from ? t('services.from') + ' ' : ''}${money(price)}`;
+      if (items.length !== barCount && show && motionOK()) replay($('#mbar-text'), 'bump');
     }
+    barCount = state.selected.size;
   }
 
   /* ------------------------------------------------------------ render all */
@@ -864,6 +1000,55 @@
 
   function setStatus(html) {
     $('#design-status').innerHTML = html;
+    if (html) replay($('#design-status'), 'is-swapping');
+  }
+
+  // Seções entram suavemente quando chegam na tela
+  function initReveal() {
+    if (!motionOK() || !('IntersectionObserver' in window)) return;
+    document.documentElement.classList.add('reveal-on');
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((en) => {
+          if (!en.isIntersecting) return;
+          en.target.classList.add('is-in');
+          io.unobserve(en.target);
+        });
+      },
+      { rootMargin: '0px 0px -10% 0px' }
+    );
+    $$('[data-reveal], [data-stagger]').forEach((el) => io.observe(el));
+  }
+
+  // Dúvidas abrem e fecham deslizando
+  function bindFaq() {
+    const ease = 'cubic-bezier(.2, .8, .2, 1)';
+    $('#faq').addEventListener('click', (e) => {
+      const summary = e.target.closest('summary');
+      if (!summary || !motionOK()) return;
+      const item = summary.parentElement;
+      const body = $('.faq__a', item);
+      if (!body || !body.animate) return;
+      e.preventDefault();
+      if (item.classList.contains('is-closing')) return;
+      if (item.open) {
+        item.classList.add('is-closing');
+        const anim = body.animate(
+          [{ height: `${body.offsetHeight}px`, paddingBottom: '24px', opacity: 1 }, { height: '0px', paddingBottom: '0px', opacity: 0 }],
+          { duration: 320, easing: ease }
+        );
+        anim.onfinish = () => {
+          item.open = false;
+          item.classList.remove('is-closing');
+        };
+      } else {
+        item.open = true;
+        body.animate(
+          [{ height: '0px', paddingBottom: '0px', opacity: 0 }, { height: `${body.offsetHeight}px`, paddingBottom: '24px', opacity: 1 }],
+          { duration: 440, easing: ease }
+        );
+      }
+    });
   }
 
   /* ------------------------------------------------------------ start */
@@ -877,4 +1062,6 @@
   renderFan();
   renderAll();
   bindEvents();
+  bindFaq();
+  initReveal();
 })();
