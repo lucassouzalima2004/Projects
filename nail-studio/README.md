@@ -62,18 +62,25 @@ Para forçar um idioma: `index.html?lang=en` ou `index.html?lang=pt`.
 
 ## Publicar
 
-### GitHub Pages (já configurado)
+### Cloudflare Pages (já configurado)
 
-O workflow `.github/workflows/deploy-pages.yml` publica o site sozinho a cada push que mexe em `nail-studio/`.
-Só precisa ligar o Pages uma vez:
+O workflow `.github/workflows/deploy-cloudflare.yml` publica o site no Cloudflare a cada push que mexe em
+`nail-studio/`. Na primeira vez ele cria o projeto `bossa-nail-studio`, e o site fica em
+<https://bossa-nail-studio.pages.dev> (se esse nome já estiver em uso, o Cloudflare acrescenta um sufixo;
+o endereço certo aparece no resumo da execução, em Actions).
 
-1. No GitHub, abra **Settings → Pages**.
-2. Em **Build and deployment → Source**, escolha **GitHub Actions**.
-3. Em **Actions → Deploy site (GitHub Pages)**, clique em **Run workflow** (ou faça um novo push).
+Ele precisa de dois secrets, cadastrados uma vez em **Settings → Secrets and variables → Actions → New repository secret**:
 
-O site fica em `https://<usuario>.github.io/<repositorio>/nail-studio/`
-(neste repositório: <https://lucassouzalima2004.github.io/Projects/nail-studio/>).
-O workflow também troca o `og:image` pelo endereço completo, que é o que o WhatsApp exige para mostrar a imagem da prévia.
+| Nome | Onde pegar |
+| --- | --- |
+| `CLOUDFLARE_API_TOKEN` | Cloudflare → My Profile → API Tokens → Create Token → Create Custom Token, com a permissão **Account · Cloudflare Pages · Edit** |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare → Workers & Pages: o Account ID aparece na lateral direita |
+
+Depois, em **Actions → Deploy site (Cloudflare Pages)**, clique em **Run workflow** (ou faça um novo push).
+Sem os secrets, o workflow só deixa um aviso e não publica nada.
+
+O workflow também troca o `og:image` pelo endereço completo, que é o que o WhatsApp exige para mostrar a imagem
+da prévia. Para usar um domínio próprio, adicione o domínio no projeto em Cloudflare → Workers & Pages → Custom domains.
 
 ### Outra hospedagem
 

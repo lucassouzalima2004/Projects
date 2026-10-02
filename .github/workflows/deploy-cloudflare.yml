@@ -1,0 +1,81 @@
+# Publica o site no Cloudflare Pages (https://bossa-nail-studio.pages.dev).
+#
+# Precisa de dois secrets no GitHub (Settings → Secrets and variables → Actions → New repository secret):
+#   CLOUDFLARE_API_TOKEN   token do Cloudflare com a permissão "Account · Cloudflare Pages · Edit"
+#   CLOUDFLARE_ACCOUNT_ID  ID da conta do Cloudflare
+# Enquanto os secrets não existirem, o workflow só avisa e não falha.
+name: Deploy site (Cloudflare Pages)
+
+on:
+  push:
+    branches: [main, claude/card-services-website-gjhr8a]
+    paths:
+      - 'nail-studio/**'
+      - '.github/workflows/deploy-cloudflare.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-pages-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PROJECT: bossa-nail-studio
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.creds.outputs.ready }}
+    steps:
+      - name: Conferir os secrets do Cloudflare
+        id: creds
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n "$TOKEN" ] && [ -n "$ACCOUNT" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=Cloudflare sem credenciais::Adicione CLOUDFLARE_API_TOKEN e CLOUDFLARE_ACCOUNT_ID em Settings → Secrets and variables → Actions e rode este workflow de novo (Actions → Deploy site → Run workflow)."
+          fi
+
+  deploy:
+    needs: check
+    if: needs.check.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar o wrangler
+        run: npm install --no-save --no-audit --no-fund --include=optional wrangler@4
+
+      - name: Criar o projeto no Cloudflare Pages (só na primeira vez)
+        run: |
+          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects"
+          auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+          if ! curl -fsS -o /dev/null -H "$auth" "$api/$PROJECT"; then
+            npx wrangler pages project create "$PROJECT" --production-branch="${{ github.event.repository.default_branch }}"
+          fi
+          domain=$(curl -fsS -H "$auth" "$api/$PROJECT" | jq -r '.result.subdomain')
+          echo "DOMAIN=$domain" >> "$GITHUB_ENV"
+
+      - name: Montar o site
+        run: |
+          mkdir -p _site
+          cp -R nail-studio/. _site/
+          # O WhatsApp só mostra a imagem da prévia do link com o endereço completo
+          sed -i "s#content=\"assets/img/og-image.jpg\"#content=\"https://$DOMAIN/assets/img/og-image.jpg\"#" _site/index.html
+
+      - name: Publicar
+        run: npx wrangler pages deploy _site --project-name="$PROJECT" --branch="${{ github.ref_name }}" --commit-dirty=true
+
+      - name: Endereço do site
+        run: |
+          echo "Site no ar: https://$DOMAIN" >> "$GITHUB_STEP_SUMMARY"
