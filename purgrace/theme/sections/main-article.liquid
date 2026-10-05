@@ -24,7 +24,7 @@
   </div>
 
   {%- if article.image -%}
-    {%- assign img_alt = article.image.alt | default: article.title | escape -%}
+    {%- assign img_alt = article.image.alt | default: article.title -%}
     <figure class="container article__hero">
       {{
         article.image

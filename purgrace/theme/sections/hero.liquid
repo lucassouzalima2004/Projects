@@ -15,7 +15,7 @@
 >
   <div class="hero__media{% if layout == 'split' %} arch{% endif %}">
     {%- if image != blank -%}
-      {%- assign hero_alt = image.alt | escape -%}
+      {%- assign hero_alt = image.alt -%}
       {{
         image
         | image_url: width: 2400

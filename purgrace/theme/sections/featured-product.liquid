@@ -9,9 +9,10 @@
       <media-gallery class="gallery spotlight__media" data-section="{{ section.id }}">
         <div class="gallery__viewport">
           <ul class="gallery__track" role="list">
+            {%- capture tidy_alt -%}{% render 'product-title', title: featured_product.title, raw: true %}{%- endcapture -%}
             {%- for media in featured_product.media limit: 6 -%}
               {%- if media.media_type == 'image' -%}
-                {%- assign media_alt = media.alt | default: featured_product.title | escape -%}
+                {%- assign media_alt = media.alt | default: tidy_alt -%}
                 <li class="gallery__item{% if media.id == variant.featured_media.id %} is-active{% endif %}" data-media-id="{{ media.id }}">
                   {{
                     media

@@ -28,7 +28,7 @@
         <li class="collection-card" {{ block.shopify_attributes }}>
           <div class="collection-card__media arch collection-card__media--{{ image_fit }}">
             {%- if image != blank -%}
-              {%- assign img_alt = image.alt | default: title | escape -%}
+              {%- assign img_alt = image.alt | default: title -%}
               {{
                 image
                 | image_url: width: 900

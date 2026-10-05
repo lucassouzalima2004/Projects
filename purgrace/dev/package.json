@@ -2,10 +2,13 @@
   "name": "purgrace-theme-dev",
   "private": true,
   "type": "module",
-  "description": "Ferramentas locais: prévia do tema com dados de exemplo e Theme Check. Não vai para o Shopify.",
+  "description": "Ferramentas locais: prévia do tema com o catálogo da loja, Theme Check, teste de interação e o zip do tema. Não vai para o Shopify.",
   "scripts": {
-    "check": "theme-check ../theme",
-    "preview": "node server.mjs"
+    "preview": "node server.mjs",
+    "check": "node check.mjs",
+    "smoke": "mkdir -p shots && node smoke.mjs shots",
+    "shots": "mkdir -p shots && node shoot.mjs shots",
+    "zip": "mkdir -p ../dist && rm -f ../dist/purgrace-theme.zip && cd ../theme && zip -qrX ../dist/purgrace-theme.zip assets config layout locales sections snippets templates"
   },
   "devDependencies": {
     "@shopify/theme-check-node": "^3.30.1",

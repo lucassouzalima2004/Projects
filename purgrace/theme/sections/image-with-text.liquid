@@ -6,7 +6,7 @@
   <div class="container media-text__grid">
     <figure class="media-text__media{% if section.settings.frame == 'arch' %} arch{% else %} frame{% endif %}" data-reveal="zoom">
       {%- if image != blank -%}
-        {%- assign img_alt = image.alt | escape -%}
+        {%- assign img_alt = image.alt -%}
         {{
           image
           | image_url: width: 1400

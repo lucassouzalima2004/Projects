@@ -15,7 +15,7 @@
         <li class="image-grid__item" {{ block.shopify_attributes }}>
           {%- if block.settings.link != blank -%}<a href="{{ block.settings.link }}" class="image-grid__link">{%- endif -%}
           {%- if block.settings.image != blank -%}
-            {%- assign img_alt = block.settings.image.alt | default: block.settings.caption | escape -%}
+            {%- assign img_alt = block.settings.image.alt | default: block.settings.caption -%}
             {{
               block.settings.image
               | image_url: width: 800

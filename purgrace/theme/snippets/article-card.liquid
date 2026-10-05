@@ -10,7 +10,7 @@
   assign a = card_article
   assign tag = heading_tag | default: 'h3'
   assign img_sizes = sizes | default: '(min-width: 990px) 33vw, 100vw'
-  assign img_alt = a.image.alt | default: a.title | escape
+  assign img_alt = a.image.alt | default: a.title
   assign words = a.content | strip_html | split: ' ' | size
   assign minutes = words | divided_by: 200.0 | ceil
   if minutes < 1

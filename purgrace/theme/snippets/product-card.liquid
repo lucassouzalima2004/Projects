@@ -33,7 +33,12 @@
     assign single_variant = true
   endif
   assign second_media = p.media[1]
-  assign img_alt = p.featured_media.alt | default: p.title | escape
+  assign img_alt = p.featured_media.alt
+  if img_alt == blank
+    capture img_alt
+      render 'product-title', title: p.title, raw: true
+    endcapture
+  endif
   assign img_class = 'card__img'
   if settings.card_blend_white
     assign img_class = 'card__img card__img--blend'

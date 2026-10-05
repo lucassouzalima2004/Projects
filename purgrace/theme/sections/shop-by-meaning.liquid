@@ -21,7 +21,7 @@
         <li class="medallion" {{ block.shopify_attributes }}>
           <div class="medallion__disc">
             {%- if image != blank -%}
-              {%- assign img_alt = image.alt | default: block.settings.title | escape -%}
+              {%- assign img_alt = image.alt | default: block.settings.title -%}
               {{
                 image
                 | image_url: width: 480

@@ -17,7 +17,7 @@
         {%- for c in collections -%}
           {%- liquid
             assign k = forloop.index0 | modulo: 6
-            assign img_alt = c.featured_image.alt | default: c.title | escape
+            assign img_alt = c.featured_image.alt | default: c.title
           -%}
           <li class="collection-card">
             <div class="collection-card__media arch collection-card__media--{% if c.image %}cover{% else %}blend{% endif %}">

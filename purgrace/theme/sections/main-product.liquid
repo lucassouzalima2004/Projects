@@ -7,6 +7,7 @@
     assign show_size_guide = true
   endif
 -%}
+{%- capture tidy_alt -%}{% render 'product-title', title: product.title, raw: true %}{%- endcapture -%}
 <product-info class="product section section--tight" data-section="{{ section.id }}" data-url="{{ product.url }}" data-update-url="true">
   <div class="container">
     {%- if section.settings.show_breadcrumbs -%}
@@ -27,7 +28,7 @@
                 {%- case media.media_type -%}
                   {%- when 'image' -%}
                     {%- liquid
-                      assign media_alt = media.alt | default: product.title | escape
+                      assign media_alt = media.alt | default: tidy_alt
                       if forloop.first
                         assign media_loading = 'eager'
                         assign media_priority = 'high'

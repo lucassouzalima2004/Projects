@@ -4,7 +4,15 @@
   and from Online Store → Preferences for the home page.
 {%- endcomment -%}
 {%- liquid
-  assign og_title = page_title | default: shop.name
+  # Products without their own SEO title use the tidy title (no trailing product code)
+  assign seo_title = page_title
+  if request.page_type == 'product' and page_title == product.title
+    capture seo_title
+      render 'product-title', title: product.title, raw: true
+    endcapture
+    assign seo_title = seo_title | strip
+  endif
+  assign og_title = seo_title | default: shop.name
   assign og_url = canonical_url | default: request.origin
   assign og_type = 'website'
   assign og_description = page_description | default: shop.description | default: shop.name
@@ -19,10 +27,10 @@
 -%}
 
 <title>
-  {{- page_title -}}
+  {{- seo_title | escape -}}
   {%- if current_tags %} &ndash; {{ 'general.meta.tags' | t: tags: tags_joined }}{% endif -%}
   {%- if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif -%}
-  {%- unless request.page_type == 'index' or page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+  {%- unless request.page_type == 'index' or seo_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
 </title>
 
 {%- if page_description -%}
@@ -31,6 +39,9 @@
 
 {%- if template.directory == 'customers' or request.page_type == 'cart' or request.page_type == 'password' or request.page_type == 'search' -%}
   <meta name="robots" content="noindex">
+{%- elsif current_tags -%}
+  {%- comment -%} Tag-filtered collection pages repeat the collection, so they stay out of search results {%- endcomment -%}
+  <meta name="robots" content="noindex, follow">
 {%- endif -%}
 
 <meta property="og:site_name" content="{{ shop.name | escape }}">

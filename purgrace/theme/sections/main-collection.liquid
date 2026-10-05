@@ -21,7 +21,7 @@
         {%- endif -%}
       </div>
       {%- if section.settings.show_image and collection.image -%}
-        {%- assign img_alt = collection.image.alt | default: collection.title | escape -%}
+        {%- assign img_alt = collection.image.alt | default: collection.title -%}
         <figure class="collection-hero__media arch">
           {{
             collection.image
