@@ -1,0 +1,75 @@
+{%- doc -%}
+  One line in the cart drawer or the cart page.
+
+  @param {object} item - Line item
+  @param {number} line - Position in the cart, starting at 1
+{%- enddoc -%}
+<li class="cart-item" data-line="{{ line }}">
+  <a href="{{ item.url }}" class="cart-item__media" tabindex="-1" aria-hidden="true">
+    {%- if item.image -%}
+      {{
+        item.image
+        | image_url: width: 240
+        | image_tag: loading: 'lazy', sizes: '96px', widths: '96, 192, 240', alt: ''
+      }}
+    {%- else -%}
+      {% render 'jewel-art' %}
+    {%- endif -%}
+  </a>
+
+  <div class="cart-item__info">
+    <a href="{{ item.url }}" class="cart-item__title">{% render 'product-title', title: item.product.title %}</a>
+    {%- unless item.product.has_only_default_variant -%}
+      <p class="cart-item__variant">
+        {%- for option in item.options_with_values -%}
+          {{ option.name | escape }}: {{ option.value | escape }}{% unless forloop.last %}<span aria-hidden="true"> · </span>{% endunless %}
+        {%- endfor -%}
+      </p>
+    {%- endunless -%}
+    {%- for property in item.properties -%}
+      {%- assign first_char = property.first | slice: 0 -%}
+      {%- if property.last != blank and first_char != '_' -%}
+        <p class="cart-item__variant">{{ property.first | escape }}: {{ property.last | escape }}</p>
+      {%- endif -%}
+    {%- endfor -%}
+    {%- if item.selling_plan_allocation -%}
+      <p class="cart-item__variant">{{ item.selling_plan_allocation.selling_plan.name | escape }}</p>
+    {%- endif -%}
+    {%- for discount in item.line_level_discount_allocations -%}
+      <p class="cart-item__discount">{% render 'icon', name: 'sparkle' %}{{ discount.discount_application.title | escape }} (−{{ discount.amount | money }})</p>
+    {%- endfor -%}
+
+    <div class="cart-item__actions">
+      <quantity-input class="qty qty--sm">
+        <button type="button" class="qty__btn" name="minus" aria-label="{{ 'products.product.quantity.decrease' | t: product: item.product.title | escape }}">
+          {%- render 'icon', name: 'minus' -%}
+        </button>
+        <input
+          class="qty__input"
+          type="number"
+          name="updates[]"
+          value="{{ item.quantity }}"
+          min="0"
+          {% if item.variant.quantity_rule.max != null %}max="{{ item.variant.quantity_rule.max }}"{% endif %}
+          step="{{ item.variant.quantity_rule.increment | default: 1 }}"
+          data-line="{{ line }}"
+          aria-label="{{ 'products.product.quantity.label_for' | t: product: item.product.title | escape }}"
+        >
+        <button type="button" class="qty__btn" name="plus" aria-label="{{ 'products.product.quantity.increase' | t: product: item.product.title | escape }}">
+          {%- render 'icon', name: 'plus' -%}
+        </button>
+      </quantity-input>
+      <a href="{{ item.url_to_remove }}" class="link-btn cart-item__remove" data-line="{{ line }}">
+        {{- 'cart.remove' | t -}}
+        <span class="visually-hidden"> {{ item.product.title | escape }}</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="cart-item__price">
+    {%- if item.original_line_price != item.final_line_price -%}
+      <s>{{ item.original_line_price | money }}</s>
+    {%- endif -%}
+    <span>{{ item.final_line_price | money }}</span>
+  </div>
+</li>

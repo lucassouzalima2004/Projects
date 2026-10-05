@@ -1,0 +1,102 @@
+{%- if section.blocks.size > 0 -%}
+  <div class="marquee scheme-{{ section.settings.color_scheme }}{% if section.settings.animate %} marquee--animate{% endif %}" style="--speed: {{ section.settings.speed }}s;">
+    <div class="marquee__track">
+      {%- for round in (1..2) -%}
+        <ul class="marquee__list" role="list"{% if round == 2 %} aria-hidden="true"{% endif %}>
+          {%- for block in section.blocks -%}
+            <li class="marquee__item" {% if round == 1 %}{{ block.shopify_attributes }}{% endif %}>
+              {%- if block.settings.icon == 'none' -%}
+                {% render 'butterfly', class: 'marquee__mark' %}
+              {%- else -%}
+                {% render 'icon', name: block.settings.icon %}
+              {%- endif -%}
+              <span>{{ block.settings.text | escape }}</span>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Scrolling text",
+  "class": "section-marquee",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colours",
+      "options": [
+        { "value": "surface", "label": "Soft" },
+        { "value": "light", "label": "Light" },
+        { "value": "dark", "label": "Dark" },
+        { "value": "accent", "label": "Accent" }
+      ],
+      "default": "surface"
+    },
+    {
+      "type": "checkbox",
+      "id": "animate",
+      "label": "Scroll the text",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Time for one loop",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "s",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "18K gold plated"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "Butterfly (default)" },
+            { "value": "sparkle", "label": "Sparkle" },
+            { "value": "gem", "label": "Gem" },
+            { "value": "truck", "label": "Delivery" },
+            { "value": "refresh", "label": "Reusable" },
+            { "value": "shield", "label": "Safe" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "leaf", "label": "Leaf" },
+            { "value": "gift", "label": "Gift" }
+          ],
+          "default": "none"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Scrolling text",
+      "blocks": [
+        { "type": "item", "settings": { "text": "18K gold plated" } },
+        { "type": "item", "settings": { "text": "Hypoallergenic and nickel-free" } },
+        { "type": "item", "settings": { "text": "Since 1986 in Brazil" } },
+        { "type": "item", "settings": { "text": "Authentic Rommanel" } },
+        { "type": "item", "settings": { "text": "Free shipping over $149" } },
+        { "type": "item", "settings": { "text": "Based in Perth, WA" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

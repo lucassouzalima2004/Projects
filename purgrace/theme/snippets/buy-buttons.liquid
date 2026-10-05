@@ -1,0 +1,89 @@
+{%- doc -%}
+  Add to cart form, dynamic checkout buttons (Shop Pay, Apple Pay, Google Pay…) and local pickup.
+
+  @param {object} product - Product
+  @param {string} form_id - Id for the product form (quantity and measurements fields point to it)
+  @param {boolean} [show_dynamic_checkout] - Show the express checkout buttons
+  @param {boolean} [show_pickup] - Show pickup availability (Settings → Shipping and delivery → Local pickup)
+{%- enddoc -%}
+{%- assign variant = product.selected_or_first_available_variant -%}
+<div class="buy">
+  {%- form 'product', product, id: form_id, class: 'product-form', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+    {%- if product.has_only_default_variant -%}
+      <input type="hidden" name="id" value="{{ variant.id }}">
+    {%- else -%}
+      <input type="hidden" name="id" value="{{ variant.id }}" data-variant-id disabled>
+      <div class="select variant-fallback">
+        <label class="visually-hidden" for="{{ form_id }}-select">{{ 'products.product.choose_options' | t }}</label>
+        <select name="id" id="{{ form_id }}-select">
+          {%- for v in product.variants -%}
+            <option
+              value="{{ v.id }}"
+              {% if v.id == variant.id %}
+                selected
+              {% endif %}
+              {% unless v.available %}
+                disabled
+              {% endunless %}
+            >
+              {{ v.title | escape }} – {{ v.price | money | strip_html }}
+            </option>
+          {%- endfor -%}
+        </select>
+        {% render 'icon', name: 'chevron-down', class: 'select__chevron' %}
+      </div>
+    {%- endif -%}
+
+    <p class="product-form__error" role="alert" hidden></p>
+
+    <div class="product-form__buttons">
+      <div data-variant-sync="add-button">
+        <button
+          type="submit"
+          name="add"
+          class="btn btn--primary btn--block product-form__submit"
+          {% unless variant.available %}
+            disabled
+          {% endunless %}
+        >
+          <span class="product-form__label">
+            {%- if variant.available -%}
+              {{- 'products.product.add_to_cart' | t -}}
+            {%- else -%}
+              {{- 'products.product.sold_out' | t -}}
+            {%- endif -%}
+          </span>
+          {%- if variant.available -%}
+            <span class="product-form__price" aria-hidden="true">{{ variant.price | money }}</span>
+          {%- endif -%}
+          <span class="spinner" aria-hidden="true"></span>
+        </button>
+      </div>
+      {%- if show_dynamic_checkout -%}
+        {{ form | payment_button }}
+      {%- endif -%}
+    </div>
+    {{ form | payment_terms }}
+  {%- endform -%}
+
+  {%- if show_pickup -%}
+    <div data-variant-sync="pickup">
+      {%- assign pickup_locations = variant.store_availabilities | where: 'pick_up_enabled', true -%}
+      {%- if pickup_locations.size > 0 -%}
+        {%- assign pickup = pickup_locations.first -%}
+        <div class="pickup{% if pickup.available %} is-available{% endif %}">
+          {%- if pickup.available -%}
+            {% render 'icon', name: 'check' %}
+            <p>
+              {{ 'products.product.pickup.available_html' | t: location: pickup.location.name }}
+              <span>{{ pickup.pick_up_time }}</span>
+            </p>
+          {%- else -%}
+            {% render 'icon', name: 'clock' %}
+            <p>{{ 'products.product.pickup.unavailable_html' | t: location: pickup.location.name }}</p>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</div>

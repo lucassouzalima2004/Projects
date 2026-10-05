@@ -1,0 +1,234 @@
+{%- liquid
+  assign image = section.settings.image
+  assign layout = section.settings.layout
+  if image == blank
+    assign layout = 'split'
+  endif
+  assign tag = section.settings.heading_tag
+  assign highlights = section.blocks | where: 'type', 'highlight'
+  assign seal_id = 'Seal-' | append: section.id
+-%}
+<section
+  class="hero hero--{{ layout }} hero--text-{{ section.settings.text_position }} hero--ink-{{ section.settings.text_color }} scheme-{{ section.settings.color_scheme }}"
+  style="--focus-x: {{ section.settings.focus_x }}%; --hero-min: {{ section.settings.height }}vh;"
+  aria-labelledby="HeroTitle-{{ section.id }}"
+>
+  <div class="hero__media{% if layout == 'split' %} arch{% endif %}">
+    {%- if image != blank -%}
+      {%- assign hero_alt = image.alt | escape -%}
+      {{
+        image
+        | image_url: width: 2400
+        | image_tag:
+          loading: 'eager',
+          fetchpriority: 'high',
+          sizes: '100vw',
+          widths: '600, 900, 1200, 1600, 2000, 2400',
+          alt: hero_alt,
+          class: 'hero__img'
+      }}
+    {%- else -%}
+      <div class="hero__art">{% render 'jewel-art', kind: 'pendant' %}</div>
+    {%- endif -%}
+  </div>
+
+  <div class="container hero__inner">
+    <div class="hero__copy">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      <{{ tag }} class="hero__title" id="HeroTitle-{{ section.id }}" data-split-words>
+        {{- section.settings.heading -}}
+      </{{ tag }}>
+      {%- if section.settings.text != blank -%}
+        <div class="hero__lead rte">{{ section.settings.text }}</div>
+      {%- endif -%}
+      {%- if highlights.size > 0 -%}
+        <ul class="hero__chips" role="list">
+          {%- for block in highlights -%}
+            <li {{ block.shopify_attributes }}>
+              {%- render 'icon', name: block.settings.icon -%}
+              <span>{{ block.settings.text | escape }}</span>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+      {%- if section.settings.button_label_1 != blank or section.settings.button_label_2 != blank -%}
+        <div class="hero__ctas">
+          {%- if section.settings.button_label_1 != blank -%}
+            <a href="{{ section.settings.button_link_1 | default: routes.all_products_collection_url }}" class="btn btn--primary">
+              {{- section.settings.button_label_1 | escape -}}
+              {% render 'icon', name: 'arrow', class: 'btn__icon btn__icon--arrow' %}
+            </a>
+          {%- endif -%}
+          {%- if section.settings.button_label_2 != blank -%}
+            <a href="{{ section.settings.button_link_2 | default: routes.collections_url }}" class="btn btn--ghost">
+              {{- section.settings.button_label_2 | escape -}}
+            </a>
+          {%- endif -%}
+          {%- if section.settings.seal_text != blank -%}
+              <div class="seal" aria-hidden="true">
+                <svg class="seal__ring" viewBox="0 0 120 120">
+                  <defs><path id="{{ seal_id }}" d="M60 60m-46 0a46 46 0 1 1 92 0a46 46 0 1 1-92 0"/></defs>
+                  <text><textPath href="#{{ seal_id }}" startOffset="0">{{ section.settings.seal_text | upcase | escape }}</textPath></text>
+                </svg>
+                {% render 'butterfly', class: 'seal__mark' %}
+              </div>
+            {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero",
+  "class": "section-hero",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "overlay", "label": "Text on the photo" },
+        { "value": "split", "label": "Photo in an arch beside the text" }
+      ],
+      "default": "overlay"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Photo",
+      "info": "Wide photo with an empty area for the text, at least 2000 px wide."
+    },
+    {
+      "type": "range",
+      "id": "focus_x",
+      "label": "Keep this part of the photo visible on phones",
+      "info": "0 = left edge, 50 = centre, 100 = right edge.",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 35
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "label": "Height on desktop",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "default": 80
+    },
+    {
+      "type": "select",
+      "id": "text_position",
+      "label": "Text position on desktop",
+      "options": [
+        { "value": "right", "label": "Right" },
+        { "value": "left", "label": "Left" }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "select",
+      "id": "text_color",
+      "label": "Text colour on the photo",
+      "options": [
+        { "value": "dark", "label": "Dark (for light photos)" },
+        { "value": "light", "label": "Light (for dark photos)" }
+      ],
+      "default": "dark"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Background colours",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "surface", "label": "Soft" }
+      ],
+      "default": "surface"
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    { "type": "text", "id": "eyebrow", "label": "Small label", "default": "Authentic Rommanel · Designed in Brazil" },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Words in italic get the accent colour.",
+      "default": "Brazilian gold, <em>made to shine</em> every day."
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading level",
+      "info": "Keep H1 when this is the first section of the home page.",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>18K gold-plated and 925 sterling silver jewellery by Rommanel, chosen in Perth and delivered across Australia.</p>"
+    },
+    { "type": "text", "id": "button_label_1", "label": "First button", "default": "Shop best sellers" },
+    { "type": "url", "id": "button_link_1", "label": "First button link" },
+    { "type": "text", "id": "button_label_2", "label": "Second button", "default": "Explore Faith" },
+    { "type": "url", "id": "button_link_2", "label": "Second button link" },
+    {
+      "type": "text",
+      "id": "seal_text",
+      "label": "Round seal text",
+      "info": "Leave empty to hide the seal.",
+      "default": "Authentic Rommanel • 18K gold plated • "
+    }
+  ],
+  "blocks": [
+    {
+      "type": "highlight",
+      "name": "Highlight",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "sparkle", "label": "Sparkle" },
+            { "value": "drop", "label": "Water" },
+            { "value": "shield", "label": "Safe" },
+            { "value": "gem", "label": "Gem" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "truck", "label": "Delivery" },
+            { "value": "butterfly", "label": "Butterfly" }
+          ],
+          "default": "sparkle"
+        },
+        { "type": "text", "id": "text", "label": "Text", "default": "Hypoallergenic" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero",
+      "blocks": [
+        { "type": "highlight", "settings": { "icon": "sparkle", "text": "18K gold plated" } },
+        { "type": "highlight", "settings": { "icon": "shield", "text": "Nickel-free" } },
+        { "type": "highlight", "settings": { "icon": "heart", "text": "Hypoallergenic" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

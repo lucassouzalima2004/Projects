@@ -1,0 +1,27 @@
+{%- doc -%}
+  Eyebrow, heading and intro shared by most sections. Words in italic in the heading
+  get the accent colour.
+
+  @param {string} [eyebrow] - Small label above the heading
+  @param {string} [heading] - Inline rich text
+  @param {string} [text] - Intro text (rich text)
+  @param {string} [heading_tag] - Defaults to h2
+  @param {string} [heading_id] - Id for aria-labelledby
+  @param {string} [align] - 'split' (default) or 'center'
+{%- enddoc -%}
+{%- if eyebrow != blank or heading != blank or text != blank -%}
+  {%- assign tag = heading_tag | default: 'h2' -%}
+  <header class="section-head section-head--{{ align | default: 'split' }}" data-stagger>
+    <div class="section-head__main">
+      {%- if eyebrow != blank -%}
+        <p class="eyebrow">{{ eyebrow | escape }}</p>
+      {%- endif -%}
+      {%- if heading != blank -%}
+        <{{ tag }} class="h2"{% if heading_id %} id="{{ heading_id }}"{% endif %}>{{ heading }}</{{ tag }}>
+      {%- endif -%}
+    </div>
+    {%- if text != blank -%}
+      <div class="section-head__lead rte">{{ text }}</div>
+    {%- endif -%}
+  </header>
+{%- endif -%}

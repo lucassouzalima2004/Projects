@@ -1,0 +1,75 @@
+{%- doc -%}
+  Option pickers for a product: pills, or colour circles when the option has swatches
+  (set them up on the product's Colour option in the admin).
+
+  @param {object} product - Product
+  @param {string} section_id - Section id
+  @param {boolean} [show_size_guide] - Show the size guide link on the Size option
+{%- enddoc -%}
+{%- unless product.has_only_default_variant -%}
+  <variant-picker class="variant-picker" data-section="{{ section_id }}" data-url="{{ product.url }}">
+    {%- for option in product.options_with_values -%}
+      {%- liquid
+        assign option_name = option.name | downcase
+        assign is_size = false
+        if option_name == 'size' or option_name == 'ring size' or option_name == 'sizes' or option_name == 'tamanho' or option_name == 'aro'
+          assign is_size = true
+        endif
+        assign has_swatches = false
+        if option.values.first.swatch
+          assign has_swatches = true
+        endif
+      -%}
+      <fieldset class="option" data-index="{{ forloop.index0 }}">
+        <legend class="option__legend">
+          <span class="option__name">{{ option.name | escape }}</span>
+          <span class="option__selected" data-selected>{{ option.selected_value | escape }}</span>
+        </legend>
+        {%- if is_size and show_size_guide -%}
+          <button type="button" class="link-btn option__guide" data-dialog-open="SizeGuide-{{ section_id }}">
+            {%- render 'icon', name: 'ruler' -%}
+            <span>{{ 'products.product.size_guide' | t }}</span>
+          </button>
+        {%- endif -%}
+        <div class="option__values{% if has_swatches %} option__values--swatches{% endif %}">
+          {%- for value in option.values -%}
+            {%- assign input_id = 'Option-' | append: section_id | append: '-' | append: option.position | append: '-' | append: forloop.index -%}
+            <input
+              type="radio"
+              class="option__input"
+              id="{{ input_id }}"
+              name="Option-{{ section_id }}-{{ option.position }}"
+              value="{{ value.name | escape }}"
+              {% if value.selected %}
+                checked
+              {% endif %}
+            >
+            <label
+              for="{{ input_id }}"
+              class="pill{% if has_swatches %} pill--swatch{% endif %}{% unless value.available %} is-unavailable{% endunless %}"
+              {% if has_swatches %}
+                title="{{ value.name | escape }}"
+              {% endif %}
+            >
+              {%- if has_swatches -%}
+                <span
+                  class="pill__swatch"
+                  aria-hidden="true"
+                  {%- if value.swatch.image %}
+                    style="--swatch-img: url({{ value.swatch.image | image_url: width: 72 }});"
+                  {%- elsif value.swatch.color %}
+                    style="--swatch: {{ value.swatch.color }};"
+                  {%- endif %}
+                ></span>
+              {%- endif -%}
+              <span class="pill__label">{{ value.name | escape }}</span>
+              <span class="visually-hidden" data-unavailable-note{% if value.available %} hidden{% endif %}>
+                {{- 'products.product.unavailable_option' | t -}}
+              </span>
+            </label>
+          {%- endfor -%}
+        </div>
+      </fieldset>
+    {%- endfor -%}
+  </variant-picker>
+{%- endunless -%}

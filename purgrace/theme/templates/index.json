@@ -1,0 +1,521 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "blocks": {
+        "highlight-1": {
+          "type": "highlight",
+          "settings": {
+            "icon": "sparkle",
+            "text": "18K gold plated"
+          }
+        },
+        "highlight-2": {
+          "type": "highlight",
+          "settings": {
+            "icon": "shield",
+            "text": "Nickel-free"
+          }
+        },
+        "highlight-3": {
+          "type": "highlight",
+          "settings": {
+            "icon": "heart",
+            "text": "Hypoallergenic"
+          }
+        }
+      },
+      "block_order": [
+        "highlight-1",
+        "highlight-2",
+        "highlight-3"
+      ],
+      "settings": {
+        "layout": "overlay",
+        "image": "shopify://shop_images/brazilian-gold-plated-jewellery-australia-purgrace.png",
+        "focus_x": 35,
+        "height": 80,
+        "text_position": "right",
+        "text_color": "dark",
+        "color_scheme": "surface",
+        "eyebrow": "Authentic Rommanel · Designed in Brazil",
+        "heading": "Brazilian gold, <em>made to shine</em> every day.",
+        "heading_tag": "h1",
+        "text": "<p>18K gold-plated and 925 sterling silver jewellery by Rommanel, chosen in Perth and delivered across Australia.</p>",
+        "button_label_1": "Shop best sellers",
+        "button_link_1": "shopify://collections/best-sellers",
+        "button_label_2": "Explore Faith",
+        "button_link_2": "shopify://collections/faith",
+        "seal_text": "Authentic Rommanel • 18K gold plated • "
+      }
+    },
+    "marquee": {
+      "type": "marquee",
+      "blocks": {
+        "item-1": {
+          "type": "item",
+          "settings": {
+            "text": "18K gold plated",
+            "icon": "none"
+          }
+        },
+        "item-2": {
+          "type": "item",
+          "settings": {
+            "text": "Nickel-free and hypoallergenic",
+            "icon": "none"
+          }
+        },
+        "item-3": {
+          "type": "item",
+          "settings": {
+            "text": "Authentic Rommanel",
+            "icon": "none"
+          }
+        },
+        "item-4": {
+          "type": "item",
+          "settings": {
+            "text": "Since 1986 in Brazil",
+            "icon": "none"
+          }
+        },
+        "item-5": {
+          "type": "item",
+          "settings": {
+            "text": "Free shipping over $149",
+            "icon": "none"
+          }
+        },
+        "item-6": {
+          "type": "item",
+          "settings": {
+            "text": "Based in Perth, WA",
+            "icon": "none"
+          }
+        }
+      },
+      "block_order": [
+        "item-1",
+        "item-2",
+        "item-3",
+        "item-4",
+        "item-5",
+        "item-6"
+      ],
+      "settings": {
+        "color_scheme": "light",
+        "animate": true,
+        "speed": 45
+      }
+    },
+    "categories": {
+      "type": "collection-list",
+      "blocks": {
+        "earrings": {
+          "type": "collection",
+          "settings": {
+            "collection": "earrings",
+            "title": "Earrings",
+            "text": ""
+          }
+        },
+        "necklaces": {
+          "type": "collection",
+          "settings": {
+            "collection": "necklace",
+            "title": "Necklaces",
+            "text": ""
+          }
+        },
+        "pendants": {
+          "type": "collection",
+          "settings": {
+            "collection": "pendant",
+            "title": "Pendants",
+            "text": ""
+          }
+        },
+        "rings": {
+          "type": "collection",
+          "settings": {
+            "collection": "ring",
+            "title": "Rings",
+            "text": ""
+          }
+        },
+        "bracelets": {
+          "type": "collection",
+          "settings": {
+            "collection": "bracelet",
+            "title": "Bracelets",
+            "text": ""
+          }
+        },
+        "sets": {
+          "type": "collection",
+          "settings": {
+            "collection": "set",
+            "title": "Sets",
+            "text": ""
+          }
+        }
+      },
+      "block_order": [
+        "earrings",
+        "necklaces",
+        "pendants",
+        "rings",
+        "bracelets",
+        "sets"
+      ],
+      "settings": {
+        "color_scheme": "light",
+        "eyebrow": "Shop by category",
+        "heading": "Find your <em>next favourite</em>",
+        "text": ""
+      }
+    },
+    "best-sellers": {
+      "type": "featured-collection",
+      "settings": {
+        "color_scheme": "surface",
+        "eyebrow": "Best sellers",
+        "heading": "Most-loved <em>pieces</em>",
+        "text": "<p>The Rommanel pieces our customers come back for.</p>",
+        "collection": "best-sellers",
+        "limit": 8,
+        "columns": 4,
+        "mobile_scroll": true,
+        "view_all_label": "View all best sellers"
+      }
+    },
+    "meaning": {
+      "type": "shop-by-meaning",
+      "blocks": {
+        "faith": {
+          "type": "meaning",
+          "settings": {
+            "title": "Faith",
+            "subtitle": "Saints, crosses and medals",
+            "collection": "faith",
+            "image": "shopify://shop_images/IMG_0720.webp"
+          }
+        },
+        "love": {
+          "type": "meaning",
+          "settings": {
+            "title": "Love",
+            "subtitle": "Hearts for every day",
+            "link": "/search?q=heart&options%5Bprefix%5D=last",
+            "image": "shopify://shop_images/IMG_5799.webp"
+          }
+        },
+        "family": {
+          "type": "meaning",
+          "settings": {
+            "title": "Family",
+            "subtitle": "Boy and girl pendants",
+            "link": "/search?q=boy+girl&options%5Bprefix%5D=last",
+            "image": "shopify://shop_images/IMG_1401.jpg"
+          }
+        },
+        "luck": {
+          "type": "meaning",
+          "settings": {
+            "title": "Luck",
+            "subtitle": "Four-leaf clovers",
+            "link": "/search?q=clover&options%5Bprefix%5D=last",
+            "image": "shopify://shop_images/IMG_9452.webp"
+          }
+        },
+        "butterflies": {
+          "type": "meaning",
+          "settings": {
+            "title": "Butterflies",
+            "subtitle": "Our signature",
+            "link": "/search?q=butterfly&options%5Bprefix%5D=last",
+            "image": "shopify://shop_images/IMG_4600_2baf37d4-1d70-45c1-b577-eccb40872166.webp"
+          }
+        }
+      },
+      "block_order": [
+        "faith",
+        "love",
+        "family",
+        "luck",
+        "butterflies"
+      ],
+      "settings": {
+        "color_scheme": "light",
+        "eyebrow": "Jewellery with meaning",
+        "heading": "Wear what you <em>believe in</em>",
+        "text": "<p>Pieces chosen for faith, love, luck and family, to keep the people and the beliefs you love close to your heart.</p>"
+      }
+    },
+    "promise": {
+      "type": "promise",
+      "blocks": {
+        "q1": {
+          "type": "quality",
+          "settings": {
+            "icon": "sparkle",
+            "title": "18K gold plated",
+            "detail": "Three layers of gold on every piece"
+          }
+        },
+        "q2": {
+          "type": "quality",
+          "settings": {
+            "icon": "shield",
+            "title": "Nickel-free",
+            "detail": "Gentle on skin that reacts to nickel"
+          }
+        },
+        "q3": {
+          "type": "quality",
+          "settings": {
+            "icon": "heart",
+            "title": "Made for everyday wear",
+            "detail": "With a little care, it keeps its shine"
+          }
+        },
+        "q4": {
+          "type": "quality",
+          "settings": {
+            "icon": "gem",
+            "title": "Solid 925 sterling silver",
+            "detail": "Finished with fine silver and an anti-tarnish treatment"
+          }
+        },
+        "q5": {
+          "type": "quality",
+          "settings": {
+            "icon": "truck",
+            "title": "Shipped from Perth",
+            "detail": "Free Australia-wide over $149"
+          }
+        }
+      },
+      "block_order": [
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "q5"
+      ],
+      "settings": {
+        "eyebrow": "Why Rommanel",
+        "heading": "40 years of <em>Brazilian craft</em>, now in Australia.",
+        "text": "<p>Rommanel was founded in Brazil in 1986 and has more than 300 stores there today. Every piece we sell is authentic Rommanel, chosen by us in Perth and sent to you with care.</p>",
+        "button_label": "Shop all jewellery",
+        "button_link": "shopify://collections/all",
+        "card_title": "Quality notes",
+        "card_note": "Designed in Brazil · Shipped from Perth, WA"
+      }
+    },
+    "silver": {
+      "type": "featured-collection",
+      "settings": {
+        "color_scheme": "light",
+        "eyebrow": "Solid 925 sterling silver",
+        "heading": "Cool, bright <em>silver</em>",
+        "text": "<p>Solid 925 sterling silver pieces with cubic zirconia, for when you want a cooler shine.</p>",
+        "collection": "solid-925-silver",
+        "limit": 4,
+        "columns": 4,
+        "mobile_scroll": true,
+        "view_all_label": "Shop silver"
+      }
+    },
+    "story": {
+      "type": "image-with-text",
+      "blocks": {
+        "point-1": {
+          "type": "point",
+          "settings": {
+            "text": "Three layers of gold on every gold-plated piece"
+          }
+        },
+        "point-2": {
+          "type": "point",
+          "settings": {
+            "text": "Solid 925 sterling silver in the silver collection"
+          }
+        },
+        "point-3": {
+          "type": "point",
+          "settings": {
+            "text": "Nickel-free and hypoallergenic, safe for sensitive skin"
+          }
+        }
+      },
+      "block_order": [
+        "point-1",
+        "point-2",
+        "point-3"
+      ],
+      "settings": {
+        "color_scheme": "surface",
+        "image": "shopify://shop_images/brazilian-gold-pendant-necklace-australia-purgrace.jpg",
+        "frame": "arch",
+        "image_position": "left",
+        "eyebrow": "Our story",
+        "heading": "From Belo Horizonte to Perth, <em>with grace</em>.",
+        "text": "<p>PurGrace was founded in 2025 by Priscila Veloso, a Brazilian mum from Belo Horizonte who now calls Perth home. Her TAFE classmates kept asking where her gold jewellery came from, so she brought Rommanel, Brazil's leading jewellery brand, to Australia.</p>",
+        "button_label": "Read our story",
+        "button_link": "shopify://pages/discover-purgrace"
+      }
+    },
+    "reviews": {
+      "type": "testimonials",
+      "blocks": {
+        "review-1": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "quote": "So practical and beautiful...",
+            "author": "Namuun",
+            "detail": "Perth, WA"
+          }
+        },
+        "review-2": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "quote": "I never take them off and they still look perfect.",
+            "author": "Felix C.",
+            "detail": "Perth, WA"
+          }
+        },
+        "review-3": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "quote": "The quality is amazing, the special back locks securely so they won't get lost easily, and they're comfortable to sleep.",
+            "author": "Leah A.",
+            "detail": "Perth, WA"
+          }
+        }
+      },
+      "block_order": [
+        "review-1",
+        "review-2",
+        "review-3"
+      ],
+      "settings": {
+        "color_scheme": "light",
+        "eyebrow": "Reviews",
+        "heading": "Loved by our <em>customers</em>",
+        "text": ""
+      }
+    },
+    "care": {
+      "type": "steps",
+      "blocks": {
+        "step-1": {
+          "type": "step",
+          "settings": {
+            "title": "Last on, first off",
+            "text": "<p>Put your jewellery on about 10 minutes after perfume, creams and sunscreen, and take it off before the gym, a swim or bed.</p>"
+          }
+        },
+        "step-2": {
+          "type": "step",
+          "settings": {
+            "title": "Keep it dry",
+            "text": "<p>Take it off for the beach, the pool and hot showers, and keep it away from detergents and alcohol gel.</p>"
+          }
+        },
+        "step-3": {
+          "type": "step",
+          "settings": {
+            "title": "Wipe and store apart",
+            "text": "<p>Wipe it with a soft, dry cloth and keep each piece in its own pouch, away from sun and heat.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "step-1",
+        "step-2",
+        "step-3"
+      ],
+      "settings": {
+        "color_scheme": "surface",
+        "eyebrow": "Jewellery care",
+        "heading": "Keep the shine for <em>years</em>",
+        "text": "",
+        "button_label": "",
+        "button_link": ""
+      }
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q1": {
+          "type": "question",
+          "settings": {
+            "question": "Is this authentic Rommanel jewellery?",
+            "answer": "<p>Yes. Every piece we sell is authentic Rommanel, a Brazilian jewellery brand founded in 1986.</p>"
+          }
+        },
+        "q2": {
+          "type": "question",
+          "settings": {
+            "question": "Is it safe for sensitive skin?",
+            "answer": "<p>Rommanel jewellery is nickel-free and hypoallergenic to nickel, so it is a good choice for sensitive ears and skin.</p>"
+          }
+        },
+        "q3": {
+          "type": "question",
+          "settings": {
+            "question": "Can I wear my jewellery in the water?",
+            "answer": "<p>We recommend taking it off before the beach, the pool and hot showers. Salt, chlorine and hot water wear the gold layer faster and can loosen stones. A quick splash while washing your hands is fine.</p>"
+          }
+        },
+        "q4": {
+          "type": "question",
+          "settings": {
+            "question": "How long does shipping take?",
+            "answer": "<p>Orders are packed within 1–2 business days and sent with Australia Post. Standard delivery takes 2–4 business days in WA and 4–8 to other states, and Express is faster. Shipping is free on orders over $149.</p>"
+          }
+        },
+        "q5": {
+          "type": "question",
+          "settings": {
+            "question": "How do I find my ring size?",
+            "answer": "<p>Measure the inside diameter of a ring that fits you well and compare it with our ring size guide. If you are between sizes, choose the larger one.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "q5"
+      ],
+      "settings": {
+        "color_scheme": "light",
+        "eyebrow": "FAQ",
+        "heading": "Good to <em>know</em>",
+        "text": "<p>Can't find your answer? Send us a message and we'll help.</p>",
+        "button_label": "Contact us",
+        "button_link": "shopify://pages/contact"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "marquee",
+    "categories",
+    "best-sellers",
+    "meaning",
+    "promise",
+    "silver",
+    "story",
+    "reviews",
+    "care",
+    "faq"
+  ]
+}

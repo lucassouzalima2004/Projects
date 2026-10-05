@@ -1,0 +1,97 @@
+<section class="section scheme-{{ section.settings.color_scheme }} steps-section" aria-labelledby="StepsTitle-{{ section.id }}">
+  <div class="container">
+    {%- assign heading_id = 'StepsTitle-' | append: section.id -%}
+    {%- render 'section-head',
+      eyebrow: section.settings.eyebrow,
+      heading: section.settings.heading,
+      text: section.settings.text,
+      heading_id: heading_id
+    -%}
+    <ol class="steps" role="list" data-stagger>
+      {%- for block in section.blocks -%}
+        <li class="step" {{ block.shopify_attributes }}>
+          <span class="step__n" aria-hidden="true">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+          <h3 class="step__title">{{ block.settings.title | escape }}</h3>
+          <div class="step__text rte">{{ block.settings.text }}</div>
+        </li>
+      {%- endfor -%}
+    </ol>
+    {%- if section.settings.button_label != blank -%}
+      <div class="section-foot">
+        <a href="{{ section.settings.button_link | default: routes.root_url }}" class="btn btn--ghost">
+          {{- section.settings.button_label | escape -}}
+          {% render 'icon', name: 'arrow', class: 'btn__icon btn__icon--arrow' %}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Steps",
+  "class": "section-steps",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colours",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "surface", "label": "Soft" },
+        { "value": "dark", "label": "Dark" }
+      ],
+      "default": "light"
+    },
+    { "type": "text", "id": "eyebrow", "label": "Small label", "default": "Jewellery care" },
+    { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "Keep the shine for <em>years</em>" },
+    { "type": "richtext", "id": "text", "label": "Text" },
+    { "type": "text", "id": "button_label", "label": "Button", "default": "Read the care guide" },
+    { "type": "url", "id": "button_link", "label": "Button link" }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Step",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Last on, first off" },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Put your jewellery on after perfume, creams and hairspray, and take it off before the gym or a swim.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Steps",
+      "blocks": [
+        {
+          "type": "step",
+          "settings": {
+            "title": "Last on, first off",
+            "text": "<p>Put your jewellery on after perfume, creams and hairspray, and take it off before the gym or a swim.</p>"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "Wipe and dry",
+            "text": "<p>After wearing, wipe each piece with a soft, dry cloth to remove sweat and oils.</p>"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "Store apart",
+            "text": "<p>Keep pieces in their pouch or a lined box, apart from each other, away from humidity.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

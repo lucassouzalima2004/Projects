@@ -1,0 +1,53 @@
+{%- doc -%}
+  Blog post card.
+
+  @param {object} card_article - Article
+  @param {string} [sizes] - Image sizes attribute
+  @param {boolean} [featured] - Larger layout for the first post
+  @param {string} [heading_tag] - Defaults to h3
+{%- enddoc -%}
+{%- liquid
+  assign a = card_article
+  assign tag = heading_tag | default: 'h3'
+  assign img_sizes = sizes | default: '(min-width: 990px) 33vw, 100vw'
+  assign img_alt = a.image.alt | default: a.title | escape
+  assign words = a.content | strip_html | split: ' ' | size
+  assign minutes = words | divided_by: 200.0 | ceil
+  if minutes < 1
+    assign minutes = 1
+  endif
+-%}
+<article class="article-card{% if featured %} article-card--featured{% endif %}">
+  <div class="article-card__media">
+    {%- if a.image -%}
+      {{
+        a.image
+        | image_url: width: 1400
+        | image_tag:
+          loading: 'lazy',
+          sizes: img_sizes,
+          widths: '360, 540, 720, 960, 1200, 1400',
+          alt: img_alt
+      }}
+    {%- else -%}
+      <div class="article-card__art" aria-hidden="true">
+        {% render 'butterfly' %}
+      </div>
+    {%- endif -%}
+  </div>
+  <div class="article-card__info">
+    <p class="article-card__meta">
+      {{- a.published_at | time_tag: format: 'date' -}}
+      <span aria-hidden="true"> · </span>
+      {{- 'blogs.article.reading_time' | t: count: minutes -}}
+    </p>
+    <{{ tag }} class="article-card__title">
+      <a href="{{ a.url }}" class="card__link">{{ a.title | escape }}</a>
+    </{{ tag }}>
+    {%- if featured -%}
+      <p class="article-card__excerpt">{{ a.excerpt_or_content | strip_html | truncatewords: 34 }}</p>
+    {%- else -%}
+      <p class="article-card__excerpt">{{ a.excerpt_or_content | strip_html | truncatewords: 20 }}</p>
+    {%- endif -%}
+  </div>
+</article>

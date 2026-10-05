@@ -1,0 +1,26 @@
+{%- doc -%}
+  Product title for display. With Theme settings → Product cards → "Tidy product titles" on,
+  a trailing product code (" - 5428350000") is hidden and ALL CAPS titles are shown in sentence case.
+  Search engines still read the full title from the page title tag.
+
+  @param {string} title - The product title
+{%- enddoc -%}
+{%- liquid
+  assign display = title
+  if settings.tidy_titles
+    assign parts = display | split: ' - '
+    if parts.size > 1
+      assign code = parts | last | strip
+      assign letters = code | remove: '0' | remove: '1' | remove: '2' | remove: '3' | remove: '4' | remove: '5' | remove: '6' | remove: '7' | remove: '8' | remove: '9'
+      if letters == blank and code.size >= 5
+        assign code_suffix = ' - ' | append: parts.last
+        assign display = display | remove_last: code_suffix | strip
+      endif
+    endif
+    assign upper = display | upcase
+    if display == upper
+      assign display = display | downcase | capitalize | replace: '18k ', '18K ' | replace: ' 18k', ' 18K'
+    endif
+  endif
+-%}
+{{- display | escape -}}

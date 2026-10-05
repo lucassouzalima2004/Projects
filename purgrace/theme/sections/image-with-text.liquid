@@ -1,0 +1,126 @@
+{%- liquid
+  assign image = section.settings.image
+  assign points = section.blocks | where: 'type', 'point'
+-%}
+<section class="section scheme-{{ section.settings.color_scheme }} media-text{% if section.settings.image_position == 'right' %} media-text--reverse{% endif %}" aria-labelledby="MediaTextTitle-{{ section.id }}">
+  <div class="container media-text__grid">
+    <figure class="media-text__media{% if section.settings.frame == 'arch' %} arch{% else %} frame{% endif %}" data-reveal="zoom">
+      {%- if image != blank -%}
+        {%- assign img_alt = image.alt | escape -%}
+        {{
+          image
+          | image_url: width: 1400
+          | image_tag:
+            loading: 'lazy',
+            sizes: '(min-width: 990px) 45vw, 90vw',
+            widths: '400, 600, 800, 1000, 1200, 1400',
+            alt: img_alt
+        }}
+      {%- else -%}
+        <div class="media-text__art">{% render 'jewel-art', kind: 'pendant' %}</div>
+      {%- endif -%}
+    </figure>
+    <div class="media-text__copy" data-stagger>
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      <h2 class="h2" id="MediaTextTitle-{{ section.id }}">{{ section.settings.heading }}</h2>
+      {%- if section.settings.text != blank -%}
+        <div class="media-text__lead rte">{{ section.settings.text }}</div>
+      {%- endif -%}
+      {%- if points.size > 0 -%}
+        <ul class="ticks" role="list">
+          {%- for block in points -%}
+            <li {{ block.shopify_attributes }}>{{ block.settings.text | escape }}</li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+      {%- if section.settings.button_label != blank -%}
+        <a href="{{ section.settings.button_link | default: routes.all_products_collection_url }}" class="btn btn--ghost">
+          {{- section.settings.button_label | escape -}}
+          {% render 'icon', name: 'arrow', class: 'btn__icon btn__icon--arrow' %}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Image with text",
+  "class": "section-media-text",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colours",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "surface", "label": "Soft" },
+        { "value": "dark", "label": "Dark" }
+      ],
+      "default": "surface"
+    },
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    {
+      "type": "select",
+      "id": "frame",
+      "label": "Image frame",
+      "options": [
+        { "value": "arch", "label": "Arch (salon mirror)" },
+        { "value": "rounded", "label": "Rounded" }
+      ],
+      "default": "arch"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position on desktop",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    { "type": "text", "id": "eyebrow", "label": "Small label", "default": "Our story" },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "From Brazil, <em>with grace</em>."
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>PurGrace brings Rommanel, one of Brazil's best-loved jewellery brands, to Australia. Every piece is chosen by us in Perth for its quality, comfort and meaning, and sent to you with care.</p>"
+    },
+    { "type": "text", "id": "button_label", "label": "Button", "default": "About PurGrace" },
+    { "type": "url", "id": "button_link", "label": "Button link" }
+  ],
+  "blocks": [
+    {
+      "type": "point",
+      "name": "List item",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text", "default": "Hypoallergenic: safe for sensitive skin" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image with text",
+      "blocks": [
+        { "type": "point", "settings": { "text": "Hypoallergenic: safe for sensitive skin" } },
+        { "type": "point", "settings": { "text": "Made for everyday wear, with a little care" } },
+        { "type": "point", "settings": { "text": "Australia-based: fast shipping from Perth" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

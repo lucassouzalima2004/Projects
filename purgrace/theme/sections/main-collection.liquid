@@ -1,0 +1,132 @@
+{%- paginate collection.products by section.settings.per_page -%}
+  {%- liquid
+    assign has_filters = false
+    if section.settings.enable_filtering and collection.filters.size > 0
+      assign has_filters = true
+    endif
+    assign columns = section.settings.columns
+    if has_filters
+      assign card_sizes = '(min-width: 1100px) 280px, (min-width: 750px) 30vw, 50vw'
+    else
+      assign card_sizes = '(min-width: 1100px) 300px, (min-width: 750px) 33vw, 50vw'
+    endif
+  -%}
+  <header class="collection-hero scheme-surface">
+    <div class="container collection-hero__inner{% if section.settings.show_image and collection.image %} has-image{% endif %}">
+      <div class="collection-hero__copy">
+        {% render 'breadcrumbs' %}
+        <h1 class="collection-hero__title">{{ collection.title | escape }}</h1>
+        {%- if section.settings.show_description and collection.description != blank -%}
+          <div class="collection-hero__desc rte">{{ collection.description }}</div>
+        {%- endif -%}
+      </div>
+      {%- if section.settings.show_image and collection.image -%}
+        {%- assign img_alt = collection.image.alt | default: collection.title | escape -%}
+        <figure class="collection-hero__media arch">
+          {{
+            collection.image
+            | image_url: width: 900
+            | image_tag:
+              loading: 'eager',
+              sizes: '(min-width: 990px) 320px, 60vw',
+              widths: '300, 450, 600, 900',
+              alt: img_alt
+          }}
+        </figure>
+      {%- endif -%}
+    </div>
+  </header>
+
+  <facet-filters class="container collection{% if has_filters %} collection--filters{% endif %}" data-section="{{ section.id }}">
+    {% render 'facets', part: 'form', results: collection, section_id: section.id, action_url: collection.url %}
+
+    {%- if has_filters -%}
+      <aside class="facets" id="FacetsPanel-{{ section.id }}" data-facets-panel aria-label="{{ 'collections.filters.title' | t }}">
+        <div class="facets__inner" data-facets-region="panel">
+          {% render 'facets', part: 'panel', results: collection, section_id: section.id %}
+        </div>
+      </aside>
+    {%- endif -%}
+
+    <div class="collection__main">
+      <div data-facets-region="toolbar">
+        {% render 'facets', part: 'toolbar', results: collection, section_id: section.id, show_filters: has_filters, show_sort: section.settings.enable_sorting, count: collection.products_count %}
+      </div>
+      <div data-facets-region="active">
+        {% render 'facets', part: 'active', results: collection, section_id: section.id, action_url: collection.url %}
+      </div>
+      <div data-facets-region="results" class="collection__results">
+        {%- if collection.products.size > 0 -%}
+          <ul class="product-grid" role="list" style="--cols: {{ columns }};">
+            {%- for product in collection.products -%}
+              {%- liquid
+                assign card_loading = 'lazy'
+                if forloop.index <= 4
+                  assign card_loading = 'eager'
+                endif
+              -%}
+              <li class="product-grid__item">
+                {% render 'product-card', card_product: product, section_id: section.id, loading: card_loading, sizes: card_sizes %}
+              </li>
+            {%- endfor -%}
+          </ul>
+          {% render 'pagination', paginate: paginate %}
+        {%- else -%}
+          <div class="empty-state">
+            {% render 'butterfly', class: 'empty-state__art' %}
+            <h2 class="h3">{{ 'collections.empty.title' | t }}</h2>
+            <p>{{ 'collections.empty.text' | t }}</p>
+            <a href="{{ collection.url }}" class="btn btn--ghost btn--sm" data-facet-link>{{ 'collections.filters.clear_all' | t }}</a>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </facet-filters>
+
+  {%- if collection.metafields.custom.seo_content != blank -%}
+    <div class="container seo-content">
+      <div class="seo-content__inner rte">{{ collection.metafields.custom.seo_content | metafield_tag }}</div>
+    </div>
+  {%- endif -%}
+{%- endpaginate -%}
+
+{% schema %}
+{
+  "name": "Collection",
+  "class": "section-main-collection",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Long text for Google can go in a collection metafield called custom.seo_content (rich text). It appears below the products."
+    },
+    { "type": "checkbox", "id": "show_description", "label": "Show collection description", "default": true },
+    { "type": "checkbox", "id": "show_image", "label": "Show collection image", "default": true },
+    {
+      "type": "range",
+      "id": "per_page",
+      "label": "Products per page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns on desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_filtering",
+      "label": "Enable filters",
+      "info": "Choose the filters in the Shopify Search & Discovery app.",
+      "default": true
+    },
+    { "type": "checkbox", "id": "enable_sorting", "label": "Enable sorting", "default": true }
+  ]
+}
+{% endschema %}

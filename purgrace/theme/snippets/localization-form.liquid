@@ -1,0 +1,58 @@
+{%- doc -%}
+  Language switch (PT / EN) and country/currency picker. They only appear when the store
+  has more than one language (Settings → Languages) or market (Settings → Markets).
+
+  @param {string} id_prefix - Unique prefix for the form ids
+  @param {boolean} [show_country] - Set to false to hide the country picker
+{%- enddoc -%}
+{%- liquid
+  assign show_languages = false
+  if localization.available_languages.size > 1
+    assign show_languages = true
+  endif
+  assign show_countries = false
+  if localization.available_countries.size > 1 and show_country != false
+    assign show_countries = true
+  endif
+  assign lang_form_id = 'LanguageForm-' | append: id_prefix
+  assign country_form_id = 'CountryForm-' | append: id_prefix
+  assign country_select_id = 'CountrySelect-' | append: id_prefix
+-%}
+{%- if show_languages or show_countries -%}
+  <localization-form class="localization">
+    {%- if show_languages -%}
+      {%- form 'localization', id: lang_form_id, class: 'localization__form' -%}
+        <div class="lang" role="group" aria-label="{{ 'localization.language_label' | t }}">
+          {%- for language in localization.available_languages -%}
+            <button
+              type="submit"
+              name="language_code"
+              value="{{ language.iso_code }}"
+              lang="{{ language.iso_code }}"
+              title="{{ language.endonym_name | capitalize }}"
+              aria-pressed="{% if language.iso_code == localization.language.iso_code %}true{% else %}false{% endif %}"
+            >
+              {{- language.iso_code | split: '-' | first | upcase -}}
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endform -%}
+    {%- endif -%}
+    {%- if show_countries -%}
+      {%- form 'localization', id: country_form_id, class: 'localization__form' -%}
+        <div class="select select--sm">
+          <label class="visually-hidden" for="{{ country_select_id }}">{{ 'localization.country_label' | t }}</label>
+          <select id="{{ country_select_id }}" name="country_code" data-autosubmit>
+            {%- for country in localization.available_countries -%}
+              <option value="{{ country.iso_code }}"{% if country.iso_code == localization.country.iso_code %} selected{% endif %}>
+                {{- country.name }} ({{ country.currency.iso_code }} {{ country.currency.symbol -}})
+              </option>
+            {%- endfor -%}
+          </select>
+          {% render 'icon', name: 'chevron-down', class: 'select__chevron' %}
+        </div>
+        <noscript><button type="submit" class="btn btn--sm btn--ghost">{{ 'localization.update' | t }}</button></noscript>
+      {%- endform -%}
+    {%- endif -%}
+  </localization-form>
+{%- endif -%}

@@ -1,0 +1,155 @@
+{%- liquid
+  assign words = article.content | strip_html | split: ' ' | size
+  assign minutes = words | divided_by: 200.0 | ceil
+  if minutes < 1
+    assign minutes = 1
+  endif
+  assign related = article.metafields.custom.related_products.value
+-%}
+<article class="article section section--tight">
+  <div class="container article__head">
+    {% render 'breadcrumbs' %}
+    <p class="article__meta">
+      {{- article.published_at | time_tag: format: 'date' -}}
+      <span aria-hidden="true"> · </span>
+      {{- 'blogs.article.reading_time' | t: count: minutes -}}
+      {%- if section.settings.show_author and article.author != blank -%}
+        <span aria-hidden="true"> · </span>{{ 'blogs.article.by' | t: author: article.author }}
+      {%- endif -%}
+    </p>
+    <h1 class="article__title">{{ article.title | escape }}</h1>
+    {%- if article.excerpt != blank -%}
+      <div class="article__excerpt rte">{{ article.excerpt }}</div>
+    {%- endif -%}
+  </div>
+
+  {%- if article.image -%}
+    {%- assign img_alt = article.image.alt | default: article.title | escape -%}
+    <figure class="container article__hero">
+      {{
+        article.image
+        | image_url: width: 2000
+        | image_tag:
+          loading: 'eager',
+          fetchpriority: 'high',
+          sizes: '(min-width: 1280px) 1180px, 94vw',
+          widths: '600, 900, 1200, 1500, 2000',
+          alt: img_alt
+      }}
+    </figure>
+  {%- endif -%}
+
+  <div class="container article__body">
+    <div class="article__content rte">{{ article.content }}</div>
+
+    {%- if related != blank -%}
+      <aside class="article__shop" aria-labelledby="ShopThePost">
+        <h2 class="h3" id="ShopThePost">{{ 'blogs.article.shop_the_post' | t }}</h2>
+        <ul class="product-grid" role="list" style="--cols: 3;">
+          {%- for p in related limit: 3 -%}
+            <li class="product-grid__item">{% render 'product-card', card_product: p, section_id: section.id %}</li>
+          {%- endfor -%}
+        </ul>
+      </aside>
+    {%- endif -%}
+
+    <footer class="article__foot">
+      {%- if article.tags.size > 0 -%}
+        <ul class="tag-list" role="list">
+          {%- for tag in article.tags -%}
+            <li><a href="{{ blog.url }}/tagged/{{ tag | handleize }}" class="pill">{{ tag | escape }}</a></li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+      <share-button class="share" data-url="{{ shop.url | append: article.url }}" data-title="{{ article.title | escape }}">
+        <button type="button" class="link-btn share__btn">
+          {%- render 'icon', name: 'share' -%}
+          {{- 'general.share' | t -}}
+        </button>
+        <span class="share__status" role="status"></span>
+      </share-button>
+    </footer>
+
+    <nav class="article__nav" aria-label="{{ 'blogs.article.more' | t }}">
+      {%- if blog.previous_article -%}
+        <a href="{{ blog.previous_article.url }}" class="article__nav-link">
+          <span>{% render 'icon', name: 'arrow-left' %}{{ 'blogs.article.older' | t }}</span>
+          <strong>{{ blog.previous_article.title | escape }}</strong>
+        </a>
+      {%- endif -%}
+      {%- if blog.next_article -%}
+        <a href="{{ blog.next_article.url }}" class="article__nav-link article__nav-link--next">
+          <span>{{ 'blogs.article.newer' | t }}{% render 'icon', name: 'arrow' %}</span>
+          <strong>{{ blog.next_article.title | escape }}</strong>
+        </a>
+      {%- endif -%}
+    </nav>
+
+    {%- if blog.comments_enabled? -%}
+      <section class="comments" aria-labelledby="CommentsTitle">
+        <h2 class="h3" id="CommentsTitle">{{ 'blogs.comments.title' | t: count: article.comments_count }}</h2>
+        {%- paginate article.comments by 20 -%}
+          {%- if article.comments_count > 0 -%}
+            <ul class="comments__list" role="list">
+              {%- for comment in article.comments -%}
+                <li class="comment">
+                  <div class="rte">{{ comment.content }}</div>
+                  <p class="comment__meta">{{ comment.author | escape }} · {{ comment.created_at | time_tag: format: 'date' }}</p>
+                </li>
+              {%- endfor -%}
+            </ul>
+            {% render 'pagination', paginate: paginate %}
+          {%- endif -%}
+        {%- endpaginate -%}
+
+        {%- form 'new_comment', article, class: 'comment-form' -%}
+          <h3 class="comment-form__title">{{ 'blogs.comments.leave' | t }}</h3>
+          {%- if form.posted_successfully? -%}
+            <p class="form-message" role="status">
+              {%- if blog.moderated? -%}
+                {{ 'blogs.comments.success_moderated' | t }}
+              {%- else -%}
+                {{ 'blogs.comments.success' | t }}
+              {%- endif -%}
+            </p>
+          {%- endif -%}
+          {%- if form.errors -%}
+            <div class="form-message form-message--error" role="alert">{{ form.errors | default_errors }}</div>
+          {%- endif -%}
+          <div class="field-row">
+            <div class="field">
+              <label class="field__label" for="CommentAuthor">{{ 'blogs.comments.name' | t }}</label>
+              <input class="field__input" type="text" id="CommentAuthor" name="comment[author]" value="{{ form.author }}" autocomplete="name" required>
+            </div>
+            <div class="field">
+              <label class="field__label" for="CommentEmail">{{ 'blogs.comments.email' | t }}</label>
+              <input class="field__input" type="email" id="CommentEmail" name="comment[email]" value="{{ form.email }}" autocomplete="email" required>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="CommentBody">{{ 'blogs.comments.message' | t }}</label>
+            <textarea class="field__input" id="CommentBody" name="comment[body]" rows="5" required>{{ form.body }}</textarea>
+          </div>
+          {%- if blog.moderated? -%}
+            <p class="form-hint">{{ 'blogs.comments.moderated' | t }}</p>
+          {%- endif -%}
+          <button type="submit" class="btn btn--primary">{{ 'blogs.comments.post' | t }}</button>
+        {%- endform -%}
+      </section>
+    {%- endif -%}
+  </div>
+</article>
+
+{% schema %}
+{
+  "name": "Blog post",
+  "class": "section-main-article",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Add products to a post with an article metafield called custom.related_products (list of products). They appear as 'Shop the post'."
+    },
+    { "type": "checkbox", "id": "show_author", "label": "Show author", "default": true }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,47 @@
+<product-recommendations
+  class="section scheme-{{ section.settings.color_scheme }} recommendations"
+  data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ section.settings.limit }}&intent=related"
+>
+  {%- if recommendations.performed? and recommendations.products_count > 0 -%}
+    <div class="container">
+      {%- assign heading_id = 'RecommendationsTitle-' | append: section.id -%}
+      {%- render 'section-head', eyebrow: section.settings.eyebrow, heading: section.settings.heading, heading_id: heading_id -%}
+      <ul class="product-grid product-grid--scroll" role="list" style="--cols: {{ section.settings.limit }};">
+        {%- for rec in recommendations.products -%}
+          <li class="product-grid__item">{% render 'product-card', card_product: rec, section_id: section.id %}</li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  {%- endif -%}
+</product-recommendations>
+
+{% schema %}
+{
+  "name": "Product recommendations",
+  "class": "section-recommendations",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shopify picks related products automatically. Fine-tune them in the Search & Discovery app."
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colours",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "surface", "label": "Soft" }
+      ],
+      "default": "surface"
+    },
+    { "type": "text", "id": "eyebrow", "label": "Small label", "default": "You may also like" },
+    { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "Complete the <em>look</em>" },
+    { "type": "range", "id": "limit", "label": "Products", "min": 2, "max": 8, "step": 1, "default": 4 }
+  ],
+  "presets": [
+    {
+      "name": "Product recommendations"
+    }
+  ]
+}
+{% endschema %}

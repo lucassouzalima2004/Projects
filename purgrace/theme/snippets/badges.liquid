@@ -1,0 +1,34 @@
+{%- doc -%}
+  Sale, sold out, bestseller and new badges. Bestseller and New come from product tags
+  (Theme settings → Product cards).
+
+  @param {object} product - Product
+{%- enddoc -%}
+{%- liquid
+  assign tag_new = settings.badge_new_tag | downcase | strip
+  assign tag_best = settings.badge_bestseller_tag | downcase | strip
+  assign is_new = false
+  assign is_best = false
+  for tag in product.tags
+    assign t_down = tag | downcase
+    if tag_new != blank and t_down == tag_new
+      assign is_new = true
+    endif
+    if tag_best != blank and t_down == tag_best
+      assign is_best = true
+    endif
+  endfor
+-%}
+<div class="badges">
+  {%- if product.available == false -%}
+    <span class="badge badge--soldout">{{ 'products.product.sold_out' | t }}</span>
+  {%- elsif product.compare_at_price > product.price -%}
+    {%- assign pct = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price -%}
+    <span class="badge badge--sale">{{ 'products.product.badge_sale' | t: percent: pct }}</span>
+  {%- endif -%}
+  {%- if is_best -%}
+    <span class="badge">{{ 'products.product.badge_bestseller' | t }}</span>
+  {%- elsif is_new -%}
+    <span class="badge badge--new">{{ 'products.product.badge_new' | t }}</span>
+  {%- endif -%}
+</div>

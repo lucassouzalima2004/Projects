@@ -1,0 +1,4 @@
+{%- if cart.item_count > 0 -%}
+  <span class="cart-count" aria-hidden="true">{{ cart.item_count | at_most: 99 }}</span>
+{%- endif -%}
+<span class="visually-hidden">{{ 'cart.title_count' | t: count: cart.item_count }}</span>

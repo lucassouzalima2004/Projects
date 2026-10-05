@@ -1,0 +1,90 @@
+{%- liquid
+  assign kinds = 'pendant,hoops,cross,ring,chain,pendant,hoops,cross' | split: ','
+-%}
+<section class="section scheme-{{ section.settings.color_scheme }} image-grid" aria-labelledby="ImageGridTitle-{{ section.id }}">
+  <div class="container">
+    {%- assign heading_id = 'ImageGridTitle-' | append: section.id -%}
+    {%- render 'section-head',
+      eyebrow: section.settings.eyebrow,
+      heading: section.settings.heading,
+      text: section.settings.text,
+      heading_id: heading_id
+    -%}
+    <ul class="image-grid__list" role="list" data-stagger>
+      {%- for block in section.blocks -%}
+        <li class="image-grid__item" {{ block.shopify_attributes }}>
+          {%- if block.settings.link != blank -%}<a href="{{ block.settings.link }}" class="image-grid__link">{%- endif -%}
+          {%- if block.settings.image != blank -%}
+            {%- assign img_alt = block.settings.image.alt | default: block.settings.caption | escape -%}
+            {{
+              block.settings.image
+              | image_url: width: 800
+              | image_tag:
+                loading: 'lazy',
+                sizes: '(min-width: 990px) 25vw, 50vw',
+                widths: '300, 450, 600, 800',
+                alt: img_alt
+            }}
+          {%- else -%}
+            {%- assign k = forloop.index0 | modulo: 8 -%}
+            {% render 'jewel-art', kind: kinds[k] %}
+          {%- endif -%}
+          {%- if block.settings.caption != blank -%}
+            <span class="image-grid__caption">{{ block.settings.caption | escape }}</span>
+          {%- endif -%}
+          {%- if block.settings.link != blank -%}</a>{%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+    {%- if section.settings.button_label != blank -%}
+      <div class="section-foot">
+        <a href="{{ section.settings.button_link | default: settings.social_instagram_link | default: routes.root_url }}" class="btn btn--ghost">
+          {% render 'icon', name: 'instagram', class: 'btn__icon' %}
+          {{- section.settings.button_label | escape -}}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Image grid",
+  "class": "section-image-grid",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colours",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "surface", "label": "Soft" }
+      ],
+      "default": "light"
+    },
+    { "type": "text", "id": "eyebrow", "label": "Small label", "default": "@purgraceau" },
+    { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "Worn by <em>you</em>" },
+    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Tag @purgraceau on Instagram for a chance to be featured.</p>" },
+    { "type": "text", "id": "button_label", "label": "Button", "default": "Follow on Instagram" },
+    { "type": "url", "id": "button_link", "label": "Button link", "info": "Leave empty to use the Instagram link from Theme settings." }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "caption", "label": "Caption" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image grid",
+      "blocks": [{ "type": "image" }, { "type": "image" }, { "type": "image" }, { "type": "image" }]
+    }
+  ]
+}
+{% endschema %}

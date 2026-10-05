@@ -1,0 +1,109 @@
+{%- liquid
+  assign featured_product = section.settings.product
+  assign product_form_id = 'ProductForm-' | append: section.id
+-%}
+<section class="section scheme-{{ section.settings.color_scheme }} spotlight" aria-labelledby="SpotlightTitle-{{ section.id }}">
+  {%- if featured_product != blank -%}
+    {%- assign variant = featured_product.selected_or_first_available_variant -%}
+    <product-info class="container spotlight__grid" data-section="{{ section.id }}" data-url="{{ featured_product.url }}" data-update-url="false">
+      <media-gallery class="gallery spotlight__media" data-section="{{ section.id }}">
+        <div class="gallery__viewport">
+          <ul class="gallery__track" role="list">
+            {%- for media in featured_product.media limit: 6 -%}
+              {%- if media.media_type == 'image' -%}
+                {%- assign media_alt = media.alt | default: featured_product.title | escape -%}
+                <li class="gallery__item{% if media.id == variant.featured_media.id %} is-active{% endif %}" data-media-id="{{ media.id }}">
+                  {{
+                    media
+                    | image_url: width: 1400
+                    | image_tag:
+                      loading: 'lazy',
+                      sizes: '(min-width: 990px) 45vw, 100vw',
+                      widths: '375, 550, 750, 1000, 1200, 1400',
+                      alt: media_alt
+                  }}
+                </li>
+              {%- endif -%}
+            {%- else -%}
+              <li class="gallery__item gallery__item--art is-active">
+                {% render 'jewel-art', kind: 'pendant' %}
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      </media-gallery>
+
+      <div class="spotlight__info" data-stagger>
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+        <h2 class="h2 spotlight__title" id="SpotlightTitle-{{ section.id }}">
+          <a href="{{ featured_product.url }}">{% render 'product-title', title: featured_product.title %}</a>
+        </h2>
+        {% render 'rating', product: featured_product, show_count: true %}
+        <div data-price>
+          {% render 'price', product: featured_product, variant: variant %}
+        </div>
+        {%- if featured_product.description != blank -%}
+          <p class="spotlight__text">{{ featured_product.description | strip_html | truncatewords: 40 }}</p>
+        {%- endif -%}
+        {% render 'variant-picker', product: featured_product, section_id: section.id %}
+        {% render 'buy-buttons', product: featured_product, form_id: product_form_id, show_dynamic_checkout: section.settings.show_dynamic_checkout %}
+        <a href="{{ featured_product.url }}" class="link-btn spotlight__more">
+          {{- 'products.product.view_details' | t -}}
+        </a>
+      </div>
+      {% render 'product-json', product: featured_product %}
+    </product-info>
+  {%- else -%}
+    <div class="container spotlight__grid">
+      <div class="spotlight__media">
+        <div class="gallery__item gallery__item--art is-active">
+          {% render 'jewel-art', kind: 'pendant' %}
+        </div>
+      </div>
+      <div class="spotlight__info">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+        <h2 class="h2 spotlight__title" id="SpotlightTitle-{{ section.id }}">{{ 'sections.featured_product.placeholder_title' | t }}</h2>
+        <div class="price"><span class="price__current">{{ 9900 | money }}</span></div>
+        <p class="spotlight__text">{{ 'sections.featured_product.placeholder_text' | t }}</p>
+        <button type="button" class="btn btn--primary btn--block" disabled>{{ 'products.product.add_to_cart' | t }}</button>
+      </div>
+    </div>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Featured product",
+  "class": "section-featured-product",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colours",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "surface", "label": "Soft" },
+        { "value": "dark", "label": "Dark" }
+      ],
+      "default": "light"
+    },
+    { "type": "product", "id": "product", "label": "Product" },
+    { "type": "text", "id": "eyebrow", "label": "Small label", "default": "Customer favourite" },
+    {
+      "type": "checkbox",
+      "id": "show_dynamic_checkout",
+      "label": "Show express checkout buttons",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured product"
+    }
+  ]
+}
+{% endschema %}

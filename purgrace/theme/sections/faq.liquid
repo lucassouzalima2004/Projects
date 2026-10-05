@@ -1,0 +1,124 @@
+<section class="section scheme-{{ section.settings.color_scheme }} faq" aria-labelledby="FaqTitle-{{ section.id }}">
+  <div class="container faq__grid">
+    <header class="faq__head" data-stagger>
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      <h2 class="h2" id="FaqTitle-{{ section.id }}">{{ section.settings.heading }}</h2>
+      {%- if section.settings.text != blank -%}
+        <div class="faq__lead rte">{{ section.settings.text }}</div>
+      {%- endif -%}
+      {%- if section.settings.button_label != blank -%}
+        <a href="{{ section.settings.button_link | default: routes.root_url }}" class="btn btn--ghost btn--sm">
+          {{- section.settings.button_label | escape -}}
+          {% render 'icon', name: 'arrow', class: 'btn__icon btn__icon--arrow' %}
+        </a>
+      {%- endif -%}
+    </header>
+    <div class="faq__list" data-stagger>
+      {%- for block in section.blocks -%}
+        <details class="faq__item" {{ block.shopify_attributes }}>
+          <summary>
+            <span>{{ block.settings.question | escape }}</span>
+            <span class="faq__icon" aria-hidden="true">{% render 'icon', name: 'plus' %}</span>
+          </summary>
+          <div class="faq__a rte">{{ block.settings.answer }}</div>
+        </details>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "FAQ",
+  "class": "section-faq",
+  "max_blocks": 16,
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colours",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "surface", "label": "Soft" }
+      ],
+      "default": "light"
+    },
+    { "type": "text", "id": "eyebrow", "label": "Small label", "default": "FAQ" },
+    { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "Good to <em>know</em>" },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Can't find your answer? Send us a message and we'll help.</p>"
+    },
+    { "type": "text", "id": "button_label", "label": "Button", "default": "Contact us" },
+    { "type": "url", "id": "button_link", "label": "Button link" }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "Question",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Question", "default": "Can I wear my jewellery in the water?" },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>We recommend taking it off before the beach, the pool and hot showers. Salt, chlorine and hot water wear the gold layer faster and can loosen stones.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ",
+      "blocks": [
+        {
+          "type": "question",
+          "settings": {
+            "question": "Is this authentic Rommanel jewellery?",
+            "answer": "<p>Yes. Every piece we sell is authentic Rommanel, a Brazilian jewellery brand founded in 1986.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "Is it safe for sensitive skin?",
+            "answer": "<p>Rommanel jewellery is nickel-free and hypoallergenic to nickel, so it is a good choice for sensitive ears and skin.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "Can I wear my jewellery in the water?",
+            "answer": "<p>We recommend taking it off before the beach, the pool and hot showers. Salt, chlorine and hot water wear the gold layer faster and can loosen stones. A quick splash while washing your hands is fine.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "How long does shipping take?",
+            "answer": "<p>We ship from Perth, Western Australia, to the whole country, and shipping is free on orders over $149. See our shipping policy for delivery times.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "How do I find my ring size?",
+            "answer": "<p>Measure the inside diameter of a ring that fits you well and compare it with our ring size guide. If you are between sizes, choose the larger one.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "Can I return or exchange a piece?",
+            "answer": "<p>Please read our refund policy. Your rights under the Australian Consumer Law always apply.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

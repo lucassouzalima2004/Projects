@@ -1,0 +1,59 @@
+{%- liquid
+  assign kinds = 'hoops,pendant,cross,ring,chain,pendant' | split: ','
+  assign default_heading = 'collections.list.title' | t
+-%}
+<header class="collection-hero scheme-surface">
+  <div class="container collection-hero__inner">
+    <div class="collection-hero__copy">
+      {% render 'breadcrumbs' %}
+      <h1 class="collection-hero__title">{{ section.settings.heading | default: default_heading | escape }}</h1>
+    </div>
+  </div>
+</header>
+<section class="section section--tight">
+  <div class="container">
+    {%- paginate collections by 24 -%}
+      <ul class="collection-cards" role="list" style="--cols: 3;">
+        {%- for c in collections -%}
+          {%- liquid
+            assign k = forloop.index0 | modulo: 6
+            assign img_alt = c.featured_image.alt | default: c.title | escape
+          -%}
+          <li class="collection-card">
+            <div class="collection-card__media arch collection-card__media--{% if c.image %}cover{% else %}blend{% endif %}">
+              {%- if c.featured_image -%}
+                {{
+                  c.featured_image
+                  | image_url: width: 900
+                  | image_tag:
+                    loading: 'lazy',
+                    sizes: '(min-width: 990px) 33vw, (min-width: 600px) 45vw, 80vw',
+                    widths: '300, 450, 600, 750, 900',
+                    alt: img_alt
+                }}
+              {%- else -%}
+                {% render 'jewel-art', kind: kinds[k] %}
+              {%- endif -%}
+            </div>
+            <div class="collection-card__info">
+              <h2 class="collection-card__title"><a href="{{ c.url }}" class="card__link">{{ c.title | escape }}</a></h2>
+              <p class="collection-card__text">{{ 'collections.products_count' | t: count: c.products_count }}</p>
+              <span class="collection-card__arrow" aria-hidden="true">{% render 'icon', name: 'arrow' %}</span>
+            </div>
+          </li>
+        {%- endfor -%}
+      </ul>
+      {% render 'pagination', paginate: paginate %}
+    {%- endpaginate -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Collections list page",
+  "class": "section-main-list-collections",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Shop all" }
+  ]
+}
+{% endschema %}

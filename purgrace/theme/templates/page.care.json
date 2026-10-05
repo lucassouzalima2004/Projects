@@ -1,0 +1,89 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "settings": {}
+    },
+    "care": {
+      "type": "steps",
+      "blocks": {
+        "step-1": {
+          "type": "step",
+          "settings": {
+            "title": "Last on, first off",
+            "text": "<p>Put your jewellery on about 10 minutes after perfume, creams and sunscreen, and take it off before the gym, a swim or bed.</p>"
+          }
+        },
+        "step-2": {
+          "type": "step",
+          "settings": {
+            "title": "Keep it dry",
+            "text": "<p>Take it off for the beach, the pool and hot showers, and keep it away from detergents and alcohol gel.</p>"
+          }
+        },
+        "step-3": {
+          "type": "step",
+          "settings": {
+            "title": "Wipe and store apart",
+            "text": "<p>Wipe it with a soft, dry cloth and keep each piece in its own pouch, away from sun and heat.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "step-1",
+        "step-2",
+        "step-3"
+      ],
+      "settings": {
+        "color_scheme": "surface",
+        "eyebrow": "Jewellery care",
+        "heading": "Keep the shine for <em>years</em>",
+        "text": "",
+        "button_label": ""
+      }
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q1": {
+          "type": "question",
+          "settings": {
+            "question": "Can I shower with my jewellery?",
+            "answer": "<p>Rommanel recommends taking your jewellery off for hot showers, the beach and the pool. Hot water can loosen stones, and salt and chlorine wear the gold layer faster.</p>"
+          }
+        },
+        "q2": {
+          "type": "question",
+          "settings": {
+            "question": "How do I clean gold-plated jewellery?",
+            "answer": "<p>Wipe it gently with a soft, dry cloth. Avoid polishing cloths with chemicals, toothpaste and abrasive products.</p>"
+          }
+        },
+        "q3": {
+          "type": "question",
+          "settings": {
+            "question": "How do I clean sterling silver?",
+            "answer": "<p>Use a silver polishing cloth and store it in a closed pouch to slow down tarnishing.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "q1",
+        "q2",
+        "q3"
+      ],
+      "settings": {
+        "color_scheme": "light",
+        "eyebrow": "Care FAQ",
+        "heading": "Questions about <em>care</em>",
+        "text": "",
+        "button_label": ""
+      }
+    }
+  },
+  "order": [
+    "main",
+    "care",
+    "faq"
+  ]
+}

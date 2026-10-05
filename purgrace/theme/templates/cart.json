@@ -1,0 +1,26 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-cart",
+      "settings": {}
+    },
+    "best-sellers": {
+      "type": "featured-collection",
+      "settings": {
+        "color_scheme": "surface",
+        "eyebrow": "Before you go",
+        "heading": "Our <em>best sellers</em>",
+        "text": "",
+        "collection": "best-sellers",
+        "limit": 4,
+        "columns": 4,
+        "mobile_scroll": true,
+        "view_all_label": ""
+      }
+    }
+  },
+  "order": [
+    "main",
+    "best-sellers"
+  ]
+}

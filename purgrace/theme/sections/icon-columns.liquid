@@ -1,0 +1,87 @@
+<section class="section scheme-{{ section.settings.color_scheme }} features" aria-labelledby="FeaturesTitle-{{ section.id }}">
+  <div class="container">
+    {%- assign heading_id = 'FeaturesTitle-' | append: section.id -%}
+    {%- render 'section-head',
+      eyebrow: section.settings.eyebrow,
+      heading: section.settings.heading,
+      text: section.settings.text,
+      heading_id: heading_id
+    -%}
+    <ul class="features__list" role="list" style="--cols: {{ section.blocks.size | at_most: 4 }};" data-stagger>
+      {%- for block in section.blocks -%}
+        <li class="feature" {{ block.shopify_attributes }}>
+          <span class="feature__icon">{% render 'icon', name: block.settings.icon %}</span>
+          <h3 class="feature__title">{{ block.settings.title | escape }}</h3>
+          <div class="feature__text rte">{{ block.settings.text }}</div>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Icons with text",
+  "class": "section-features",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colours",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "surface", "label": "Soft" },
+        { "value": "dark", "label": "Dark" }
+      ],
+      "default": "light"
+    },
+    { "type": "text", "id": "eyebrow", "label": "Small label", "default": "Why PurGrace" },
+    { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "Made to <em>last</em>, chosen with <em>love</em>" },
+    { "type": "richtext", "id": "text", "label": "Text" }
+  ],
+  "blocks": [
+    {
+      "type": "column",
+      "name": "Column",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "gem", "label": "Gem" },
+            { "value": "medal", "label": "Medal" },
+            { "value": "butterfly", "label": "Butterfly" },
+            { "value": "sparkle", "label": "Sparkle" },
+            { "value": "refresh", "label": "Reusable" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "truck", "label": "Delivery" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "shield", "label": "Safe" },
+            { "value": "leaf", "label": "Leaf" },
+            { "value": "drop", "label": "Drop" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "ruler", "label": "Ruler" },
+            { "value": "box", "label": "Box" }
+          ],
+          "default": "medal"
+        },
+        { "type": "text", "id": "title", "label": "Title", "default": "Authentic Rommanel" },
+        { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Original pieces from one of Brazil's best-known jewellery brands.</p>" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Icons with text",
+      "blocks": [
+        { "type": "column", "settings": { "icon": "medal", "title": "Authentic Rommanel", "text": "<p>Original pieces from one of Brazil's best-known jewellery brands.</p>" } },
+        { "type": "column", "settings": { "icon": "shield", "title": "Nickel-free", "text": "<p>Gentle on skin that reacts to nickel.</p>" } },
+        { "type": "column", "settings": { "icon": "heart", "title": "Everyday wear", "text": "<p>Made to be worn, with a little care.</p>" } },
+        { "type": "column", "settings": { "icon": "truck", "title": "Shipped from Perth", "text": "<p>Free Australia-wide shipping over $149.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

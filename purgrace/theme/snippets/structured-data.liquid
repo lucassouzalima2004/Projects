@@ -1,0 +1,105 @@
+{%- comment -%}
+  Structured data (schema.org JSON-LD) read by Google, Bing and AI assistants.
+  Products and blog posts use Shopify's own structured_data filter, which lists every variant
+  with its price and stock. Breadcrumbs are added by the breadcrumbs snippet.
+  Shipping and return details set in Google Merchant Center or Search Console take priority
+  over the return policy below.
+{%- endcomment -%}
+{%- case request.page_type -%}
+  {%- when 'product' -%}
+    <script type="application/ld+json">
+      {{ product | structured_data }}
+    </script>
+  {%- when 'article' -%}
+    <script type="application/ld+json">
+      {{ article | structured_data }}
+    </script>
+  {%- when 'index' -%}
+    {%- liquid
+      assign logo_url = ''
+      if settings.logo != blank
+        assign logo_url = settings.logo | image_url: width: 600 | prepend: 'https:'
+      elsif shop.brand.logo != blank
+        assign logo_url = shop.brand.logo | image_url: width: 600 | prepend: 'https:'
+      endif
+
+      assign social_keys = 'instagram,tiktok,facebook,pinterest,youtube' | split: ','
+      assign same_as = ''
+      for key in social_keys
+        assign setting_key = 'social_' | append: key | append: '_link'
+        assign social_link = settings[setting_key]
+        if social_link != blank
+          if same_as != ''
+            assign same_as = same_as | append: ','
+          endif
+          assign social_json = social_link | json
+          assign same_as = same_as | append: social_json
+        endif
+      endfor
+
+      assign country = shop.address.country_code | default: 'AU'
+      assign org_id = shop.url | append: '/#organization'
+      assign wa = settings.whatsapp_number | remove: ' ' | remove: '+' | remove: '-'
+    -%}
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "OnlineStore",
+        "@id": {{ org_id | json }},
+        "name": {{ shop.name | json }},
+        "url": {{ shop.url | json }},
+        {%- if shop.description != blank %}
+        "description": {{ shop.description | json }},
+        {%- endif %}
+        {%- if logo_url != blank %}
+        "logo": {{ logo_url | json }},
+        {%- endif %}
+        {%- if same_as != '' %}
+        "sameAs": [{{ same_as }}],
+        {%- endif %}
+        {%- if settings.contact_email != blank or wa != blank %}
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer support",
+          {%- if wa != blank %}
+          "telephone": {{ wa | prepend: '+' | json }},
+          {%- endif %}
+          {%- if settings.contact_email != blank %}
+          "email": {{ settings.contact_email | json }},
+          {%- endif %}
+          "areaServed": {{ country | json }}
+        },
+        {%- endif %}
+        {%- if shop.address.city != blank %}
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": {{ shop.address.city | json }},
+          {%- if shop.address.province_code != blank %}
+          "addressRegion": {{ shop.address.province_code | json }},
+          {%- endif %}
+          "addressCountry": {{ country | json }}
+        },
+        {%- endif %}
+        "hasMerchantReturnPolicy": {
+          "@type": "MerchantReturnPolicy",
+          "applicableCountry": {{ country | json }},
+          {%- if settings.returns_policy == 'none' %}
+          "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted"
+          {%- else %}
+          "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+          "merchantReturnDays": {{ settings.returns_days }},
+          "returnMethod": "https://schema.org/ReturnByMail",
+          "returnFees": "https://schema.org/{% if settings.returns_fees == 'free' %}FreeReturn{% else %}ReturnFeesCustomerResponsibility{% endif %}"
+          {%- endif %}
+        }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": {{ shop.name | json }},
+        "url": {{ shop.url | json }}
+      }
+    </script>
+{%- endcase -%}

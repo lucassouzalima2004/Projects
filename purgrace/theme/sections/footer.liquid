@@ -1,0 +1,177 @@
+{%- liquid
+  assign wa = settings.whatsapp_number | remove: ' ' | remove: '+' | remove: '-'
+-%}
+<footer class="site-footer scheme-dark">
+  <div class="container">
+    <div class="footer__grid">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'brand' -%}
+            <div class="footer__col footer__brand" {{ block.shopify_attributes }}>
+              {% render 'logo', class: 'logo--footer' %}
+              {%- if block.settings.text != blank -%}
+                <div class="footer__text rte">{{ block.settings.text }}</div>
+              {%- endif -%}
+              {% render 'social-icons' %}
+            </div>
+          {%- when 'menu' -%}
+            <nav class="footer__col" aria-label="{{ block.settings.heading | default: block.settings.menu.title | escape }}" {{ block.shopify_attributes }}>
+              <h2 class="footer__heading">{{ block.settings.heading | default: block.settings.menu.title | escape }}</h2>
+              <ul class="footer__menu" role="list">
+                {%- for link in block.settings.menu.links -%}
+                  <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+                {%- endfor -%}
+              </ul>
+            </nav>
+          {%- when 'contact' -%}
+            <div class="footer__col" {{ block.shopify_attributes }}>
+              <h2 class="footer__heading">{{ block.settings.heading | escape }}</h2>
+              <ul class="footer__menu footer__contact" role="list">
+                {%- if settings.location_label != blank -%}
+                  <li>
+                    {%- render 'icon', name: 'pin' -%}
+                    <span>{{ settings.location_label | escape }}</span>
+                  </li>
+                {%- endif -%}
+                {%- if wa != blank -%}
+                  <li>
+                    {%- render 'icon', name: 'whatsapp' -%}
+                    <a href="https://wa.me/{{ wa }}" target="_blank" rel="noopener">{{ 'sections.footer.whatsapp' | t }}</a>
+                  </li>
+                {%- endif -%}
+                {%- if settings.contact_email != blank -%}
+                  <li>
+                    {%- render 'icon', name: 'mail' -%}
+                    <a href="mailto:{{ settings.contact_email }}">{{ settings.contact_email | escape }}</a>
+                  </li>
+                {%- endif -%}
+                {%- if settings.social_instagram_link != blank -%}
+                  <li>
+                    {%- render 'icon', name: 'instagram' -%}
+                    <a href="{{ settings.social_instagram_link }}" target="_blank" rel="noopener">{{ 'sections.footer.instagram' | t }}</a>
+                  </li>
+                {%- endif -%}
+              </ul>
+            </div>
+          {%- when 'text' -%}
+            <div class="footer__col" {{ block.shopify_attributes }}>
+              {%- if block.settings.heading != blank -%}
+                <h2 class="footer__heading">{{ block.settings.heading | escape }}</h2>
+              {%- endif -%}
+              <div class="footer__text rte">{{ block.settings.text }}</div>
+            </div>
+          {%- when '@app' -%}
+            {% render block %}
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+
+    <div class="footer__bottom">
+      <div class="footer__legal">
+        <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name | escape }}</p>
+        {%- if section.settings.show_policies and shop.policies.size > 0 -%}
+          <ul class="footer__policies" role="list">
+            {%- for policy in shop.policies -%}
+              <li><a href="{{ policy.url }}">{{ policy.title | escape }}</a></li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      </div>
+      {% render 'localization-form', id_prefix: 'footer' %}
+      {% render 'payment-icons' %}
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "class": "section-footer",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_policies",
+      "label": "Show policy links",
+      "info": "Write them in Settings → Policies.",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "brand",
+      "name": "Logo and social",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Authentic Rommanel jewellery from Brazil: 18K gold plated and 925 sterling silver, delivered across Australia.</p>"
+        }
+      ]
+    },
+    {
+      "type": "menu",
+      "name": "Menu",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu",
+          "default": "footer"
+        }
+      ]
+    },
+    {
+      "type": "contact",
+      "name": "Contact details",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Details come from Theme settings → Contact and Social media."
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Get in touch"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Help"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Questions about a piece or an order? Send us a message and we'll help.</p>"
+        }
+      ]
+    },
+    {
+      "type": "@app"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Footer",
+      "blocks": [{ "type": "brand" }, { "type": "menu" }, { "type": "contact" }]
+    }
+  ]
+}
+{% endschema %}

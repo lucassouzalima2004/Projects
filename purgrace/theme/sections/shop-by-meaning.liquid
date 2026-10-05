@@ -1,0 +1,103 @@
+{%- liquid
+  assign kinds = 'pendant,cross,hoops,ring,chain,pendant,cross,hoops' | split: ','
+-%}
+<section class="section scheme-{{ section.settings.color_scheme }} meaning" aria-labelledby="MeaningTitle-{{ section.id }}">
+  <div class="container">
+    {%- assign heading_id = 'MeaningTitle-' | append: section.id -%}
+    {%- render 'section-head',
+      eyebrow: section.settings.eyebrow,
+      heading: section.settings.heading,
+      text: section.settings.text,
+      heading_id: heading_id,
+      align: 'center'
+    -%}
+    <ul class="medallions" role="list" data-stagger>
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign link = block.settings.link | default: block.settings.collection.url
+          assign image = block.settings.image | default: block.settings.collection.featured_image
+          assign k = forloop.index0 | modulo: 8
+        -%}
+        <li class="medallion" {{ block.shopify_attributes }}>
+          <div class="medallion__disc">
+            {%- if image != blank -%}
+              {%- assign img_alt = image.alt | default: block.settings.title | escape -%}
+              {{
+                image
+                | image_url: width: 480
+                | image_tag:
+                  loading: 'lazy',
+                  sizes: '(min-width: 990px) 180px, 34vw',
+                  widths: '160, 240, 320, 480',
+                  alt: img_alt,
+                  class: 'medallion__img'
+              }}
+            {%- else -%}
+              {% render 'jewel-art', kind: kinds[k], class: 'medallion__img' %}
+            {%- endif -%}
+          </div>
+          <h3 class="medallion__title">
+            <a href="{{ link | default: routes.collections_url }}" class="card__link">{{ block.settings.title | escape }}</a>
+          </h3>
+          {%- if block.settings.subtitle != blank -%}
+            <p class="medallion__sub">{{ block.settings.subtitle | escape }}</p>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Shop by meaning",
+  "class": "section-meaning",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colours",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "surface", "label": "Soft" },
+        { "value": "dark", "label": "Dark" }
+      ],
+      "default": "light"
+    },
+    { "type": "text", "id": "eyebrow", "label": "Small label", "default": "Jewellery with meaning" },
+    { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "Wear what you <em>believe in</em>" },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Pieces chosen for faith, love, luck and family, to keep the people and the beliefs you love close to your heart.</p>"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "meaning",
+      "name": "Meaning",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Faith" },
+        { "type": "text", "id": "subtitle", "label": "Short line", "default": "Saints, crosses and medals" },
+        { "type": "collection", "id": "collection", "label": "Collection" },
+        { "type": "url", "id": "link", "label": "Link", "info": "Optional. Overrides the collection link, for example a search or a single product." },
+        { "type": "image_picker", "id": "image", "label": "Image", "info": "A product photo on white works best. Leave empty to use the collection image." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop by meaning",
+      "blocks": [
+        { "type": "meaning", "settings": { "title": "Faith", "subtitle": "Saints, crosses and medals" } },
+        { "type": "meaning", "settings": { "title": "Love", "subtitle": "Hearts for every day" } },
+        { "type": "meaning", "settings": { "title": "Family", "subtitle": "Boy and girl pendants" } },
+        { "type": "meaning", "settings": { "title": "Luck", "subtitle": "Four-leaf clovers" } },
+        { "type": "meaning", "settings": { "title": "Butterflies", "subtitle": "Our signature" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

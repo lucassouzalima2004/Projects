@@ -1,0 +1,263 @@
+{
+  "accessibility": {
+    "skip_to_content": "Pular para o conteúdo"
+  },
+  "general": {
+    "account": "Minha conta",
+    "breadcrumbs": "Navegação estrutural",
+    "close": "Fechar",
+    "home": "Início",
+    "link_copied": "Link copiado",
+    "main_menu": "Menu principal",
+    "menu": "Menu",
+    "payment_methods": "Formas de pagamento",
+    "share": "Compartilhar",
+    "meta": {
+      "tags": "Marcados com \"{{ tags }}\"",
+      "page": "Página {{ page }}"
+    },
+    "pagination": {
+      "label": "Paginação",
+      "next": "Próxima página",
+      "previous": "Página anterior",
+      "page": "Página {{ number }}"
+    },
+    "slider": {
+      "next": "Próximo",
+      "previous": "Anterior"
+    }
+  },
+  "localization": {
+    "country_label": "País/região",
+    "language_label": "Idioma",
+    "update": "Atualizar"
+  },
+  "newsletter": {
+    "label": "E-mail",
+    "placeholder": "Seu e-mail",
+    "button": "Inscrever",
+    "success": "Obrigada pela inscrição. Bem-vinda ao nosso círculo!"
+  },
+  "search": {
+    "title": "Buscar",
+    "label": "Buscar na loja",
+    "placeholder": "Busque brincos, pingentes, santos…",
+    "submit": "Buscar",
+    "products": "Produtos",
+    "suggestions": "Sugestões",
+    "page": "Página",
+    "see_all": "Ver todos os resultados para “{{ terms }}”",
+    "no_results": "Nenhum resultado para “{{ terms }}”",
+    "no_results_hint": "Confira a grafia ou tente uma palavra mais ampla, como “brinco” ou “cruz”.",
+    "results_for_html": "Resultados para <em>“{{ terms }}”</em>"
+  },
+  "cart": {
+    "title": "Sua sacola",
+    "title_count": {
+      "one": "Sacola, {{ count }} item",
+      "other": "Sacola, {{ count }} itens"
+    },
+    "added": "Adicionado à sacola",
+    "error": "Algo deu errado. Tente novamente.",
+    "checkout": "Finalizar compra com segurança",
+    "continue": "Continuar comprando",
+    "empty": "Sua sacola está vazia",
+    "remove": "Remover",
+    "subtotal": "Subtotal",
+    "summary": "Resumo do pedido",
+    "update": "Atualizar sacola",
+    "upsell_title": "Você também vai amar",
+    "view_cart": "Ver sacola",
+    "taxes_included_shipping_at_checkout": "GST incluído. Frete calculado no checkout.",
+    "taxes_and_shipping_at_checkout": "Impostos e frete calculados no checkout.",
+    "note": {
+      "label": "Adicionar mensagem de presente",
+      "placeholder": "Escreva sua mensagem. Não incluímos o preço."
+    },
+    "free_shipping": {
+      "remaining_html": "Faltam <strong>{{ amount }}</strong> para o frete grátis",
+      "unlocked": "Você ganhou frete grátis"
+    }
+  },
+  "collections": {
+    "products_count": {
+      "one": "{{ count }} peça",
+      "other": "{{ count }} peças"
+    },
+    "list": {
+      "title": "Coleções"
+    },
+    "sort": {
+      "label": "Ordenar por"
+    },
+    "empty": {
+      "title": "Nenhuma peça com esses filtros",
+      "text": "Remova um filtro para ver mais opções."
+    },
+    "filters": {
+      "title": "Filtrar",
+      "apply": "Aplicar",
+      "clear_all": "Limpar tudo",
+      "remove": "Remover filtro",
+      "from": "De",
+      "to": "Até",
+      "max_price_html": "O maior preço é {{ price }}",
+      "show_results": "Ver resultados"
+    }
+  },
+  "products": {
+    "placeholder": {
+      "names": "Medalha de São Bento|Argola Borboleta|Anel Solitário Coração|Pingente Cruz Texturizada|Corrente Elo Português|Pingente Nossa Senhora Aparecida"
+    },
+    "product": {
+      "add_to_cart": "Adicionar à sacola",
+      "add_short": "Adicionar",
+      "add_named": "Adicionar {{ title }} à sacola",
+      "choose_options": "Escolher opções",
+      "choose_short": "Escolher",
+      "view_details": "Ver todos os detalhes",
+      "description": "Descrição",
+      "sold_out": "Esgotado",
+      "unavailable": "Indisponível",
+      "unavailable_option": "Indisponível com as opções escolhidas",
+      "badge_sale": "{{ percent }}% off",
+      "badge_new": "Novidade",
+      "badge_bestseller": "Mais vendido",
+      "swatches_count": {
+        "one": "{{ count }} cor",
+        "other": "{{ count }} cores"
+      },
+      "low_stock": {
+        "one": "Só resta {{ count }}",
+        "other": "Só restam {{ count }}"
+      },
+      "rating_label": "Nota {{ rating }} de {{ max }}",
+      "taxes_included": "GST incluído.",
+      "taxes_excluded": "Impostos calculados no checkout.",
+      "shipping_policy_html": "<a href=\"{{ link }}\">Frete</a> calculado no checkout.",
+      "size_guide": "Guia de tamanhos",
+      "size_guide_full": "Ver o guia completo",
+      "price": {
+        "from_html": "A partir de {{ price }}",
+        "regular_price": "Preço normal",
+        "sale_price": "Preço promocional",
+        "unit_price": "Preço unitário"
+      },
+      "quantity": {
+        "label": "Quantidade",
+        "label_for": "Quantidade de {{ product }}",
+        "decrease": "Diminuir a quantidade de {{ product }}",
+        "increase": "Aumentar a quantidade de {{ product }}"
+      },
+      "media": {
+        "gallery": "Fotos do produto",
+        "position": "Foto {{ number }} de {{ total }}",
+        "show": "Mostrar foto {{ number }}"
+      },
+      "pickup": {
+        "available_html": "Retirada disponível em <strong>{{ location }}</strong>",
+        "unavailable_html": "Retirada indisponível no momento em <strong>{{ location }}</strong>"
+      },
+      "gift": {
+        "label": "Sua mensagem",
+        "placeholder": "Feliz aniversário, com carinho…",
+        "property": "Mensagem de presente"
+      }
+    }
+  },
+  "blogs": {
+    "all_posts": "Todos os posts",
+    "empty": "Ainda não há posts.",
+    "article": {
+      "by": "por {{ author }}",
+      "more": "Mais posts",
+      "newer": "Post mais recente",
+      "older": "Post anterior",
+      "shop_the_post": "Compre as peças do post",
+      "reading_time": {
+        "one": "{{ count }} min de leitura",
+        "other": "{{ count }} min de leitura"
+      }
+    },
+    "comments": {
+      "title": {
+        "one": "{{ count }} comentário",
+        "other": "{{ count }} comentários"
+      },
+      "leave": "Deixe um comentário",
+      "name": "Nome",
+      "email": "E-mail",
+      "message": "Comentário",
+      "post": "Publicar comentário",
+      "moderated": "Os comentários são aprovados antes de aparecer.",
+      "success": "Seu comentário foi publicado. Obrigada!",
+      "success_moderated": "Obrigada! Seu comentário aparece depois de aprovado."
+    }
+  },
+  "contact": {
+    "name": "Nome",
+    "email": "E-mail",
+    "phone": "Telefone",
+    "message": "Mensagem",
+    "send": "Enviar mensagem",
+    "success": "Obrigada pela mensagem. Respondemos em breve.",
+    "whatsapp": "Falar no WhatsApp"
+  },
+  "sections": {
+    "announcement": {
+      "label": "Avisos"
+    },
+    "blog_posts": {
+      "placeholder_titles": "Como cuidar de joias folheadas a ouro|O significado da medalha de São Bento|Nossa Senhora Aparecida: a história do pingente"
+    },
+    "collection_list": {
+      "placeholder_title": "Coleção"
+    },
+    "featured_product": {
+      "placeholder_title": "Sua peça em destaque",
+      "placeholder_text": "Escolha um produto no editor do tema para mostrá-lo aqui, com fotos e botão de compra."
+    },
+    "footer": {
+      "whatsapp": "WhatsApp",
+      "instagram": "Instagram"
+    },
+    "size_guide": {
+      "caption": "Tamanhos de anel",
+      "au": "Austrália",
+      "diameter": "Diâmetro (mm)",
+      "circumference": "Circunferência (mm)",
+      "brazil": "Brasil (aro)",
+      "unit_note": "Medidas internas em milímetros. O tamanho brasileiro é o aro Rommanel mais próximo."
+    },
+    "testimonials": {
+      "label": "Avaliações de clientes"
+    }
+  },
+  "templates": {
+    "404": {
+      "title_html": "Esta página <em>voou</em>",
+      "text": "O link pode estar quebrado ou a página mudou de lugar. Faça uma busca ou volte para a loja.",
+      "link": "Voltar para a loja"
+    },
+    "password": {
+      "notify": "Avise-me",
+      "owner": "É a dona da loja? Entre aqui",
+      "password": "Senha",
+      "enter": "Entrar"
+    }
+  },
+  "gift_cards": {
+    "issued": {
+      "title": "Aqui está seu vale-presente de {{ value }} da {{ shop }}!",
+      "subtext": "Seu vale-presente",
+      "initial_value": "Valor original {{ value }}",
+      "expired": "Expirado",
+      "expires_on": "Válido até {{ expires_on }}",
+      "code": "Código do vale-presente",
+      "copy": "Copiar código",
+      "add_to_apple_wallet": "Adicionar à Apple Wallet",
+      "shop_link": "Começar a comprar",
+      "print": "Imprimir"
+    }
+  }
+}

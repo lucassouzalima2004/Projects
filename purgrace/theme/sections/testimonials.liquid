@@ -1,0 +1,107 @@
+<section class="section scheme-{{ section.settings.color_scheme }} reviews" aria-labelledby="ReviewsTitle-{{ section.id }}">
+  <div class="container">
+    {%- assign heading_id = 'ReviewsTitle-' | append: section.id -%}
+    {%- render 'section-head',
+      eyebrow: section.settings.eyebrow,
+      heading: section.settings.heading,
+      text: section.settings.text,
+      heading_id: heading_id
+    -%}
+    <scroll-slider class="slider">
+      <ul class="reviews__track slider__track" role="list" tabindex="0" aria-label="{{ 'sections.testimonials.label' | t }}">
+        {%- for block in section.blocks -%}
+          <li class="review" {{ block.shopify_attributes }}>
+            <figure class="review__inner">
+              {%- if block.settings.rating > 0 -%}
+                {%- assign stars_pct = block.settings.rating | times: 20 -%}
+                <div class="rating" role="img" aria-label="{{ 'products.product.rating_label' | t: rating: block.settings.rating, max: 5 }}">
+                  <span class="rating__stars" style="--rating: {{ stars_pct }}%" aria-hidden="true"></span>
+                </div>
+              {%- endif -%}
+              <blockquote class="review__quote">{{ block.settings.quote }}</blockquote>
+              <figcaption class="review__author">
+                <span class="review__name">{{ block.settings.author | escape }}</span>
+                {%- if block.settings.detail != blank -%}
+                  <span class="review__detail">{{ block.settings.detail | escape }}</span>
+                {%- endif -%}
+              </figcaption>
+            </figure>
+          </li>
+        {%- endfor -%}
+      </ul>
+      {%- if section.blocks.size > 1 -%}
+        <div class="slider__nav">
+          <button type="button" class="slider__btn" data-slider-prev aria-label="{{ 'general.slider.previous' | t }}">
+            {%- render 'icon', name: 'arrow-left' -%}
+          </button>
+          <button type="button" class="slider__btn" data-slider-next aria-label="{{ 'general.slider.next' | t }}">
+            {%- render 'icon', name: 'arrow' -%}
+          </button>
+        </div>
+      {%- endif -%}
+    </scroll-slider>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "class": "section-testimonials",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Use real words from real clients (with their permission). Made-up reviews break Australian Consumer Law."
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colours",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "surface", "label": "Soft" },
+        { "value": "dark", "label": "Dark" }
+      ],
+      "default": "surface"
+    },
+    { "type": "text", "id": "eyebrow", "label": "Small label", "default": "Reviews" },
+    { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "Loved by our <em>customers</em>" },
+    { "type": "richtext", "id": "text", "label": "Text" }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Stars (0 hides them)",
+          "min": 0,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "inline_richtext",
+          "id": "quote",
+          "label": "Quote",
+          "default": "Paste a real customer review here. Short and specific works best."
+        },
+        { "type": "text", "id": "author", "label": "Name", "default": "Customer name" },
+        { "type": "text", "id": "detail", "label": "Detail", "default": "Perth, WA" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials",
+      "blocks": [
+        { "type": "testimonial", "settings": { "rating": 5, "quote": "So practical and beautiful...", "author": "Namuun", "detail": "Perth, WA" } },
+        { "type": "testimonial", "settings": { "rating": 5, "quote": "I never take them off and they still look perfect.", "author": "Felix C.", "detail": "Perth, WA" } },
+        { "type": "testimonial", "settings": { "rating": 5, "quote": "The quality is amazing, the special back locks securely so they won't get lost easily, and they're comfortable to sleep.", "author": "Leah A.", "detail": "Perth, WA" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

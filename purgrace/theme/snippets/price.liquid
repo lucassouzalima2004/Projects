@@ -1,0 +1,55 @@
+{%- doc -%}
+  Price with sale price and unit price.
+
+  @param {object} product - Product
+  @param {object} [variant] - Variant to price. Without it the card shows the lowest price ("From …").
+  @param {string} [class] - Extra classes
+{%- enddoc -%}
+{%- liquid
+  if variant
+    assign price = variant.price
+    assign compare_at = variant.compare_at_price
+    assign available = variant.available
+    assign varies = false
+  else
+    assign price = product.price
+    assign compare_at = product.compare_at_price
+    assign available = product.available
+    assign varies = product.price_varies
+  endif
+
+  assign on_sale = false
+  if compare_at > price
+    assign on_sale = true
+  endif
+  assign money_price = price | money
+-%}
+<div class="price{% if on_sale %} price--sale{% endif %}{% unless available %} price--soldout{% endunless %}{% if class %} {{ class }}{% endif %}">
+  {%- if varies -%}
+    <span class="price__current">{{ 'products.product.price.from_html' | t: price: money_price }}</span>
+  {%- else -%}
+    <span class="visually-hidden">
+      {%- if on_sale -%}
+        {{ 'products.product.price.sale_price' | t }}
+      {%- else -%}
+        {{ 'products.product.price.regular_price' | t }}
+      {%- endif -%}
+    </span>
+    <span class="price__current">{{ money_price }}</span>
+  {%- endif -%}
+  {%- if on_sale -%}
+    <span class="visually-hidden">{{ 'products.product.price.regular_price' | t }}</span>
+    <s class="price__compare">{{ compare_at | money }}</s>
+  {%- endif -%}
+  {%- if variant.unit_price_measurement -%}
+    <span class="price__unit">
+      <span class="visually-hidden">{{ 'products.product.price.unit_price' | t }}</span>
+      {{- variant.unit_price | money -}}
+      /
+      {%- if variant.unit_price_measurement.reference_value != 1 -%}
+        {{- variant.unit_price_measurement.reference_value -}}
+      {%- endif -%}
+      {{- variant.unit_price_measurement.reference_unit -}}
+    </span>
+  {%- endif -%}
+</div>

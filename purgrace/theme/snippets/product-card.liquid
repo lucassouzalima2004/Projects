@@ -1,0 +1,128 @@
+{%- doc -%}
+  Product card used in grids, sliders, the cart and search results.
+
+  @param {object} card_product - Product
+  @param {string} [sizes] - Image sizes attribute
+  @param {string} [loading] - 'lazy' (default) or 'eager'
+  @param {string} [section_id] - Section id, keeps form ids unique on the page
+  @param {boolean} [show_quick_add] - Set to false to hide the quick add button
+  @param {string} [heading_tag] - Defaults to h3
+  @param {boolean} [compact] - Smaller card for the cart
+{%- enddoc -%}
+{%- liquid
+  assign p = card_product
+  assign img_sizes = sizes | default: '(min-width: 1100px) 300px, (min-width: 750px) 33vw, 50vw'
+  assign img_loading = loading | default: 'lazy'
+  assign tag = heading_tag | default: 'h3'
+
+  assign quick = settings.card_show_quick_add
+  if show_quick_add == false
+    assign quick = false
+  endif
+
+  assign ratio = 1
+  if settings.card_image_ratio == 'portrait'
+    assign ratio = 0.8
+  elsif settings.card_image_ratio == 'adapt' and p.featured_media
+    assign ratio = p.featured_media.aspect_ratio
+  endif
+
+  assign variant = p.selected_or_first_available_variant
+  assign single_variant = false
+  if p.has_only_default_variant or p.variants_count == 1
+    assign single_variant = true
+  endif
+  assign second_media = p.media[1]
+  assign img_alt = p.featured_media.alt | default: p.title | escape
+  assign img_class = 'card__img'
+  if settings.card_blend_white
+    assign img_class = 'card__img card__img--blend'
+  endif
+-%}
+<div class="card{% unless p.available %} is-soldout{% endunless %}{% if compact %} card--compact{% endif %}" style="--card-ratio: {{ ratio }};">
+  <div class="card__media">
+    {%- if p.featured_media -%}
+      {{
+        p.featured_media
+        | image_url: width: 1000
+        | image_tag:
+          loading: img_loading,
+          sizes: img_sizes,
+          widths: '240, 360, 480, 640, 800, 1000',
+          class: img_class,
+          alt: img_alt
+      }}
+      {%- if settings.card_show_secondary_image and second_media and second_media.media_type == 'image' -%}
+        {{
+          second_media
+          | image_url: width: 1000
+          | image_tag:
+            loading: 'lazy',
+            sizes: img_sizes,
+            widths: '240, 360, 480, 640, 800, 1000',
+            class: 'card__img card__img--alt',
+            alt: ''
+        }}
+      {%- endif -%}
+    {%- else -%}
+      {% render 'jewel-art', class: 'card__img' %}
+    {%- endif -%}
+    {%- unless compact -%}
+      {% render 'badges', product: p %}
+    {%- endunless -%}
+  </div>
+
+  <div class="card__info">
+    <{{ tag }} class="card__title">
+      <a href="{{ p.url }}" class="card__link">{% render 'product-title', title: p.title %}</a>
+    </{{ tag }}>
+    {%- if settings.card_show_rating and compact != true -%}
+      {% render 'rating', product: p, show_count: true %}
+    {%- endif -%}
+    {% render 'price', product: p, class: 'card__price' %}
+    {%- if settings.card_show_swatches and compact != true -%}
+      {%- for option in p.options_with_values -%}
+        {%- assign option_name = option.name | downcase -%}
+        {%- if option_name == 'color' or option_name == 'colour' or option_name == 'cor' -%}
+          {%- if option.values.first.swatch -%}
+            <ul class="card__swatches" role="list" aria-label="{{ 'products.product.swatches_count' | t: count: option.values.size }}">
+              {%- for value in option.values limit: 5 -%}
+                <li
+                  class="mini-swatch"
+                  title="{{ value.name | escape }}"
+                  {%- if value.swatch.image %}
+                    style="--swatch-img: url({{ value.swatch.image | image_url: width: 48 }});"
+                  {%- elsif value.swatch.color %}
+                    style="--swatch: {{ value.swatch.color }};"
+                  {%- endif %}
+                ></li>
+              {%- endfor -%}
+              {%- if option.values.size > 5 -%}
+                <li class="mini-swatch__more">+{{ option.values.size | minus: 5 }}</li>
+              {%- endif -%}
+            </ul>
+          {%- endif -%}
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+
+  {%- if quick and p.available -%}
+    {%- if single_variant -%}
+      {%- assign quick_form_id = 'QuickAdd-' | append: section_id | append: '-' | append: p.id -%}
+      {%- form 'product', p, id: quick_form_id, class: 'card__quick', data-type: 'add-to-cart-form' -%}
+        <input type="hidden" name="id" value="{{ variant.id }}">
+        <button type="submit" class="card__add" aria-label="{{ 'products.product.add_named' | t: title: p.title | escape }}">
+          {% render 'icon', name: 'plus' %}
+          <span class="card__add-label">{{ 'products.product.add_short' | t }}</span>
+        </button>
+      {%- endform -%}
+    {%- else -%}
+      <a href="{{ p.url }}" class="card__add card__add--link" tabindex="-1" aria-hidden="true">
+        {% render 'icon', name: 'arrow' %}
+        <span class="card__add-label">{{ 'products.product.choose_short' | t }}</span>
+      </a>
+    {%- endif -%}
+  {%- endif -%}
+</div>

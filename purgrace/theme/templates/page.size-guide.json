@@ -1,0 +1,96 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "settings": {}
+    },
+    "guide": {
+      "type": "size-guide",
+      "blocks": {
+        "step-1": {
+          "type": "step",
+          "settings": {
+            "title": "Use a ring that fits",
+            "text": "<p>Measure the inside diameter of a ring that fits the finger you want, in millimetres, and find it in the table.</p>"
+          }
+        },
+        "step-2": {
+          "type": "step",
+          "settings": {
+            "title": "Or measure your finger",
+            "text": "<p>Wrap a strip of paper around the base of your finger, mark where it overlaps and measure it: that's the circumference.</p>"
+          }
+        },
+        "step-3": {
+          "type": "step",
+          "settings": {
+            "title": "Between two sizes?",
+            "text": "<p>Choose the larger one. Fingers are a little bigger at the end of the day and in warm weather.</p>"
+          }
+        },
+        "length-37": {
+          "type": "length",
+          "settings": {
+            "length": 37,
+            "name": "Choker",
+            "description": "Sits close to the base of the neck. Most Rommanel chokers are around this length."
+          }
+        },
+        "length-42": {
+          "type": "length",
+          "settings": {
+            "length": 42,
+            "name": "Short",
+            "description": "Rests just above the collarbone, lovely with small pendants."
+          }
+        },
+        "length-45": {
+          "type": "length",
+          "settings": {
+            "length": 45,
+            "name": "Princess",
+            "description": "Falls on the collarbone. The most popular length."
+          }
+        },
+        "length-50": {
+          "type": "length",
+          "settings": {
+            "length": 50,
+            "name": "Matinee",
+            "description": "Just below the collarbone. Many Rommanel necklaces are 50 cm and adjust to 45 cm."
+          }
+        },
+        "length-60": {
+          "type": "length",
+          "settings": {
+            "length": 60,
+            "name": "Long",
+            "description": "Sits at the top of the bust, perfect for layering."
+          }
+        }
+      },
+      "block_order": [
+        "step-1",
+        "step-2",
+        "step-3",
+        "length-37",
+        "length-42",
+        "length-45",
+        "length-50",
+        "length-60"
+      ],
+      "settings": {
+        "color_scheme": "light",
+        "eyebrow": "Size guide",
+        "heading": "Find your <em>perfect fit</em>",
+        "text": "<p>Our rings use Australian sizes. If you know your Brazilian size (aro), you'll find it in the table too.</p>",
+        "rings_title": "Ring sizes",
+        "necklaces_title": "Necklace lengths"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "guide"
+  ]
+}

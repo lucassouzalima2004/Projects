@@ -1,0 +1,75 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "settings": {}
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q1": {
+          "type": "question",
+          "settings": {
+            "question": "Is this authentic Rommanel jewellery?",
+            "answer": "<p>Yes. Every piece we sell is authentic Rommanel, a Brazilian jewellery brand founded in 1986.</p>"
+          }
+        },
+        "q2": {
+          "type": "question",
+          "settings": {
+            "question": "Is it safe for sensitive skin?",
+            "answer": "<p>Rommanel jewellery is nickel-free and hypoallergenic to nickel, so it is a good choice for sensitive ears and skin.</p>"
+          }
+        },
+        "q3": {
+          "type": "question",
+          "settings": {
+            "question": "Can I wear my jewellery in the water?",
+            "answer": "<p>We recommend taking it off before the beach, the pool and hot showers. Salt, chlorine and hot water wear the gold layer faster and can loosen stones. A quick splash while washing your hands is fine.</p>"
+          }
+        },
+        "q4": {
+          "type": "question",
+          "settings": {
+            "question": "How long does shipping take?",
+            "answer": "<p>Orders are packed within 1–2 business days and sent with Australia Post. Standard delivery takes 2–4 business days in WA and 4–8 to other states, and Express is faster. Shipping is free on orders over $149.</p>"
+          }
+        },
+        "q5": {
+          "type": "question",
+          "settings": {
+            "question": "How do I find my ring size?",
+            "answer": "<p>Measure the inside diameter of a ring that fits you well and compare it with our ring size guide. If you are between sizes, choose the larger one.</p>"
+          }
+        },
+        "q6": {
+          "type": "question",
+          "settings": {
+            "question": "Can I return or exchange a piece?",
+            "answer": "<p>Please read our refund policy. Your rights under the Australian Consumer Law always apply.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "q5",
+        "q6"
+      ],
+      "settings": {
+        "color_scheme": "light",
+        "eyebrow": "FAQ",
+        "heading": "Good to <em>know</em>",
+        "text": "<p>Can't find your answer? Send us a message and we'll help.</p>",
+        "button_label": "Contact us",
+        "button_link": "shopify://pages/contact"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "faq"
+  ]
+}

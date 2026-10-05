@@ -1,0 +1,96 @@
+{%- comment -%}
+  Cart drawer. Rendered once in layout/theme.liquid and refreshed through the Section Rendering API.
+{%- endcomment -%}
+{%- liquid
+  assign upsell = settings.cart_upsell_collection
+-%}
+<dialog id="CartDrawer" class="drawer drawer--right cart-drawer" aria-labelledby="CartDrawerTitle">
+  <div class="drawer__inner" id="CartDrawerInner">
+    <div class="drawer__head">
+      <h2 class="drawer__title" id="CartDrawerTitle">
+        {{- 'cart.title' | t -}}
+        {%- if cart.item_count > 0 -%}<span class="drawer__count">{{ cart.item_count }}</span>{%- endif -%}
+      </h2>
+      <button type="button" class="icon-btn" data-dialog-close aria-label="{{ 'general.close' | t }}" autofocus>
+        {%- render 'icon', name: 'close' -%}
+      </button>
+    </div>
+
+    {%- if cart.item_count > 0 -%}
+      {% render 'free-shipping-bar' %}
+      <form action="{{ routes.cart_url }}" method="post" id="CartDrawerForm" class="drawer__body cart-form" novalidate>
+        <cart-items>
+          <ul class="cart-items" role="list">
+            {%- for item in cart.items -%}
+              {% render 'cart-item', item: item, line: forloop.index %}
+            {%- endfor -%}
+          </ul>
+        </cart-items>
+
+        {%- if upsell != blank and upsell.products_count > 0 -%}
+          {%- liquid
+            assign upsell_shown = 0
+            assign cart_product_ids = cart.items | map: 'product_id'
+          -%}
+          {%- capture upsell_items -%}
+            {%- for p in upsell.products limit: 12 -%}
+              {%- if upsell_shown >= 3 -%}{%- break -%}{%- endif -%}
+              {%- unless p.available -%}{%- continue -%}{%- endunless -%}
+              {%- if cart_product_ids contains p.id -%}{%- continue -%}{%- endif -%}
+              {%- assign upsell_shown = upsell_shown | plus: 1 -%}
+              <li>{% render 'product-card', card_product: p, section_id: 'drawer', compact: true, sizes: '72px' %}</li>
+            {%- endfor -%}
+          {%- endcapture -%}
+          {%- if upsell_shown > 0 -%}
+            <div class="upsell">
+              <p class="upsell__title">{{ 'cart.upsell_title' | t }}</p>
+              <ul class="upsell__list" role="list">{{ upsell_items }}</ul>
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+
+        {%- if settings.cart_show_note -%}
+          <details class="cart-note"{% if cart.note != blank %} open{% endif %}>
+            <summary>{% render 'icon', name: 'gift' %}{{ 'cart.note.label' | t }}</summary>
+            <label class="visually-hidden" for="CartDrawerNote">{{ 'cart.note.label' | t }}</label>
+            <textarea id="CartDrawerNote" name="note" class="field__input" rows="3" placeholder="{{ 'cart.note.placeholder' | t }}" data-cart-note>{{ cart.note }}</textarea>
+          </details>
+        {%- endif -%}
+      </form>
+
+      <div class="drawer__foot cart-summary">
+        {%- for discount in cart.cart_level_discount_applications -%}
+          <p class="cart-summary__row cart-summary__discount">
+            <span>{% render 'icon', name: 'sparkle' %}{{ discount.title | escape }}</span>
+            <span>−{{ discount.total_allocated_amount | money }}</span>
+          </p>
+        {%- endfor -%}
+        <p class="cart-summary__row cart-summary__total">
+          <span>{{ 'cart.subtotal' | t }}</span>
+          <span>{{ cart.total_price | money_with_currency }}</span>
+        </p>
+        <p class="cart-summary__fine">
+          {%- if cart.taxes_included -%}
+            {{ 'cart.taxes_included_shipping_at_checkout' | t }}
+          {%- else -%}
+            {{ 'cart.taxes_and_shipping_at_checkout' | t }}
+          {%- endif -%}
+        </p>
+        <button type="submit" name="checkout" form="CartDrawerForm" class="btn btn--primary btn--block">
+          {%- render 'icon', name: 'shield', class: 'btn__icon' -%}
+          {{- 'cart.checkout' | t -}}
+        </button>
+        <a href="{{ routes.cart_url }}" class="link-btn cart-summary__view">{{ 'cart.view_cart' | t }}</a>
+        {% render 'payment-icons' %}
+      </div>
+    {%- else -%}
+      <div class="drawer__body cart-empty">
+        <div class="cart-empty__art" aria-hidden="true">
+          {% render 'butterfly', class: 'cart-empty__mark' %}
+        </div>
+        <p class="cart-empty__title">{{ 'cart.empty' | t }}</p>
+        <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary">{{ 'cart.continue' | t }}</a>
+      </div>
+    {%- endif -%}
+  </div>
+</dialog>

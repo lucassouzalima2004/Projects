@@ -1,0 +1,26 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-404",
+      "settings": {}
+    },
+    "best-sellers": {
+      "type": "featured-collection",
+      "settings": {
+        "color_scheme": "surface",
+        "eyebrow": "Best sellers",
+        "heading": "Maybe you were looking for <em>these</em>",
+        "text": "",
+        "collection": "best-sellers",
+        "limit": 4,
+        "columns": 4,
+        "mobile_scroll": true,
+        "view_all_label": "Shop all"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "best-sellers"
+  ]
+}

@@ -1,0 +1,263 @@
+{
+  "accessibility": {
+    "skip_to_content": "Skip to content"
+  },
+  "general": {
+    "account": "Account",
+    "breadcrumbs": "Breadcrumbs",
+    "close": "Close",
+    "home": "Home",
+    "link_copied": "Link copied",
+    "main_menu": "Main menu",
+    "menu": "Menu",
+    "payment_methods": "Payment methods",
+    "share": "Share",
+    "meta": {
+      "tags": "Tagged \"{{ tags }}\"",
+      "page": "Page {{ page }}"
+    },
+    "pagination": {
+      "label": "Pagination",
+      "next": "Next page",
+      "previous": "Previous page",
+      "page": "Page {{ number }}"
+    },
+    "slider": {
+      "next": "Next",
+      "previous": "Previous"
+    }
+  },
+  "localization": {
+    "country_label": "Country/region",
+    "language_label": "Language",
+    "update": "Update"
+  },
+  "newsletter": {
+    "label": "Email",
+    "placeholder": "Your email address",
+    "button": "Subscribe",
+    "success": "Thank you for subscribing. Welcome to the circle!"
+  },
+  "search": {
+    "title": "Search",
+    "label": "Search the store",
+    "placeholder": "Search earrings, pendants, saints…",
+    "submit": "Search",
+    "products": "Products",
+    "suggestions": "Suggestions",
+    "page": "Page",
+    "see_all": "See all results for “{{ terms }}”",
+    "no_results": "No results for “{{ terms }}”",
+    "no_results_hint": "Check the spelling or try a broader word, like “earrings” or “cross”.",
+    "results_for_html": "Results for <em>“{{ terms }}”</em>"
+  },
+  "cart": {
+    "title": "Your bag",
+    "title_count": {
+      "one": "Bag, {{ count }} item",
+      "other": "Bag, {{ count }} items"
+    },
+    "added": "Added to your bag",
+    "error": "Something went wrong. Please try again.",
+    "checkout": "Checkout securely",
+    "continue": "Continue shopping",
+    "empty": "Your bag is empty",
+    "remove": "Remove",
+    "subtotal": "Subtotal",
+    "summary": "Order summary",
+    "update": "Update bag",
+    "upsell_title": "You may also love",
+    "view_cart": "View bag",
+    "taxes_included_shipping_at_checkout": "GST included. Shipping calculated at checkout.",
+    "taxes_and_shipping_at_checkout": "Taxes and shipping calculated at checkout.",
+    "note": {
+      "label": "Add a gift message",
+      "placeholder": "Write your message. We'll leave the price out."
+    },
+    "free_shipping": {
+      "remaining_html": "You're <strong>{{ amount }}</strong> away from free shipping",
+      "unlocked": "You've unlocked free shipping"
+    }
+  },
+  "collections": {
+    "products_count": {
+      "one": "{{ count }} piece",
+      "other": "{{ count }} pieces"
+    },
+    "list": {
+      "title": "Collections"
+    },
+    "sort": {
+      "label": "Sort by"
+    },
+    "empty": {
+      "title": "No pieces match these filters",
+      "text": "Try removing a filter to see more."
+    },
+    "filters": {
+      "title": "Filter",
+      "apply": "Apply",
+      "clear_all": "Clear all",
+      "remove": "Remove filter",
+      "from": "From",
+      "to": "To",
+      "max_price_html": "The highest price is {{ price }}",
+      "show_results": "Show results"
+    }
+  },
+  "products": {
+    "placeholder": {
+      "names": "Saint Benedict Medal|Butterfly Hoop Earrings|Heart Solitaire Ring|Textured Cross Pendant|Cable Chain Necklace|Our Lady of Aparecida Pendant"
+    },
+    "product": {
+      "add_to_cart": "Add to bag",
+      "add_short": "Add",
+      "add_named": "Add {{ title }} to your bag",
+      "choose_options": "Choose options",
+      "choose_short": "Choose",
+      "view_details": "View full details",
+      "description": "Description",
+      "sold_out": "Sold out",
+      "unavailable": "Unavailable",
+      "unavailable_option": "Unavailable with the selected options",
+      "badge_sale": "{{ percent }}% off",
+      "badge_new": "New",
+      "badge_bestseller": "Best seller",
+      "swatches_count": {
+        "one": "{{ count }} colour",
+        "other": "{{ count }} colours"
+      },
+      "low_stock": {
+        "one": "Only {{ count }} left",
+        "other": "Only {{ count }} left"
+      },
+      "rating_label": "Rated {{ rating }} out of {{ max }}",
+      "taxes_included": "GST included.",
+      "taxes_excluded": "Taxes calculated at checkout.",
+      "shipping_policy_html": "<a href=\"{{ link }}\">Shipping</a> calculated at checkout.",
+      "size_guide": "Size guide",
+      "size_guide_full": "Read the full size guide",
+      "price": {
+        "from_html": "From {{ price }}",
+        "regular_price": "Regular price",
+        "sale_price": "Sale price",
+        "unit_price": "Unit price"
+      },
+      "quantity": {
+        "label": "Quantity",
+        "label_for": "Quantity for {{ product }}",
+        "decrease": "Decrease quantity for {{ product }}",
+        "increase": "Increase quantity for {{ product }}"
+      },
+      "media": {
+        "gallery": "Product photos",
+        "position": "Photo {{ number }} of {{ total }}",
+        "show": "Show photo {{ number }}"
+      },
+      "pickup": {
+        "available_html": "Pickup available in <strong>{{ location }}</strong>",
+        "unavailable_html": "Pickup currently unavailable in <strong>{{ location }}</strong>"
+      },
+      "gift": {
+        "label": "Your message",
+        "placeholder": "Happy birthday, with love…",
+        "property": "Gift message"
+      }
+    }
+  },
+  "blogs": {
+    "all_posts": "All posts",
+    "empty": "No posts yet.",
+    "article": {
+      "by": "by {{ author }}",
+      "more": "More posts",
+      "newer": "Newer post",
+      "older": "Older post",
+      "shop_the_post": "Shop the post",
+      "reading_time": {
+        "one": "{{ count }} min read",
+        "other": "{{ count }} min read"
+      }
+    },
+    "comments": {
+      "title": {
+        "one": "{{ count }} comment",
+        "other": "{{ count }} comments"
+      },
+      "leave": "Leave a comment",
+      "name": "Name",
+      "email": "Email",
+      "message": "Comment",
+      "post": "Post comment",
+      "moderated": "Comments are approved before they appear.",
+      "success": "Your comment was posted. Thank you!",
+      "success_moderated": "Thank you! Your comment will appear once it's approved."
+    }
+  },
+  "contact": {
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "message": "Message",
+    "send": "Send message",
+    "success": "Thanks for your message. We'll get back to you soon.",
+    "whatsapp": "Message us on WhatsApp"
+  },
+  "sections": {
+    "announcement": {
+      "label": "Announcements"
+    },
+    "blog_posts": {
+      "placeholder_titles": "How to care for gold-plated jewellery|The meaning of the Saint Benedict medal|Our Lady of Aparecida: the story behind the pendant"
+    },
+    "collection_list": {
+      "placeholder_title": "Collection"
+    },
+    "featured_product": {
+      "placeholder_title": "Your featured piece",
+      "placeholder_text": "Choose a product in the theme editor to show it here with its photos and a buy button."
+    },
+    "footer": {
+      "whatsapp": "WhatsApp",
+      "instagram": "Instagram"
+    },
+    "size_guide": {
+      "caption": "Ring sizes",
+      "au": "Australia",
+      "diameter": "Diameter (mm)",
+      "circumference": "Circumference (mm)",
+      "brazil": "Brazil (aro)",
+      "unit_note": "Inside measurements in millimetres. Brazilian sizes show the closest Rommanel aro."
+    },
+    "testimonials": {
+      "label": "Customer reviews"
+    }
+  },
+  "templates": {
+    "404": {
+      "title_html": "This page has <em>flown away</em>",
+      "text": "The link may be broken or the page may have moved. Try a search or go back to the shop.",
+      "link": "Back to the shop"
+    },
+    "password": {
+      "notify": "Notify me",
+      "owner": "Are you the store owner? Log in here",
+      "password": "Password",
+      "enter": "Enter"
+    }
+  },
+  "gift_cards": {
+    "issued": {
+      "title": "Here's your {{ value }} gift card for {{ shop }}!",
+      "subtext": "Your gift card",
+      "initial_value": "Original value {{ value }}",
+      "expired": "Expired",
+      "expires_on": "Expires on {{ expires_on }}",
+      "code": "Gift card code",
+      "copy": "Copy code",
+      "add_to_apple_wallet": "Add to Apple Wallet",
+      "shop_link": "Start shopping",
+      "print": "Print"
+    }
+  }
+}

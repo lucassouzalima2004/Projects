@@ -1,0 +1,116 @@
+{%- liquid
+  assign brand = settings.logo_text | default: shop.name
+-%}
+<section class="section promise scheme-dark" aria-labelledby="PromiseTitle-{{ section.id }}">
+  <div class="container promise__grid">
+    <div class="promise__copy" data-stagger>
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      <h2 class="h2" id="PromiseTitle-{{ section.id }}">{{ section.settings.heading }}</h2>
+      {%- if section.settings.text != blank -%}
+        <div class="promise__lead rte">{{ section.settings.text }}</div>
+      {%- endif -%}
+      {%- if section.settings.button_label != blank -%}
+        <div class="promise__ctas">
+          <a href="{{ section.settings.button_link | default: routes.all_products_collection_url }}" class="btn btn--light">
+            {{- section.settings.button_label | escape -}}
+            {% render 'icon', name: 'arrow', class: 'btn__icon btn__icon--arrow' %}
+          </a>
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- if section.blocks.size > 0 -%}
+      <article class="certificate" aria-labelledby="PromiseCard-{{ section.id }}" data-reveal="card">
+        <header class="certificate__head">
+          {% render 'butterfly', class: 'certificate__mark' %}
+          <p class="certificate__brand">{{ brand | escape }}</p>
+          <h3 class="certificate__title" id="PromiseCard-{{ section.id }}">{{ section.settings.card_title | escape }}</h3>
+        </header>
+        <ul class="certificate__list" role="list">
+          {%- for block in section.blocks -%}
+            <li class="certificate__row" {{ block.shopify_attributes }}>
+              {%- render 'icon', name: block.settings.icon, class: 'certificate__icon' -%}
+              <span>
+                <strong>{{ block.settings.title | escape }}</strong>
+                {%- if block.settings.detail != blank -%}
+                  <span class="certificate__detail">{{ block.settings.detail | escape }}</span>
+                {%- endif -%}
+              </span>
+            </li>
+          {%- endfor -%}
+        </ul>
+        {%- if section.settings.card_note != blank -%}
+          <p class="certificate__note">{{ section.settings.card_note | escape }}</p>
+        {%- endif -%}
+      </article>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Quality promise",
+  "class": "section-promise",
+  "max_blocks": 7,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Small label", "default": "Why Rommanel" },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "40 years of <em>Brazilian craft</em>, now in Australia."
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Rommanel was founded in Brazil in 1986 and has more than 300 stores there today. Every piece we sell is authentic Rommanel, chosen by us in Perth and sent to you with care.</p>"
+    },
+    { "type": "text", "id": "button_label", "label": "Button", "default": "Shop all jewellery" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    { "type": "text", "id": "card_title", "label": "Card title", "default": "Quality notes" },
+    { "type": "text", "id": "card_note", "label": "Card note", "default": "Designed in Brazil · Shipped from Perth, WA" }
+  ],
+  "blocks": [
+    {
+      "type": "quality",
+      "name": "Quality point",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "sparkle", "label": "Sparkle" },
+            { "value": "gem", "label": "Gem" },
+            { "value": "shield", "label": "Safe" },
+            { "value": "drop", "label": "Water" },
+            { "value": "medal", "label": "Medal" },
+            { "value": "truck", "label": "Delivery" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "butterfly", "label": "Butterfly" }
+          ],
+          "default": "sparkle"
+        },
+        { "type": "text", "id": "title", "label": "Title", "default": "18K gold plated" },
+        { "type": "text", "id": "detail", "label": "Detail", "default": "Three layers of gold on every piece" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Quality promise",
+      "blocks": [
+        { "type": "quality", "settings": { "icon": "sparkle", "title": "18K gold plated", "detail": "Three layers of gold on every piece" } },
+        { "type": "quality", "settings": { "icon": "shield", "title": "Nickel-free", "detail": "Gentle on skin that reacts to nickel" } },
+        { "type": "quality", "settings": { "icon": "heart", "title": "Made for everyday wear", "detail": "With a little care, it keeps its shine" } },
+        { "type": "quality", "settings": { "icon": "gem", "title": "Solid 925 sterling silver", "detail": "In our silver collection" } },
+        { "type": "quality", "settings": { "icon": "truck", "title": "Shipped from Perth", "detail": "Free Australia-wide over $149" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

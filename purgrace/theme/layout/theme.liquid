@@ -1,0 +1,87 @@
+<!doctype html>
+<html class="no-js" lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="{{ settings.color_background }}">
+    <link rel="canonical" href="{{ canonical_url }}">
+    <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+
+    {%- if settings.favicon != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 96, height: 96 }}">
+      <link rel="apple-touch-icon" href="{{ settings.favicon | image_url: width: 180, height: 180 }}">
+    {%- endif -%}
+
+    {% render 'meta-tags' %}
+    {% render 'theme-styles' %}
+    {{ 'base.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'theme.js' | asset_url }}" defer="defer"></script>
+
+    <script>
+      document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+    </script>
+
+    {{ content_for_header }}
+
+    {% render 'structured-data' %}
+  </head>
+
+  <body class="template-{{ template.name | handleize }}{% if settings.animations_reveal and request.design_mode == false %} has-reveal{% endif %}">
+    <a class="skip-link" href="#MainContent">{{ 'accessibility.skip_to_content' | t }}</a>
+
+    <svg class="svg-defs" width="0" height="0" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="goldStroke" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#9C7536"/>
+          <stop offset=".28" stop-color="#E7CB86"/>
+          <stop offset=".52" stop-color="#B98F43"/>
+          <stop offset=".78" stop-color="#F2E1B0"/>
+          <stop offset="1" stop-color="#A27A38"/>
+        </linearGradient>
+        <radialGradient id="goldFill" cx=".35" cy=".3" r=".85">
+          <stop offset="0" stop-color="#F8E9BF"/>
+          <stop offset=".42" stop-color="#DDB86A"/>
+          <stop offset=".78" stop-color="#B2893B"/>
+          <stop offset="1" stop-color="#8E6A2C"/>
+        </radialGradient>
+        <radialGradient id="jewelShadow">
+          <stop offset="0" stop-color="#2E211E" stop-opacity=".16"/>
+          <stop offset="1" stop-color="#2E211E" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+    </svg>
+
+    {% sections 'header-group' %}
+
+    <main id="MainContent" class="main" role="main" tabindex="-1">
+      {{ content_for_layout }}
+    </main>
+
+    {% sections 'footer-group' %}
+
+    {%- if settings.cart_type == 'drawer' and request.page_type != 'cart' -%}
+      {% section 'cart-drawer' %}
+    {%- endif -%}
+
+    <script type="application/json" id="ThemeConfig">
+      {
+        "routes": {
+          "root": {{ routes.root_url | json }},
+          "cart": {{ routes.cart_url | json }},
+          "cartAdd": {{ routes.cart_add_url | json }},
+          "cartChange": {{ routes.cart_change_url | json }},
+          "cartUpdate": {{ routes.cart_update_url | json }},
+          "predictiveSearch": {{ routes.predictive_search_url | json }}
+        },
+        "cartType": {{ settings.cart_type | json }},
+        "strings": {
+          "added": {{ 'cart.added' | t | json }},
+          "error": {{ 'cart.error' | t | json }},
+          "copied": {{ 'general.link_copied' | t | json }}
+        }
+      }
+    </script>
+  </body>
+</html>

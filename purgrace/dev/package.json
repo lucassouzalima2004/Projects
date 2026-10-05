@@ -1,0 +1,15 @@
+{
+  "name": "purgrace-theme-dev",
+  "private": true,
+  "type": "module",
+  "description": "Ferramentas locais: prévia do tema com dados de exemplo e Theme Check. Não vai para o Shopify.",
+  "scripts": {
+    "check": "theme-check ../theme",
+    "preview": "node server.mjs"
+  },
+  "devDependencies": {
+    "@shopify/theme-check-node": "^3.30.1",
+    "liquidjs": "^10.30.0",
+    "playwright-core": "^1.63.0"
+  }
+}

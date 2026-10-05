@@ -1,0 +1,77 @@
+<section class="section section--tight cart-page" id="MainCart" data-cart-page>
+  <div class="container" id="MainCartInner">
+    <h1 class="cart-page__title">
+      {{- 'cart.title' | t -}}
+      {%- if cart.item_count > 0 -%}<span class="drawer__count">{{ cart.item_count }}</span>{%- endif -%}
+    </h1>
+
+    {%- if cart.item_count > 0 -%}
+      <div class="cart-page__grid">
+        <form action="{{ routes.cart_url }}" method="post" id="CartPageForm" class="cart-form" novalidate>
+          <cart-items>
+            <ul class="cart-items cart-items--page" role="list">
+              {%- for item in cart.items -%}
+                {% render 'cart-item', item: item, line: forloop.index %}
+              {%- endfor -%}
+            </ul>
+          </cart-items>
+          <noscript>
+            <button type="submit" name="update" class="btn btn--ghost btn--sm">{{ 'cart.update' | t }}</button>
+          </noscript>
+          {%- if settings.cart_show_note -%}
+            <div class="cart-note cart-note--page">
+              <label class="field__label" for="CartPageNote">{% render 'icon', name: 'gift' %}{{ 'cart.note.label' | t }}</label>
+              <textarea id="CartPageNote" name="note" class="field__input" rows="3" placeholder="{{ 'cart.note.placeholder' | t }}" data-cart-note>{{ cart.note }}</textarea>
+            </div>
+          {%- endif -%}
+        </form>
+
+        <aside class="cart-page__summary cart-summary" aria-labelledby="CartSummaryTitle">
+          <h2 class="cart-summary__title" id="CartSummaryTitle">{{ 'cart.summary' | t }}</h2>
+          {% render 'free-shipping-bar' %}
+          {%- for discount in cart.cart_level_discount_applications -%}
+            <p class="cart-summary__row cart-summary__discount">
+              <span>{% render 'icon', name: 'sparkle' %}{{ discount.title | escape }}</span>
+              <span>−{{ discount.total_allocated_amount | money }}</span>
+            </p>
+          {%- endfor -%}
+          <p class="cart-summary__row cart-summary__total">
+            <span>{{ 'cart.subtotal' | t }}</span>
+            <span>{{ cart.total_price | money_with_currency }}</span>
+          </p>
+          <p class="cart-summary__fine">
+            {%- if cart.taxes_included -%}
+              {{ 'cart.taxes_included_shipping_at_checkout' | t }}
+            {%- else -%}
+              {{ 'cart.taxes_and_shipping_at_checkout' | t }}
+            {%- endif -%}
+          </p>
+          <button type="submit" name="checkout" form="CartPageForm" class="btn btn--primary btn--block">
+            {%- render 'icon', name: 'shield', class: 'btn__icon' -%}
+            {{- 'cart.checkout' | t -}}
+          </button>
+          {%- if additional_checkout_buttons -%}
+            <div class="cart-summary__express">{{ content_for_additional_checkout_buttons }}</div>
+          {%- endif -%}
+          {% render 'payment-icons' %}
+        </aside>
+      </div>
+    {%- else -%}
+      <div class="cart-empty cart-empty--page">
+        <div class="cart-empty__art" aria-hidden="true">
+          {% render 'butterfly', class: 'cart-empty__mark' %}
+        </div>
+        <p class="cart-empty__title">{{ 'cart.empty' | t }}</p>
+        <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary">{{ 'cart.continue' | t }}</a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Cart",
+  "class": "section-main-cart",
+  "settings": []
+}
+{% endschema %}

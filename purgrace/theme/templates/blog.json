@@ -1,0 +1,13 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-blog",
+      "settings": {
+        "intro": "<p>How to care for your jewellery, the meaning behind each symbol and ideas for every occasion.</p>"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

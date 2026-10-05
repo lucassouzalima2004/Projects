@@ -1,0 +1,192 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "eyebrow": {
+          "type": "text",
+          "settings": {
+            "text": "Rommanel · Designed in Brazil",
+            "style": "eyebrow"
+          }
+        },
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "rating": {
+          "type": "rating",
+          "settings": {}
+        },
+        "price": {
+          "type": "price",
+          "settings": {
+            "show_tax_note": true
+          }
+        },
+        "variants": {
+          "type": "variant_picker",
+          "settings": {}
+        },
+        "quantity": {
+          "type": "quantity",
+          "settings": {}
+        },
+        "buy": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": true,
+            "show_pickup": true,
+            "low_stock": 3
+          }
+        },
+        "gift": {
+          "type": "gift_message",
+          "settings": {
+            "heading": "Is it a gift? Add a message",
+            "max_length": 200,
+            "note": "We'll write it on a card and leave the price out."
+          }
+        },
+        "highlights": {
+          "type": "highlights",
+          "settings": {
+            "icon_1": "sparkle",
+            "text_1": "18K gold plated",
+            "icon_2": "shield",
+            "text_2": "Nickel-free",
+            "icon_3": "medal",
+            "text_3": "Authentic Rommanel"
+          }
+        },
+        "description": {
+          "type": "description",
+          "settings": {
+            "collapsible": true,
+            "open": true
+          }
+        },
+        "care": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Jewellery care",
+            "icon": "sparkle",
+            "content": "<ul><li>Put your jewellery on last, about 10 minutes after perfume, creams and sunscreen.</li><li>Take it off for the beach, the pool, hot showers, exercise and sleep.</li><li>Keep it away from detergents, alcohol gel, hair dye and anti-dandruff shampoo.</li><li>Wipe it with a soft, dry cloth after wearing. Don't soak pieces with stones.</li><li>Store each piece on its own, in a soft pouch, away from sun and heat.</li><li>Silver: wear it often, keep it in a sealed bag and use a polishing cloth for light tarnish.</li></ul>"
+          }
+        },
+        "shipping": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Shipping and returns",
+            "icon": "truck",
+            "content": "<p>Free Australia-wide shipping on orders over $149. Orders are shipped from Perth, Western Australia. Read our <a href=\"/policies/shipping-policy\">shipping policy</a> and <a href=\"/policies/refund-policy\">refund policy</a> for the details.</p>"
+          }
+        },
+        "authentic": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Authentic Rommanel",
+            "icon": "medal",
+            "content": "<p>Every piece we sell is original Rommanel jewellery from Brazil. Rommanel was founded in 1986 and is known for 18K gold-plated and 925 sterling silver jewellery.</p>"
+          }
+        },
+        "pairs": {
+          "type": "complementary",
+          "settings": {
+            "heading": "Pairs well with",
+            "limit": 2
+          }
+        },
+        "share": {
+          "type": "share",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "eyebrow",
+        "title",
+        "rating",
+        "price",
+        "variants",
+        "quantity",
+        "buy",
+        "gift",
+        "highlights",
+        "description",
+        "care",
+        "shipping",
+        "authentic",
+        "pairs",
+        "share"
+      ],
+      "settings": {
+        "show_breadcrumbs": true,
+        "show_thumbnails": true,
+        "sticky_atc": true
+      }
+    },
+    "recommendations": {
+      "type": "product-recommendations",
+      "settings": {
+        "color_scheme": "surface",
+        "eyebrow": "You may also like",
+        "heading": "Complete the <em>look</em>",
+        "limit": 4
+      }
+    },
+    "why": {
+      "type": "icon-columns",
+      "blocks": {
+        "c1": {
+          "type": "column",
+          "settings": {
+            "icon": "medal",
+            "title": "Authentic Rommanel",
+            "text": "<p>Original pieces from one of Brazil's best-known jewellery brands.</p>"
+          }
+        },
+        "c2": {
+          "type": "column",
+          "settings": {
+            "icon": "shield",
+            "title": "Nickel-free",
+            "text": "<p>Gentle on skin that reacts to nickel.</p>"
+          }
+        },
+        "c3": {
+          "type": "column",
+          "settings": {
+            "icon": "heart",
+            "title": "Everyday wear",
+            "text": "<p>Made to be worn, with a little care.</p>"
+          }
+        },
+        "c4": {
+          "type": "column",
+          "settings": {
+            "icon": "truck",
+            "title": "Shipped from Perth",
+            "text": "<p>Free Australia-wide shipping over $149.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2",
+        "c3",
+        "c4"
+      ],
+      "settings": {
+        "color_scheme": "light",
+        "eyebrow": "Why PurGrace",
+        "heading": "Made to <em>last</em>, chosen with <em>love</em>",
+        "text": ""
+      }
+    }
+  },
+  "order": [
+    "main",
+    "recommendations",
+    "why"
+  ]
+}

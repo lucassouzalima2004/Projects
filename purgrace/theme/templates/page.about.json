@@ -1,0 +1,148 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "settings": {}
+    },
+    "story": {
+      "type": "image-with-text",
+      "blocks": {
+        "point-1": {
+          "type": "point",
+          "settings": {
+            "text": "Authentic Rommanel, designed in Brazil"
+          }
+        },
+        "point-2": {
+          "type": "point",
+          "settings": {
+            "text": "Chosen piece by piece in Perth"
+          }
+        },
+        "point-3": {
+          "type": "point",
+          "settings": {
+            "text": "Sent with care across Australia"
+          }
+        }
+      },
+      "block_order": [
+        "point-1",
+        "point-2",
+        "point-3"
+      ],
+      "settings": {
+        "color_scheme": "surface",
+        "image": "shopify://shop_images/brazilian-gold-plated-jewellery-australia-purgrace.png",
+        "frame": "arch",
+        "image_position": "left",
+        "eyebrow": "Meet the founder",
+        "heading": "Jewellery that carries <em>meaning</em>.",
+        "text": "<p>Priscila Veloso was born in Belo Horizonte, Minas Gerais. After more than a year in Australia dedicated to her son and family, she started PurGrace to balance motherhood and work, and to share the Brazilian jewellery her classmates kept admiring.</p>",
+        "button_label": "Shop the collection",
+        "button_link": "shopify://collections/all"
+      }
+    },
+    "promise": {
+      "type": "promise",
+      "blocks": {
+        "q1": {
+          "type": "quality",
+          "settings": {
+            "icon": "sparkle",
+            "title": "18K gold plated",
+            "detail": "Three layers of gold on every piece"
+          }
+        },
+        "q2": {
+          "type": "quality",
+          "settings": {
+            "icon": "shield",
+            "title": "Nickel-free",
+            "detail": "Gentle on skin that reacts to nickel"
+          }
+        },
+        "q3": {
+          "type": "quality",
+          "settings": {
+            "icon": "heart",
+            "title": "Made for everyday wear",
+            "detail": "With a little care, it keeps its shine"
+          }
+        },
+        "q4": {
+          "type": "quality",
+          "settings": {
+            "icon": "truck",
+            "title": "Shipped from Perth",
+            "detail": "Free Australia-wide over $149"
+          }
+        }
+      },
+      "block_order": [
+        "q1",
+        "q2",
+        "q3",
+        "q4"
+      ],
+      "settings": {
+        "eyebrow": "Why Rommanel",
+        "heading": "40 years of <em>Brazilian craft</em>, now in Australia.",
+        "text": "<p>Rommanel was founded in Brazil in 1986. Every piece we sell is authentic Rommanel.</p>",
+        "button_label": "Shop all jewellery",
+        "button_link": "shopify://collections/all",
+        "card_title": "Quality notes",
+        "card_note": "Designed in Brazil · Shipped from Perth, WA"
+      }
+    },
+    "reviews": {
+      "type": "testimonials",
+      "blocks": {
+        "review-1": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "quote": "So practical and beautiful...",
+            "author": "Namuun",
+            "detail": "Perth, WA"
+          }
+        },
+        "review-2": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "quote": "I never take them off and they still look perfect.",
+            "author": "Felix C.",
+            "detail": "Perth, WA"
+          }
+        },
+        "review-3": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "quote": "The quality is amazing, the special back locks securely so they won't get lost easily, and they're comfortable to sleep.",
+            "author": "Leah A.",
+            "detail": "Perth, WA"
+          }
+        }
+      },
+      "block_order": [
+        "review-1",
+        "review-2",
+        "review-3"
+      ],
+      "settings": {
+        "color_scheme": "light",
+        "eyebrow": "Reviews",
+        "heading": "Loved by our <em>customers</em>",
+        "text": ""
+      }
+    }
+  },
+  "order": [
+    "main",
+    "story",
+    "promise",
+    "reviews"
+  ]
+}

@@ -1,0 +1,33 @@
+{%- comment -%}
+  "You're $12 away from free shipping" bar. Threshold: Theme settings → Cart.
+  Hidden when the visitor shops in another currency, since the threshold is in the store currency.
+{%- endcomment -%}
+{%- liquid
+  assign threshold = settings.free_shipping_threshold | times: 100
+  assign show_bar = false
+  if threshold > 0 and cart.currency.iso_code == shop.currency and cart.item_count > 0
+    assign show_bar = true
+  endif
+-%}
+{%- if show_bar -%}
+  {%- liquid
+    assign remaining = threshold | minus: cart.total_price
+    assign progress = cart.total_price | times: 100 | divided_by: threshold
+    if progress > 100
+      assign progress = 100
+    endif
+    assign remaining_money = remaining | money
+  -%}
+  <div class="ship-bar{% if remaining <= 0 %} is-done{% endif %}">
+    <p class="ship-bar__text">
+      {%- if remaining > 0 -%}
+        {{ 'cart.free_shipping.remaining_html' | t: amount: remaining_money }}
+      {%- else -%}
+        {% render 'icon', name: 'sparkle' %}{{ 'cart.free_shipping.unlocked' | t }}
+      {%- endif -%}
+    </p>
+    <div class="ship-bar__track" aria-hidden="true">
+      <span class="ship-bar__fill" style="width: {{ progress }}%;"></span>
+    </div>
+  </div>
+{%- endif -%}

@@ -1,0 +1,83 @@
+{%- liquid
+  assign form_id = 'ContactForm-' | append: section.id
+  assign wa = settings.whatsapp_number | remove: ' ' | remove: '+' | remove: '-'
+-%}
+<section class="section scheme-{{ section.settings.color_scheme }} contact" aria-labelledby="ContactTitle-{{ section.id }}">
+  <div class="container contact__grid">
+    <div class="contact__intro" data-stagger>
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      <h2 class="h2" id="ContactTitle-{{ section.id }}">{{ section.settings.heading }}</h2>
+      {%- if section.settings.text != blank -%}
+        <div class="rte">{{ section.settings.text }}</div>
+      {%- endif -%}
+      {%- if section.settings.show_whatsapp and wa != blank -%}
+        <a href="https://wa.me/{{ wa }}" class="btn btn--ghost" target="_blank" rel="noopener">
+          {% render 'icon', name: 'whatsapp', class: 'btn__icon' %}
+          {{- 'contact.whatsapp' | t -}}
+        </a>
+      {%- endif -%}
+    </div>
+
+    {%- form 'contact', id: form_id, class: 'contact__form' -%}
+      {%- if form.posted_successfully? -%}
+        <p class="form-message" role="status">{% render 'icon', name: 'check' %}{{ 'contact.success' | t }}</p>
+      {%- elsif form.errors -%}
+        <div class="form-message form-message--error" role="alert">{{ form.errors | default_errors }}</div>
+      {%- endif -%}
+      <div class="field-row">
+        <div class="field">
+          <label class="field__label" for="ContactName-{{ section.id }}">{{ 'contact.name' | t }}</label>
+          <input class="field__input" type="text" id="ContactName-{{ section.id }}" name="contact[name]" value="{{ form.name }}" autocomplete="name">
+        </div>
+        <div class="field">
+          <label class="field__label" for="ContactEmail-{{ section.id }}">{{ 'contact.email' | t }} <span aria-hidden="true">*</span></label>
+          <input class="field__input" type="email" id="ContactEmail-{{ section.id }}" name="contact[email]" value="{{ form.email }}" autocomplete="email" required>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field__label" for="ContactPhone-{{ section.id }}">{{ 'contact.phone' | t }}</label>
+        <input class="field__input" type="tel" id="ContactPhone-{{ section.id }}" name="contact[phone]" value="{{ form.phone }}" autocomplete="tel">
+      </div>
+      <div class="field">
+        <label class="field__label" for="ContactBody-{{ section.id }}">{{ 'contact.message' | t }}</label>
+        <textarea class="field__input" id="ContactBody-{{ section.id }}" name="contact[body]" rows="6">{{ form.body }}</textarea>
+      </div>
+      <button type="submit" class="btn btn--primary">{{ 'contact.send' | t }}</button>
+    {%- endform -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Contact form",
+  "class": "section-contact-form",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colours",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "surface", "label": "Soft" }
+      ],
+      "default": "surface"
+    },
+    { "type": "text", "id": "eyebrow", "label": "Small label", "default": "Contact" },
+    { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "We'd love to <em>hear from you</em>" },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Questions about sizes, a custom design or an order? Write to us and we'll reply within one business day.</p>"
+    },
+    { "type": "checkbox", "id": "show_whatsapp", "label": "Show WhatsApp button", "default": true }
+  ],
+  "presets": [
+    {
+      "name": "Contact form"
+    }
+  ]
+}
+{% endschema %}

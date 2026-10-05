@@ -1,0 +1,139 @@
+{%- liquid
+  assign kinds = 'hoops,pendant,cross,ring,chain,pendant,hoops,cross' | split: ','
+  assign count = section.blocks.size
+  assign placeholder_title = 'sections.collection_list.placeholder_title' | t
+-%}
+<section class="section scheme-{{ section.settings.color_scheme }} collection-list" aria-labelledby="CollectionListTitle-{{ section.id }}">
+  <div class="container">
+    {%- assign heading_id = 'CollectionListTitle-' | append: section.id -%}
+    {%- render 'section-head',
+      eyebrow: section.settings.eyebrow,
+      heading: section.settings.heading,
+      text: section.settings.text,
+      heading_id: heading_id
+    -%}
+    <ul class="collection-cards" role="list" style="--cols: {{ count | at_most: 6 }};" data-stagger>
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign c = block.settings.collection
+          assign title = block.settings.title | default: c.title
+          assign image = block.settings.image | default: c.image
+          assign image_fit = 'cover'
+          if image == blank
+            assign image = c.featured_image
+            assign image_fit = 'blend'
+          endif
+          assign k = forloop.index0 | modulo: 8
+        -%}
+        <li class="collection-card" {{ block.shopify_attributes }}>
+          <div class="collection-card__media arch collection-card__media--{{ image_fit }}">
+            {%- if image != blank -%}
+              {%- assign img_alt = image.alt | default: title | escape -%}
+              {{
+                image
+                | image_url: width: 900
+                | image_tag:
+                  loading: 'lazy',
+                  sizes: '(min-width: 990px) 25vw, (min-width: 600px) 45vw, 80vw',
+                  widths: '300, 450, 600, 750, 900',
+                  alt: img_alt
+              }}
+            {%- else -%}
+              {% render 'jewel-art', kind: kinds[k] %}
+            {%- endif -%}
+          </div>
+          <div class="collection-card__info">
+            <h3 class="collection-card__title">
+              <a href="{{ c.url | default: routes.collections_url }}" class="card__link">{{ title | default: placeholder_title | escape }}</a>
+            </h3>
+            {%- if block.settings.text != blank -%}
+              <p class="collection-card__text">{{ block.settings.text | escape }}</p>
+            {%- elsif c.products_count > 0 -%}
+              <p class="collection-card__text">{{ 'collections.products_count' | t: count: c.products_count }}</p>
+            {%- endif -%}
+            <span class="collection-card__arrow" aria-hidden="true">{% render 'icon', name: 'arrow' %}</span>
+          </div>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Collection list",
+  "class": "section-collection-list",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colours",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "surface", "label": "Soft" }
+      ],
+      "default": "surface"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Small label",
+      "default": "Shop by category"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Find your <em>next favourite</em>"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "info": "Leave empty to use the collection title."
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Short line",
+          "info": "Leave empty to show the number of products."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Leave empty to use the collection image."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection list",
+      "blocks": [
+        { "type": "collection", "settings": { "title": "Earrings" } },
+        { "type": "collection", "settings": { "title": "Necklaces" } },
+        { "type": "collection", "settings": { "title": "Pendants" } },
+        { "type": "collection", "settings": { "title": "Rings" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

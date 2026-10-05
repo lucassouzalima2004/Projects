@@ -1,0 +1,140 @@
+{%- liquid
+  assign steps = section.blocks | where: 'type', 'step'
+  assign lengths = section.blocks | where: 'type', 'length'
+-%}
+<section class="section scheme-{{ section.settings.color_scheme }} size-guide" aria-labelledby="SizeGuideTitle-{{ section.id }}">
+  <div class="container size-guide__grid">
+    <div class="size-guide__intro" data-stagger>
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      <h2 class="h2" id="SizeGuideTitle-{{ section.id }}">{{ section.settings.heading }}</h2>
+      {%- if section.settings.text != blank -%}
+        <div class="rte">{{ section.settings.text }}</div>
+      {%- endif -%}
+      {%- if steps.size > 0 -%}
+        <ol class="size-guide__steps" role="list">
+          {%- for block in steps -%}
+            <li {{ block.shopify_attributes }}>
+              <span class="size-guide__n" aria-hidden="true">{{ forloop.index }}</span>
+              <div>
+                <h3>{{ block.settings.title | escape }}</h3>
+                <div class="rte">{{ block.settings.text }}</div>
+              </div>
+            </li>
+          {%- endfor -%}
+        </ol>
+      {%- endif -%}
+    </div>
+    <div class="size-guide__table" data-reveal>
+      <h3 class="size-guide__subtitle">{{ section.settings.rings_title | escape }}</h3>
+      {% render 'size-table' %}
+    </div>
+  </div>
+
+  {%- if lengths.size > 0 -%}
+    <div class="container necklaces">
+      <div class="necklaces__art" data-reveal="zoom">
+        <svg viewBox="0 0 360 300" role="img" aria-labelledby="NecklaceArt-{{ section.id }}">
+          <title id="NecklaceArt-{{ section.id }}">{{ section.settings.necklaces_title | escape }}</title>
+          <path class="necklaces__body" d="M146 0v58c0 14-10 22-34 30C70 102 34 112 14 150M214 0v58c0 14 10 22 34 30 42 14 78 24 98 62" fill="none"/>
+          {%- for block in lengths -%}
+            {%- liquid
+              assign cm = block.settings.length
+              assign y0 = cm | minus: 35 | times: 5.2 | plus: 66 | round
+              assign w = cm | minus: 35 | times: 2.2 | plus: 44 | round
+              assign depth = cm | minus: 35 | times: 1.6 | plus: 26 | round
+              assign x1 = 180 | minus: w
+              assign x2 = 180 | plus: w
+              assign start_y = y0 | minus: depth
+              assign label_y = y0 | plus: 16
+            -%}
+            <g class="necklaces__line" style="--i: {{ forloop.index0 }};">
+              <path d="M{{ x1 }} {{ start_y }}Q180 {{ y0 | plus: depth }} {{ x2 }} {{ start_y }}" fill="none"/>
+              <circle cx="180" cy="{{ y0 }}" r="3.5"/>
+              <text x="180" y="{{ label_y }}" text-anchor="middle">{{ cm }} cm</text>
+            </g>
+          {%- endfor -%}
+        </svg>
+      </div>
+      <div class="necklaces__copy">
+        <h3 class="size-guide__subtitle">{{ section.settings.necklaces_title | escape }}</h3>
+        <dl class="necklaces__list">
+          {%- for block in lengths -%}
+            <div {{ block.shopify_attributes }}>
+              <dt><span>{{ block.settings.length }} cm</span> {{ block.settings.name | escape }}</dt>
+              <dd>{{ block.settings.description | escape }}</dd>
+            </div>
+          {%- endfor -%}
+        </dl>
+      </div>
+    </div>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Size guide",
+  "class": "section-size-guide",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Edit the ring sizes in Theme settings → Size guide. The same table appears in the pop-up on product pages."
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colours",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "surface", "label": "Soft" }
+      ],
+      "default": "light"
+    },
+    { "type": "text", "id": "eyebrow", "label": "Small label", "default": "Size guide" },
+    { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "Find your <em>perfect fit</em>" },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Our rings use Australian sizes. If you know your Brazilian size (aro), you'll find it in the table too.</p>"
+    },
+    { "type": "text", "id": "rings_title", "label": "Ring table title", "default": "Ring sizes" },
+    { "type": "text", "id": "necklaces_title", "label": "Necklace title", "default": "Necklace lengths" }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Ring step",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Use a ring that fits" },
+        { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Measure the inside diameter of a ring that fits well, in millimetres.</p>" }
+      ]
+    },
+    {
+      "type": "length",
+      "name": "Necklace length",
+      "settings": [
+        { "type": "range", "id": "length", "label": "Length", "min": 35, "max": 80, "step": 1, "unit": "cm", "default": 45 },
+        { "type": "text", "id": "name", "label": "Name", "default": "Princess" },
+        { "type": "text", "id": "description", "label": "Where it sits", "default": "Rests on the collarbone. The most popular length." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Size guide",
+      "blocks": [
+        { "type": "step", "settings": { "title": "Use a ring that fits", "text": "<p>Measure the inside diameter of a ring that fits the finger you want, in millimetres, and find it in the table.</p>" } },
+        { "type": "step", "settings": { "title": "Or measure your finger", "text": "<p>Wrap a strip of paper around the base of your finger, mark where it overlaps and measure it: that's the circumference.</p>" } },
+        { "type": "step", "settings": { "title": "Between two sizes?", "text": "<p>Choose the larger one. Fingers are a little bigger at the end of the day and in warm weather.</p>" } },
+        { "type": "length", "settings": { "length": 40, "name": "Choker", "description": "Sits at the base of the neck." } },
+        { "type": "length", "settings": { "length": 45, "name": "Princess", "description": "Rests on the collarbone. The most popular length." } },
+        { "type": "length", "settings": { "length": 50, "name": "Matinee", "description": "Falls just below the collarbone, lovely with pendants." } },
+        { "type": "length", "settings": { "length": 60, "name": "Long", "description": "Sits at the top of the bust, perfect for layering." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,126 @@
+{%- liquid
+  assign featured = section.settings.collection
+  assign has_products = false
+  if featured != blank and featured.products_count > 0
+    assign has_products = true
+  endif
+  assign columns = section.settings.columns
+  assign card_sizes = '(min-width: 1100px) calc(' | append: settings.page_width | append: 'px / ' | append: columns | append: '), (min-width: 750px) 33vw, 50vw'
+-%}
+<section class="section scheme-{{ section.settings.color_scheme }} featured-collection" aria-labelledby="FeaturedTitle-{{ section.id }}">
+  <div class="container">
+    {%- assign heading_id = 'FeaturedTitle-' | append: section.id -%}
+    {%- render 'section-head',
+      eyebrow: section.settings.eyebrow,
+      heading: section.settings.heading,
+      text: section.settings.text,
+      heading_id: heading_id
+    -%}
+    <ul
+      class="product-grid{% if section.settings.mobile_scroll %} product-grid--scroll{% endif %}"
+      role="list"
+      style="--cols: {{ columns }};"
+      data-stagger
+    >
+      {%- if has_products -%}
+        {%- for product in featured.products limit: section.settings.limit -%}
+          <li class="product-grid__item">
+            {% render 'product-card', card_product: product, section_id: section.id, sizes: card_sizes %}
+          </li>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for i in (1..columns) -%}
+          <li class="product-grid__item">
+            {% render 'card-placeholder', index: i %}
+          </li>
+        {%- endfor -%}
+      {%- endif -%}
+    </ul>
+    {%- if section.settings.view_all_label != blank and has_products -%}
+      <div class="section-foot">
+        <a href="{{ featured.url }}" class="btn btn--ghost">
+          {{- section.settings.view_all_label | escape -}}
+          {% render 'icon', name: 'arrow', class: 'btn__icon btn__icon--arrow' %}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Featured collection",
+  "class": "section-featured-collection",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colours",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "surface", "label": "Soft" },
+        { "value": "dark", "label": "Dark" }
+      ],
+      "default": "light"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Small label",
+      "default": "Best sellers"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Most-loved <em>pieces</em>"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>The Rommanel pieces our customers come back for.</p>"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "Products to show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns on desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_scroll",
+      "label": "Swipe sideways on mobile",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "View all button",
+      "default": "View all"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured collection"
+    }
+  ]
+}
+{% endschema %}

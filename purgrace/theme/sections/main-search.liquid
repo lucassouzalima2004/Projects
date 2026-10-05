@@ -1,0 +1,87 @@
+{%- paginate search.results by 24 -%}
+  {%- liquid
+    assign has_filters = false
+    if search.performed and search.filters.size > 0
+      assign has_filters = true
+    endif
+  -%}
+  <header class="collection-hero scheme-surface">
+    <div class="container collection-hero__inner">
+      <div class="collection-hero__copy">
+        {% render 'breadcrumbs' %}
+        <h1 class="collection-hero__title">
+          {%- if search.performed -%}
+            {{- 'search.results_for_html' | t: terms: search.terms -}}
+          {%- else -%}
+            {{- 'search.title' | t -}}
+          {%- endif -%}
+        </h1>
+        <form action="{{ routes.search_url }}" method="get" role="search" class="search-field search-field--page">
+          <label class="visually-hidden" for="SearchPageInput">{{ 'search.label' | t }}</label>
+          {%- render 'icon', name: 'search', class: 'search-field__icon' -%}
+          <input type="search" id="SearchPageInput" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'search.placeholder' | t }}">
+          <input type="hidden" name="options[prefix]" value="last">
+          <button type="submit" class="btn btn--primary btn--sm">{{ 'search.submit' | t }}</button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  {%- if search.performed -%}
+    <facet-filters class="container collection{% if has_filters %} collection--filters{% endif %}" data-section="{{ section.id }}">
+      {% render 'facets', part: 'form', results: search, section_id: section.id, action_url: routes.search_url, terms: search.terms %}
+      {%- if has_filters -%}
+        <aside class="facets" id="FacetsPanel-{{ section.id }}" data-facets-panel aria-label="{{ 'collections.filters.title' | t }}">
+          <div class="facets__inner" data-facets-region="panel">
+            {% render 'facets', part: 'panel', results: search, section_id: section.id %}
+          </div>
+        </aside>
+      {%- endif -%}
+      <div class="collection__main">
+        <div data-facets-region="toolbar">
+          {% render 'facets', part: 'toolbar', results: search, section_id: section.id, show_filters: has_filters, show_sort: true, count: search.results_count %}
+        </div>
+        <div data-facets-region="active">
+          {% render 'facets', part: 'active', results: search, section_id: section.id, action_url: routes.search_url, terms: search.terms %}
+        </div>
+        <div data-facets-region="results" class="collection__results">
+          {%- if search.results_count > 0 -%}
+            <ul class="product-grid" role="list" style="--cols: 3;">
+              {%- for item in search.results -%}
+                <li class="product-grid__item">
+                  {%- case item.object_type -%}
+                    {%- when 'product' -%}
+                      {% render 'product-card', card_product: item, section_id: section.id %}
+                    {%- when 'article' -%}
+                      {% render 'article-card', card_article: item %}
+                    {%- when 'page' -%}
+                      <div class="page-card">
+                        <p class="eyebrow">{{ 'search.page' | t }}</p>
+                        <h3 class="page-card__title"><a href="{{ item.url }}" class="card__link">{{ item.title | escape }}</a></h3>
+                        <p>{{ item.content | strip_html | truncatewords: 24 }}</p>
+                      </div>
+                  {%- endcase -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+            {% render 'pagination', paginate: paginate %}
+          {%- else -%}
+            <div class="empty-state">
+              {% render 'butterfly', class: 'empty-state__art' %}
+              <h2 class="h3">{{ 'search.no_results' | t: terms: search.terms }}</h2>
+              <p>{{ 'search.no_results_hint' | t }}</p>
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </facet-filters>
+  {%- endif -%}
+{%- endpaginate -%}
+
+{% schema %}
+{
+  "name": "Search results",
+  "class": "section-main-search",
+  "settings": []
+}
+{% endschema %}

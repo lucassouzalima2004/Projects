@@ -1,0 +1,21 @@
+{%- doc -%}
+  Product card shown in the theme editor until a collection with products is chosen.
+
+  @param {number} index - Position, used to vary the illustration
+{%- enddoc -%}
+{%- liquid
+  assign kinds = 'pendant,hoops,ring,cross,chain,pendant' | split: ','
+  assign names = 'products.placeholder.names' | t | split: '|'
+  assign prices = '9900,6400,12900,4100,12400,9100' | split: ','
+  assign k = index | minus: 1 | modulo: 6
+  assign price = prices[k] | plus: 0
+-%}
+<div class="card card--placeholder">
+  <div class="card__media card__media--art">
+    {% render 'jewel-art', kind: kinds[k], class: 'card__img' %}
+  </div>
+  <div class="card__info">
+    <h3 class="card__title">{{ names[k] }}</h3>
+    <div class="price card__price"><span class="price__current">{{ price | money }}</span></div>
+  </div>
+</div>

@@ -1,0 +1,22 @@
+{%- doc -%}
+  Star rating from the standard review metafields (reviews.rating and reviews.rating_count),
+  filled by review apps such as Judge.me or Shopify Product Reviews.
+
+  @param {object} product - Product
+  @param {boolean} [show_count] - Show the number of reviews
+{%- enddoc -%}
+{%- if product.metafields.reviews.rating.value != blank -%}
+  {%- liquid
+    assign rating = product.metafields.reviews.rating.value
+    assign rating_count = product.metafields.reviews.rating_count.value | default: 0
+    assign rating_pct = rating.rating | times: 100.0 | divided_by: rating.scale_max | round: 1
+    assign rating_rounded = rating.rating | round: 1
+  -%}
+  <div class="rating" role="img" aria-label="{{ 'products.product.rating_label' | t: rating: rating_rounded, max: rating.scale_max }}">
+    <span class="rating__stars" style="--rating: {{ rating_pct }}%" aria-hidden="true"></span>
+    <span class="rating__value" aria-hidden="true">{{ rating_rounded }}</span>
+    {%- if show_count and rating_count > 0 -%}
+      <span class="rating__count" aria-hidden="true">({{ rating_count }})</span>
+    {%- endif -%}
+  </div>
+{%- endif -%}

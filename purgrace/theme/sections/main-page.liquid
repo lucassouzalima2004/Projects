@@ -1,0 +1,17 @@
+<section class="section section--tight page">
+  <div class="container page__inner">
+    {% render 'breadcrumbs' %}
+    <h1 class="page__title">{{ page.title | escape }}</h1>
+    {%- if page.content != blank -%}
+      <div class="page__content rte">{{ page.content }}</div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Page",
+  "class": "section-main-page",
+  "settings": []
+}
+{% endschema %}

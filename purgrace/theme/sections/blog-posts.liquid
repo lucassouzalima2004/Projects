@@ -1,0 +1,80 @@
+{%- liquid
+  assign featured_blog = section.settings.blog
+  assign has_posts = false
+  if featured_blog != blank and featured_blog.articles_count > 0
+    assign has_posts = true
+  endif
+  assign placeholder_titles = 'sections.blog_posts.placeholder_titles' | t | split: '|'
+-%}
+<section class="section scheme-{{ section.settings.color_scheme }} blog-posts" aria-labelledby="BlogPostsTitle-{{ section.id }}">
+  <div class="container">
+    {%- assign heading_id = 'BlogPostsTitle-' | append: section.id -%}
+    {%- render 'section-head',
+      eyebrow: section.settings.eyebrow,
+      heading: section.settings.heading,
+      text: section.settings.text,
+      heading_id: heading_id
+    -%}
+    <ul class="article-grid" role="list" data-stagger>
+      {%- if has_posts -%}
+        {%- for post in featured_blog.articles limit: section.settings.limit -%}
+          <li>{% render 'article-card', card_article: post %}</li>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for title in placeholder_titles limit: 3 -%}
+          <li>
+            <article class="article-card">
+              <div class="article-card__media">
+                <div class="article-card__art" aria-hidden="true">
+                  {% render 'butterfly' %}
+                </div>
+              </div>
+              <div class="article-card__info">
+                <p class="article-card__meta">{{ 'blogs.article.reading_time' | t: count: 4 }}</p>
+                <h3 class="article-card__title">{{ title }}</h3>
+              </div>
+            </article>
+          </li>
+        {%- endfor -%}
+      {%- endif -%}
+    </ul>
+    {%- if has_posts and section.settings.view_all_label != blank -%}
+      <div class="section-foot">
+        <a href="{{ featured_blog.url }}" class="btn btn--ghost">
+          {{- section.settings.view_all_label | escape -}}
+          {% render 'icon', name: 'arrow', class: 'btn__icon btn__icon--arrow' %}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Blog posts",
+  "class": "section-blog-posts",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colours",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "surface", "label": "Soft" }
+      ],
+      "default": "light"
+    },
+    { "type": "text", "id": "eyebrow", "label": "Small label", "default": "The journal" },
+    { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "Care, meaning and <em>gift ideas</em>" },
+    { "type": "richtext", "id": "text", "label": "Text" },
+    { "type": "blog", "id": "blog", "label": "Blog" },
+    { "type": "range", "id": "limit", "label": "Posts", "min": 2, "max": 6, "step": 1, "default": 3 },
+    { "type": "text", "id": "view_all_label", "label": "View all button", "default": "Read the journal" }
+  ],
+  "presets": [
+    {
+      "name": "Blog posts"
+    }
+  ]
+}
+{% endschema %}

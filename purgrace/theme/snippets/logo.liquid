@@ -1,0 +1,28 @@
+{%- doc -%}
+  Store logo: the image from Theme settings → Logo, or the text logo with the butterfly.
+
+  @param {string} [class] - Extra classes
+{%- enddoc -%}
+<a href="{{ routes.root_url }}" class="logo{% if class %} {{ class }}{% endif %}">
+  {%- if settings.logo != blank -%}
+    {%- liquid
+      assign logo_height = settings.logo_width | divided_by: settings.logo.aspect_ratio | round
+      assign logo_sizes = settings.logo_width | append: 'px'
+    -%}
+    {{
+      settings.logo
+      | image_url: width: 600
+      | image_tag:
+        class: 'logo__image',
+        width: settings.logo_width,
+        height: logo_height,
+        widths: '150, 300, 450, 600',
+        sizes: logo_sizes,
+        alt: shop.name,
+        loading: 'eager'
+    }}
+  {%- else -%}
+    {% render 'butterfly', class: 'logo__mark' %}
+    <span class="logo__name">{{ settings.logo_text | default: shop.name | escape }}</span>
+  {%- endif -%}
+</a>

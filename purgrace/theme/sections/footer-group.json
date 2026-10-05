@@ -1,0 +1,53 @@
+{
+  "type": "footer",
+  "name": "Footer",
+  "sections": {
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "color_scheme": "accent",
+        "eyebrow": "The PurGrace circle",
+        "heading": "New arrivals, restocks and <em>private offers</em> first.",
+        "text": "<p>One email a month, at most. Unsubscribe whenever you like.</p>",
+        "fine_print": "<p>By subscribing you agree to receive marketing emails from PurGrace. See our privacy policy.</p>",
+        "watermark": true
+      }
+    },
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "brand": {
+          "type": "brand",
+          "settings": {
+            "text": "<p>Authentic Rommanel jewellery from Brazil: 18K gold plated and 925 sterling silver, delivered across Australia.</p>"
+          }
+        },
+        "menu-shop": {
+          "type": "menu",
+          "settings": {
+            "heading": "Shop",
+            "menu": "main-menu"
+          }
+        },
+        "menu-help": {
+          "type": "menu",
+          "settings": {
+            "heading": "Help",
+            "menu": "footer"
+          }
+        },
+        "contact": {
+          "type": "contact",
+          "settings": {
+            "heading": "Get in touch"
+          }
+        }
+      },
+      "block_order": ["brand", "menu-shop", "menu-help", "contact"],
+      "settings": {
+        "show_policies": true
+      }
+    }
+  },
+  "order": ["newsletter", "footer"]
+}

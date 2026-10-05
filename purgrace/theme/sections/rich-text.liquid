@@ -1,0 +1,102 @@
+<section class="section scheme-{{ section.settings.color_scheme }} rich-text rich-text--{{ section.settings.align }}">
+  <div class="container rich-text__inner" data-stagger>
+    {%- for block in section.blocks -%}
+      {%- case block.type -%}
+        {%- when 'eyebrow' -%}
+          <p class="eyebrow" {{ block.shopify_attributes }}>{{ block.settings.text | escape }}</p>
+        {%- when 'heading' -%}
+          <h2 class="h2 rich-text__heading" {{ block.shopify_attributes }}>{{ block.settings.heading }}</h2>
+        {%- when 'text' -%}
+          <div class="rich-text__text rte" {{ block.shopify_attributes }}>{{ block.settings.text }}</div>
+        {%- when 'button' -%}
+          {%- if block.settings.label != blank -%}
+            <a href="{{ block.settings.link | default: routes.root_url }}" class="btn btn--{{ block.settings.style }}" {{ block.shopify_attributes }}>
+              {{- block.settings.label | escape -}}
+            </a>
+          {%- endif -%}
+      {%- endcase -%}
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Rich text",
+  "class": "section-rich-text",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colours",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "surface", "label": "Soft" },
+        { "value": "dark", "label": "Dark" },
+        { "value": "accent", "label": "Accent" }
+      ],
+      "default": "light"
+    },
+    {
+      "type": "select",
+      "id": "align",
+      "label": "Alignment",
+      "options": [
+        { "value": "center", "label": "Centre" },
+        { "value": "left", "label": "Left" }
+      ],
+      "default": "center"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "eyebrow",
+      "name": "Small label",
+      "limit": 1,
+      "settings": [{ "type": "text", "id": "text", "label": "Text", "default": "Our story" }]
+    },
+    {
+      "type": "heading",
+      "name": "Heading",
+      "settings": [
+        { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "Brazilian jewellery, <em>Australian</em> sunshine" }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Tell your story here: where you are from, why you chose Rommanel and what you love about each piece.</p>"
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "name": "Button",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Shop the collection" },
+        { "type": "url", "id": "link", "label": "Link" },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Style",
+          "options": [
+            { "value": "primary", "label": "Solid" },
+            { "value": "ghost", "label": "Outline" }
+          ],
+          "default": "primary"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Rich text",
+      "blocks": [{ "type": "eyebrow" }, { "type": "heading" }, { "type": "text" }, { "type": "button" }]
+    }
+  ]
+}
+{% endschema %}

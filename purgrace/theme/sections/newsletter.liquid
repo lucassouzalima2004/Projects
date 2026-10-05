@@ -1,0 +1,111 @@
+{%- liquid
+  assign form_id = 'Newsletter-' | append: section.id
+  assign watermark = settings.logo_text | default: shop.name
+-%}
+<section
+  class="newsletter scheme-{{ section.settings.color_scheme }}{% if section.settings.watermark %} newsletter--mark{% endif %}"
+  data-brand="{{ watermark | escape }}"
+  aria-labelledby="NewsletterTitle-{{ section.id }}"
+>
+  <div class="container newsletter__inner" data-stagger>
+    {%- if section.settings.eyebrow != blank -%}
+      <p class="eyebrow">{{ section.settings.eyebrow | escape }}</p>
+    {%- endif -%}
+    <h2 class="newsletter__title" id="NewsletterTitle-{{ section.id }}">{{ section.settings.heading }}</h2>
+    {%- if section.settings.text != blank -%}
+      <div class="newsletter__lead rte">{{ section.settings.text }}</div>
+    {%- endif -%}
+    {%- form 'customer', id: form_id, class: 'newsletter__form' -%}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <div class="newsletter__field">
+        <label class="visually-hidden" for="NewsletterEmail-{{ section.id }}">{{ 'newsletter.label' | t }}</label>
+        <input
+          id="NewsletterEmail-{{ section.id }}"
+          type="email"
+          name="contact[email]"
+          value="{{ form.email }}"
+          autocomplete="email"
+          autocapitalize="off"
+          spellcheck="false"
+          placeholder="{{ 'newsletter.placeholder' | t }}"
+          required
+          {% if form.errors %}
+            aria-invalid="true"
+            aria-describedby="NewsletterError-{{ section.id }}"
+          {% endif %}
+        >
+        <button type="submit" class="btn btn--milk">
+          {{- 'newsletter.button' | t -}}
+          {% render 'icon', name: 'arrow', class: 'btn__icon btn__icon--arrow' %}
+        </button>
+      </div>
+      {%- if form.errors -%}
+        <p class="newsletter__msg newsletter__msg--error" id="NewsletterError-{{ section.id }}" role="alert">
+          {{ form.errors.translated_fields.email | capitalize }}
+          {{ form.errors.messages.email }}
+        </p>
+      {%- endif -%}
+      {%- if form.posted_successfully? -%}
+        <p class="newsletter__msg" role="status">{% render 'icon', name: 'sparkle' %}{{ 'newsletter.success' | t }}</p>
+      {%- endif -%}
+    {%- endform -%}
+    {%- if section.settings.fine_print != blank -%}
+      <div class="newsletter__fine rte">{{ section.settings.fine_print }}</div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "class": "section-newsletter",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colours",
+      "options": [
+        { "value": "accent", "label": "Accent" },
+        { "value": "dark", "label": "Dark" },
+        { "value": "surface", "label": "Soft" }
+      ],
+      "default": "accent"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Small label",
+      "default": "The PurGrace circle"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "New arrivals, restocks and <em>private offers</em> first."
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>One email a month, at most. Unsubscribe whenever you like.</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "fine_print",
+      "label": "Fine print",
+      "default": "<p>By subscribing you agree to receive marketing emails. See our privacy policy.</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "watermark",
+      "label": "Show large brand name in the background",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter"
+    }
+  ]
+}
+{% endschema %}

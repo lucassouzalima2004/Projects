@@ -1,0 +1,37 @@
+{%- comment -%}
+  Ring size chart from Theme settings → Size guide (one size per line: "N: 17.3, 54.4, 14").
+{%- endcomment -%}
+{%- assign rows = settings.ring_sizes | newline_to_br | split: '<br />' -%}
+<div class="size-table">
+  <div class="size-table__scroll">
+    <table>
+      <caption class="visually-hidden">{{ 'sections.size_guide.caption' | t }}</caption>
+      <thead>
+        <tr>
+          <th scope="col">{{ 'sections.size_guide.au' | t }}</th>
+          <th scope="col">{{ 'sections.size_guide.diameter' | t }}</th>
+          <th scope="col">{{ 'sections.size_guide.circumference' | t }}</th>
+          <th scope="col">{{ 'sections.size_guide.brazil' | t }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {%- for row in rows -%}
+          {%- assign row_clean = row | strip -%}
+          {%- if row_clean contains ':' -%}
+            {%- liquid
+              assign parts = row_clean | split: ':'
+              assign values = parts[1] | split: ','
+            -%}
+            <tr>
+              <th scope="row">{{ parts[0] | strip | escape }}</th>
+              {%- for value in values limit: 3 -%}
+                <td>{{ value | strip | escape }}</td>
+              {%- endfor -%}
+            </tr>
+          {%- endif -%}
+        {%- endfor -%}
+      </tbody>
+    </table>
+  </div>
+  <p class="size-table__note">{{ 'sections.size_guide.unit_note' | t }}</p>
+</div>

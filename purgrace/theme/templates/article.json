@@ -1,0 +1,28 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-article",
+      "settings": {
+        "show_author": true
+      }
+    },
+    "best-sellers": {
+      "type": "featured-collection",
+      "settings": {
+        "color_scheme": "surface",
+        "eyebrow": "Shop the journal",
+        "heading": "Pieces our readers <em>love</em>",
+        "text": "",
+        "collection": "best-sellers",
+        "limit": 4,
+        "columns": 4,
+        "mobile_scroll": true,
+        "view_all_label": "Shop best sellers"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "best-sellers"
+  ]
+}
