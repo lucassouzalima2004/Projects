@@ -1,3 +1,5 @@
 node_modules/
 .DS_Store
 shots/
+dist/site/
+dev/.build/

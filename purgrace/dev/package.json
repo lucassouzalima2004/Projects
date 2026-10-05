@@ -8,10 +8,13 @@
     "check": "node check.mjs",
     "smoke": "mkdir -p shots && node smoke.mjs shots",
     "shots": "mkdir -p shots && node shoot.mjs shots",
-    "zip": "mkdir -p ../dist && rm -f ../dist/purgrace-theme.zip && cd ../theme && zip -qrX ../dist/purgrace-theme.zip assets config layout locales sections snippets templates"
+    "zip": "mkdir -p ../dist && rm -f ../dist/purgrace-theme.zip && cd ../theme && zip -qrX ../dist/purgrace-theme.zip assets config layout locales sections snippets templates",
+    "export": "node export.mjs",
+    "serve:site": "node serve-static.mjs"
   },
   "devDependencies": {
     "@shopify/theme-check-node": "^3.30.1",
+    "esbuild": "^0.25.12",
     "liquidjs": "^10.30.0",
     "playwright-core": "^1.63.0"
   }

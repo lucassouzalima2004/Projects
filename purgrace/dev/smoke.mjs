@@ -1,10 +1,18 @@
-// Interaction smoke test against the local preview: cart drawer, quantity, variants,
-// predictive search, filters, menu drawer, size guide and language switch.
+// Interaction smoke test: cart drawer, quantity, variants, predictive search, filters,
+// menu drawer, size guide and language switch.
 // Usage: node smoke.mjs [screenshotDir]
+//   PREVIEW=http://localhost:9393 SW=1 node smoke.mjs   tests the online copy (dist/site), where a
+//   service worker runs the store; each browser waits for it before testing.
 import { chromium } from 'playwright-core';
 
 const out = process.argv[2] || 'shots';
 const base = process.env.PREVIEW || 'http://localhost:9292';
+const useSW = process.env.SW === '1';
+// Opens the store once and, for the online copy, waits until the service worker runs it
+async function warmUp(p) {
+  await p.goto(`${base}/`, { waitUntil: 'networkidle' });
+  if (useSW) await p.waitForFunction(() => navigator.serviceWorker && navigator.serviceWorker.controller, null, { timeout: 15000 });
+}
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
 let failures = 0;
 const check = (ok, label) => {
@@ -21,7 +29,8 @@ const track = (page) => {
 const desktop = await browser.newContext({ viewport: { width: 1440, height: 900 } });
 const page = await desktop.newPage();
 track(page);
-await page.request.post(`${base}/cart/clear.js`); // the preview keeps one shared cart
+await warmUp(page);
+await page.evaluate(() => fetch('/cart/clear.js', { method: 'POST' })); // the local preview keeps one shared cart
 
 await page.goto(`${base}/products/18k-gold-plated-saint-benedict-medal-5428350000`, { waitUntil: 'networkidle' });
 await page.click('.product-form__submit');
@@ -84,7 +93,7 @@ await desktop.close();
 const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
 const m = await mobile.newPage();
 track(m);
-await m.goto(`${base}/`, { waitUntil: 'networkidle' });
+await warmUp(m);
 await m.click('.header__menu');
 await m.waitForSelector('#MenuDrawer[open]');
 await m.waitForTimeout(600);
@@ -108,7 +117,7 @@ await mobile.close();
 const pt = await browser.newContext({ viewport: { width: 1440, height: 900 } });
 const p = await pt.newPage();
 track(p);
-await p.goto(`${base}/`, { waitUntil: 'networkidle' });
+await warmUp(p);
 await p.click('.header__localization button[value="pt-BR"]');
 await p.waitForLoadState('networkidle');
 check((await p.textContent('.header__icons')).length >= 0 && (await p.content()).includes('Pular para o conteúdo'), 'PT switch renders Portuguese strings');

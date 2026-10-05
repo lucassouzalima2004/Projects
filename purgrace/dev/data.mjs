@@ -1,11 +1,6 @@
 // Shopify-like objects built from the store's public catalogue (fixtures/purgrace-store.json).
-// Only used by the local preview; the real store provides these objects itself.
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const here = path.dirname(fileURLToPath(import.meta.url));
-const fixture = JSON.parse(fs.readFileSync(path.join(here, 'fixtures/purgrace-store.json'), 'utf8'));
+// Only used by the preview (local server and the Cloudflare copy); the real store provides these objects itself.
+// No Node imports: the same code runs in the browser's service worker.
 export const FILES_CDN = 'https://cdn.shopify.com/s/files/1/0735/5288/7987/files/';
 
 const cents = (v) => Math.round(parseFloat(v || 0) * 100);
@@ -41,7 +36,7 @@ export function imageFromSetting(value) {
   if (!m) return null;
   const known = {
     'brazilian-gold-plated-jewellery-australia-purgrace.png': [2400, 1200],
-    'brazilian-gold-pendant-necklace-australia-purgrace.jpg': [1200, 1010],
+    'brazilian-gold-pendant-necklace-australia-purgrace.jpg': [887, 747],
   };
   const [w, h] = known[m[1]] || [1000, 1000];
   return makeImage(FILES_CDN + m[1], { width: w, height: h });
@@ -148,7 +143,7 @@ export function setOptionsWithValues(product, variant = product.selected_or_firs
   }));
 }
 
-export function buildStore(origin) {
+export function buildStore(origin, fixture) {
   const products = fixture.products.map(buildProduct);
   const byHandle = Object.fromEntries(products.map((p) => [p.handle, p]));
 

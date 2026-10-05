@@ -13,24 +13,53 @@
   style="--focus-x: {{ section.settings.focus_x }}%; --hero-min: {{ section.settings.height }}vh;"
   aria-labelledby="HeroTitle-{{ section.id }}"
 >
-  <div class="hero__media{% if layout == 'split' %} arch{% endif %}">
-    {%- if image != blank -%}
-      {%- assign hero_alt = image.alt -%}
-      {{
-        image
-        | image_url: width: 2400
-        | image_tag:
-          loading: 'eager',
-          fetchpriority: 'high',
-          sizes: '100vw',
-          widths: '600, 900, 1200, 1600, 2000, 2400',
-          alt: hero_alt,
-          class: 'hero__img'
-      }}
-    {%- else -%}
-      <div class="hero__art">{% render 'jewel-art', kind: 'pendant' %}</div>
-    {%- endif -%}
-  </div>
+  {%- capture hero_media -%}
+    <div class="hero__media{% if layout == 'split' %} arch{% endif %}">
+      {%- if image != blank -%}
+        {%- liquid
+          assign hero_alt = image.alt
+          assign hero_sizes = '100vw'
+          if layout == 'split'
+            assign hero_sizes = '(min-width: 990px) 520px, 100vw'
+          endif
+        -%}
+        {{
+          image
+          | image_url: width: 2400
+          | image_tag:
+            loading: 'eager',
+            fetchpriority: 'high',
+            sizes: hero_sizes,
+            widths: '600, 900, 1200, 1600, 2000, 2400',
+            alt: hero_alt,
+            class: 'hero__img'
+        }}
+      {%- else -%}
+        <div class="hero__art">{% render 'jewel-art', kind: 'pendant' %}</div>
+      {%- endif -%}
+    </div>
+  {%- endcapture -%}
+  {%- if layout == 'split' -%}
+    <div class="hero__visual">
+      {{ hero_media }}
+      {%- if section.settings.image_2 != blank -%}
+        <div class="hero__orb">
+          {{
+            section.settings.image_2
+            | image_url: width: 640
+            | image_tag:
+              loading: 'eager',
+              sizes: '(min-width: 990px) 190px, 34vw',
+              widths: '240, 360, 480, 640',
+              alt: section.settings.image_2.alt,
+              class: 'hero__orb-img'
+          }}
+        </div>
+      {%- endif -%}
+    </div>
+  {%- else -%}
+    {{ hero_media }}
+  {%- endif -%}
 
   <div class="container hero__inner">
     <div class="hero__copy">
@@ -103,6 +132,12 @@
       "id": "image",
       "label": "Photo",
       "info": "Wide photo with an empty area for the text, at least 2000 px wide."
+    },
+    {
+      "type": "image_picker",
+      "id": "image_2",
+      "label": "Small round photo",
+      "info": "Shown over the corner of the arch photo. A close-up works best, like an earring on the ear."
     },
     {
       "type": "range",

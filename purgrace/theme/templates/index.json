@@ -31,9 +31,10 @@
         "highlight-3"
       ],
       "settings": {
-        "layout": "overlay",
-        "image": "shopify://shop_images/brazilian-gold-plated-jewellery-australia-purgrace.png",
-        "focus_x": 35,
+        "layout": "split",
+        "image": "shopify://shop_images/brazilian-gold-pendant-necklace-australia-purgrace.jpg",
+        "image_2": "shopify://shop_images/IMG_4317.jpg",
+        "focus_x": 50,
         "height": 80,
         "text_position": "right",
         "text_color": "dark",
@@ -357,8 +358,8 @@
       ],
       "settings": {
         "color_scheme": "surface",
-        "image": "shopify://shop_images/brazilian-gold-pendant-necklace-australia-purgrace.jpg",
-        "frame": "arch",
+        "image": "shopify://shop_images/IMG_1402.jpg",
+        "frame": "rounded",
         "image_position": "left",
         "eyebrow": "Our story",
         "heading": "From Belo Horizonte to Perth, <em>with grace</em>.",

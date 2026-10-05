@@ -40,7 +40,8 @@
         "heading": "Jewellery that carries <em>meaning</em>.",
         "text": "<p>Priscila Veloso was born in Belo Horizonte, Minas Gerais. After more than a year in Australia dedicated to her son and family, she started PurGrace to balance motherhood and work, and to share the Brazilian jewellery her classmates kept admiring.</p>",
         "button_label": "Shop the collection",
-        "button_link": "shopify://collections/all"
+        "button_link": "shopify://collections/all",
+        "focus_x": 20
       }
     },
     "promise": {

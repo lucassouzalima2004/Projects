@@ -43,6 +43,21 @@ npx @shopify/cli@latest theme push --path purgrace/theme --unpublished --theme "
 
 O comando sobe o tema como rascunho e mostra o link de pré-visualização. A integração do Shopify com o GitHub não serve aqui, porque ela exige o tema na raiz do repositório.
 
+## Prévia online (Cloudflare Pages)
+
+Para mostrar o tema sem mexer na loja, o workflow [`deploy-purgrace-preview.yml`](../.github/workflows/deploy-purgrace-preview.yml) publica uma cópia em **https://purgrace-preview.pages.dev** a cada push em `purgrace/`. A cópia tem os produtos e coleções reais. Carrinho, filtros, busca, tamanhos e o botão EN/PT funcionam no navegador de quem visita, por um *service worker* que roda o mesmo `dev/core.mjs` da prévia local. O checkout não existe, nada é enviado a lugar nenhum, e todas as páginas têm `noindex`, para não concorrer com purgrace.com.au no Google.
+
+O workflow precisa de dois secrets do Cloudflare no GitHub (**Settings › Secrets and variables › Actions › New repository secret**):
+
+| Secret | Onde pegar |
+| --- | --- |
+| `CLOUDFLARE_API_TOKEN` | Cloudflare › My Profile › API Tokens › Create Token › Custom token, permissão **Account · Cloudflare Pages · Edit** |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare › Workers & Pages: o *Account ID* fica na coluna da direita |
+
+Depois de salvar os dois, rode **Actions › Deploy PurGrace preview › Run workflow**. O endereço aparece no resumo da execução.
+
+Sem os secrets, dá para publicar à mão: `cd purgrace/dev && npm run export` gera `purgrace/dist/site/`, que pode ser arrastada em **Cloudflare › Workers & Pages › Create › Pages › Upload assets**.
+
 ## SEO dos produtos
 
 `seo/` tem tudo o que o guia manda importar:
@@ -75,6 +90,9 @@ npm run check     # Theme Check: hoje 0 problemas
 npm run smoke     # 19 interações (carrinho, tamanhos, busca, filtros, menu, idioma); precisa do Chromium
 npm run shots     # capturas de tela de computador e celular em dev/shots/
 npm run zip       # gera dist/purgrace-theme.zip
+npm run export    # gera a prévia online em dist/site/
+npm run serve:site                      # serve dist/site como o Cloudflare, em http://localhost:9393
+PREVIEW=http://localhost:9393 SW=1 node smoke.mjs shots   # o mesmo teste, na cópia online
 ```
 
-A prévia imita o Shopify só o bastante para ver o tema: carrinho, filtros e busca funcionam em memória, e o checkout não existe. O teste e as capturas procuram o Chromium em `/opt/pw-browsers`; em outro computador, aponte a variável `CHROMIUM` para o executável do Chrome.
+A prévia imita o Shopify só o bastante para ver o tema: carrinho, filtros e busca funcionam em memória, e o checkout não existe. A loja simulada fica em `dev/core.mjs`, que não usa nada do Node: `server.mjs` a serve localmente e `sw-entry.mjs` a roda no navegador na prévia online. O teste e as capturas procuram o Chromium em `/opt/pw-browsers`; em outro computador, aponte a variável `CHROMIUM` para o executável do Chrome.

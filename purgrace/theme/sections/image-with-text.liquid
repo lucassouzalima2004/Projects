@@ -6,7 +6,14 @@
   <div class="container media-text__grid">
     <figure class="media-text__media{% if section.settings.frame == 'arch' %} arch{% else %} frame{% endif %}" data-reveal="zoom">
       {%- if image != blank -%}
-        {%- assign img_alt = image.alt -%}
+        {%- liquid
+          assign img_alt = image.alt
+          assign img_focus = image.presentation.focal_point | default: '50% 50%'
+          if section.settings.focus_x != 50
+            assign img_focus = section.settings.focus_x | append: '% 30%'
+          endif
+          assign img_style = 'object-position: ' | append: img_focus
+        -%}
         {{
           image
           | image_url: width: 1400
@@ -14,7 +21,8 @@
             loading: 'lazy',
             sizes: '(min-width: 990px) 45vw, 90vw',
             widths: '400, 600, 800, 1000, 1200, 1400',
-            alt: img_alt
+            alt: img_alt,
+            style: img_style
         }}
       {%- else -%}
         <div class="media-text__art">{% render 'jewel-art', kind: 'pendant' %}</div>
@@ -63,6 +71,17 @@
       "default": "surface"
     },
     { "type": "image_picker", "id": "image", "label": "Image" },
+    {
+      "type": "range",
+      "id": "focus_x",
+      "label": "Keep this part of the photo visible",
+      "info": "0 = left edge, 50 = centre (or the focal point set on the image in Files), 100 = right edge.",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 50
+    },
     {
       "type": "select",
       "id": "frame",
