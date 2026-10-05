@@ -4,3 +4,4 @@ shots/
 dist/site/
 dev/.build/
 dist/purgrace-preview-site.zip
+__pycache__/
