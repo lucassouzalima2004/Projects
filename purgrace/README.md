@@ -24,8 +24,9 @@ O passo a passo de SEO para a Priscila está no doc **PurGrace · Passo a passo 
    | Size guide | `page.size-guide` |
    | Jewellery care | `page.care` |
    | FAQ | `page.faq` |
+   | Páginas de campanha (ex.: Christmas gifts) | `page.campaign` |
 
-4. Coloque Size guide, Jewellery care e FAQ no menu do rodapé em **Content › Menus**.
+4. Coloque Size guide, Jewellery care e FAQ no menu do rodapé em **Content › Menus**. No menu principal, crie o item **Gifts** com For her (`gifts-for-her`), For him (`gifts-for-him`), For Mum (`mother-s-day`), For kids (`kids`) e Disney (`disney`). As três coleções novas são automáticas por tag; as condições estão na aba Coleções da planilha e no guia.
 5. Em **Settings › Customer accounts**, use as contas de cliente novas: o tema não traz os templates das contas antigas (legacy), que o Shopify descontinuou.
 6. Em **Customize › Theme settings**, confira Contact (número do WhatsApp), Cart (frete grátis acima de $149) e Returns (Google), que precisa bater com a política de reembolso.
 7. **Publish**. Mantenha o tema antigo na biblioteca como cópia.
@@ -56,6 +57,8 @@ O workflow precisa de dois secrets do Cloudflare no GitHub (**Settings › Secre
 
 Depois de salvar os dois, rode **Actions › Deploy PurGrace preview › Run workflow**. O endereço aparece no resumo da execução.
 
+A prévia que a Priscila recebeu está em **https://bitter-night-68f9.lucassouzalima10.workers.dev**, publicada à mão. Para atualizar esse endereço, gere o zip com `PREVIEW_ORIGIN=https://bitter-night-68f9.lucassouzalima10.workers.dev npm run export && npm run zip:site` e suba no mesmo Worker.
+
 Sem os secrets, dá para publicar à mão. `cd purgrace/dev && npm run export && npm run zip:site` gera `purgrace/dist/purgrace-preview-site.zip`. No Cloudflare: **Workers & Pages › Create application › Get started › Drag and drop your files**, nome do projeto `purgrace-preview` (é o endereço que vai nos links de compartilhamento), solte o zip e clique em **Deploy site**. Para atualizar depois: abra o projeto › **Create a new deployment** e solte o zip novo.
 
 ## SEO dos produtos
@@ -67,7 +70,8 @@ Sem os secrets, dá para publicar à mão. `cd purgrace/dev && npm run export &&
 | `PurGrace-SEO.xlsx` | Revisão: título novo, tipo, categoria, tags, os textos para o Google de hoje ao lado da sugestão, coleções, problemas e anéis |
 | `shopify-import-0-teste-2-produtos.csv` | A importação 1 só para 2 produtos, para testar antes |
 | `shopify-import-1-titulos-tipos-tags.csv` | Título, tipo, categoria, tags, SKU e MPN (código Rommanel) dos 162 produtos. Não tem as colunas de SEO, então os 115 títulos e 111 descrições para o Google que a loja já tem não mudam |
-| `shopify-import-2-descricoes.csv` | Só as 25 descrições com "waterproof", "Medical grade", "24k, 18k & 22k" ou "Romanel" |
+| `shopify-import-2-descricoes.csv` | Descrições novas dos 162 produtos: um parágrafo sobre a peça, a lista de detalhes (material, medidas, pedras) e o cuidado. Saem com "water-resistant", nunca "waterproof", e sem "Medical grade" e "24k, 18k & 22k" |
+| `descricoes.json` | O texto de cada descrição nova (parágrafo, medidas, pedras e detalhes), escrito só com os dados do título e da descrição de hoje; `build_seo.py` monta o HTML a partir dele |
 | `shopify-import-3-seo-onde-falta.csv` | Título e descrição para o Google só dos 46 produtos que não têm nenhum dos dois hoje |
 | `shopify-import-desfazer.csv` | Volta título, tipo, tags, descrição, SKU e MPN dos 162 para como estavam em 5/10/2026 |
 | `live-seo.json` | Os títulos e descrições para o Google que a loja mostrava em 5/10/2026 (lidos por `dev/fetch-live-seo.mjs`) |

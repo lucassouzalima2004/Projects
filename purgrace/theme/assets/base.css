@@ -1539,7 +1539,7 @@ a.pagination__item:hover { border-color: var(--line-strong); }
 @media (min-width: 990px) {
   .features__list { grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); gap: 40px; }
 }
-.feature { display: grid; justify-items: center; gap: 10px; text-align: center; }
+.feature { display: grid; justify-items: center; align-content: start; gap: 10px; text-align: center; }
 .feature__icon {
   display: grid;
   place-items: center;
