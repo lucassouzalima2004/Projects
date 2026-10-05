@@ -35,7 +35,13 @@ Para mostrar o tema antes de publicar, abra a pré-visualização dele (**Previe
 - **Visitante**: abre sem login, em `https://<código>.shopifypreview.com`, e vale 2 dias.
 - **Lojista**: exige login no admin da loja, permite testar o checkout e vale 30 dias.
 
-Pela linha de comando, com o [Shopify CLI](https://shopify.dev/docs/api/shopify-cli): `shopify theme push --path purgrace/theme --store <loja>.myshopify.com --unpublished`. A integração do Shopify com o GitHub não serve aqui, porque ela exige o tema na raiz do repositório.
+Pela linha de comando, com o [Shopify CLI](https://shopify.dev/docs/api/shopify-cli) e uma senha do app **Theme Access** da loja nas variáveis `SHOPIFY_CLI_THEME_TOKEN` e `SHOPIFY_FLAG_STORE=ehzhmc-zv.myshopify.com`:
+
+```sh
+npx @shopify/cli@latest theme push --path purgrace/theme --unpublished --theme "Grace"
+```
+
+O comando sobe o tema como rascunho e mostra o link de pré-visualização. A integração do Shopify com o GitHub não serve aqui, porque ela exige o tema na raiz do repositório.
 
 ## SEO dos produtos
 
