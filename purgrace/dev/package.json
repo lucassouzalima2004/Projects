@@ -10,6 +10,7 @@
     "shots": "mkdir -p shots && node shoot.mjs shots",
     "zip": "mkdir -p ../dist && rm -f ../dist/purgrace-theme.zip && cd ../theme && zip -qrX ../dist/purgrace-theme.zip assets config layout locales sections snippets templates",
     "export": "node export.mjs",
+    "zip:site": "rm -f ../dist/purgrace-preview-site.zip && cd ../dist/site && zip -qrX ../purgrace-preview-site.zip .",
     "serve:site": "node serve-static.mjs"
   },
   "devDependencies": {

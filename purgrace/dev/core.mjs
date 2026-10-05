@@ -18,6 +18,8 @@ const formatMoney = (value, { currency = false, trailing = true } = {}) => {
   if (!trailing && s.endsWith('.00')) s = s.slice(0, -3);
   return `$${s}${currency ? ' AUD' : ''}`;
 };
+// Stands in for the social sharing image the store sets in Online Store › Preferences (home page link previews)
+const SHARE_IMAGE = imageFromSetting('shopify://shop_images/brazilian-gold-pendant-necklace-australia-purgrace.jpg');
 const lookup = (obj, key) => key.split('.').reduce((o, k) => (o == null ? undefined : o[k]), obj);
 
 const FONTS = {
@@ -352,7 +354,8 @@ export function createStorefront({ readText, fixture, origin, cache = false, dec
     if (!img) return '';
     const o = argsToObject(args);
     const w = o.width || (o.height ? Math.round(o.height * img.aspect_ratio) : img.width);
-    const url = withWidth(img.src, w, o.height);
+    // Shopify returns protocol-relative URLs (//cdn.shopify.com/…); the theme adds https: where it needs one
+    const url = withWidth(img.src, w, o.height).replace(/^https?:/, '');
     return { __src: img, __width: Math.min(w, img.width), toString() { return url; }, url };
   });
   engine.registerFilter('image_tag', (input, ...args) => {
@@ -586,7 +589,7 @@ export function createStorefront({ readText, fixture, origin, cache = false, dec
     const params = new URLSearchParams(query);
     const base = { path: urlPath, query, locale, state, objects: {}, pageNumber: Number(params.get('page')) || 1 };
     const seg = urlPath.split('/').filter(Boolean);
-    const home = { ...base, type: 'index', template: 'index', title: 'Brazilian Jewellery Australia | Rommanel Gold Jewellery | PurGrace', description: store.shop.description };
+    const home = { ...base, type: 'index', template: 'index', title: 'Brazilian Jewellery Australia | Rommanel Gold Jewellery | PurGrace', description: store.shop.description, image: SHARE_IMAGE };
     if (!seg.length) return home;
 
     if (seg[0] === 'products' || (seg[0] === 'collections' && seg[2] === 'products')) {

@@ -56,7 +56,7 @@ O workflow precisa de dois secrets do Cloudflare no GitHub (**Settings › Secre
 
 Depois de salvar os dois, rode **Actions › Deploy PurGrace preview › Run workflow**. O endereço aparece no resumo da execução.
 
-Sem os secrets, dá para publicar à mão: `cd purgrace/dev && npm run export` gera `purgrace/dist/site/`, que pode ser arrastada em **Cloudflare › Workers & Pages › Create › Pages › Upload assets**.
+Sem os secrets, dá para publicar à mão. `cd purgrace/dev && npm run export && npm run zip:site` gera `purgrace/dist/purgrace-preview-site.zip`. No Cloudflare: **Workers & Pages › Create application › Get started › Drag and drop your files**, nome do projeto `purgrace-preview` (é o endereço que vai nos links de compartilhamento), solte o zip e clique em **Deploy site**. Para atualizar depois: abra o projeto › **Create a new deployment** e solte o zip novo.
 
 ## SEO dos produtos
 
@@ -94,6 +94,7 @@ npm run smoke     # 19 interações (carrinho, tamanhos, busca, filtros, menu, i
 npm run shots     # capturas de tela de computador e celular em dev/shots/
 npm run zip       # gera dist/purgrace-theme.zip
 npm run export    # gera a prévia online em dist/site/
+npm run zip:site  # dist/site num zip, para subir à mão no Cloudflare
 npm run serve:site                      # serve dist/site como o Cloudflare, em http://localhost:9393
 PREVIEW=http://localhost:9393 SW=1 node smoke.mjs shots   # o mesmo teste, na cópia online
 ```
