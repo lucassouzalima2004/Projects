@@ -30,11 +30,6 @@ env:
 jobs:
   check:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      actions: read
-      checks: read
-      deployments: read
     outputs:
       ready: ${{ steps.creds.outputs.ready }}
     steps:
@@ -44,10 +39,6 @@ jobs:
           TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID }}
           TOKEN_AS_VARIABLE: ${{ vars.CLOUDFLARE_API_TOKEN != '' }}
-          # Só os nomes são mostrados, nunca os valores
-          ALL_SECRETS: ${{ toJSON(secrets) }}
-          ALL_VARS: ${{ toJSON(vars) }}
-          GH_TOKEN: ${{ github.token }}
         run: |
           missing=""
           [ -n "$TOKEN" ] || missing="$missing CLOUDFLARE_API_TOKEN"
@@ -58,22 +49,10 @@ jobs:
           fi
           echo "ready=false" >> "$GITHUB_OUTPUT"
           echo "Faltando:$missing"
-          api="https://api.github.com/repos/$GITHUB_REPOSITORY"
-          gh_get() { curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$api/$1" 2>/dev/null; }
-          secrets=$(jq -r '[keys[] | select(ascii_downcase != "github_token")] | join(", ")' <<< "$ALL_SECRETS")
-          variables=$(jq -r 'keys | join(", ")' <<< "$ALL_VARS")
-          environments=$(gh_get environments | jq -r '[.environments[]?.name] | join(", ")')
-          echo "Secrets do repositório que este workflow enxerga: ${secrets:-nenhum}"
-          echo "Variables: ${variables:-nenhuma}"
-          echo "Environments: ${environments:-nenhum}"
-          echo "Verificações neste commit:"
-          gh_get "commits/$GITHUB_SHA/check-runs" | jq -r '.check_runs[]? | "  \(.name) · \(.app.name) · \(.conclusion // .status) · \(.details_url // "")"'
-          echo "Deployments recentes:"
-          gh_get "deployments?per_page=5" | jq -r '.[]? | "  \(.environment) · \(.ref) · \(.created_at) · \(.creator.login)"'
           if [ "$TOKEN_AS_VARIABLE" = "true" ]; then
             echo "::warning title=Token salvo como variável::CLOUDFLARE_API_TOKEN está em Variables. Apague de lá e salve na aba Secrets (Settings → Secrets and variables → Actions → Secrets)."
           fi
-          echo "::warning title=Cloudflare sem credenciais::Faltando:$missing. Secrets visíveis: ${secrets:-nenhum}. Salve em Settings → Secrets and variables → Actions → aba Secrets → New repository secret, com o nome exato, e rode este workflow de novo."
+          echo "::warning title=Cloudflare sem credenciais::Faltando:$missing. Salve em Settings → Secrets and variables → Actions → aba Secrets → New repository secret, com o nome exato, e rode este workflow de novo."
 
   deploy:
     needs: check
