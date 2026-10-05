@@ -17,8 +17,8 @@
         "step-2": {
           "type": "step",
           "settings": {
-            "title": "Keep it dry",
-            "text": "<p>Take it off for the beach, the pool and hot showers, and keep it away from detergents and alcohol gel.</p>"
+            "title": "Water-resistant, with care",
+            "text": "<p>Washing your hands or getting caught in the rain is fine. To keep the shine for longer, take it off for the beach, the pool and hot showers, and keep it away from detergents and alcohol gel.</p>"
           }
         },
         "step-3": {
@@ -49,7 +49,7 @@
           "type": "question",
           "settings": {
             "question": "Can I shower with my jewellery?",
-            "answer": "<p>Rommanel recommends taking your jewellery off for hot showers, the beach and the pool. Hot water can loosen stones, and salt and chlorine wear the gold layer faster.</p>"
+            "answer": "<p>Your jewellery is water-resistant, so washing your hands or rain is fine. Rommanel recommends taking it off for hot showers, the beach and the pool: hot water can loosen stones, and salt and chlorine wear the gold layer faster.</p>"
           }
         },
         "q2": {

@@ -1,0 +1,228 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "blocks": {
+        "h1": {
+          "type": "highlight",
+          "settings": {
+            "icon": "sparkle",
+            "text": "18K gold plated"
+          }
+        },
+        "h2": {
+          "type": "highlight",
+          "settings": {
+            "icon": "shield",
+            "text": "Nickel-free"
+          }
+        },
+        "h3": {
+          "type": "highlight",
+          "settings": {
+            "icon": "truck",
+            "text": "Free shipping over $149"
+          }
+        }
+      },
+      "block_order": [
+        "h1",
+        "h2",
+        "h3"
+      ],
+      "settings": {
+        "layout": "split",
+        "image": "shopify://shop_images/IMG_4317.jpg",
+        "focus_x": 50,
+        "height": 70,
+        "text_position": "right",
+        "text_color": "dark",
+        "color_scheme": "surface",
+        "eyebrow": "Christmas gift guide",
+        "heading": "Gifts that <em>shine</em> this Christmas",
+        "heading_tag": "h1",
+        "text": "<p>Hearts, butterflies, saints and little pieces for kids, plated in 18K gold by Rommanel and shipped from Perth.</p>",
+        "button_label_1": "Shop best sellers",
+        "button_link_1": "shopify://collections/best-sellers",
+        "button_label_2": "",
+        "seal_text": ""
+      }
+    },
+    "gifts": {
+      "type": "shop-by-meaning",
+      "blocks": {
+        "g1": {
+          "type": "meaning",
+          "settings": {
+            "title": "For her",
+            "subtitle": "Girlfriend, wife, best friend",
+            "collection": "gifts-for-her",
+            "image": "shopify://shop_images/IMG_4250.webp"
+          }
+        },
+        "g2": {
+          "type": "meaning",
+          "settings": {
+            "title": "For him",
+            "subtitle": "Boyfriend, husband, dad",
+            "collection": "gifts-for-him",
+            "image": "shopify://shop_images/IMG_9471.webp"
+          }
+        },
+        "g3": {
+          "type": "meaning",
+          "settings": {
+            "title": "For Mum",
+            "subtitle": "Pieces that carry her family",
+            "collection": "mother-s-day",
+            "image": "shopify://shop_images/IMG_1406.jpg"
+          }
+        },
+        "g4": {
+          "type": "meaning",
+          "settings": {
+            "title": "For kids",
+            "subtitle": "First jewellery for little ones",
+            "collection": "kids",
+            "image": "shopify://shop_images/IMG_4854.webp"
+          }
+        },
+        "g5": {
+          "type": "meaning",
+          "settings": {
+            "title": "Disney",
+            "subtitle": "Rommanel's Disney line",
+            "collection": "disney",
+            "image": "shopify://shop_images/IMG_4298.webp"
+          }
+        }
+      },
+      "block_order": [
+        "g1",
+        "g2",
+        "g3",
+        "g4",
+        "g5"
+      ],
+      "settings": {
+        "color_scheme": "light",
+        "eyebrow": "Who are you shopping for?",
+        "heading": "A gift for <em>everyone</em>",
+        "text": ""
+      }
+    },
+    "products": {
+      "type": "featured-collection",
+      "settings": {
+        "color_scheme": "surface",
+        "eyebrow": "Most-loved pieces",
+        "heading": "Ready to <em>give</em>",
+        "text": "<p>The Rommanel pieces our customers come back for.</p>",
+        "collection": "best-sellers",
+        "limit": 8,
+        "columns": 4,
+        "mobile_scroll": true,
+        "view_all_label": "View all best sellers"
+      }
+    },
+    "why": {
+      "type": "icon-columns",
+      "blocks": {
+        "c1": {
+          "type": "column",
+          "settings": {
+            "icon": "medal",
+            "title": "Authentic Rommanel",
+            "text": "<p>Original pieces from one of Brazil's best-known jewellery brands.</p>"
+          }
+        },
+        "c2": {
+          "type": "column",
+          "settings": {
+            "icon": "shield",
+            "title": "Hypoallergenic and nickel-free",
+            "text": "<p>Designed with sensitive skin in mind.</p>"
+          }
+        },
+        "c3": {
+          "type": "column",
+          "settings": {
+            "icon": "drop",
+            "title": "Water-resistant",
+            "text": "<p>Durable. Made to last. Designed for everyday wear.</p>"
+          }
+        },
+        "c4": {
+          "type": "column",
+          "settings": {
+            "icon": "truck",
+            "title": "Shipped from Perth",
+            "text": "<p>Free Australia-wide shipping over $149.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2",
+        "c3",
+        "c4"
+      ],
+      "settings": {
+        "color_scheme": "light",
+        "eyebrow": "Why PurGrace",
+        "heading": "Made to <em>last</em>, chosen with <em>love</em>",
+        "text": ""
+      }
+    },
+    "reviews": {
+      "type": "testimonials",
+      "blocks": {
+        "review-1": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "quote": "So practical and beautiful...",
+            "author": "Namuun",
+            "detail": "Perth, WA"
+          }
+        },
+        "review-2": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "quote": "I never take them off and they still look perfect.",
+            "author": "Felix C.",
+            "detail": "Perth, WA"
+          }
+        },
+        "review-3": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "quote": "The quality is amazing, the special back locks securely so they won't get lost easily, and they're comfortable to sleep.",
+            "author": "Leah A.",
+            "detail": "Perth, WA"
+          }
+        }
+      },
+      "block_order": [
+        "review-1",
+        "review-2",
+        "review-3"
+      ],
+      "settings": {
+        "color_scheme": "light",
+        "eyebrow": "Reviews",
+        "heading": "Loved by our <em>customers</em>",
+        "text": ""
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "gifts",
+    "products",
+    "why",
+    "reviews"
+  ]
+}

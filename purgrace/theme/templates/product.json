@@ -149,16 +149,16 @@
           "type": "column",
           "settings": {
             "icon": "shield",
-            "title": "Nickel-free",
-            "text": "<p>Gentle on skin that reacts to nickel.</p>"
+            "title": "Hypoallergenic and nickel-free",
+            "text": "<p>Designed with sensitive skin in mind.</p>"
           }
         },
         "c3": {
           "type": "column",
           "settings": {
-            "icon": "heart",
-            "title": "Everyday wear",
-            "text": "<p>Made to be worn, with a little care.</p>"
+            "icon": "drop",
+            "title": "Water-resistant",
+            "text": "<p>Durable. Made to last. Designed for everyday wear.</p>"
           }
         },
         "c4": {

@@ -849,8 +849,31 @@
     walk(el);
   }
 
+  /* -------------------------------------------------------------- hero video */
+  // Silent looping video with a pause button; it stays paused for visitors who turn motion off
+  function heroVideos(root = document) {
+    $$('[data-video-toggle]', root).forEach((button) => {
+      const video = button.parentElement.querySelector('video');
+      if (!video || button.dataset.ready) return;
+      button.dataset.ready = 'true';
+      const sync = () => {
+        button.classList.toggle('is-paused', video.paused);
+        button.setAttribute('aria-label', video.paused ? button.dataset.labelPlay : button.dataset.labelPause);
+      };
+      if (!motionOK()) {
+        video.removeAttribute('autoplay');
+        video.pause();
+      }
+      video.addEventListener('play', sync);
+      video.addEventListener('pause', sync);
+      button.addEventListener('click', () => (video.paused ? video.play() : video.pause()));
+      sync();
+    });
+  }
+
   function init() {
     reveal.init();
+    heroVideos();
     if (motionOK()) $$('[data-split-words]').forEach(splitWords);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
@@ -859,6 +882,7 @@
   // Theme editor: show re-rendered sections straight away
   document.addEventListener('shopify:section:load', (event) => {
     $$('[data-reveal], [data-stagger]', event.target).forEach((el) => el.classList.add('is-in'));
+    heroVideos(event.target);
   });
   document.addEventListener('shopify:section:select', (event) => {
     $$('[data-reveal], [data-stagger]', event.target).forEach((el) => el.classList.add('is-in'));

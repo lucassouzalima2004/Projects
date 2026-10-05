@@ -144,12 +144,37 @@ export function setOptionsWithValues(product, variant = product.selected_or_firs
   }));
 }
 
+// Smart collections in the guide: gifts-for-her = tags love, butterfly or gift set; gifts-for-him = tags men or
+// unisex; disney = tag disney. The tags arrive with import 1, so the preview matches today's titles instead.
+const PLANNED_COLLECTIONS = [
+  {
+    id: 9001,
+    handle: 'gifts-for-her',
+    title: 'Gifts for Her',
+    match: /heart|butterfl|\bset\b/i,
+    body_html: '<p>Hearts, butterflies and ready-to-give sets for your girlfriend, your wife or your best friend.</p>',
+  },
+  {
+    id: 9002,
+    handle: 'gifts-for-him',
+    title: 'Gifts for Him',
+    match: /\bmen'?s\b|unisex|scapular|textured cross/i,
+    body_html: '<p>Chains, crosses and scapulars for your boyfriend, your husband or your dad.</p>',
+  },
+  {
+    id: 9003,
+    handle: 'disney',
+    title: 'Disney',
+    match: /cinderella|lotso/i,
+    body_html: '<p>Pieces from the Rommanel Disney line.</p>',
+  },
+];
+
 export function buildStore(origin, fixture) {
   const products = fixture.products.map(buildProduct);
   const byHandle = Object.fromEntries(products.map((p) => [p.handle, p]));
 
-  const collections = fixture.collections.map((c) => {
-    const members = (fixture.membership[c.handle] || []).map((h) => byHandle[h]).filter(Boolean);
+  const makeCollection = (c, members) => {
     const image = c.image ? makeImage(c.image.src, { width: c.image.width, height: c.image.height, alt: c.image.alt || '' }) : null;
     const coll = {
       id: c.id,
@@ -179,7 +204,15 @@ export function buildStore(origin, fixture) {
     };
     members.forEach((p) => p.collections.push(coll));
     return coll;
-  });
+  };
+  const collections = fixture.collections.map((c) => makeCollection(c, (fixture.membership[c.handle] || []).map((h) => byHandle[h]).filter(Boolean)));
+  // The gift collections the guide asks the store to create (smart collections by tag after import 1),
+  // filled here from the same pieces so the gift guide and the Gifts menu work in the preview
+  for (const planned of PLANNED_COLLECTIONS) {
+    if (collections.some((c) => c.handle === planned.handle)) continue;
+    const members = products.filter((product) => planned.match.test(product.title));
+    collections.push(makeCollection({ id: planned.id, handle: planned.handle, title: planned.title, body_html: planned.body_html }, members));
+  }
   const collectionsByHandle = Object.fromEntries(collections.map((c) => [c.handle, c]));
   const collectionsList = Object.assign(collections.slice(), collectionsByHandle);
 
@@ -194,8 +227,10 @@ export function buildStore(origin, fixture) {
     'size-guide': { id: 91, handle: 'size-guide', title: 'Size guide', url: '/pages/size-guide', content: '<p>How to find your ring size and the right necklace length.</p>', metafields: {} },
     care: { id: 92, handle: 'care', title: 'Jewellery care', url: '/pages/care', content: '<p>A few simple habits keep your gold-plated and silver jewellery shining for longer.</p>', metafields: {} },
     faq: { id: 93, handle: 'faq', title: 'Frequently asked questions', url: '/pages/faq', content: '', metafields: {} },
+    // An example landing page on the campaign template
+    christmas: { id: 94, handle: 'christmas', title: 'Christmas gifts', url: '/pages/christmas', content: '', metafields: {} },
   };
-  const templateFor = { 'discover-purgrace': 'about', contact: 'contact', 'size-guide': 'size-guide', care: 'care', faq: 'faq' };
+  const templateFor = { 'discover-purgrace': 'about', contact: 'contact', 'size-guide': 'size-guide', care: 'care', faq: 'faq', christmas: 'campaign' };
 
   const link = (title, url, links = []) => ({ title, url, links, levels: links.length ? 1 : 0, active: false, current: false, child_active: false, type: 'http_link' });
   const linklists = {
@@ -212,6 +247,13 @@ export function buildStore(origin, fixture) {
           link('Bracelets', '/collections/bracelet'),
           link('Sets', '/collections/set'),
           link('Kids', '/collections/kids'),
+        ]),
+        link('Gifts', '/collections/gifts-for-her', [
+          link('For her', '/collections/gifts-for-her'),
+          link('For him', '/collections/gifts-for-him'),
+          link('For Mum', '/collections/mother-s-day'),
+          link('For kids', '/collections/kids'),
+          link('Disney', '/collections/disney'),
         ]),
         link('Faith', '/collections/faith'),
         link('925 Silver', '/collections/solid-925-silver'),

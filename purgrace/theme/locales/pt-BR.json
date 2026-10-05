@@ -231,6 +231,10 @@
     },
     "testimonials": {
       "label": "Avaliações de clientes"
+    },
+    "hero": {
+      "pause_video": "Pausar vídeo",
+      "play_video": "Reproduzir vídeo"
     }
   },
   "templates": {

@@ -17,15 +17,15 @@
         "q2": {
           "type": "question",
           "settings": {
-            "question": "Is it safe for sensitive skin?",
-            "answer": "<p>Rommanel jewellery is nickel-free and hypoallergenic to nickel, so it is a good choice for sensitive ears and skin.</p>"
+            "question": "Is it good for sensitive skin?",
+            "answer": "<p>Rommanel jewellery is hypoallergenic and nickel-free, designed with sensitive skin in mind.</p>"
           }
         },
         "q3": {
           "type": "question",
           "settings": {
-            "question": "Can I wear my jewellery in the water?",
-            "answer": "<p>We recommend taking it off before the beach, the pool and hot showers. Salt, chlorine and hot water wear the gold layer faster and can loosen stones. A quick splash while washing your hands is fine.</p>"
+            "question": "Can I get my jewellery wet?",
+            "answer": "<p>Yes. Rommanel pieces are water-resistant, so washing your hands or getting caught in the rain won't harm them. They are not waterproof: take them off for the beach, the pool and hot showers, because salt, chlorine and hot water wear the gold layer faster and can loosen stones.</p>"
           }
         },
         "q4": {

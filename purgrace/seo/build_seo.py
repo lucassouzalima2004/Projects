@@ -116,7 +116,7 @@ CURATED = [
     ("butterfly-earring-plated-in-18k-gold-52656000", "18K Gold-Plated Mini Openwork Butterfly Studs, 0.9 cm", "E", "butterfly, studs"),
     ("hoop-earrings-with-cubic-zirconia-18k-gold-plated-52677006", "18K Gold-Plated Hoop Earrings with Cubic Zirconia Drops", "E", "hoops"),
     ("heart-earrings-52754600", "18K Gold-Plated Beaded Heart Stud Earrings", "E", "love, heart, studs"),
-    ("lotso", "18K Gold-Plated Lotso and Strawberry Bracelet", "B", "kids"),
+    ("lotso", "18K Gold-Plated Lotso and Strawberry Bracelet", "B", "kids, disney"),
     ("boy-pendant-with-zirconia", "18K Gold-Plated Boy on a Swing Pendant with Cubic Zirconia", "P", "family, boy"),
     ("starfish", "18K Gold-Plated Starfish Stud Earrings", "E", "nature, starfish, studs"),
     ("skinny-infinity-ring", "18K Gold-Plated Skinny Infinity Ring", "R", "stacking"),
@@ -229,7 +229,8 @@ FLAGS = {
     17: "Descrição vazia: escreva medidas e fecho.",
 }
 
-WATER = re.compile(r"waterproof|water[- ]resistant|water resistant", re.I)
+# "Waterproof" promises more than plated jewellery gives; Priscila keeps "water-resistant" (it can get wet)
+WATERPROOF = re.compile(r"water\s*-?\s*proof", re.I)
 
 # Product URLs in Portuguese, made only of numbers, or with a typo: change by hand with a redirect (CSV can't change URLs)
 HANDLE_FIX = {37, 48, 50, 56, 82, 85, 91, 112, 157, 160}
@@ -256,19 +257,15 @@ def fix_description(body):
     changes = []
     new = body
     patterns = [
-        (r"<li[^>]*>\s*(?:<span[^>]*>)?\s*(?:Waterproof|Water[- ]resistant)\s*(?:</span>)?\s*</li>\s*", "", "tirou 'Waterproof' da lista"),
-        (r"<span[^>]*>✨ Waterproof</span><span[^>]*><br></span>", "", "tirou '✨ Waterproof'"),
-        (r"hypoallergenic, nickel[- ]free and water resistant", "hypoallergenic and nickel-free", "tirou 'water resistant'"),
-        (r"Although water resistant, we recommend avoiding prolonged exposure to chlorine, salt water, perfumes and chemicals to help preserve the gold finish\.",
-         "To keep the gold finish, take it off before swimming or showering and keep it away from chlorine, salt water, perfumes and chemicals.",
-         "trocou o cuidado 'Although water resistant' pela orientação da Rommanel"),
+        (r"\bWater\s*-?\s*proof\b", "Water-resistant", "trocou 'Waterproof' por 'Water-resistant'"),
+        (r"\bwater\s*-?\s*proof\b", "water-resistant", "trocou 'waterproof' por 'water-resistant'"),
         (r"\bRomanel\b", "Rommanel", "corrigiu 'Romanel' para 'Rommanel'"),
         (r"Triple gold finish \(24k, 18k &amp; 22k\)|Triple gold finish \(24k, 18k & 22k\)", "Triple-layer gold finish", "trocou '24k, 18k & 22k' por 'Triple-layer gold finish'"),
         (r"\s*Medical grade\.", "", "tirou 'Medical grade'"),
         (r"\bCChain\b", "Chain", "corrigiu 'CChain'"),
     ]
     for pattern, repl, label in patterns:
-        new, n = re.subn(pattern, repl, new, flags=re.I if "Waterproof" in pattern or "water" in pattern else 0)
+        new, n = re.subn(pattern, repl, new)
         if n:
             changes.append(label)
     return new, changes
@@ -423,7 +420,7 @@ def main():
                 "variants": p["variants"],
                 "options": p["options"],
                 "old_skus": [v.get("sku") or "" for v in p["variants"]],
-                "water": bool(WATER.search(body)),
+                "water": bool(WATERPROOF.search(body)),
                 "body": body,
                 "new_body": new_body,
                 "changes": changes,
@@ -522,7 +519,7 @@ def write_descriptions_import(rows):
         for r in rows:
             if not r["changes"]:
                 continue
-            assert not WATER.search(r["new_body"]), r["handle"]
+            assert not WATERPROOF.search(r["new_body"]), r["handle"]
             for row in variant_rows(r, {"Title": r["title"], "Description": r["new_body"]}):
                 w.writerow(row)
 
@@ -681,14 +678,32 @@ def write_workbook(rows, data, dupes, seo_dupes):
         ("eofy-gold", "EOFY Gold", "EOFY Sale – 18K Gold Plated Jewellery | Rommanel Australia",
          "Selected 18K gold-plated Rommanel jewellery on sale for the end of the financial year. Nickel-free, shipped from Perth Australia-wide.",
          "Selected 18K gold-plated Rommanel pieces for the end of the financial year, nickel-free and hypoallergenic."),
+        ("gifts-for-her", "Gifts for Her", "Gifts for Her – Hearts, Butterflies & Sets | Rommanel",
+         "Rommanel gifts for her: heart and butterfly jewellery and ready-to-give sets plated in 18K gold, for a girlfriend, wife or friend. Shipped from Perth.",
+         "Hearts, butterflies and ready-to-give sets for your girlfriend, your wife or your best friend."),
+        ("gifts-for-him", "Gifts for Him", "Gifts for Him – Chains, Crosses & Scapulars | Rommanel",
+         "18K gold-plated chains, crosses and scapulars by Rommanel for your boyfriend, husband or dad. Nickel-free, shipped from Perth Australia-wide.",
+         "Chains, crosses and scapulars for your boyfriend, your husband or your dad."),
+        ("disney", "Disney", "Disney Jewellery – 18K Gold Plated | Rommanel Australia",
+         "Pieces from the Rommanel Disney line plated in 18K gold, like Cinderella and Lotso: a magical gift for kids and fans. Shipped from Perth.",
+         "Pieces from the Rommanel Disney line, plated in 18K gold."),
     ]
+    # Gift collections that don't exist yet: smart collections by the tags import 1 adds
+    planned = {
+        "gifts-for-her": ("love", "butterfly", "gift set"),
+        "gifts-for-him": ("men", "unisex"),
+        "disney": ("disney",),
+    }
     notes = {
         "mother-s-day": "Deixe a página no ar o ano todo e troque os produtos em abril, sem mudar o endereço: assim ela não perde a posição no Google.",
         "eofy-gold": "A promoção de fim de ano fiscal foi em junho. Se não houver desconto agora, tire o '30% OFF' do texto ou esconda a coleção do menu até a próxima.",
         "best-sellers": "O texto de hoje pode ficar.",
+        "gifts-for-her": "Coleção nova para o guia de presentes. Crie como automática, com qualquer condição: Tag é igual a love, Tag é igual a butterfly, Tag é igual a gift set.",
+        "gifts-for-him": "Coleção nova para o guia de presentes. Crie como automática, com qualquer condição: Tag é igual a men, Tag é igual a unisex.",
+        "disney": "Coleção nova para o guia de presentes. Crie como automática: Tag é igual a disney. Peça nova da linha Disney entra sozinha quando tiver a tag disney.",
     }
     claims = [
-        (re.compile(r"waterproof|water[- ]resistant", re.I), "diz que a peça é à prova d'água"),
+        (WATERPROOF, "diz 'waterproof'; troque por 'water-resistant'"),
         (re.compile(r"24k|22k", re.I), "diz '24k, 18k e 22k', que a Rommanel não publica"),
         (re.compile(r"30% off", re.I), "anuncia 30% OFF"),
     ]
@@ -708,7 +723,9 @@ def write_workbook(rows, data, dupes, seo_dupes):
         coll_rows.append([
             handle, f"{STORE}/collections/{handle}", c.get("title", ""), title, now, "; ".join(problems),
             intro or "(mantenha o texto de hoje)", stitle, len(stitle), sdesc, len(sdesc),
-            len(membership.get(handle, [])), missing_count.get(handle, 0), " ".join(filter(None, attention)),
+            len(membership.get(handle, [])),
+            sum(1 for r in rows if set(planned[handle]) & {t.strip() for t in r["tags"].split(",")}) if handle in planned else missing_count.get(handle, 0),
+            " ".join(filter(None, attention)),
         ])
     ws = sheet(wb, "Coleções", ["Coleção", "Link", "Título atual", "Título novo", "Texto de hoje (na loja)", "O que tem de errado",
                                 "Texto de abertura novo", "Título para o Google", "Car.", "Descrição para o Google", "Car.",
@@ -728,7 +745,7 @@ def write_workbook(rows, data, dupes, seo_dupes):
             issues.append([r["n"], r["title"], r["url"], f"O link do produto está em português, só com números ou com erro ({r['handle']}). No produto, em 'Search engine listing' (listagem nos mecanismos de pesquisa), troque o 'URL handle' para {r['new_handle']} e deixe marcado 'Create a URL redirect' (criar redirecionamento)."])
     for r in rows:
         if r["water"]:
-            issues.append([r["n"], r["title"], r["url"], "A descrição diz que a peça é à prova d'água (waterproof/water resistant). A Rommanel orienta tirar as joias para mar, piscina e banho: a importação 2 tira essa frase."])
+            issues.append([r["n"], r["title"], r["url"], "A descrição diz 'Waterproof' (à prova d'água). A importação 2 troca por 'Water-resistant', que diz que pode molhar sem prometer que aguenta mar e piscina."])
     issues.append(["–", "Todas as fotos", "", "Nenhuma das 436 fotos tem texto alternativo. O tema novo usa o título limpo como texto alternativo enquanto você não escreve um, mas o ideal é descrever cada foto (ex.: 'brinco de borboleta na orelha da modelo')."])
     spellings = sorted({r["old_type"] for r in rows if r["old_type"]})
     blank_types = sum(1 for r in rows if not r["old_type"])
@@ -740,8 +757,8 @@ def write_workbook(rows, data, dupes, seo_dupes):
     for r in live_all:
         text = (r.get("visibleDescription") or "") + " " + (r.get("description") or "")
         found = []
-        if re.search(r"waterproof|water[- ]resistant", text, re.I):
-            found.append("diz que as peças são à prova d'água (waterproof/water-resistant)")
+        if WATERPROOF.search(text):
+            found.append("diz 'waterproof' (troque por 'water-resistant')")
         if re.search(r"24k|22k", text, re.I):
             found.append("diz '24k, 18k e 22k' (a Rommanel só diz 'três camadas de ouro')")
         if not found or r["kind"] not in ("collection", "page"):

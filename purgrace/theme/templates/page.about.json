@@ -59,16 +59,16 @@
           "type": "quality",
           "settings": {
             "icon": "shield",
-            "title": "Nickel-free",
-            "detail": "Gentle on skin that reacts to nickel"
+            "title": "Hypoallergenic and nickel-free",
+            "detail": "Designed with sensitive skin in mind"
           }
         },
         "q3": {
           "type": "quality",
           "settings": {
-            "icon": "heart",
-            "title": "Made for everyday wear",
-            "detail": "With a little care, it keeps its shine"
+            "icon": "drop",
+            "title": "Water-resistant",
+            "detail": "Durable. Made to last. Designed for everyday wear."
           }
         },
         "q4": {

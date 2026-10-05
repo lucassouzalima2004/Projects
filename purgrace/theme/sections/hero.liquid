@@ -1,7 +1,9 @@
 {%- liquid
   assign image = section.settings.image
+  assign image_mobile = section.settings.image_mobile
+  assign video = section.settings.video
   assign layout = section.settings.layout
-  if image == blank
+  if image == blank and video == blank
     assign layout = 'split'
   endif
   assign tag = section.settings.heading_tag
@@ -15,7 +17,24 @@
 >
   {%- capture hero_media -%}
     <div class="hero__media{% if layout == 'split' %} arch{% endif %}">
-      {%- if image != blank -%}
+      {%- if video != blank -%}
+        {{
+          video
+          | video_tag:
+            autoplay: true,
+            loop: true,
+            muted: true,
+            playsinline: true,
+            controls: false,
+            preload: 'metadata',
+            image_size: '1600x',
+            class: 'hero__img hero__video'
+        }}
+        <button type="button" class="hero__video-toggle" data-video-toggle aria-label="{{ 'sections.hero.pause_video' | t }}" data-label-pause="{{ 'sections.hero.pause_video' | t }}" data-label-play="{{ 'sections.hero.play_video' | t }}">
+          {%- render 'icon', name: 'pause', class: 'hero__video-pause' -%}
+          {%- render 'icon', name: 'play', class: 'hero__video-play' -%}
+        </button>
+      {%- elsif image != blank -%}
         {%- liquid
           assign hero_alt = image.alt
           assign hero_sizes = '100vw'
@@ -23,17 +42,28 @@
             assign hero_sizes = '(min-width: 990px) 520px, 100vw'
           endif
         -%}
-        {{
-          image
-          | image_url: width: 2400
-          | image_tag:
-            loading: 'eager',
-            fetchpriority: 'high',
-            sizes: hero_sizes,
-            widths: '600, 900, 1200, 1600, 2000, 2400',
-            alt: hero_alt,
-            class: 'hero__img'
-        }}
+        <picture>
+          {%- if image_mobile != blank -%}
+            <source
+              media="(max-width: 749px)"
+              srcset="{{ image_mobile | image_url: width: 600 }} 600w, {{ image_mobile | image_url: width: 900 }} 900w, {{ image_mobile | image_url: width: 1200 }} 1200w, {{ image_mobile | image_url: width: 1500 }} 1500w"
+              sizes="100vw"
+              width="{{ image_mobile.width }}"
+              height="{{ image_mobile.height }}"
+            >
+          {%- endif -%}
+          {{
+            image
+            | image_url: width: 2400
+            | image_tag:
+              loading: 'eager',
+              fetchpriority: 'high',
+              sizes: hero_sizes,
+              widths: '600, 900, 1200, 1600, 2000, 2400',
+              alt: hero_alt,
+              class: 'hero__img'
+          }}
+        </picture>
       {%- else -%}
         <div class="hero__art">{% render 'jewel-art', kind: 'pendant' %}</div>
       {%- endif -%}
@@ -132,6 +162,18 @@
       "id": "image",
       "label": "Photo",
       "info": "Wide photo with an empty area for the text, at least 2000 px wide."
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Photo on phones (optional)",
+      "info": "For campaign banners cropped for phones, like a vertical photo. Without it, phones show the photo above."
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Video (optional)",
+      "info": "Plays silently in a loop in place of the photo, with a pause button. Keep it short, under 30 seconds."
     },
     {
       "type": "image_picker",

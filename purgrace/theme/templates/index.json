@@ -13,15 +13,15 @@
         "highlight-2": {
           "type": "highlight",
           "settings": {
-            "icon": "shield",
-            "text": "Nickel-free"
+            "icon": "drop",
+            "text": "Water-resistant"
           }
         },
         "highlight-3": {
           "type": "highlight",
           "settings": {
-            "icon": "heart",
-            "text": "Hypoallergenic"
+            "icon": "shield",
+            "text": "Hypoallergenic & nickel-free"
           }
         }
       },
@@ -63,7 +63,7 @@
         "item-2": {
           "type": "item",
           "settings": {
-            "text": "Nickel-free and hypoallergenic",
+            "text": "Hypoallergenic and nickel-free",
             "icon": "none"
           }
         },
@@ -94,10 +94,18 @@
             "text": "Based in Perth, WA",
             "icon": "none"
           }
+        },
+        "item-water": {
+          "type": "item",
+          "settings": {
+            "text": "Water-resistant, made to last",
+            "icon": "none"
+          }
         }
       },
       "block_order": [
         "item-1",
+        "item-water",
         "item-2",
         "item-3",
         "item-4",
@@ -254,6 +262,69 @@
         "text": "<p>Pieces chosen for faith, love, luck and family, to keep the people and the beliefs you love close to your heart.</p>"
       }
     },
+    "gifts": {
+      "type": "shop-by-meaning",
+      "blocks": {
+        "g1": {
+          "type": "meaning",
+          "settings": {
+            "title": "For her",
+            "subtitle": "Girlfriend, wife, best friend",
+            "collection": "gifts-for-her",
+            "image": "shopify://shop_images/IMG_4250.webp"
+          }
+        },
+        "g2": {
+          "type": "meaning",
+          "settings": {
+            "title": "For him",
+            "subtitle": "Boyfriend, husband, dad",
+            "collection": "gifts-for-him",
+            "image": "shopify://shop_images/IMG_9471.webp"
+          }
+        },
+        "g3": {
+          "type": "meaning",
+          "settings": {
+            "title": "For Mum",
+            "subtitle": "Pieces that carry her family",
+            "collection": "mother-s-day",
+            "image": "shopify://shop_images/IMG_1406.jpg"
+          }
+        },
+        "g4": {
+          "type": "meaning",
+          "settings": {
+            "title": "For kids",
+            "subtitle": "First jewellery for little ones",
+            "collection": "kids",
+            "image": "shopify://shop_images/IMG_4854.webp"
+          }
+        },
+        "g5": {
+          "type": "meaning",
+          "settings": {
+            "title": "Disney",
+            "subtitle": "Rommanel's Disney line",
+            "collection": "disney",
+            "image": "shopify://shop_images/IMG_4298.webp"
+          }
+        }
+      },
+      "block_order": [
+        "g1",
+        "g2",
+        "g3",
+        "g4",
+        "g5"
+      ],
+      "settings": {
+        "color_scheme": "surface",
+        "eyebrow": "Gift guide",
+        "heading": "Gifts for <em>every occasion</em>",
+        "text": "<p>Ideas for the people you love, from a first piece for the little ones to something special for your partner or your mum.</p>"
+      }
+    },
     "promise": {
       "type": "promise",
       "blocks": {
@@ -269,16 +340,16 @@
           "type": "quality",
           "settings": {
             "icon": "shield",
-            "title": "Nickel-free",
-            "detail": "Gentle on skin that reacts to nickel"
+            "title": "Hypoallergenic and nickel-free",
+            "detail": "Designed with sensitive skin in mind"
           }
         },
         "q3": {
           "type": "quality",
           "settings": {
-            "icon": "heart",
-            "title": "Made for everyday wear",
-            "detail": "With a little care, it keeps its shine"
+            "icon": "drop",
+            "title": "Water-resistant",
+            "detail": "Durable. Made to last. Designed for everyday wear."
           }
         },
         "q4": {
@@ -347,7 +418,7 @@
         "point-3": {
           "type": "point",
           "settings": {
-            "text": "Nickel-free and hypoallergenic, safe for sensitive skin"
+            "text": "Hypoallergenic and nickel-free, designed with sensitive skin in mind"
           }
         }
       },
@@ -424,8 +495,8 @@
         "step-2": {
           "type": "step",
           "settings": {
-            "title": "Keep it dry",
-            "text": "<p>Take it off for the beach, the pool and hot showers, and keep it away from detergents and alcohol gel.</p>"
+            "title": "Water-resistant, with care",
+            "text": "<p>Washing your hands or getting caught in the rain is fine. To keep the shine for longer, take it off for the beach, the pool and hot showers, and keep it away from detergents and alcohol gel.</p>"
           }
         },
         "step-3": {
@@ -463,15 +534,15 @@
         "q2": {
           "type": "question",
           "settings": {
-            "question": "Is it safe for sensitive skin?",
-            "answer": "<p>Rommanel jewellery is nickel-free and hypoallergenic to nickel, so it is a good choice for sensitive ears and skin.</p>"
+            "question": "Is it good for sensitive skin?",
+            "answer": "<p>Rommanel jewellery is hypoallergenic and nickel-free, designed with sensitive skin in mind.</p>"
           }
         },
         "q3": {
           "type": "question",
           "settings": {
-            "question": "Can I wear my jewellery in the water?",
-            "answer": "<p>We recommend taking it off before the beach, the pool and hot showers. Salt, chlorine and hot water wear the gold layer faster and can loosen stones. A quick splash while washing your hands is fine.</p>"
+            "question": "Can I get my jewellery wet?",
+            "answer": "<p>Yes. Rommanel pieces are water-resistant, so washing your hands or getting caught in the rain won't harm them. They are not waterproof: take them off for the beach, the pool and hot showers, because salt, chlorine and hot water wear the gold layer faster and can loosen stones.</p>"
           }
         },
         "q4": {
@@ -512,6 +583,7 @@
     "categories",
     "best-sellers",
     "meaning",
+    "gifts",
     "promise",
     "silver",
     "story",
