@@ -85,4 +85,5 @@ jobs:
         run: npx --yes wrangler@4 pages deploy purgrace/dist/site --project-name="$PROJECT" --branch=main --commit-dirty=true
 
       - name: Endereço da prévia
-        run: echo "Prévia no ar: https://$DOMAIN" >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          echo "Prévia no ar: https://$DOMAIN" >> "$GITHUB_STEP_SUMMARY"
