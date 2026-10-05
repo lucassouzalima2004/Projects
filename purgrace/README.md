@@ -13,7 +13,7 @@ O passo a passo de SEO para a Priscila está no doc **PurGrace · Passo a passo 
 
 ## Instalar o tema
 
-1. No admin do Shopify: **Online Store › Themes › Add theme › Upload zip file** e escolha `dist/purgrace-theme.zip`.
+1. No admin do Shopify, em **Online Store**, na seção **Draft themes**: **Import theme › Upload zip file** e escolha `dist/purgrace-theme.zip`. O tema entra como rascunho, e a loja no ar não muda.
 2. Clique em **Customize** e revise. O tema já vem montado com as fotos da loja (em Content › Files) e as coleções `earrings`, `necklace`, `pendant`, `ring`, `bracelet`, `set`, `best-sellers`, `faith` e `solid-925-silver`.
 3. Crie as páginas que o tema prevê e escolha o template de cada uma em **Online Store › Pages**:
 
@@ -29,6 +29,11 @@ O passo a passo de SEO para a Priscila está no doc **PurGrace · Passo a passo 
 5. Em **Settings › Customer accounts**, use as contas de cliente novas: o tema não traz os templates das contas antigas (legacy), que o Shopify descontinuou.
 6. Em **Customize › Theme settings**, confira Contact (número do WhatsApp), Cart (frete grátis acima de $149) e Returns (Google), que precisa bater com a política de reembolso.
 7. **Publish**. Mantenha o tema antigo na biblioteca como cópia.
+
+Para mostrar o tema antes de publicar, abra a pré-visualização dele (**Preview**) e clique no ícone de link. Há dois tipos de link ([Shopify Help](https://help.shopify.com/en/manual/online-store/themes/adding-themes)):
+
+- **Visitante**: abre sem login, em `https://<código>.shopifypreview.com`, e vale 2 dias.
+- **Lojista**: exige login no admin da loja, permite testar o checkout e vale 30 dias.
 
 Pela linha de comando, com o [Shopify CLI](https://shopify.dev/docs/api/shopify-cli): `shopify theme push --path purgrace/theme --store <loja>.myshopify.com --unpublished`. A integração do Shopify com o GitHub não serve aqui, porque ela exige o tema na raiz do repositório.
 
