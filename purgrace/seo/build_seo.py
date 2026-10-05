@@ -1,9 +1,13 @@
 """Builds the SEO spreadsheet and the Shopify import files for PurGrace.
 
-Reads the store's public catalogue (dev/fixtures/purgrace-store.json) and writes:
-  PurGrace-SEO.xlsx                       review sheet (products, collections, issues, rings)
-  shopify-import-1-titulos-tipos-seo.csv  titles, types, tags, category, SKU and SEO fields
-  shopify-import-2-descricoes.csv         only the descriptions that need a fix (water claims, typos)
+Reads the store's public catalogue (dev/fixtures/purgrace-store.json) and the SEO texts the live store
+shows today (live-seo.json, from dev/fetch-live-seo.mjs), and writes:
+  PurGrace-SEO.xlsx                          review sheet (products, collections, issues, rings)
+  shopify-import-0-teste-2-produtos.csv      import 1 for two products only, to test first
+  shopify-import-1-titulos-tipos-tags.csv    titles, types, tags, category, SKU and MPN (no SEO fields)
+  shopify-import-2-descricoes.csv            only the descriptions that need a fix (water claims, typos)
+  shopify-import-3-seo-onde-falta.csv        SEO title and description only where the product has none today
+  shopify-import-desfazer.csv                puts titles, types, tags, SKU, MPN and descriptions back as they were
 
 Usage: python3 build_seo.py   (needs openpyxl: pip install openpyxl)
 """
@@ -20,7 +24,8 @@ from openpyxl.utils import get_column_letter
 
 HERE = Path(__file__).resolve().parent
 FIXTURE = HERE.parent / "dev" / "fixtures" / "purgrace-store.json"
-STORE = "https://www.purgrace.com.au"
+LIVE = HERE / "live-seo.json"
+STORE = "https://purgrace.com.au"
 
 # Product types (used by filters, Google and automated collections) and their Shopify categories
 TYPES = {
@@ -211,13 +216,16 @@ FLAGS = {
     78: "Anel sem opção de tamanho: o código termina em ...1400, ou seja aro 14 (confira na peça). Informe o tamanho no anúncio.",
     79: "Anel sem opção de tamanho: o código termina em ...1206, ou seja aro 12 (confira na peça). Informe o tamanho no anúncio.",
     80: "Anel sem opção de tamanho: o código termina em ...1606, ou seja aro 16 (confira na peça). Informe o tamanho no anúncio.",
-    71: "Anel sem opção de tamanho e com código curto (513639): informe o tamanho (aro) no anúncio.",
+    71: "Anel sem opção de tamanho e com código curto (513639), sem o aro: veja o aro na etiqueta da peça e informe no anúncio.",
     93: "A descrição diz 'Medical grade' sem comprovação: a importação 2 tira essa frase.",
     150: "A descrição diz 'Triple gold finish (24k, 18k & 22k)'. A Rommanel não publica essa divisão: a importação 2 troca por 'Triple-layer gold finish'.",
     151: "A descrição diz 'Triple gold finish (24k, 18k & 22k)'. A Rommanel não publica essa divisão: a importação 2 troca por 'Triple-layer gold finish'.",
     127: "Estava com o tipo EARRINGS, mas é um colar (Y necklace).",
     81: "Colar personalizável: explique na descrição como a cliente envia o nome (campo de texto ou mensagem).",
     11: "Descrição vazia: escreva comprimento e medidas da pérola.",
+    6: "Conjunto montado pela loja: o número no título (003) não é código Rommanel, então fica sem SKU e sem MPN.",
+    28: "Conjunto montado pela loja: o número no título (0000002) não é código Rommanel, então fica sem SKU e sem MPN.",
+    41: "Conjunto montado pela loja: o número no título (00012026) não é código Rommanel, então fica sem SKU e sem MPN.",
     17: "Descrição vazia: escreva medidas e fecho.",
 }
 
@@ -326,9 +334,37 @@ def meta_description(title, type_code, tags, sizes):
     return text
 
 
+def live_seo(products):
+    """What each product page shows Google today: a custom SEO title/description, or Shopify's defaults."""
+    live = json.loads(LIVE.read_text())
+    by_handle = {p["handle"]: p for p in products}
+    norm = lambda v: re.sub(r"\s+", " ", html.unescape(v or "")).strip()
+    out = {}
+    for r in live["results"]:
+        if r["kind"] != "product":
+            continue
+        p = by_handle[r["handle"]]
+        if r.get("status") != 200:
+            out[r["handle"]] = {"known": False}
+            continue
+        title = norm(r.get("title"))
+        if title.endswith(" – PurGrace"):
+            title = title[: -len(" – PurGrace")]
+        desc = norm(r.get("description"))
+        body = strip_html(p.get("body_html"))
+        default_desc = not desc or body.startswith(desc.rstrip(".… ").rstrip()) or desc[:60] == body[:60]
+        out[r["handle"]] = {
+            "known": True,
+            "title": title if title != norm(p["title"]) else "",
+            "description": "" if default_desc else desc,
+        }
+    return out
+
+
 def main():
     data = json.loads(FIXTURE.read_text())
     products = data["products"]
+    seo_now = live_seo(products)
     membership = {h: set(m) for h, m in data["membership"].items()}
     assert len(products) == len(CURATED), (len(products), len(CURATED))
 
@@ -375,6 +411,11 @@ def main():
                 "tags": ", ".join(tags),
                 "seo_title": seo_title(title, material_short),
                 "seo_description": meta_description(title, type_code, ", ".join(tags), sizes),
+                "seo_known": seo_now.get(p["handle"], {}).get("known", False),
+                "seo_title_now": seo_now.get(p["handle"], {}).get("title", ""),
+                "seo_description_now": seo_now.get(p["handle"], {}).get("description", ""),
+                "is_set": type_code == "S",
+                "category_collection": collection or "",
                 "alt": title,
                 "missing": ", ".join(missing),
                 "wrong": ", ".join(wrong),
@@ -397,14 +438,28 @@ def main():
     for r in rows:
         if dupes[r["title"]] > 1 and not r["flag"]:
             r["flag"] = "Título repetido em outro produto."
+    # Her own SEO titles: typos and titles shared by two products
+    now_dupes = Counter(r["seo_title_now"] for r in rows if r["seo_title_now"])
+    for r in rows:
+        notes = []
+        if re.match(r"^\d?K ", r["seo_title_now"]) and not r["seo_title_now"].startswith("18K"):
+            notes.append(f"O título para o Google de hoje começa com \"{r['seo_title_now'][:3]}\": falta o 1 de 18K.")
+        if r["seo_title_now"] and now_dupes[r["seo_title_now"]] > 1:
+            notes.append("O título para o Google de hoje é igual ao de outro produto: diferencie (tamanho, pedra, cor).")
+        if notes:
+            r["flag"] = " ".join(filter(None, [r["flag"]] + notes))
+        # Import 3 only fills products that have neither text today, so nothing she wrote is replaced
+        r["seo_fill"] = r["seo_known"] and not r["seo_title_now"] and not r["seo_description_now"]
     seo_dupes = Counter(r["seo_title"] for r in rows)
     write_csv_import(rows)
     write_descriptions_import(rows)
+    write_seo_import(rows)
+    write_undo(rows)
     write_workbook(rows, data, dupes, seo_dupes)
     print(f"{len(rows)} products · {sum(1 for r in rows if r['changes'])} descriptions fixed · "
+          f"{sum(1 for r in rows if r['seo_title_now'])} custom SEO titles kept · {sum(1 for r in rows if r['seo_fill'])} products in import 3 · "
           f"{sum(1 for r in rows if r['missing'])} missing from a collection · "
-          f"longest SEO title {max(len(r['seo_title']) for r in rows)} · longest meta {max(len(r['seo_description']) for r in rows)} · "
-          f"duplicate titles {sum(1 for v in dupes.values() if v > 1)} · duplicate SEO titles {sum(1 for v in seo_dupes.values() if v > 1)}")
+          f"duplicate titles {sum(1 for v in dupes.values() if v > 1)}")
 
 
 def variant_rows(r, first):
@@ -425,39 +480,71 @@ def variant_rows(r, first):
 
 # Two products for a first test import: a single piece and a ring with sizes
 TEST_PRODUCTS = (0, 122)
+MPN = "Google Shopping / Manufacturer part number (MPN)"
+
+
+def open_csv(name, headers):
+    fh = open(HERE / name, "w", newline="", encoding="utf-8")
+    writer = csv.DictWriter(fh, fieldnames=headers, lineterminator="\n")
+    writer.writeheader()
+    return fh, writer
+
+
+def sku_for(r, k):
+    """The Rommanel reference: SKU for stock and MPN for Google. Ring sizes keep what they have;
+    the sets are put together by the shop, so they get no manufacturer code."""
+    existing = r["old_skus"][k]
+    if existing or len(r["variants"]) > 1 or r["is_set"]:
+        return existing
+    return r["code"]
 
 
 def write_csv_import(rows):
-    write_import_file(rows, "shopify-import-1-titulos-tipos-seo.csv")
+    write_import_file(rows, "shopify-import-1-titulos-tipos-tags.csv")
     write_import_file([rows[i] for i in TEST_PRODUCTS], "shopify-import-0-teste-2-produtos.csv")
 
 
 def write_import_file(rows, name):
-    headers = ["URL handle", "Title", "Type", "Product category", "Tags", "SEO title", "SEO description",
-               "Option1 name", "Option1 value", "SKU"]
-    with open(HERE / name, "w", newline="", encoding="utf-8") as fh:
-        w = csv.DictWriter(fh, fieldnames=headers)
-        w.writeheader()
+    headers = ["URL handle", "Title", "Type", "Product category", "Tags", "Option1 name", "Option1 value", "SKU", MPN]
+    fh, w = open_csv(name, headers)
+    with fh:
         for r in rows:
-            first = {"Title": r["title"], "Type": r["type"], "Product category": r["category"], "Tags": r["tags"],
-                     "SEO title": r["seo_title"], "SEO description": r["seo_description"]}
+            first = {"Title": r["title"], "Type": r["type"], "Product category": r["category"], "Tags": r["tags"]}
             for k, row in enumerate(variant_rows(r, first)):
-                existing = r["old_skus"][k]
-                # Single pieces get the Rommanel reference as SKU (Google reads it as the part number); ring sizes keep theirs
-                row["SKU"] = existing or (r["code"] if len(r["variants"]) == 1 else "")
+                row["SKU"] = sku_for(r, k)
+                row[MPN] = "" if r["is_set"] or len(r["variants"]) > 1 else sku_for(r, k)
                 w.writerow(row)
 
 
 def write_descriptions_import(rows):
-    headers = ["URL handle", "Title", "Description", "Option1 name", "Option1 value"]
-    with open(HERE / "shopify-import-2-descricoes.csv", "w", newline="", encoding="utf-8") as fh:
-        w = csv.DictWriter(fh, fieldnames=headers)
-        w.writeheader()
+    fh, w = open_csv("shopify-import-2-descricoes.csv", ["URL handle", "Title", "Description", "Option1 name", "Option1 value"])
+    with fh:
         for r in rows:
             if not r["changes"]:
                 continue
             assert not WATER.search(r["new_body"]), r["handle"]
             for row in variant_rows(r, {"Title": r["title"], "Description": r["new_body"]}):
+                w.writerow(row)
+
+
+def write_seo_import(rows):
+    fh, w = open_csv("shopify-import-3-seo-onde-falta.csv", ["URL handle", "Title", "SEO title", "SEO description", "Option1 name", "Option1 value"])
+    with fh:
+        for r in rows:
+            if r["seo_fill"]:
+                for row in variant_rows(r, {"Title": r["title"], "SEO title": r["seo_title"], "SEO description": r["seo_description"]}):
+                    w.writerow(row)
+
+
+def write_undo(rows):
+    """Puts back what imports 1 and 2 change, as it was on 5/10/2026 (the Shopify category can't be put back)."""
+    fh, w = open_csv("shopify-import-desfazer.csv", ["URL handle", "Title", "Type", "Tags", "Description", "Option1 name", "Option1 value", "SKU", MPN])
+    with fh:
+        for r in rows:
+            first = {"Title": r["old_title"], "Type": r["old_type"], "Tags": "", "Description": r["body"]}
+            for k, row in enumerate(variant_rows(r, first)):
+                row["SKU"] = r["old_skus"][k]
+                row[MPN] = ""
                 w.writerow(row)
 
 
@@ -499,18 +586,20 @@ def write_workbook(rows, data, dupes, seo_dupes):
         ("PurGrace · revisão de SEO dos produtos", True),
         ("", False),
         ("O que tem aqui", True),
-        ("Produtos: título limpo (sem código e sem CAIXA ALTA), tipo, categoria do Shopify, material, tags, título e descrição para o Google, texto alternativo da foto principal e o que falta em cada produto. Colunas verdes = sugestão nova.", False),
-        ("Coleções: título, texto de abertura, título e descrição para o Google de cada coleção, e quantos produtos estão faltando nela.", False),
+        ("Produtos: título limpo (sem código e sem CAIXA ALTA), tipo, categoria do Shopify, material, tags, código Rommanel, o título e a descrição para o Google que a loja mostra hoje ao lado de uma sugestão, texto alternativo da foto principal e o que falta em cada produto. Colunas verdes = sugestão nova.", False),
+        ("Coleções: o texto que cada coleção tem hoje, o que tem de errado nele, e o título, o texto de abertura e os textos para o Google sugeridos.", False),
         ("Problemas: tudo que precisa de uma decisão sua (anúncios repetidos, códigos estranhos, tamanhos de anel, frases sem comprovação).", False),
         ("Anéis: tamanhos oferecidos hoje e o aro que o código Rommanel indica.", False),
         ("", False),
         ("Como aplicar (o passo a passo completo está no guia de SEO)", True),
-        ("1. Faça um backup: Produtos › Exportar › Todos os produtos › CSV para Excel. Guarde o arquivo.", False),
-        ("2. Teste com 2 produtos: importe shopify-import-0-teste-2-produtos.csv (a medalha de São Bento e um anel com tamanhos) em Produtos › Importar, marcando 'Overwrite products with matching handles' (substituir produtos com o mesmo identificador).", False),
-        ("3. Confira os 2 produtos na loja. Se estiver tudo certo, importe o arquivo completo. Depois importe shopify-import-2-descricoes.csv do mesmo jeito.", False),
-        ("O arquivo 1 tem as colunas Option1 name/Option1 value iguais às de hoje: isso mantém os tamanhos dos anéis e os preços. Não apague essas colunas.", False),
-        ("Os links (URLs) dos produtos não mudam: só o título, o tipo, as tags, a categoria, o SKU e os textos do Google.", False),
-        ("Os dados vêm da loja pública em 05/10/2026. Se você mudou títulos ou descrições depois disso, a importação substitui essas mudanças: gere os arquivos de novo ou edite à mão.", False),
+        ("Faça as importações antes de mexer à mão em qualquer produto (links, tamanhos, títulos, descrições ou apagar anúncio). Os arquivos acham cada produto pelo link e pelos tamanhos de 5/10/2026.", False),
+        ("1. Backup: Produtos › Exportar › Todos os produtos › Arquivo CSV simples (Plain CSV file). O arquivo chega por e-mail: baixe e guarde. Não importe esse backup inteiro depois: ele volta o estoque e as fotos para o dia do backup.", False),
+        ("2. Em Produtos › Importar, escolha o arquivo, desmarque 'Publicar novos produtos em todos os canais de vendas' e marque 'Sobrescrever produtos com identificadores correspondentes' (Overwrite products with matching handles). No resumo, confira o número de produtos antes de clicar em Importar.", False),
+        ("3. Importe nesta ordem, esperando o e-mail de confirmação de cada um: shopify-import-0-teste-2-produtos.csv (2 produtos; confira na loja), shopify-import-1-titulos-tipos-tags.csv (162), shopify-import-2-descricoes.csv (25) e, se quiser, shopify-import-3-seo-onde-falta.csv (só os produtos sem título e descrição para o Google hoje).", False),
+        ("Se algo sair errado, importe shopify-import-desfazer.csv do mesmo jeito: ele volta títulos, tipos, tags, SKU e descrições para o que eram em 5/10/2026.", False),
+        ("Os títulos e descrições para o Google que você já escreveu não mudam: a importação 1 não tem essas colunas, e a 3 só preenche os produtos que estão sem.", False),
+        ("Os links (URLs), preços, fotos e estoque não mudam. As colunas Option1 name/Option1 value estão iguais às de hoje para o Shopify não recriar os tamanhos dos anéis: não apague essas colunas.", False),
+        ("Não abra os CSV no Excel para salvar de novo: ele estraga acentos e travessões.", False),
     ]
     for text, bold in lines:
         readme.append([text])
@@ -518,21 +607,24 @@ def write_workbook(rows, data, dupes, seo_dupes):
         readme.cell(row=readme.max_row, column=1).alignment = Alignment(wrap_text=True, vertical="top")
     readme.column_dimensions["A"].width = 120
 
-    headers = ["#", "Link", "Título atual", "Título novo", "Código Rommanel (vira SKU)", "Tipo atual", "Tipo novo",
-               "Categoria do Shopify", "Material (metacampo da categoria)", "Tags", "Título para o Google",
-               "Car.", "Descrição para o Google", "Car.", "Texto alternativo da foto principal",
-               "Falta nas coleções", "Está na coleção errada", "Tamanhos (variantes)", "Descrição será corrigida",
-               "URL nova sugerida (mudar à mão, com redirecionamento)", "Atenção"]
-    widths = [5, 14, 40, 44, 14, 11, 12, 28, 18, 30, 44, 6, 58, 6, 40, 22, 18, 18, 30, 34, 50]
+    headers = ["#", "Link", "Título atual", "Título novo", "Código Rommanel (SKU e MPN)", "Tipo atual", "Tipo novo",
+               "Categoria do Shopify", "Material (metacampo da categoria)", "Tags",
+               "Título para o Google hoje", "Título sugerido", "Car.",
+               "Descrição para o Google hoje", "Descrição sugerida", "Car.", "Importação 3 preenche?",
+               "Texto alternativo da foto principal", "Falta nas coleções", "Está na coleção errada", "Tamanhos (variantes)",
+               "Descrição será corrigida", "URL nova sugerida (mudar à mão, com redirecionamento)", "Atenção"]
+    widths = [5, 10, 40, 44, 14, 11, 12, 28, 18, 30, 40, 40, 6, 50, 50, 6, 12, 40, 22, 18, 18, 30, 34, 50]
     body = []
     for r in rows:
+        title_now = r["seo_title_now"] or ("(sem: usa o título do produto)" if r["seo_known"] else "(não deu para ler)")
+        desc_now = r["seo_description_now"] or ("(sem: usa o começo da descrição)" if r["seo_known"] else "(não deu para ler)")
         body.append([
-            r["n"], r["url"], r["old_title"], r["title"], r["code"], r["old_type"], r["type"], r["category"],
-            r["material"], r["tags"], r["seo_title"], len(r["seo_title"]), r["seo_description"],
-            len(r["seo_description"]), r["alt"], r["missing"], r["wrong"], r["sizes"], "; ".join(r["changes"]),
-            r["new_handle"], r["flag"],
+            r["n"], r["url"], r["old_title"], r["title"], "" if r["is_set"] else r["code"], r["old_type"], r["type"], r["category"],
+            r["material"], r["tags"], title_now, r["seo_title"], len(r["seo_title"]), desc_now, r["seo_description"],
+            len(r["seo_description"]), "sim" if r["seo_fill"] else "não", r["alt"], r["missing"], r["wrong"], r["sizes"],
+            "; ".join(r["changes"]), r["new_handle"], r["flag"],
         ])
-    ws = sheet(wb, "Produtos", headers, widths, body, warn_col=21, new_cols=(4, 5, 7, 8, 9, 10, 11, 13, 15, 20))
+    ws = sheet(wb, "Produtos", headers, widths, body, warn_col=24, new_cols=(4, 5, 7, 8, 9, 10, 12, 15, 18, 23))
     for row in range(2, ws.max_row + 1):
         link = ws.cell(row=row, column=2)
         link.hyperlink, link.value, link.font = link.value, "abrir", Font(color="A65A4F", underline="single")
@@ -579,27 +671,49 @@ def write_workbook(rows, data, dupes, seo_dupes):
          "Rommanel has been plating jewellery in Brazil since 1986. Every piece here is authentic Rommanel, plated in 18K gold."),
         ("all", "All Jewellery", "Rommanel Jewellery Australia – 18K Gold Plated & 925 Silver",
          "Shop authentic Rommanel jewellery in Australia: 18K gold-plated and 925 sterling silver earrings, necklaces, rings and more, shipped from Perth.",
-         ""),
+         "Every piece here is authentic Rommanel jewellery from Brazil, plated in 18K gold or made in solid 925 sterling silver, nickel-free and chosen in Perth."),
         ("best-sellers", "Best Sellers", "Best-Selling Rommanel Jewellery | PurGrace",
          "The Rommanel pieces our customers come back for: hoops, butterflies, saints and fine chains, plated in 18K gold. Shipped from Perth.",
          ""),
         ("mother-s-day", "Mother's Day Gifts", "Mother's Day Jewellery Gifts | Rommanel Australia",
          "Mother's Day gifts by Rommanel: boy and girl pendants, hearts and family bracelets plated in 18K gold. Shipped from Perth Australia-wide.",
-         "Keep this page live all year and update the products each May, so it keeps its place on Google."),
+         "Gifts she'll wear every day: boy and girl pendants, hearts and family bracelets, plated in 18K gold by Rommanel."),
+        ("eofy-gold", "EOFY Gold", "EOFY Sale – 18K Gold Plated Jewellery | Rommanel Australia",
+         "Selected 18K gold-plated Rommanel jewellery on sale for the end of the financial year. Nickel-free, shipped from Perth Australia-wide.",
+         "Selected 18K gold-plated Rommanel pieces for the end of the financial year, nickel-free and hypoallergenic."),
     ]
+    notes = {
+        "mother-s-day": "Deixe a página no ar o ano todo e troque os produtos em abril, sem mudar o endereço: assim ela não perde a posição no Google.",
+        "eofy-gold": "A promoção de fim de ano fiscal foi em junho. Se não houver desconto agora, tire o '30% OFF' do texto ou esconda a coleção do menu até a próxima.",
+        "best-sellers": "O texto de hoje pode ficar.",
+    }
+    claims = [
+        (re.compile(r"waterproof|water[- ]resistant", re.I), "diz que a peça é à prova d'água"),
+        (re.compile(r"24k|22k", re.I), "diz '24k, 18k e 22k', que a Rommanel não publica"),
+        (re.compile(r"30% off", re.I), "anuncia 30% OFF"),
+    ]
+    live = {r["handle"]: r for r in json.loads(LIVE.read_text())["results"] if r["kind"] == "collection"}
+    generic = Counter(re.sub(r"\s+", " ", (r.get("visibleDescription") or "")).strip() for r in live.values())
     by_handle = {c["handle"]: c for c in data["collections"]}
     coll_rows = []
     for handle, title, stitle, sdesc, intro in collections:
         c = by_handle.get(handle, {})
+        now = re.sub(r"\s+", " ", (live.get(handle, {}).get("visibleDescription") or "")).strip()
+        problems = [label for rx, label in claims if rx.search(now)]
+        if now and generic[now] > 1:
+            problems.append(f"texto igual ao de outras {generic[now] - 1} coleções")
+        attention = [notes.get(handle, "")]
+        if handle == "18k-gold-plated" and wrong_gold:
+            attention.append(f"{wrong_gold} peças de prata estão nesta coleção.")
         coll_rows.append([
-            handle, f"{STORE}/collections/{handle}", c.get("title", ""), title, intro, stitle, len(stitle), sdesc, len(sdesc),
-            len(membership.get(handle, [])), missing_count.get(handle, 0),
-            (f"{wrong_gold} peças de prata estão nesta coleção" if handle == "18k-gold-plated" and wrong_gold else ""),
+            handle, f"{STORE}/collections/{handle}", c.get("title", ""), title, now, "; ".join(problems),
+            intro or "(mantenha o texto de hoje)", stitle, len(stitle), sdesc, len(sdesc),
+            len(membership.get(handle, [])), missing_count.get(handle, 0), " ".join(filter(None, attention)),
         ])
-    ws = sheet(wb, "Coleções", ["Coleção", "Link", "Título atual", "Título novo", "Texto de abertura (descrição)",
-                                "Título para o Google", "Car.", "Descrição para o Google", "Car.", "Produtos hoje",
-                                "Produtos faltando", "Atenção"],
-               [18, 12, 18, 20, 60, 50, 6, 60, 6, 10, 10, 30], coll_rows, warn_col=12, new_cols=(4, 5, 6, 8))
+    ws = sheet(wb, "Coleções", ["Coleção", "Link", "Título atual", "Título novo", "Texto de hoje (na loja)", "O que tem de errado",
+                                "Texto de abertura novo", "Título para o Google", "Car.", "Descrição para o Google", "Car.",
+                                "Produtos hoje", "Produtos faltando", "Atenção"],
+               [18, 10, 18, 20, 50, 30, 55, 46, 6, 55, 6, 10, 10, 40], coll_rows, warn_col=6, new_cols=(4, 7, 8, 10))
     for row in range(2, ws.max_row + 1):
         link = ws.cell(row=row, column=2)
         link.hyperlink, link.value, link.font = link.value, "abrir", Font(color="A65A4F", underline="single")
@@ -616,8 +730,25 @@ def write_workbook(rows, data, dupes, seo_dupes):
         if r["water"]:
             issues.append([r["n"], r["title"], r["url"], "A descrição diz que a peça é à prova d'água (waterproof/water resistant). A Rommanel orienta tirar as joias para mar, piscina e banho: a importação 2 tira essa frase."])
     issues.append(["–", "Todas as fotos", "", "Nenhuma das 436 fotos tem texto alternativo. O tema novo usa o título limpo como texto alternativo enquanto você não escreve um, mas o ideal é descrever cada foto (ex.: 'brinco de borboleta na orelha da modelo')."])
-    issues.append(["–", "Tipos de produto", "", "Hoje há 10 tipos diferentes para as mesmas coisas (EARRINGS, EARRING, Brinco, CHEKER...) e 33 produtos sem tipo. A importação 1 deixa só 7: Earrings, Necklaces, Pendants, Rings, Bracelets, Anklets, Jewellery Sets."])
-    issues.append(["–", "Coleções incompletas", "", f"{sum(1 for r in rows if r['missing'])} produtos não estão na coleção da categoria deles (ex.: 25 brincos fora de 'Earrings'). Com os tipos padronizados, dá para transformar as coleções em automáticas (veja o guia)."])
+    spellings = sorted({r["old_type"] for r in rows if r["old_type"]})
+    blank_types = sum(1 for r in rows if not r["old_type"])
+    issues.append(["–", "Tipos de produto", "", f"Hoje há {len(spellings)} grafias diferentes para as mesmas coisas (EARRINGS, EARRING, Brinco, CHEKER...) e {blank_types} produtos sem tipo. A importação 1 deixa só 7: Earrings, Necklaces, Pendants, Rings, Bracelets, Anklets, Jewellery Sets."])
+    outside = [r for r in rows if r["category_collection"] and r["category_collection"] in r["missing"].split(", ")]
+    earrings_out = sum(1 for r in outside if r["category_collection"] == "earrings")
+    issues.append(["–", "Coleções incompletas", "", f"{len(outside)} produtos não estão na coleção da categoria deles (ex.: {earrings_out} brincos fora de 'Earrings'). Com os tipos padronizados, dá para transformar as coleções em automáticas (veja o guia)."])
+    live_all = json.loads(LIVE.read_text())["results"]
+    for r in live_all:
+        text = (r.get("visibleDescription") or "") + " " + (r.get("description") or "")
+        found = []
+        if re.search(r"waterproof|water[- ]resistant", text, re.I):
+            found.append("diz que as peças são à prova d'água (waterproof/water-resistant)")
+        if re.search(r"24k|22k", text, re.I):
+            found.append("diz '24k, 18k e 22k' (a Rommanel só diz 'três camadas de ouro')")
+        if not found or r["kind"] not in ("collection", "page"):
+            continue
+        where = "Produtos › Coleções" if r["kind"] == "collection" else "Loja virtual › Páginas"
+        name = "Coleção " if r["kind"] == "collection" else "Página "
+        issues.append(["–", name + r.get("title", "").replace(" – PurGrace", ""), r["url"], f"O texto {' e '.join(found)}. Corrija em {where}, no campo Descrição/Conteúdo; a importação não mexe nisso."])
     ws = sheet(wb, "Problemas", ["#", "Produto", "Link", "O que fazer"], [5, 44, 12, 100], issues)
     for row in range(2, ws.max_row + 1):
         link = ws.cell(row=row, column=3)

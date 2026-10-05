@@ -64,13 +64,16 @@ Sem os secrets, dá para publicar à mão: `cd purgrace/dev && npm run export` g
 
 | Arquivo | Para quê |
 | --- | --- |
-| `PurGrace-SEO.xlsx` | Revisão: título novo, tipo, categoria, tags, textos para o Google, coleções que faltam, problemas e anéis |
-| `shopify-import-0-teste-2-produtos.csv` | Teste com 2 produtos antes da importação completa |
-| `shopify-import-1-titulos-tipos-seo.csv` | Títulos, tipos, categoria, tags, SKU e textos para o Google dos 162 produtos |
+| `PurGrace-SEO.xlsx` | Revisão: título novo, tipo, categoria, tags, os textos para o Google de hoje ao lado da sugestão, coleções, problemas e anéis |
+| `shopify-import-0-teste-2-produtos.csv` | A importação 1 só para 2 produtos, para testar antes |
+| `shopify-import-1-titulos-tipos-tags.csv` | Título, tipo, categoria, tags, SKU e MPN (código Rommanel) dos 162 produtos. Não tem as colunas de SEO, então os 115 títulos e 111 descrições para o Google que a loja já tem não mudam |
 | `shopify-import-2-descricoes.csv` | Só as 25 descrições com "waterproof", "Medical grade", "24k, 18k & 22k" ou "Romanel" |
-| `build_seo.py` | Gera os quatro arquivos a partir do catálogo em `dev/fixtures/` |
+| `shopify-import-3-seo-onde-falta.csv` | Título e descrição para o Google só dos 46 produtos que não têm nenhum dos dois hoje |
+| `shopify-import-desfazer.csv` | Volta título, tipo, tags, descrição, SKU e MPN dos 162 para como estavam em 5/10/2026 |
+| `live-seo.json` | Os títulos e descrições para o Google que a loja mostrava em 5/10/2026 (lidos por `dev/fetch-live-seo.mjs`) |
+| `build_seo.py` | Gera a planilha e os CSV a partir do catálogo em `dev/fixtures/` e de `live-seo.json` |
 
-As importações usam **Products › Import** com *Overwrite products with matching handles*. Os arquivos mantêm as colunas `Option1 name`/`Option1 value` iguais às de hoje, para o Shopify não recriar as variantes (tamanhos dos anéis). Faça antes o backup em **Products › Export**.
+As importações usam **Produtos › Importar** com *Sobrescrever produtos com identificadores correspondentes* (Overwrite products with matching handles), na ordem 0, 1, 2 e 3, e antes de qualquer mudança feita à mão nos produtos. Os arquivos mantêm as colunas `Option1 name`/`Option1 value` iguais às de hoje, para o Shopify não recriar as variantes (tamanhos dos anéis). Faça antes o backup em **Produtos › Exportar** (chega por e-mail); para voltar atrás, use `shopify-import-desfazer.csv`, não o backup inteiro.
 
 Para gerar de novo depois de mudar algo (precisa de `pip install openpyxl`):
 
@@ -78,7 +81,7 @@ Para gerar de novo depois de mudar algo (precisa de `pip install openpyxl`):
 python3 purgrace/seo/build_seo.py
 ```
 
-O catálogo em `dev/fixtures/purgrace-store.json` foi baixado da loja pública em 5/10/2026. Se os produtos mudarem, baixe de novo antes de gerar os arquivos.
+O catálogo em `dev/fixtures/purgrace-store.json` foi baixado da loja pública em 5/10/2026. Se os produtos mudarem, baixe de novo e rode `node dev/fetch-live-seo.mjs` antes de gerar os arquivos, senão a importação pode apagar um texto escrito depois disso.
 
 ## Prévia local e testes
 

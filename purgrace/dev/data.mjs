@@ -64,6 +64,7 @@ function buildProduct(p) {
       price: cents(v.price),
       compare_at_price: v.compare_at_price ? cents(v.compare_at_price) : null,
       available: v.available,
+      taxable: v.taxable !== false,
       sku: v.sku,
       barcode: v.barcode || null,
       featured_media: featured,

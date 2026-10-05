@@ -123,7 +123,9 @@
                   </div>
                   {%- if block.settings.show_tax_note -%}
                     <p class="product__tax">
-                      {%- if cart.taxes_included -%}
+                      {%- comment -%} No GST line on products marked "Charge tax: off" in the admin {%- endcomment -%}
+                      {%- if variant.taxable == false -%}
+                      {%- elsif cart.taxes_included -%}
                         {{ 'products.product.taxes_included' | t }}
                       {%- else -%}
                         {{ 'products.product.taxes_excluded' | t }}

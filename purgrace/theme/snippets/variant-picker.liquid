@@ -12,7 +12,8 @@
       {%- liquid
         assign option_name = option.name | downcase
         assign is_size = false
-        if option_name == 'size' or option_name == 'ring size' or option_name == 'sizes' or option_name == 'tamanho' or option_name == 'aro'
+        # Matches Size, Ring size and translations such as Tamanho do anel or Aro
+        if option_name contains 'size' or option_name contains 'tamanho' or option_name == 'aro'
           assign is_size = true
         endif
         assign has_swatches = false
