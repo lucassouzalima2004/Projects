@@ -95,7 +95,7 @@ python3 -m http.server 8000
 
 ## Publicar
 
-### Link do site: `https://theberrycoffee.<subdomínio-da-conta>.workers.dev`
+### Link do site: <https://theberrycoffee.lucassouzalima10.workers.dev>
 
 O workflow `.github/workflows/deploy-berry-coffee.yml` publica a pasta `berry-coffee/` sempre nesse mesmo link. Ele roda a cada push que mexe nela, no `main` ou no branch `claude/keen-tesla-fjkq02`. O endereço exato aparece no resumo de cada execução, em Actions.
 

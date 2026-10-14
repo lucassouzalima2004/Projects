@@ -1,5 +1,5 @@
 # Publica o site da The Berry Coffee no Cloudflare, sempre no mesmo link:
-#   https://theberrycoffee.<subdomínio-da-conta>.workers.dev
+#   https://theberrycoffee.lucassouzalima10.workers.dev
 # Cada push que mexe em berry-coffee/ (no main ou no branch claude/keen-tesla-fjkq02) atualiza esse link.
 #
 # O site vai como Worker com arquivos estáticos (Workers Static Assets), e não como projeto do
