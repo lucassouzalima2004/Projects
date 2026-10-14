@@ -10,7 +10,7 @@ O cliente pediu um site para quem quiser informação, com WhatsApp para clicar 
 - **Topo laranja** com o título "Your packages, in good hands." / "Sua entrega em boas mãos.", botões de WhatsApp e de ligar,
   e uma **etiqueta de envio animada**: a caixinha percorre a rota, o rastreio vai mudando (coletado → em trânsito → saiu para entrega)
   e, quando chega, a etiqueta leva o carimbo "Delivered / Entregue".
-- **Faixa** inclinada com os serviços passando.
+- **Faixa** preta com os serviços passando.
 - **Serviços** (6 cartões). Cada um tem "Ask about this", que abre o WhatsApp já perguntando sobre aquele serviço.
 - **Por que a GoHand** (4 diferenciais, fundo preto).
 - **Como funciona** em 4 passos, desenhado como o rastreio de um pacote: os passos acendem um a um.
