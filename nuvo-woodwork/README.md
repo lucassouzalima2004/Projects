@@ -98,8 +98,13 @@ python3 -m http.server 8000
 
 O workflow `.github/workflows/deploy-nuvo-woodwork.yml` publica o site no Cloudflare Pages a cada push que mexe em
 `nuvo-woodwork/`, sempre como produção, em **<https://nuvo-woodwork.pages.dev>** (se o nome já existir no Cloudflare,
-o endereço certo aparece no resumo da execução, em Actions). Ele usa os mesmos secrets dos outros sites
-(`CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID`) e deixa de fora `README.md`, `PROMPTS.md`, `tools/` e `videos/`.
+o endereço certo aparece no resumo da execução, em Actions). Deixa de fora `README.md`, `PROMPTS.md`, `tools/` e `videos/`.
+
+Ele usa o secret `CLOUDFLARE_API_TOKEN` dos outros sites. O `CLOUDFLARE_ACCOUNT_ID` pode estar em Secrets ou em
+Variables; se não existir em nenhum dos dois, o workflow tenta descobrir a conta pelo próprio token. Se o resumo da
+execução disser "Falta o ID da conta do Cloudflare", salve o ID em **Settings → Secrets and variables → Actions →
+New repository secret**, com o nome `CLOUDFLARE_ACCOUNT_ID` (no Cloudflare, ele aparece em Workers & Pages, na
+lateral direita), e rode de novo em **Actions → Deploy NUVO Woodwork → Run workflow**.
 
 A conta do Cloudflare permite no máximo 10 projetos do Pages. Se a criação do projeto falhar por isso, apague um
 projeto antigo (Workers & Pages → projeto → Settings → Delete project) e rode o workflow de novo.
