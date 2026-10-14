@@ -86,8 +86,21 @@ jobs:
           api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects"
           auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
           if ! curl -fsS -o /dev/null -H "$auth" "$api/$PROJECT"; then
-            curl -sS --fail-with-body -X POST -H "$auth" -H "Content-Type: application/json" \
-              --data "{\"name\":\"$PROJECT\",\"production_branch\":\"main\"}" "$api"
+            res=$(curl -sS -X POST -H "$auth" -H "Content-Type: application/json" \
+              --data "{\"name\":\"$PROJECT\",\"production_branch\":\"main\"}" "$api")
+            if [ "$(echo "$res" | jq -r '.success')" != "true" ]; then
+              echo "$res" | jq '.errors'
+              if echo "$res" | jq -e '.errors[]? | select(.code == 8000027)' > /dev/null; then
+                total=$(curl -sS -H "$auth" "$api?per_page=10" | jq -r '.result_info.total_count // (.result | length)')
+                acc="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID"
+                echo "Diagnóstico (sem nomes):"
+                echo "  projetos no Pages: $total"
+                curl -sS -H "$auth" "$acc/workers/subdomain" | jq -r '"  subdomínio workers.dev: " + (if .success then "configurado" else "não (" + ([.errors[]?.code|tostring]|join(",")) + ")" end)'
+                curl -sS -H "$auth" "$acc/workers/scripts" | jq -r '"  Workers: " + (if .success then "\(.result|length) script(s), o token consegue ler" else "o token não consegue ler (" + ([.errors[]?.code|tostring]|join(",")) + ")" end)'
+                echo "::error title=Limite de projetos do Cloudflare Pages::A conta já tem $total projeto(s) no Cloudflare Pages e o Cloudflare não deixa criar outro. Apague um projeto que não usa mais (Cloudflare → Workers & Pages) ou peça aumento do limite ao suporte do Cloudflare (código 8000027), e rode de novo."
+              fi
+              exit 1
+            fi
           fi
           info=$(curl -fsS -H "$auth" "$api/$PROJECT")
           # Se o nome já estiver em uso no Cloudflare, o endereço ganha um sufixo; aqui pegamos o endereço real
