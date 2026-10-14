@@ -106,8 +106,10 @@ execução disser "Falta o ID da conta do Cloudflare", salve o ID em **Settings 
 New repository secret**, com o nome `CLOUDFLARE_ACCOUNT_ID` (no Cloudflare, ele aparece em Workers & Pages, na
 lateral direita), e rode de novo em **Actions → Deploy NUVO Woodwork → Run workflow**.
 
-A conta do Cloudflare permite no máximo 10 projetos do Pages. Se a criação do projeto falhar por isso, apague um
-projeto antigo (Workers & Pages → projeto → Settings → Delete project) e rode o workflow de novo.
+A conta do Cloudflare permite no máximo 10 projetos do Pages, e esse limite já foi atingido. Nesse caso o workflow
+publica o site como Worker, no endereço `https://nuvo-woodwork.<sua-conta>.workers.dev` (o endereço exato aparece no
+resumo da execução, em Actions). Para usar o `nuvo-woodwork.pages.dev`, apague um projeto antigo do Pages
+(Workers & Pages → projeto → Settings → Delete project) e rode o workflow de novo.
 
 A prévia está fora do Google (`<meta name="robots" content="noindex">` no `index.html`), para não competir com o site
 atual. Quando o site for para o domínio da Nuvo: apague essa linha, aponte o domínio em Cloudflare → Workers & Pages →

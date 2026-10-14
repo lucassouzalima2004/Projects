@@ -77,10 +77,23 @@ jobs:
           api="https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/pages/projects"
           auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
           if ! curl -fsS -o /dev/null -H "$auth" "$api/$PROJECT"; then
-            curl -sS --fail-with-body -X POST -H "$auth" -H "Content-Type: application/json" \
-              --data "{\"name\":\"$PROJECT\",\"production_branch\":\"${{ github.event.repository.default_branch }}\"}" "$api"
+            res=$(curl -sS -X POST -H "$auth" -H "Content-Type: application/json" \
+              --data "{\"name\":\"$PROJECT\",\"production_branch\":\"${{ github.event.repository.default_branch }}\"}" "$api")
+            if ! jq -e '.success' <<<"$res" >/dev/null; then
+              echo "$res"
+              # Conta no limite de projetos do Pages: publica como Worker (endereço .workers.dev)
+              if jq -e '.errors[]? | select(.code == 8000027)' <<<"$res" >/dev/null; then
+                echo "::warning title=Limite de projetos do Pages::A conta já tem o máximo de projetos do Cloudflare Pages. O site vai como Worker, no endereço .workers.dev. Para usar o .pages.dev, apague um projeto antigo do Pages e rode o workflow de novo."
+                sub=$(curl -sS -H "$auth" "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/workers/subdomain" | jq -r '.result.subdomain // empty' || true)
+                echo "TARGET=workers" >> "$GITHUB_ENV"
+                if [ -n "$sub" ]; then echo "DOMAIN=$PROJECT.$sub.workers.dev" >> "$GITHUB_ENV"; fi
+                exit 0
+              fi
+              exit 1
+            fi
           fi
           project=$(curl -fsS -H "$auth" "$api/$PROJECT")
+          echo "TARGET=pages" >> "$GITHUB_ENV"
           echo "DOMAIN=$(jq -r '.result.subdomain' <<<"$project")" >> "$GITHUB_ENV"
           # Publica sempre como produção, seja qual for o branch do git, para o endereço principal mostrar a última versão
           echo "PROD_BRANCH=$(jq -r '.result.production_branch' <<<"$project")" >> "$GITHUB_ENV"
@@ -92,10 +105,21 @@ jobs:
           # Anotações, prompts, script e vídeos originais não vão para o ar
           rm -rf _site/README.md _site/PROMPTS.md _site/tools _site/videos _site/.gitignore
           # O WhatsApp só mostra a imagem da prévia do link com o endereço completo
-          sed -i "s#content=\"assets/img/og-image.jpg\"#content=\"https://$DOMAIN/assets/img/og-image.jpg\"#" _site/index.html
+          if [ -n "${DOMAIN:-}" ]; then
+            sed -i "s#content=\"assets/img/og-image.jpg\"#content=\"https://$DOMAIN/assets/img/og-image.jpg\"#" _site/index.html
+          fi
 
       - name: Publicar
-        run: CLOUDFLARE_ACCOUNT_ID="$ACCOUNT_ID" npx wrangler pages deploy _site --project-name="$PROJECT" --branch="$PROD_BRANCH" --commit-dirty=true
+        run: |
+          set -o pipefail
+          if [ "$TARGET" = workers ]; then
+            CLOUDFLARE_ACCOUNT_ID="$ACCOUNT_ID" npx wrangler deploy --name="$PROJECT" --assets=_site --compatibility-date=2026-10-01 | tee deploy.log
+            # Endereço que o wrangler informou (vale mais que o calculado)
+            url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | head -n 1 || true)
+            if [ -n "$url" ]; then echo "DOMAIN=${url#https://}" >> "$GITHUB_ENV"; fi
+          else
+            CLOUDFLARE_ACCOUNT_ID="$ACCOUNT_ID" npx wrangler pages deploy _site --project-name="$PROJECT" --branch="$PROD_BRANCH" --commit-dirty=true
+          fi
 
       - name: Endereço do site
         run: |
