@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GoHand Shop · Package delivery for businesses</title>
+  <meta name="description" content="Package delivery contractor for businesses: same-day delivery, scheduled routes and pickups, with updates on WhatsApp.">
+  <meta name="theme-color" content="#E94206">
+
+  <!-- Prévia do link no WhatsApp/Instagram/Facebook. O WhatsApp só mostra a imagem com o endereço completo:
+       o deploy do Cloudflare (.github/workflows/deploy-gohand-shop.yml) troca o og:image sozinho.
+       Em outra hospedagem, troque por https://seudominio.com/assets/img/og-image.jpg -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="GoHand Shop">
+  <meta property="og:title" content="GoHand Shop · Your packages, in good hands">
+  <meta property="og:description" content="Same-day delivery, scheduled routes and pickups for businesses. Get a quote on WhatsApp.">
+  <meta property="og:image" content="assets/img/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="pt_BR">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700;1,800;1,900&display=swap">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo" data-t="ui.skip">Skip to content</a>
+
+  <!-- Logo e ícones -->
+  <svg class="sr-defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <symbol id="logo" viewBox="174 212 866 270"><g style="fill:var(--logo-word,#141414)"><path transform="translate(185.3 381)" d="M 66.88 -125.62 C 74.95 -125.62 81.62 -123.97 86.89 -120.67 C 92.17 -117.37 95.84 -112.86 97.91 -107.14 L 100.98 -124.08 L 149.59 -124.08 L 128.05 -2.2 C 125.98 9.39 121.98 19.95 116.05 29.48 C 110.11 39.02 101.89 46.64 91.41 52.36 C 80.93 58.08 68.27 60.94 53.45 60.94 C 34.54 60.94 20.09 56.72 10.11 48.28 C 0.14 39.85 -4.84 28.3 -4.84 13.64 C -4.84 11.59 -4.77 10.05 -4.62 9.02 L 43.34 9.02 C 43.63 15.47 48.33 18.7 57.42 18.7 C 63.14 18.7 67.87 17.23 71.61 14.3 C 75.35 11.37 77.95 5.87 79.42 -2.2 L 82.06 -16.94 C 77.96 -11.22 72.68 -6.71 66.22 -3.41 C 59.77 -0.1 52.51 1.55 44.44 1.55 C 31.97 1.55 21.92 -2.63 14.3 -11 C 6.67 -19.36 2.86 -30.95 2.86 -45.77 C 2.86 -51.34 3.38 -56.77 4.41 -62.05 C 6.75 -75.1 11 -86.43 17.16 -96.03 C 23.32 -105.63 30.73 -112.97 39.38 -118.03 C 48.03 -123.09 57.2 -125.62 66.88 -125.62 Z M 89.98 -62.05 C 90.27 -63.36 90.42 -65.11 90.42 -67.31 C 90.42 -72.3 89.1 -76.15 86.45 -78.86 C 83.82 -81.58 80.23 -82.94 75.69 -82.94 C 70.41 -82.94 65.74 -81.1 61.7 -77.44 C 57.67 -73.77 55.07 -68.64 53.91 -62.05 C 53.6 -60.72 53.45 -58.96 53.45 -56.77 C 53.45 -51.77 54.77 -47.92 57.41 -45.2 C 60.05 -42.49 63.65 -41.14 68.2 -41.14 C 73.48 -41.14 78.14 -42.97 82.17 -46.64 C 86.2 -50.3 88.8 -55.44 89.98 -62.05 Z M 89.98 -62.05 "/><path transform="translate(323.9 381)" d="M 58.73 1.55 C 47.73 1.55 38.05 -0.58 29.69 -4.83 C 21.33 -9.09 14.8 -15.14 10.11 -22.98 C 5.42 -30.84 3.08 -39.97 3.08 -50.38 C 3.08 -64.75 6.49 -77.66 13.31 -89.09 C 20.13 -100.54 29.48 -109.49 41.36 -115.94 C 53.24 -122.39 66.52 -125.62 81.19 -125.62 C 92.19 -125.62 101.86 -123.46 110.22 -119.12 C 118.58 -114.8 125.11 -108.71 129.8 -100.86 C 134.49 -93.02 136.84 -83.89 136.84 -73.48 C 136.84 -59.11 133.47 -46.2 126.72 -34.75 C 119.97 -23.31 110.65 -14.4 98.77 -8.02 C 86.89 -1.64 73.55 1.55 58.73 1.55 Z M 66.22 -40.7 C 72.53 -40.7 77.52 -43.56 81.19 -49.28 C 84.85 -55 86.69 -61.38 86.69 -68.42 C 86.69 -73.41 85.47 -77.15 83.05 -79.64 C 80.63 -82.13 77.52 -83.38 73.7 -83.38 C 67.39 -83.38 62.4 -80.52 58.73 -74.8 C 55.07 -69.08 53.23 -62.7 53.23 -55.66 C 53.23 -50.68 54.41 -46.94 56.75 -44.44 C 59.1 -41.95 62.26 -40.7 66.22 -40.7 Z M 66.22 -40.7 "/><path transform="translate(452.82 381)" d="M 108.91 -124.95 C 120.93 -124.95 130.16 -121.47 136.61 -114.5 C 143.07 -107.54 146.3 -97.97 146.3 -85.8 C 146.3 -81.4 145.86 -76.78 144.98 -71.94 L 132.22 0 L 83.59 0 L 95.27 -65.78 C 95.55 -68.12 95.7 -69.74 95.7 -70.62 C 95.7 -75.16 94.41 -78.68 91.84 -81.17 C 89.28 -83.67 85.73 -84.92 81.19 -84.92 C 75.76 -84.92 71.25 -83.23 67.66 -79.86 C 64.06 -76.48 61.68 -71.79 60.5 -65.78 L 60.5 -66 L 48.84 0 L 0 0 L 28.81 -162.8 L 77.66 -162.8 L 67.55 -105.38 C 72.38 -111.25 78.32 -115.98 85.36 -119.56 C 92.4 -123.16 100.25 -124.95 108.91 -124.95 Z M 108.91 -124.95 "/><path transform="translate(595.16 381)" d="M 4.41 -62.05 C 6.75 -75.1 11 -86.43 17.16 -96.03 C 23.32 -105.63 30.73 -112.97 39.38 -118.03 C 48.03 -123.09 57.2 -125.62 66.88 -125.62 C 74.95 -125.62 81.62 -123.97 86.89 -120.67 C 92.17 -117.37 95.84 -112.86 97.91 -107.14 L 100.98 -124.08 L 149.59 -124.08 L 127.59 0 L 78.98 0 L 82.06 -16.94 C 77.96 -11.22 72.68 -6.71 66.22 -3.41 C 59.77 -0.1 52.51 1.55 44.44 1.55 C 31.97 1.55 21.92 -2.63 14.3 -11 C 6.67 -19.36 2.86 -30.95 2.86 -45.77 C 2.86 -51.34 3.38 -56.77 4.41 -62.05 Z M 89.98 -62.05 C 90.27 -63.36 90.42 -65.11 90.42 -67.31 C 90.42 -72.3 89.1 -76.15 86.45 -78.86 C 83.82 -81.58 80.23 -82.94 75.69 -82.94 C 70.41 -82.94 65.74 -81.1 61.7 -77.44 C 57.67 -73.77 55.07 -68.64 53.91 -62.05 C 53.6 -60.72 53.45 -58.96 53.45 -56.77 C 53.45 -51.77 54.77 -47.92 57.41 -45.2 C 60.05 -42.49 63.65 -41.14 68.2 -41.14 C 73.48 -41.14 78.14 -42.97 82.17 -46.64 C 86.2 -50.3 88.8 -55.44 89.98 -62.05 Z M 89.98 -62.05 "/><path transform="translate(733.76 381)" d="M 108.91 -124.95 C 120.93 -124.95 130.16 -121.47 136.61 -114.5 C 143.07 -107.54 146.3 -97.97 146.3 -85.8 C 146.3 -81.4 145.86 -76.78 144.98 -71.94 L 132.22 0 L 83.59 0 L 95.27 -65.78 C 95.55 -68.12 95.7 -69.74 95.7 -70.62 C 95.7 -75.16 94.41 -78.68 91.84 -81.17 C 89.28 -83.67 85.73 -84.92 81.19 -84.92 C 75.91 -84.92 71.43 -83.23 67.77 -79.86 C 64.1 -76.48 61.68 -71.86 60.5 -66 L 48.84 0 L 0 0 L 22 -124.08 L 70.84 -124.08 L 67.55 -105.38 C 72.38 -111.25 78.32 -115.98 85.36 -119.56 C 92.4 -123.16 100.25 -124.95 108.91 -124.95 Z M 108.91 -124.95 "/><path transform="translate(876.1 381)" d="M 4.41 -62.05 C 6.75 -75.1 11 -86.43 17.16 -96.03 C 23.32 -105.63 30.73 -112.97 39.38 -118.03 C 48.03 -123.09 57.2 -125.62 66.88 -125.62 C 74.95 -125.62 81.58 -123.97 86.78 -120.67 C 91.99 -117.37 95.62 -112.86 97.69 -107.14 L 107.58 -162.8 L 156.42 -162.8 L 127.59 0 L 78.77 0 L 81.84 -16.94 C 77.74 -11.22 72.49 -6.71 66.11 -3.41 C 59.73 -0.1 52.51 1.55 44.44 1.55 C 31.97 1.55 21.92 -2.63 14.3 -11 C 6.67 -19.36 2.86 -30.95 2.86 -45.77 C 2.86 -51.34 3.38 -56.77 4.41 -62.05 Z M 89.98 -62.05 C 90.27 -63.36 90.42 -65.11 90.42 -67.31 C 90.42 -72.3 89.1 -76.15 86.45 -78.86 C 83.82 -81.58 80.23 -82.94 75.69 -82.94 C 70.41 -82.94 65.74 -81.1 61.7 -77.44 C 57.67 -73.77 55.07 -68.64 53.91 -62.05 C 53.6 -60.72 53.45 -58.96 53.45 -56.77 C 53.45 -51.77 54.77 -47.92 57.41 -45.2 C 60.05 -42.49 63.65 -41.14 68.2 -41.14 C 73.48 -41.14 78.14 -42.97 82.17 -46.64 C 86.2 -50.3 88.8 -55.44 89.98 -62.05 Z M 89.98 -62.05 "/></g><path style="fill:var(--logo-tag,#E94206)" d="M 319.82 476.2 L 569.08 476.2 L 585.24 400.2 L 335.98 400.2 Z M 319.82 476.2 "/><g style="fill:var(--logo-tag-text,#fff)"><path transform="translate(365.521 454.76)" d="M 13.34 0.33 C 9.84 0.33 6.99 -0.43 4.8 -1.95 C 2.61 -3.47 1.52 -5.63 1.52 -8.42 C 1.52 -8.69 1.55 -9.1 1.61 -9.66 L 9.8 -9.66 C 9.7 -8.49 9.98 -7.57 10.62 -6.89 C 11.27 -6.22 12.25 -5.89 13.56 -5.89 C 14.76 -5.89 15.7 -6.15 16.39 -6.67 C 17.09 -7.19 17.44 -7.93 17.44 -8.88 C 17.44 -9.85 17 -10.65 16.12 -11.27 C 15.25 -11.88 13.89 -12.57 12.05 -13.34 C 10.27 -14.07 8.83 -14.77 7.7 -15.42 C 6.59 -16.09 5.61 -16.99 4.78 -18.12 C 3.96 -19.26 3.55 -20.69 3.55 -22.41 C 3.52 -24.52 4.04 -26.36 5.11 -27.92 C 6.18 -29.48 7.66 -30.68 9.56 -31.5 C 11.47 -32.33 13.64 -32.75 16.09 -32.75 C 18.3 -32.75 20.27 -32.41 21.98 -31.72 C 23.7 -31.03 25.04 -30.03 25.98 -28.72 C 26.94 -27.41 27.42 -25.88 27.42 -24.11 C 27.42 -23.64 27.41 -23.3 27.38 -23.09 L 19 -23.09 C 19.03 -23.22 19.05 -23.4 19.05 -23.64 C 19.05 -24.5 18.74 -25.2 18.14 -25.73 C 17.55 -26.27 16.73 -26.55 15.69 -26.55 C 14.58 -26.55 13.68 -26.27 12.98 -25.73 C 12.3 -25.2 11.95 -24.47 11.95 -23.55 C 11.95 -22.63 12.38 -21.85 13.23 -21.22 C 14.1 -20.59 15.44 -19.87 17.25 -19.05 C 19.06 -18.21 20.54 -17.44 21.69 -16.73 C 22.83 -16.04 23.82 -15.09 24.64 -13.91 C 25.47 -12.73 25.89 -11.28 25.89 -9.56 C 25.89 -7.66 25.38 -5.96 24.38 -4.45 C 23.36 -2.95 21.91 -1.78 20 -0.94 C 18.1 -0.09 15.88 0.33 13.34 0.33 Z M 13.34 0.33 "/><path transform="translate(409.773 454.76)" d="M 34.17 -32.3 L 28.47 0 L 20.61 0 L 22.95 -13.39 L 10.72 -13.39 L 8.38 0 L 0.5 0 L 6.2 -32.3 L 14.08 -32.3 L 11.83 -19.59 L 24.06 -19.59 L 26.31 -32.3 Z M 34.17 -32.3 "/><path transform="translate(459.039 454.76)" d="M 15.88 0.33 C 13.14 0.33 10.74 -0.24 8.67 -1.38 C 6.6 -2.51 4.99 -4.1 3.86 -6.16 C 2.72 -8.22 2.16 -10.58 2.16 -13.25 C 2.16 -17.02 2.97 -20.38 4.59 -23.34 C 6.22 -26.3 8.48 -28.61 11.38 -30.27 C 14.28 -31.92 17.57 -32.75 21.25 -32.75 C 24.01 -32.75 26.43 -32.19 28.52 -31.06 C 30.6 -29.95 32.21 -28.37 33.34 -26.33 C 34.48 -24.3 35.05 -21.96 35.05 -19.31 C 35.05 -15.54 34.23 -12.16 32.61 -9.17 C 30.98 -6.18 28.71 -3.85 25.8 -2.17 C 22.89 -0.5 19.58 0.33 15.88 0.33 Z M 17.06 -6.95 C 19.09 -6.95 20.88 -7.47 22.41 -8.52 C 23.94 -9.55 25.12 -10.96 25.97 -12.72 C 26.81 -14.48 27.23 -16.39 27.23 -18.45 C 27.23 -20.66 26.62 -22.39 25.39 -23.64 C 24.16 -24.9 22.44 -25.53 20.23 -25.53 C 18.21 -25.53 16.43 -25.01 14.88 -23.97 C 13.33 -22.93 12.14 -21.54 11.3 -19.8 C 10.45 -18.07 10.03 -16.16 10.03 -14.08 C 10.03 -11.87 10.64 -10.13 11.86 -8.86 C 13.09 -7.59 14.82 -6.95 17.06 -6.95 Z M 17.06 -6.95 "/><path transform="translate(510.835 454.76)" d="M 28.98 -21.89 C 28.67 -20.02 27.95 -18.32 26.81 -16.77 C 25.68 -15.21 24.13 -13.96 22.19 -13.02 C 20.25 -12.07 17.96 -11.59 15.31 -11.59 L 10.44 -11.59 L 8.38 0 L 0.5 0 L 6.2 -32.3 L 18.95 -32.3 C 22.33 -32.3 24.87 -31.55 26.58 -30.06 C 28.3 -28.57 29.16 -26.55 29.16 -24.02 C 29.16 -23.24 29.1 -22.54 28.98 -21.89 Z M 15.78 -17.75 C 18.72 -17.75 20.45 -19.13 20.97 -21.89 C 21.03 -22.38 21.06 -22.73 21.06 -22.95 C 21.06 -23.93 20.75 -24.69 20.12 -25.22 C 19.5 -25.76 18.54 -26.03 17.25 -26.03 L 12.97 -26.03 L 11.55 -17.75 Z M 15.78 -17.75 "/></g></symbol>
+    <symbol id="i-wa" viewBox="0 0 24 24"><path fill="currentColor" d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.6-.91-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.06 2.88 1.21 3.07c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.63.71.22 1.36.19 1.87.12.57-.09 1.76-.72 2-1.41.25-.7.25-1.29.18-1.41-.08-.13-.28-.2-.57-.35zM12.05 21.8h-.01a9.9 9.9 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88a9.83 9.83 0 0 1 6.99 2.9 9.83 9.83 0 0 1 2.89 6.99c0 5.45-4.44 9.88-9.88 9.88zm8.41-18.3A11.82 11.82 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 0 0 5.68 1.45h.01c6.55 0 11.89-5.34 11.89-11.9 0-3.17-1.24-6.16-3.48-8.4z"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M5.2 3h3.4l1.9 4.7-2.3 1.5a11.5 11.5 0 0 0 6.6 6.6l1.5-2.3 4.7 1.9v3.4A2.2 2.2 0 0 1 18.8 21 16.8 16.8 0 0 1 3 5.2 2.2 2.2 0 0 1 5.2 3z"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 12h15M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 20V5M6 11l6-6 6 6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M4 8h16M7 16h13"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M5 12.5l4.5 4.5L19 7"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5 12 13l8.5-6.5"/></g></symbol>
+    <symbol id="i-ig" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/></g><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></g></symbol>
+    <symbol id="i-route" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="18" r="2.2"/><circle cx="18" cy="6" r="2.2"/><path d="M8.2 18H15a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h6.8"/></g></symbol>
+    <symbol id="i-pickup" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11h16v9H4z"/><path d="M12 8V2.5M9 5.5l3-3 3 3M9.5 15h5"/></g></symbol>
+    <symbol id="i-cart" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 12.5H6.2z"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10"/></g></symbol>
+    <symbol id="i-building" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V5.5L12 3v18M12 9l8 2.5V21M2.5 21h19M7.5 8h1.5M7.5 12h1.5M7.5 16h1.5M15.5 14h1.5M15.5 17.5h1.5"/></g></symbol>
+    <symbol id="i-truck" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6h11v10h-11zM13.5 10h4l3.5 3.2V16h-7.5"/><circle cx="6.5" cy="17.5" r="2"/><circle cx="17" cy="17.5" r="2"/></g></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9.5L4 20.5z"/><path d="M8 9.5h8M8 12.5h5"/></g></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.5s7-6.3 7-12a7 7 0 0 0-14 0c0 5.7 7 12 7 12z"/><circle cx="12" cy="9.5" r="2.5"/></g></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h4l2-3h6l2 3h4v11.5H3z"/><circle cx="12" cy="13.5" r="3.6"/></g></symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12.2V3.5h8.7L21 12.8 12.8 21z"/><circle cx="7.8" cy="8.3" r="1.4"/></g></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.8 20 7v10l-8 4.2L4 17V7z"/><path d="M4.3 7.2 12 11.4l7.7-4.2M12 11.4v9.6M8 5l8 4.2"/></g></symbol>
+  </svg>
+
+  <!-- ===================================================== TOPO -->
+  <header class="site-header" id="topo">
+    <div class="container header-inner">
+      <a class="brand" href="#topo" aria-label="GoHand Shop">
+        <svg class="logo" viewBox="0 0 866 270" aria-hidden="true"><use href="#logo"/></svg>
+      </a>
+
+      <nav class="nav" id="nav" aria-label="Main">
+        <a href="#servicos" data-t="nav.services">Services</a>
+        <a href="#como-funciona" data-t="nav.how">How it works</a>
+        <a href="#orcamento" data-t="nav.quote">Get a quote</a>
+        <a href="#onde" data-t="nav.area" data-needs-areas>Coverage</a>
+        <a href="#duvidas" data-t="nav.faq">FAQ</a>
+        <a class="btn btn--orange nav__cta" data-wa href="#" target="_blank" rel="noopener">
+          <svg class="icon" aria-hidden="true"><use href="#i-wa"/></svg>
+          <span data-t="hero.whatsapp">Chat on WhatsApp</span>
+        </a>
+      </nav>
+
+      <div class="header-actions">
+        <div class="lang" role="group" data-t-attr="aria-label:ui.lang">
+          <button type="button" data-lang="en" aria-pressed="true">EN</button>
+          <button type="button" data-lang="pt" aria-pressed="false">PT</button>
+        </div>
+        <a class="btn btn--sm btn--ink header-wa" data-wa href="#" target="_blank" rel="noopener">
+          <svg class="icon" aria-hidden="true"><use href="#i-wa"/></svg>
+          <span data-t="ui.whatsapp">WhatsApp</span>
+        </a>
+        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav" data-t-attr="aria-label:ui.menu">
+          <svg class="icon icon--menu" aria-hidden="true"><use href="#i-menu"/></svg>
+          <svg class="icon icon--close" aria-hidden="true"><use href="#i-close"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <!-- ===================================================== HERO -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero__bg" aria-hidden="true">
+        <span class="hero__stripes"></span>
+        <span class="hero__word">gohand</span>
+      </div>
+
+      <div class="container hero__grid">
+        <div class="hero__copy">
+          <p class="kicker kicker--light" data-t="hero.kicker"></p>
+          <h1 class="hero__title" id="hero-title" data-t-rich="hero.title"></h1>
+          <p class="hero__lead" data-t="hero.lead"></p>
+          <div class="hero__ctas">
+            <a class="btn btn--ink btn--lg" data-wa href="#" target="_blank" rel="noopener">
+              <svg class="icon" aria-hidden="true"><use href="#i-wa"/></svg>
+              <span data-t="hero.whatsapp"></span>
+            </a>
+            <a class="btn btn--ghost btn--lg" data-tel href="#">
+              <svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg>
+              <span data-t="hero.call"></span>
+            </a>
+          </div>
+          <p class="hero__note">
+            <svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>
+            <span data-t="hero.note"></span>
+          </p>
+        </div>
+
+        <div class="hero__visual" aria-hidden="true">
+          <svg class="route" viewBox="0 0 520 200">
+            <path class="route__path" id="route-path" d="M28 150 C 70 60, 150 40, 210 80 S 320 110, 370 70 S 450 22, 492 46"/>
+            <path class="route__dash" pathLength="1" d="M28 150 C 70 60, 150 40, 210 80 S 320 110, 370 70 S 450 22, 492 46"/>
+            <g class="route__start">
+              <circle cx="28" cy="150" r="15"/>
+              <circle cx="28" cy="150" r="5.5"/>
+            </g>
+            <g class="route__end" transform="translate(492 46)">
+              <path d="M0 0C-5-7-15-15-15-27a15 15 0 0 1 30 0c0 12-10 20-15 27z"/>
+              <circle cy="-27" r="5.5"/>
+            </g>
+            <g class="route__mover" id="route-mover" transform="translate(28 150)">
+              <g class="route__box">
+                <rect x="-15" y="-15" width="30" height="30" rx="5"/>
+                <path d="M-15 -4h30M0 -15v11"/>
+              </g>
+            </g>
+          </svg>
+
+          <article class="label" id="hero-label">
+            <header class="label__head">
+              <svg class="logo logo--label" viewBox="0 0 866 270"><use href="#logo"/></svg>
+              <span class="label__priority" data-t="label.priority"></span>
+            </header>
+            <div class="label__row label__row--tracking">
+              <span class="label__key" data-t="label.tracking"></span>
+              <span class="label__val label__val--mono" id="label-code">GH-0000-0000</span>
+            </div>
+            <div class="label__cols">
+              <div class="label__row">
+                <span class="label__key" data-t="label.from"></span>
+                <span class="label__val" data-t="label.fromValue"></span>
+              </div>
+              <div class="label__row">
+                <span class="label__key" data-t="label.to"></span>
+                <span class="label__val" data-t="label.toValue"></span>
+              </div>
+            </div>
+            <ol class="label__steps" id="label-steps"></ol>
+            <div class="label__barcode" id="label-barcode"></div>
+            <div class="label__stamp"><span data-t="label.stamp"></span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================== FAIXA -->
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker__track" id="ticker"></div>
+    </div>
+
+    <!-- ===================================================== SERVIÇOS -->
+    <section class="section services" id="servicos" aria-labelledby="services-title">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="kicker" data-t="services.kicker"></p>
+          <h2 class="title" id="services-title" data-t-rich="services.title"></h2>
+          <p class="lead" data-t="services.lead"></p>
+        </div>
+        <ul class="services__grid" id="services-list"></ul>
+      </div>
+    </section>
+
+    <!-- ===================================================== DIFERENCIAIS -->
+    <section class="section why" id="por-que" aria-labelledby="why-title">
+      <div class="why__word" aria-hidden="true">go</div>
+      <div class="container why__grid">
+        <div class="section-head" data-reveal>
+          <p class="kicker kicker--orange" data-t="why.kicker"></p>
+          <h2 class="title title--on-dark" id="why-title" data-t-rich="why.title"></h2>
+          <p class="lead lead--on-dark" data-t="why.lead"></p>
+        </div>
+        <ul class="why__list" id="promises-list"></ul>
+      </div>
+    </section>
+
+    <!-- ===================================================== COMO FUNCIONA -->
+    <section class="section how" id="como-funciona" aria-labelledby="how-title">
+      <div class="container">
+        <div class="section-head section-head--center" data-reveal>
+          <p class="kicker" data-t="how.kicker"></p>
+          <h2 class="title" id="how-title" data-t-rich="how.title"></h2>
+        </div>
+        <div class="track" id="track">
+          <div class="track__rail" aria-hidden="true"><span class="track__fill"></span></div>
+          <ol class="track__steps" id="steps-list"></ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================== ORÇAMENTO -->
+    <section class="section quote" id="orcamento" aria-labelledby="quote-title">
+      <div class="quote__stripes" aria-hidden="true"></div>
+      <div class="container quote__grid">
+        <div class="quote__intro" data-reveal>
+          <p class="kicker kicker--light" data-t="quote.kicker"></p>
+          <h2 class="title title--on-orange" id="quote-title" data-t-rich="quote.title"></h2>
+          <p class="lead lead--on-orange" data-t="quote.lead"></p>
+          <ul class="quote__perks" id="quote-perks"></ul>
+        </div>
+
+        <form class="ship" id="quote-form" novalidate data-reveal>
+          <div class="ship__head">
+            <svg class="logo logo--ship" viewBox="0 0 866 270" aria-hidden="true"><use href="#logo"/></svg>
+            <span class="ship__title" data-t="quote.header"></span>
+            <span class="ship__code" id="quote-code" aria-hidden="true">Q-0000</span>
+          </div>
+
+          <div class="ship__row ship__row--2">
+            <label class="cell">
+              <span class="cell__label" data-t="quote.name"></span>
+              <input name="name" type="text" autocomplete="name" required data-t-attr="placeholder:quote.namePh">
+            </label>
+            <label class="cell">
+              <span class="cell__label" data-t="quote.company"></span>
+              <input name="company" type="text" autocomplete="organization" data-t-attr="placeholder:quote.companyPh">
+            </label>
+          </div>
+
+          <div class="ship__row ship__row--2 ship__row--route">
+            <label class="cell">
+              <span class="cell__label"><span class="cell__dot cell__dot--a" aria-hidden="true">A</span> <span data-t="quote.pickup"></span></span>
+              <input name="pickup" type="text" autocomplete="address-level2" data-t-attr="placeholder:quote.pickupPh">
+            </label>
+            <label class="cell">
+              <span class="cell__label"><span class="cell__dot cell__dot--b" aria-hidden="true">B</span> <span data-t="quote.dropoff"></span></span>
+              <input name="dropoff" type="text" data-t-attr="placeholder:quote.dropoffPh">
+            </label>
+          </div>
+
+          <fieldset class="cell cell--chips">
+            <legend class="cell__label" data-t="quote.kind"></legend>
+            <div class="chips" id="chips-kind"></div>
+          </fieldset>
+
+          <div class="ship__row ship__row--2">
+            <fieldset class="cell cell--chips">
+              <legend class="cell__label" data-t="quote.frequency"></legend>
+              <div class="chips" id="chips-frequency"></div>
+            </fieldset>
+            <fieldset class="cell cell--chips">
+              <legend class="cell__label" data-t="quote.volume"></legend>
+              <div class="chips" id="chips-volume"></div>
+            </fieldset>
+          </div>
+
+          <label class="cell">
+            <span class="cell__label" data-t="quote.notes"></span>
+            <textarea name="notes" rows="2" data-t-attr="placeholder:quote.notesPh"></textarea>
+          </label>
+
+          <div class="ship__foot">
+            <div class="ship__barcode" id="quote-barcode" aria-hidden="true"></div>
+            <div class="ship__actions">
+              <p class="ship__error" id="quote-error" role="alert" hidden></p>
+              <button class="btn btn--ink btn--lg btn--block" type="submit">
+                <svg class="icon" aria-hidden="true"><use href="#i-wa"/></svg>
+                <span data-t="quote.send"></span>
+                <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg>
+              </button>
+              <a class="ship__call" data-tel href="#">
+                <svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg>
+                <span data-t="quote.orCall"></span>
+              </a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ===================================================== ONDE ATENDE -->
+    <section class="section area" id="onde" aria-labelledby="area-title" hidden>
+      <div class="container area__grid">
+        <div class="section-head" data-reveal>
+          <p class="kicker" data-t="area.kicker"></p>
+          <h2 class="title" id="area-title" data-t-rich="area.title"></h2>
+          <p class="lead"><strong id="area-base"></strong> <span data-t="area.lead"></span></p>
+        </div>
+        <ul class="area__chips" id="area-list" data-reveal></ul>
+      </div>
+    </section>
+
+    <!-- ===================================================== DÚVIDAS -->
+    <section class="section faq" id="duvidas" aria-labelledby="faq-title">
+      <div class="container faq__grid">
+        <div class="section-head faq__head" data-reveal>
+          <p class="kicker" data-t="faq.kicker"></p>
+          <h2 class="title" id="faq-title" data-t-rich="faq.title"></h2>
+          <p class="lead" data-t="faq.lead"></p>
+          <a class="btn btn--orange" data-wa href="#" target="_blank" rel="noopener">
+            <svg class="icon" aria-hidden="true"><use href="#i-wa"/></svg>
+            <span data-t="ui.whatsapp"></span>
+          </a>
+        </div>
+        <div class="faq__list" id="faq-list"></div>
+      </div>
+    </section>
+
+    <!-- ===================================================== CONTATO -->
+    <section class="section contact" id="contato" aria-labelledby="contact-title">
+      <div class="contact__bg" aria-hidden="true"></div>
+      <div class="container">
+        <div class="contact__top" data-reveal>
+          <p class="kicker kicker--light" data-t="contact.kicker"></p>
+          <h2 class="contact__title" id="contact-title" data-t-rich="contact.title"></h2>
+          <p class="lead lead--on-orange" data-t="contact.lead"></p>
+          <div class="hero__ctas">
+            <a class="btn btn--ink btn--lg" data-wa href="#" target="_blank" rel="noopener">
+              <svg class="icon" aria-hidden="true"><use href="#i-wa"/></svg>
+              <span data-t="hero.whatsapp"></span>
+            </a>
+            <a class="btn btn--ghost btn--lg" data-tel href="#">
+              <svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg>
+              <span data-t="hero.call"></span>
+            </a>
+          </div>
+        </div>
+        <ul class="contact__list" id="contact-list" data-reveal></ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================================================== RODAPÉ -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <a class="brand" href="#topo" aria-label="GoHand Shop">
+        <svg class="logo" viewBox="0 0 866 270" aria-hidden="true"><use href="#logo"/></svg>
+      </a>
+      <p class="footer-tagline" data-t="footer.tagline"></p>
+      <p class="footer-legal">© <span id="year">2026</span> GoHand Shop. <span data-t="footer.rights"></span></p>
+      <a class="footer-top" href="#topo">
+        <span data-t="footer.top"></span>
+        <svg class="icon" aria-hidden="true"><use href="#i-up"/></svg>
+      </a>
+    </div>
+  </footer>
+
+  <!-- Barra fixa no celular -->
+  <div class="mobile-bar">
+    <a class="btn btn--ink" data-wa href="#" target="_blank" rel="noopener">
+      <svg class="icon" aria-hidden="true"><use href="#i-wa"/></svg>
+      <span data-t="ui.whatsapp"></span>
+    </a>
+    <a class="btn btn--orange" data-tel href="#">
+      <svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg>
+      <span data-t="ui.call"></span>
+    </a>
+  </div>
+
+  <script src="assets/js/content.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

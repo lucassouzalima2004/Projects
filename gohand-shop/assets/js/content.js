@@ -1,0 +1,474 @@
+/* =============================================================================
+   CONTEÚDO DO SITE — tudo o que você precisa editar está neste arquivo.
+   -----------------------------------------------------------------------------
+   • Contato (WhatsApp, telefone, e-mail, Instagram) .. seção 1
+   • Cidade e região atendida ........................ seção 2
+   • Serviços, diferenciais, passos e dúvidas ......... seção 3
+   • Opções do pedido de orçamento ................... seção 4
+   • Textos em inglês (en) e português (pt) ........... seção 5
+
+   Textos com *asteriscos* ganham a faixa preta inclinada do logo.
+   Dica: mantenha as aspas e as vírgulas no fim de cada linha. Se o site
+   ficar em branco depois de uma edição, quase sempre é uma vírgula faltando.
+   ========================================================================== */
+
+window.SITE = {
+  /* ---------------------------------------------------------------------------
+     1. CONTATO
+     ------------------------------------------------------------------------- */
+  brand: 'GoHand Shop',
+
+  // WhatsApp que recebe os pedidos: código do país + número, só dígitos.
+  // Ex.: celular americano (508) 555-0123  →  '15085550123'
+  // ATENÇÃO: o número abaixo é de exemplo (555-01xx não existe).
+  whatsapp: '15555550123',
+
+  // Telefone para ligar. Vazio = usa o mesmo número do WhatsApp.
+  phone: '',
+
+  email: '',     // Ex.: 'contact@gohandshop.com'. Vazio = não aparece.
+  instagram: '', // Usuário sem @. Vazio = não aparece.
+
+  hours: {
+    en: 'Monday to Saturday, 7am to 7pm',
+    pt: 'Segunda a sábado, das 7h às 19h',
+  },
+
+  /* ---------------------------------------------------------------------------
+     2. ONDE ATENDE
+     ------------------------------------------------------------------------- */
+  location: {
+    // Nome curto da região, aparece no topo do site. Ex.: { en: 'Massachusetts', pt: 'Massachusetts' }
+    name: { en: 'United States', pt: 'Estados Unidos' },
+    // Como a região aparece no meio das frases ("... for businesses in Massachusetts").
+    // Ex.: { en: 'in Massachusetts', pt: 'em Massachusetts' }
+    in: { en: 'in the U.S.', pt: 'nos Estados Unidos' },
+    // Cidade-base. Vazio = a frase "Based in ..." não aparece.
+    base: '',
+  },
+
+  // Cidades atendidas, aparecem como etiquetas na seção "Where we deliver".
+  // Lista vazia = a seção some do site.
+  // Ex.: ['Framingham', 'Marlborough', 'Hudson', 'Worcester', 'Boston']
+  areas: [],
+
+  /* ---------------------------------------------------------------------------
+     3. SERVIÇOS, DIFERENCIAIS, PASSOS E DÚVIDAS
+     icon: box, clock, route, pickup, cart, building, truck, chat, pin, camera, tag
+     ------------------------------------------------------------------------- */
+  services: [
+    {
+      icon: 'clock',
+      title: { en: 'Same-day delivery', pt: 'Entrega no mesmo dia' },
+      text: {
+        en: 'Book in the morning, delivered by the end of the day within our routes.',
+        pt: 'Pediu de manhã, entregamos até o fim do dia dentro das nossas rotas.',
+      },
+    },
+    {
+      icon: 'route',
+      title: { en: 'Scheduled routes', pt: 'Rotas programadas' },
+      text: {
+        en: 'Daily or weekly runs for stores, restaurants and offices, on the days you choose.',
+        pt: 'Rotas diárias ou semanais para lojas, restaurantes e escritórios, nos dias que você escolher.',
+      },
+    },
+    {
+      icon: 'pickup',
+      title: { en: 'Pickup & drop-off', pt: 'Coleta e entrega' },
+      text: {
+        en: 'We collect at your door, warehouse or post office and take it where it needs to go.',
+        pt: 'Buscamos na sua porta, no depósito ou no correio e levamos aonde precisar.',
+      },
+    },
+    {
+      icon: 'cart',
+      title: { en: 'Online store orders', pt: 'Pedidos de loja online' },
+      text: {
+        en: 'Local delivery for e-commerce, so your customers get their orders sooner.',
+        pt: 'Entrega local para e-commerce, para o seu cliente receber o pedido mais rápido.',
+      },
+    },
+    {
+      icon: 'building',
+      title: { en: 'Business to business', pt: 'Entre empresas' },
+      text: {
+        en: 'Documents, parts, supplies and samples between companies, handled with care.',
+        pt: 'Documentos, peças, suprimentos e amostras entre empresas, com todo o cuidado.',
+      },
+    },
+    {
+      icon: 'truck',
+      title: { en: 'Last mile for carriers', pt: 'Última milha para transportadoras' },
+      text: {
+        en: 'Extra hands for carriers and logistics companies that need reliable drivers on the route.',
+        pt: 'Reforço para transportadoras e empresas de logística que precisam de motorista confiável na rota.',
+      },
+    },
+  ],
+
+  promises: [
+    {
+      icon: 'chat',
+      title: { en: 'Talk to who’s driving', pt: 'Fale com quem entrega' },
+      text: {
+        en: 'No call center. You message us on WhatsApp and get an answer from the people on the road.',
+        pt: 'Sem central de atendimento. Você chama no WhatsApp e quem responde é quem está na rua.',
+      },
+    },
+    {
+      icon: 'pin',
+      title: { en: 'Updates at every step', pt: 'Aviso a cada etapa' },
+      text: {
+        en: 'Picked up, on the way, delivered: you get a message at each stop.',
+        pt: 'Coletado, a caminho, entregue: você recebe uma mensagem em cada etapa.',
+      },
+    },
+    {
+      icon: 'camera',
+      title: { en: 'Photo proof of delivery', pt: 'Foto na entrega' },
+      text: {
+        en: 'Every drop-off is photographed at the door. No more “where did it go?”.',
+        pt: 'Toda entrega é fotografada na porta. Acabou o “cadê o pacote?”.',
+      },
+    },
+    {
+      icon: 'tag',
+      title: { en: 'Clear pricing', pt: 'Preço combinado' },
+      text: {
+        en: 'You get the price before we leave. No surprise fees at the end.',
+        pt: 'Você sabe o valor antes de a gente sair. Nada de taxa surpresa no final.',
+      },
+    },
+  ],
+
+  // Os 4 passos aparecem como o rastreio de um pacote.
+  steps: [
+    {
+      status: { en: 'Order placed', pt: 'Pedido feito' },
+      title: { en: 'Send a message', pt: 'Mande uma mensagem' },
+      text: {
+        en: 'Tell us what, where and when, on WhatsApp or by phone.',
+        pt: 'Conte o quê, de onde, para onde e quando, pelo WhatsApp ou por telefone.',
+      },
+    },
+    {
+      status: { en: 'Confirmed', pt: 'Confirmado' },
+      title: { en: 'Get your quote', pt: 'Receba o orçamento' },
+      text: {
+        en: 'We reply with the price and pickup time. You say yes, we’re set.',
+        pt: 'Respondemos com preço e horário da coleta. Você aprova e pronto.',
+      },
+    },
+    {
+      status: { en: 'In transit', pt: 'Em trânsito' },
+      title: { en: 'We pick up and go', pt: 'Coletamos e saímos' },
+      text: {
+        en: 'Your package hits the road and you follow every step.',
+        pt: 'Seu pacote pega a estrada e você acompanha cada etapa.',
+      },
+    },
+    {
+      status: { en: 'Delivered', pt: 'Entregue' },
+      title: { en: 'Done, with proof', pt: 'Entregue, com prova' },
+      text: {
+        en: 'The delivery photo lands on your WhatsApp.',
+        pt: 'A foto da entrega chega no seu WhatsApp.',
+      },
+    },
+  ],
+
+  faq: [
+    {
+      q: { en: 'What can you deliver?', pt: 'O que vocês entregam?' },
+      a: {
+        en: 'Packages, boxes, documents, online store orders and business supplies. If it fits in our vehicle and is legal to carry, ask us.',
+        pt: 'Pacotes, caixas, documentos, pedidos de loja online e materiais de empresas. Se cabe no nosso veículo e pode ser transportado, é só perguntar.',
+      },
+    },
+    {
+      q: { en: 'How much does a delivery cost?', pt: 'Quanto custa uma entrega?' },
+      a: {
+        en: 'It depends on distance, volume and how often you ship. Send us the pickup and delivery areas and we reply with a price. Recurring routes get better rates.',
+        pt: 'Depende da distância, do volume e da frequência. Mande a origem e o destino e respondemos com o valor. Rotas fixas têm preço melhor.',
+      },
+    },
+    {
+      q: { en: 'Do you work with businesses on a regular schedule?', pt: 'Vocês atendem empresas com frequência fixa?' },
+      a: {
+        en: 'Yes. That’s our focus: daily or weekly routes for stores, restaurants, online sellers and carriers that need extra drivers.',
+        pt: 'Sim, esse é o nosso foco: rotas diárias ou semanais para lojas, restaurantes, vendedores online e transportadoras que precisam de reforço.',
+      },
+    },
+    {
+      q: { en: 'How do I know my package arrived?', pt: 'Como sei que o pacote chegou?' },
+      a: {
+        en: 'You get a WhatsApp message when we pick up, while we’re on the way and a photo when it’s delivered.',
+        pt: 'Você recebe mensagem no WhatsApp na coleta, durante o trajeto e uma foto quando entregamos.',
+      },
+    },
+    {
+      q: { en: 'How do I pay?', pt: 'Como faço o pagamento?' },
+      a: {
+        en: 'We’ll agree on the payment method with your quote. Businesses with recurring routes can pay weekly.',
+        pt: 'A forma de pagamento é combinada junto com o orçamento. Empresas com rota fixa podem pagar por semana.',
+      },
+    },
+    {
+      q: { en: 'Do you speak Portuguese?', pt: 'Vocês falam português?' },
+      a: {
+        en: 'Yes! We speak English and Portuguese. Message us in whichever you prefer.',
+        pt: 'Sim! Atendemos em inglês e em português. Chame no idioma que preferir.',
+      },
+    },
+  ],
+
+  /* ---------------------------------------------------------------------------
+     4. ORÇAMENTO (a "etiqueta" que abre o WhatsApp com a mensagem pronta)
+     ------------------------------------------------------------------------- */
+  quote: {
+    kinds: [
+      { en: 'Packages', pt: 'Pacotes' },
+      { en: 'Documents', pt: 'Documentos' },
+      { en: 'Online orders', pt: 'Pedidos online' },
+      { en: 'Supplies', pt: 'Materiais' },
+      { en: 'Other', pt: 'Outro' },
+    ],
+    frequency: [
+      { en: 'Just once', pt: 'Só uma vez' },
+      { en: 'Every week', pt: 'Toda semana' },
+      { en: 'Every day', pt: 'Todo dia' },
+    ],
+    volume: ['1–10', '11–50', '51–200', '200+'],
+  },
+
+  /* ---------------------------------------------------------------------------
+     5. TEXTOS
+     Marcadores: {place} = location.name · {area} = location.in · {base} = location.base
+                 {phone} = telefone · {brand} = nome
+     ------------------------------------------------------------------------- */
+  text: {
+    en: {
+      meta: {
+        title: 'GoHand Shop · Package delivery for businesses',
+        description: 'Package delivery contractor for businesses: same-day delivery, scheduled routes and pickups, with updates on WhatsApp.',
+      },
+      ui: {
+        skip: 'Skip to content',
+        menu: 'Menu',
+        close: 'Close',
+        lang: 'Language',
+        whatsapp: 'WhatsApp',
+        call: 'Call',
+      },
+      // Mensagens que já chegam escritas no WhatsApp
+      wa: {
+        hello: 'Hi {brand}! I found you on your website and I’d like more information.',
+        about: 'Hi {brand}! I’d like to know more about: {service}.',
+      },
+      nav: {
+        services: 'Services',
+        how: 'How it works',
+        quote: 'Get a quote',
+        area: 'Coverage',
+        faq: 'FAQ',
+      },
+      hero: {
+        kicker: 'Package delivery · {place}',
+        title: 'Your packages,\n*in good hands.*',
+        lead: '{brand} is a delivery contractor for businesses {area}: same-day deliveries, scheduled routes and pickups, with every step updated on WhatsApp.',
+        whatsapp: 'Chat on WhatsApp',
+        call: 'Call {phone}',
+        note: 'Free quote · English & Português',
+      },
+      label: {
+        priority: 'Priority',
+        tracking: 'Tracking Nº',
+        from: 'From',
+        fromValue: 'Your business',
+        to: 'To',
+        toValue: 'Your customer',
+        statuses: ['Picked up', 'In transit', 'Out for delivery', 'Delivered'],
+        stamp: 'Delivered',
+      },
+      ticker: ['Same-day', 'Scheduled routes', 'Pickup & drop-off', 'E-commerce', 'Business to business', 'Last mile'],
+      services: {
+        kicker: 'Services',
+        title: 'What we *move*',
+        lead: 'One partner for the deliveries your business can’t stop making.',
+        cta: 'Ask about this',
+      },
+      why: {
+        kicker: 'Why {brand}',
+        title: 'Small company.\n*Serious* delivery.',
+        lead: 'We’re just getting started, and that’s the point: every package gets the attention of the people who run the company.',
+      },
+      how: {
+        kicker: 'How it works',
+        title: 'As easy as *tracking* a package',
+        stepLabel: 'Step',
+      },
+      quote: {
+        kicker: 'Free quote',
+        title: 'Fill out the label.\n*We deliver.*',
+        lead: 'It takes 30 seconds. We open WhatsApp with your message ready, you just hit send.',
+        perks: ['No contract to get a price', 'Answer the same day', 'One-time or recurring'],
+        header: 'Quote request',
+        name: 'Your name',
+        namePh: 'John Smith',
+        company: 'Company',
+        companyPh: 'Optional',
+        pickup: 'Pickup from',
+        pickupPh: 'City or ZIP',
+        dropoff: 'Deliver to',
+        dropoffPh: 'City, ZIP or area',
+        kind: 'What are you shipping?',
+        frequency: 'How often?',
+        volume: 'Packages per run',
+        notes: 'Anything else?',
+        notesPh: 'Sizes, time windows, special care…',
+        send: 'Send on WhatsApp',
+        orCall: 'Prefer to talk? Call {phone}',
+        needName: 'Tell us your name so we know who to answer.',
+        msgIntro: 'Hi {brand}! I’d like a delivery quote.',
+      },
+      area: {
+        kicker: 'Coverage',
+        title: 'Where we *deliver*',
+        base: 'Based in {base}.',
+        lead: 'Not on the list? Message us: we’re adding new routes all the time.',
+      },
+      faq: {
+        kicker: 'FAQ',
+        title: 'Good *questions*',
+        lead: 'Didn’t find yours? Ask us on WhatsApp.',
+      },
+      contact: {
+        kicker: 'Let’s talk',
+        title: 'Ready to *go?*',
+        lead: 'Message us now and get your quote today.',
+        whatsapp: 'WhatsApp',
+        phone: 'Phone',
+        email: 'Email',
+        instagram: 'Instagram',
+        hours: 'Hours',
+      },
+      footer: {
+        tagline: 'Package delivery for businesses {area}.',
+        rights: 'All rights reserved.',
+        top: 'Back to top',
+      },
+    },
+
+    pt: {
+      meta: {
+        title: 'GoHand Shop · Entregas de pacotes para empresas',
+        description: 'Empresa de entregas de pacotes para empresas: entrega no mesmo dia, rotas programadas e coletas, com aviso pelo WhatsApp.',
+      },
+      ui: {
+        skip: 'Pular para o conteúdo',
+        menu: 'Menu',
+        close: 'Fechar',
+        lang: 'Idioma',
+        whatsapp: 'WhatsApp',
+        call: 'Ligar',
+      },
+      wa: {
+        hello: 'Olá, {brand}! Vi o site de vocês e queria mais informações.',
+        about: 'Olá, {brand}! Quero saber mais sobre: {service}.',
+      },
+      nav: {
+        services: 'Serviços',
+        how: 'Como funciona',
+        quote: 'Orçamento',
+        area: 'Onde atendemos',
+        faq: 'Dúvidas',
+      },
+      hero: {
+        kicker: 'Entrega de pacotes · {place}',
+        title: 'Sua entrega\n*em boas mãos.*',
+        lead: 'A {brand} faz entregas para empresas {area}: no mesmo dia, em rotas programadas e com coleta, avisando cada etapa pelo WhatsApp.',
+        whatsapp: 'Chamar no WhatsApp',
+        call: 'Ligar {phone}',
+        note: 'Orçamento grátis · English & Português',
+      },
+      label: {
+        priority: 'Prioridade',
+        tracking: 'Rastreio Nº',
+        from: 'De',
+        fromValue: 'Sua empresa',
+        to: 'Para',
+        toValue: 'Seu cliente',
+        statuses: ['Coletado', 'Em trânsito', 'Saiu para entrega', 'Entregue'],
+        stamp: 'Entregue',
+      },
+      ticker: ['Mesmo dia', 'Rotas programadas', 'Coleta e entrega', 'E-commerce', 'Entre empresas', 'Última milha'],
+      services: {
+        kicker: 'Serviços',
+        title: 'O que a gente *leva*',
+        lead: 'Um parceiro só para as entregas que a sua empresa não pode parar de fazer.',
+        cta: 'Quero esse',
+      },
+      why: {
+        kicker: 'Por que a {brand}',
+        title: 'Empresa pequena.\nEntrega *séria.*',
+        lead: 'Estamos começando, e essa é a vantagem: cada pacote recebe a atenção de quem comanda a empresa.',
+      },
+      how: {
+        kicker: 'Como funciona',
+        title: 'Simples como *rastrear* um pacote',
+        stepLabel: 'Etapa',
+      },
+      quote: {
+        kicker: 'Orçamento grátis',
+        title: 'Preencha a etiqueta.\n*A gente entrega.*',
+        lead: 'Leva 30 segundos. Abrimos o WhatsApp com a mensagem pronta, é só enviar.',
+        perks: ['Sem contrato para saber o preço', 'Resposta no mesmo dia', 'Uma vez ou com frequência'],
+        header: 'Pedido de orçamento',
+        name: 'Seu nome',
+        namePh: 'Maria Silva',
+        company: 'Empresa',
+        companyPh: 'Opcional',
+        pickup: 'Coleta em',
+        pickupPh: 'Cidade ou ZIP',
+        dropoff: 'Entrega em',
+        dropoffPh: 'Cidade, ZIP ou região',
+        kind: 'O que vai enviar?',
+        frequency: 'Com que frequência?',
+        volume: 'Pacotes por viagem',
+        notes: 'Algo mais?',
+        notesPh: 'Tamanhos, horários, cuidados especiais…',
+        send: 'Enviar no WhatsApp',
+        orCall: 'Prefere falar? Ligue {phone}',
+        needName: 'Diga seu nome para sabermos com quem falar.',
+        msgIntro: 'Olá, {brand}! Quero um orçamento de entrega.',
+      },
+      area: {
+        kicker: 'Onde atendemos',
+        title: 'Onde a gente *entrega*',
+        base: 'Base em {base}.',
+        lead: 'Sua cidade não está na lista? Chame a gente: estamos abrindo rotas novas o tempo todo.',
+      },
+      faq: {
+        kicker: 'Dúvidas',
+        title: 'Boas *perguntas*',
+        lead: 'Não achou a sua? Pergunte no WhatsApp.',
+      },
+      contact: {
+        kicker: 'Fale com a gente',
+        title: 'Bora *rodar?*',
+        lead: 'Chame agora e receba seu orçamento hoje mesmo.',
+        whatsapp: 'WhatsApp',
+        phone: 'Telefone',
+        email: 'E-mail',
+        instagram: 'Instagram',
+        hours: 'Horário',
+      },
+      footer: {
+        tagline: 'Entregas de pacotes para empresas {area}.',
+        rights: 'Todos os direitos reservados.',
+        top: 'Voltar ao topo',
+      },
+    },
+  },
+};
