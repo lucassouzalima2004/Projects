@@ -1,9 +1,9 @@
-# Publica o site da The Berry Coffee no Cloudflare Pages.
-#   main ............................ https://the-berry-coffee.pages.dev
-#   outros branches (prévia) ........ https://<nome-do-branch>.the-berry-coffee.pages.dev
-#                                     ex.: https://claude-keen-tesla-fjkq02.the-berry-coffee.pages.dev
+# Publica o site da The Berry Coffee no Cloudflare Pages, sempre no mesmo link:
+#   https://theberrycoffee.pages.dev
+# Cada push que mexe em berry-coffee/ (no main ou no branch claude/keen-tesla-fjkq02) atualiza esse link.
+# Cada publicação também ganha um endereço próprio (https://<código>.theberrycoffee.pages.dev), que fica de histórico.
 #
-# Usa os mesmos dois secrets do site da manicure (Settings → Secrets and variables → Actions):
+# Usa os mesmos dois secrets dos outros sites do repositório (Settings → Secrets and variables → Actions):
 #   CLOUDFLARE_API_TOKEN   token do Cloudflare com a permissão "Account · Cloudflare Pages · Edit"
 #   CLOUDFLARE_ACCOUNT_ID  ID da conta do Cloudflare
 # Enquanto os secrets não existirem, o workflow só avisa e não falha.
@@ -21,11 +21,11 @@ permissions:
   contents: read
 
 concurrency:
-  group: berry-coffee-pages-${{ github.ref }}
+  group: berry-coffee-pages
   cancel-in-progress: false
 
 env:
-  PROJECT: the-berry-coffee
+  PROJECT: theberrycoffee
 
 jobs:
   check:
@@ -43,7 +43,10 @@ jobs:
             echo "ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::warning title=Cloudflare sem credenciais::Adicione CLOUDFLARE_API_TOKEN e CLOUDFLARE_ACCOUNT_ID em Settings → Secrets and variables → Actions e rode este workflow de novo (Actions → Deploy The Berry Coffee → Run workflow)."
+            missing=""
+            [ -z "$TOKEN" ] && missing="$missing CLOUDFLARE_API_TOKEN"
+            [ -z "$ACCOUNT" ] && missing="$missing CLOUDFLARE_ACCOUNT_ID"
+            echo "::warning title=Cloudflare sem credenciais::Falta:$missing. Cadastre em Settings → Secrets and variables → Actions e rode de novo (Actions → Deploy The Berry Coffee → Run workflow)."
           fi
 
   deploy:
@@ -53,8 +56,6 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      BRANCH: ${{ github.ref_name }}
-      MAIN: ${{ github.event.repository.default_branch }}
     steps:
       - uses: actions/checkout@v4
 
@@ -67,17 +68,13 @@ jobs:
           auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
           if ! curl -fsS -o /dev/null -H "$auth" "$api/$PROJECT"; then
             curl -sS --fail-with-body -X POST -H "$auth" -H "Content-Type: application/json" \
-              --data "{\"name\":\"$PROJECT\",\"production_branch\":\"$MAIN\"}" "$api"
+              --data "{\"name\":\"$PROJECT\",\"production_branch\":\"main\"}" "$api"
           fi
-          domain=$(curl -fsS -H "$auth" "$api/$PROJECT" | jq -r '.result.subdomain')
-          # Branch que não é o principal vira prévia: o Cloudflare usa o nome em minúsculas, com hífen no lugar de / e outros símbolos
-          if [ "$BRANCH" = "$MAIN" ]; then
-            url="https://$domain"
-          else
-            alias=$(printf '%s' "$BRANCH" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
-            url="https://$alias.$domain"
-          fi
-          echo "SITE_URL=$url" >> "$GITHUB_ENV"
+          info=$(curl -fsS -H "$auth" "$api/$PROJECT")
+          # Se o nome já estiver em uso no Cloudflare, o endereço ganha um sufixo; aqui pegamos o endereço real
+          echo "SITE_URL=https://$(echo "$info" | jq -r '.result.subdomain')" >> "$GITHUB_ENV"
+          # Publicar como "produção" do projeto faz o site aparecer no link principal, sem o nome do branch
+          echo "PROD_BRANCH=$(echo "$info" | jq -r '.result.production_branch')" >> "$GITHUB_ENV"
 
       - name: Montar o site
         run: |
@@ -89,9 +86,11 @@ jobs:
           sed -i "s#content=\"assets/img/og-image.jpg\"#content=\"$SITE_URL/assets/img/og-image.jpg\"#" _site/index.html
 
       - name: Publicar
-        run: npx wrangler pages deploy _site --project-name="$PROJECT" --branch="$BRANCH" --commit-dirty=true
+        run: |
+          npx wrangler pages deploy _site --project-name="$PROJECT" --branch="$PROD_BRANCH" \
+            --commit-hash="$GITHUB_SHA" --commit-message="${GITHUB_REF_NAME}@${GITHUB_SHA::7}" --commit-dirty=true
 
       - name: Endereço do site
         run: |
           echo "Site no ar: $SITE_URL"
-          echo "Site no ar: $SITE_URL" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Site no ar: $SITE_URL" >> "$GITHUB_STEP_SUMMARY"

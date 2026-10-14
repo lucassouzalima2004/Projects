@@ -95,24 +95,31 @@ python3 -m http.server 8000
 
 ## Publicar
 
-### Cloudflare Pages (workflow pronto)
+### Link do site: <https://theberrycoffee.pages.dev>
 
-O workflow `.github/workflows/deploy-berry-coffee.yml` publica a pasta `berry-coffee/` a cada push que mexe nela, no `main` e no branch `claude/keen-tesla-fjkq02`. Ele precisa dos mesmos dois secrets do site da manicure: `CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID`. Na primeira vez ele cria o projeto `the-berry-coffee`.
+O workflow `.github/workflows/deploy-berry-coffee.yml` publica a pasta `berry-coffee/` sempre nesse mesmo link. Ele roda a cada push que mexe nela, no `main` ou no branch `claude/keen-tesla-fjkq02`. Na primeira vez, o workflow cria no Cloudflare o projeto `theberrycoffee`.
 
-| Branch | Endereço |
-| --- | --- |
-| `main` | <https://the-berry-coffee.pages.dev> |
-| `claude/keen-tesla-fjkq02` (prévia para o Thiago) | <https://claude-keen-tesla-fjkq02.the-berry-coffee.pages.dev> |
+- Se esse nome já estiver em uso no Cloudflare, o endereço ganha um sufixo. O endereço certo aparece no resumo da execução, em Actions.
+- O workflow troca o `og:image` pelo endereço completo, que é o que o WhatsApp exige para mostrar a imagem, e não publica este README.
+- Enquanto o site estiver só no `.pages.dev`, o Google não indexa a prévia (arquivo `_headers`). Com o domínio `theberrycoffee.ie` ligado ao projeto, ele fica indexável normalmente.
 
-Se o nome já estiver em uso, o Cloudflare acrescenta um sufixo. O endereço certo aparece no resumo da execução, em Actions. O workflow troca o `og:image` pelo endereço completo, que é o que o WhatsApp exige para mostrar a imagem, e não publica este README.
+### Ligar o deploy (uma vez só, uns 2 minutos)
+
+O workflow precisa de dois secrets no GitHub. São os mesmos que os workflows do `nail-studio` e do PurGrace usam, então isso destrava os três sites.
+
+1. **Token**: abra o link abaixo, já preenchido com a permissão *Cloudflare Pages: Edit*. Clique em *Continue to summary* → *Create Token* e copie o token (ele só aparece uma vez). Se não tiver conta no Cloudflare, crie uma grátis antes.
+   <https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=%5B%7B%22key%22%3A%22page%22%2C%22type%22%3A%22edit%22%7D%5D&accountId=*&zoneId=all&name=GitHub%20Actions%20-%20Cloudflare%20Pages>
+2. **Account ID**: no Cloudflare, abra *Workers & Pages*. O *Account ID* aparece na coluna da direita; copie.
+3. **GitHub**: em <https://github.com/lucassouzalima2004/Projects/settings/secrets/actions/new>, crie o secret `CLOUDFLARE_API_TOKEN` com o token. Depois crie o `CLOUDFLARE_ACCOUNT_ID` com o Account ID.
+4. **Publicar**: abra a última execução de *Deploy The Berry Coffee* em Actions e clique em *Re-run all jobs*, ou faça um novo push.
 
 ### Sem os secrets: upload manual
 
-1. Cloudflare → Workers & Pages → Create → Pages → *Upload assets*. Dê o nome `the-berry-coffee`.
+1. Cloudflare → Workers & Pages → Create → Pages → *Upload assets*. Dê ao projeto o nome `theberrycoffee`.
 2. Arraste a pasta `berry-coffee` sem este README.
-3. Antes de subir, troque no `index.html` o `og:image` pelo endereço completo, por exemplo `https://the-berry-coffee.pages.dev/assets/img/og-image.jpg`.
+3. Antes de subir, troque no `index.html` o `og:image` pelo endereço completo: `https://theberrycoffee.pages.dev/assets/img/og-image.jpg`.
 
-O Netlify Drop (<https://app.netlify.com/drop>) também serve.
+Nesse caminho, cada atualização precisa de um novo upload.
 
 ## Domínio e e-mail
 
@@ -129,8 +136,8 @@ Sobre o "número que o sistema pede": é bem provável que seja um registro de D
 
 Para colocar o site novo no domínio sem derrubar o e-mail, siga esta ordem:
 
-1. No Cloudflare, no projeto `the-berry-coffee` → *Custom domains*, adicione `www.theberrycoffee.ie`.
-2. No DNS da Hostinger, troque o registro do `www` por um `CNAME` apontando para `the-berry-coffee.pages.dev`. Desconecte o construtor da Hostinger desse domínio.
+1. No Cloudflare, no projeto `theberrycoffee` → *Custom domains*, adicione `www.theberrycoffee.ie`.
+2. No DNS da Hostinger, troque o registro do `www` por um `CNAME` apontando para `theberrycoffee.pages.dev`. Desconecte o construtor da Hostinger desse domínio.
 3. O domínio sem `www` (`theberrycoffee.ie`) pode redirecionar para o `www` pelo hPanel. A alternativa é mudar os nameservers na register365 para o Cloudflare (grátis); aí dá para usar o domínio sem `www` direto no Pages.
 4. **Não mexa nos registros MX, SPF e DKIM** do Titan. Se o DNS for para o Cloudflare, copie esses registros iguais antes de trocar os nameservers.
 
@@ -141,6 +148,7 @@ berry-coffee/
 ├── index.html              estrutura da página, títulos, história e missão
 ├── 404.html                página de "não encontrado"
 ├── robots.txt, sitemap.xml
+├── _headers                cabeçalhos do Cloudflare (prévia .pages.dev fora do Google, cache das fontes)
 ├── assets/css/styles.css   visual (cores e fontes no topo do arquivo)
 ├── assets/js/content.js    contato, horários, cardápio, fotos, avaliações, Instagram
 ├── assets/js/app.js        comportamento (status aberto/fechado, vitrine, cardápio, feed, mapa)
