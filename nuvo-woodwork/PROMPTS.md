@@ -217,9 +217,9 @@ CONSTRAINTS: No cuts, transitions, teleportation, straight-only flight, slow mot
 Me mande os MP4 (pode ser um de cada vez) e as imagens. Eu rodo, na pasta `nuvo-woodwork/`:
 
 ```bash
-tools/make-frames.sh
+tools/make-videos.sh
 ```
 
-O script transforma cada vídeo em imagens WebP (16:9 para computador e um recorte vertical do centro para celular),
-atualiza `assets/frames/manifest.js` e o site passa a usar o vídeo daquele trecho. Os trechos que ainda não têm vídeo
-continuam com as fotos, então dá para publicar aos poucos.
+O script prepara cada vídeo para andar liso com o scroll (16:9 para computador e um recorte do centro em 3:4 para
+celular), atualiza `assets/video/manifest.js` e o site passa a usar o vídeo daquele trecho. Os trechos que ainda não
+têm vídeo mostram as imagens, então dá para publicar aos poucos.

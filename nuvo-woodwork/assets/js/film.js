@@ -1,13 +1,18 @@
 /* =============================================================================
-   O filme da casa: um <canvas> preso na tela que avança quadro a quadro com o
-   scroll, com os títulos de cada ambiente subindo e sumindo por cima.
+   O filme da casa: os vídeos ficam presos na tela e andam conforme o scroll
+   (rolar para baixo avança, para cima volta), com os títulos de cada ambiente
+   subindo e sumindo por cima.
 
    Os trechos do content.js são vídeos encadeados (o último quadro de um é o
-   primeiro do próximo), então tocam um atrás do outro como um voo só. Cada um
-   usa a sequência de imagens que o tools/make-frames.sh gera a partir do vídeo
-   (assets/frames/<id>/), listada em assets/frames/manifest.js. Trecho sem vídeo
-   mostra as fotos de placeholder com um zoom lento.
-   Normalmente não é preciso mexer neste arquivo.
+   primeiro do próximo), então tocam um atrás do outro como um voo só. Os
+   arquivos são preparados pelo tools/make-videos.sh (assets/video/) e listados
+   em assets/video/manifest.js. Normalmente não é preciso mexer neste arquivo.
+
+   Para o vídeo deslizar:
+   • cada vídeo é baixado inteiro antes de entrar (buscar um quadro nunca espera a rede);
+   • o scroll vale mais nas partes com movimento e menos nas paradas (manifest.js);
+   • o filme segue o scroll com um pouco de inércia e só pede um quadro novo
+     quando o anterior já está na tela.
    ========================================================================== */
 (function () {
   'use strict';
@@ -16,17 +21,14 @@
   const film = document.querySelector('[data-film]');
   if (!C || !Array.isArray(C.scenes) || !C.scenes.length || !film) return;
 
-  const FRAMES = window.NUVO_FRAMES || {};
+  const VIDEOS = window.NUVO_VIDEOS || {};
   const stage = film.querySelector('.film__stage');
-  const canvas = film.querySelector('.film__canvas');
-  const ctx = canvas.getContext('2d');
-  const layer = document.createElement('canvas'); // o trecho seguinte, durante a emenda
-  const lctx = layer.getContext('2d');
+  const media = film.querySelector('[data-film-media]');
   const beatsRoot = film.querySelector('[data-film-beats]');
-  const ruler = film.querySelector('[data-film-ruler]');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-  const INK = '#14110F';
+  const pace = Math.max(4, (C.tour && C.tour.pace) || 24); // % da tela de scroll por segundo de vídeo
+  const FADE = 14; // % da tela de scroll para um título entrar ou sair
+  const BLEND = 0.4; // segundos de fusão na emenda entre um vídeo e o próximo
 
   /* ------------------------------------------------------------ helpers */
   const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
@@ -35,249 +37,278 @@
     return t * t * (3 - 2 * t);
   };
   const easeOut = (t) => 1 - Math.pow(1 - t, 3);
-  const pad = (n) => String(n).padStart(2, '0');
   const esc = (s) =>
     String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
   const rich = (s) => esc(s).replace(/\*(.+?)\*/g, '<em>$1</em>');
 
-  const view = { w: 1, h: 1, dpr: 1, portrait: false };
-
-  // Retângulo que cobre a tela com uma imagem iw × ih, mantendo `focus` à vista
-  function coverRect(iw, ih, focus, zoom = 1) {
-    const s = Math.max(view.w / iw, view.h / ih) * zoom;
-    const w = iw * s;
-    const h = ih * s;
-    const f = focus || [0.5, 0.5];
-    return { x: (view.w - w) * f[0], y: (view.h - h) * f[1], w, h };
-  }
-
-  function drawCover(g, img, alpha, focus, zoom) {
-    const r = coverRect(img.naturalWidth, img.naturalHeight, focus, zoom);
-    g.globalAlpha = alpha;
-    g.drawImage(img, r.x, r.y, r.w, r.h);
-    g.globalAlpha = 1;
-  }
-
-  /* ------------------------------------------------------------ sequências de quadros (vídeos) */
-  const STRIDES = [16, 8, 4, 2, 1];
-
-  function Sequence(scene, entry) {
-    this.scene = scene;
-    this.entry = entry;
-    this.ext = entry.ext || 'webp';
-    this.variant = '';
-    this.count = 0;
-    this.loaded = 0;
-    this.broken = !entry.lg && !entry.mobile;
-  }
-
-  // Celular em pé usa os quadros "mobile" (verticais); o resto usa "lg" (16:9)
-  Sequence.prototype.choose = function () {
-    if (this.broken) return;
-    const e = this.entry;
-    const v = e.mobile && (view.portrait || !e.lg) ? 'mobile' : 'lg';
-    if (v === this.variant) return;
-    this.variant = v;
-    this.count = e[v].n;
-    this.imgs = new Array(this.count);
-    this.state = new Uint8Array(this.count); // 0 na fila · 1 baixando · 2 pronto · 3 erro
-    this.loaded = 0;
-    // Primeiro um quadro a cada 16, depois a cada 8, 4, 2 e 1: o scroll já funciona com
-    // poucos quadros e vai ficando mais suave conforme o resto chega. O último quadro
-    // (o ambiente pronto) vem logo no começo.
-    this.levels = STRIDES.map(() => []);
-    for (let i = 0; i < this.count; i++) {
-      const lv = i === this.count - 1 ? 0 : STRIDES.findIndex((s) => i % s === 0);
-      this.levels[lv].push(i);
-    }
-    this.cursor = STRIDES.map(() => 0);
-  };
-
-  Sequence.prototype.next = function (lv) {
-    const list = this.levels[lv];
-    let c = this.cursor[lv];
-    while (c < list.length && this.state[list[c]]) c++;
-    this.cursor[lv] = c;
-    return c < list.length ? list[c] : -1;
-  };
-
-  Sequence.prototype.src = function (i) {
-    return 'assets/frames/' + this.scene.id + '/' + this.variant + '/' + String(i + 1).padStart(4, '0') + '.' + this.ext;
-  };
-
-  Sequence.prototype.nearest = function (i) {
-    for (let d = 0; d < this.count; d++) {
-      if (this.state[i - d] === 2) return i - d;
-      if (this.state[i + d] === 2) return i + d;
-    }
-    return -1;
-  };
-
-  Sequence.prototype.progress = function () {
-    return this.count ? this.loaded / this.count : 0;
-  };
-
-  Sequence.prototype.draw = function (g, fp) {
-    if (this.broken || !this.count) return false;
-    const x = fp * (this.count - 1);
-    const i = Math.floor(x);
-    const a = this.nearest(i);
-    if (a < 0) return false;
-    const focus = this.variant === 'mobile' ? null : this.scene.focus;
-    drawCover(g, this.imgs[a], 1, focus);
-    // Entre dois quadros prontos, mistura os dois: o movimento fica mais suave
-    const f = x - i;
-    if (a === i && f > 0.04 && this.state[i + 1] === 2) drawCover(g, this.imgs[i + 1], f, focus);
-    return true;
-  };
-
-  const queue = { active: 0, max: 6 };
-
-  function pump() {
-    while (queue.active < queue.max) {
-      const job = pick();
-      if (!job) return;
-      fetchFrame(job[0], job[1]);
-    }
-  }
-
-  // Próximo quadro a baixar: o trecho atual e os seguintes primeiro, e os quadros
-  // "espaçados" de cada trecho antes dos intermediários. Trechos longe de onde a pessoa
-  // está ficam só com os espaçados até ela chegar perto (economiza o 4G).
-  function pick() {
-    let best = null;
-    let score = Infinity;
-    scenes.forEach((s) => {
-      const m = s.seq;
-      if (!m || m.broken || !m.count) return;
-      const d = s.index >= now.index ? s.index - now.index : (now.index - s.index) * 2;
-      const deepest = d <= 2 ? STRIDES.length - 1 : 1;
-      for (let lv = 0; lv <= deepest && d + lv < score; lv++) {
-        const f = m.next(lv);
-        if (f >= 0) {
-          best = [m, f];
-          score = d + lv;
-          break;
-        }
+  /* ------------------------------------------------------------ ritmo de cada vídeo */
+  // Quanto scroll cada quadro ganha: o quanto a imagem muda (média de 9 quadros), com um
+  // mínimo para as partes paradas não sumirem e um máximo para um corte não segurar o scroll.
+  function weights(motion) {
+    const n = motion.length;
+    const w = new Float32Array(n);
+    for (let f = 1; f < n; f++) {
+      let sum = 0;
+      let k = 0;
+      for (let j = Math.max(1, f - 4); j <= Math.min(n - 1, f + 4); j++) {
+        sum += +motion[j] || 0;
+        k++;
       }
-    });
-    return best;
+      w[f] = clamp(sum / k, 2.5, 18);
+    }
+    return w;
   }
 
-  function fetchFrame(m, i) {
-    const variant = m.variant;
-    const img = new Image();
-    img.decoding = 'async';
-    m.state[i] = 1;
-    queue.active++;
-    const done = (ok) => {
-      queue.active--;
-      if (m.variant === variant) {
-        m.state[i] = ok ? 2 : 3;
-        if (ok) {
-          m.imgs[i] = img;
-          m.loaded++;
-        } else if (i === 0) {
-          m.broken = true; // sem o primeiro quadro, o trecho volta para as fotos
-        }
-        buffer(m.scene);
-        if (Math.abs(m.scene.index - now.index) <= 1) requestDraw();
-      }
-      pump();
-    };
-    img.onload = () => {
-      (img.decode ? img.decode() : Promise.resolve()).catch(() => {}).then(() => done(true));
-    };
-    img.onerror = () => done(false);
-    img.src = m.src(i);
-  }
-
-  /* ------------------------------------------------------------ placeholder (trecho sem vídeo) */
-  const cache = {};
-  function image(src) {
-    if (cache[src]) return cache[src];
-    const img = new Image();
-    img.decoding = 'async';
-    img.onload = () => {
-      img.ok = true;
-      requestDraw();
-    };
-    img.src = src;
-    return (cache[src] = img);
-  }
-
-  // As fotos do trecho, uma depois da outra, com zoom lento e fusão entre elas
-  function Stills(opt) {
-    this.items = (opt.photos || []).map((p) => {
-      const it = typeof p === 'string' ? { src: p } : p;
-      return { img: image('assets/img/' + it.src), focus: it.focus || opt.focus };
-    });
-  }
-
-  Stills.prototype.draw = function (g, fp) {
-    const n = this.items.length;
-    if (!n) return false;
-    const x = Math.min(fp * n, n - 0.0001);
-    const i = Math.floor(x);
-    const t = x - i;
-    const zoom = (u) => 1.02 + 0.07 * u;
-    const cur = this.items[i];
-    if (cur.img.ok) drawCover(g, cur.img, 1, cur.focus, zoom(t));
-    const nx = this.items[i + 1];
-    if (nx && nx.img.ok && t > 0.72) drawCover(g, nx.img, ramp(0.72, 1, t), nx.focus, zoom(0));
-    return cur.img.ok;
-  };
-
-  /* ------------------------------------------------------------ trechos e linha do tempo */
   const scenes = C.scenes.map((raw, index) => {
-    const last = index === C.scenes.length - 1;
-    const s = Object.assign({}, raw, {
+    const video = VIDEOS[raw.id] && VIDEOS[raw.id].src ? VIDEOS[raw.id] : null;
+    const fps = (video && video.fps) || 24;
+    const frames = Math.max(2, (video && video.frames) || 240);
+    const motion = video && Array.isArray(video.motion) && video.motion.length === frames ? video.motion : null;
+    return Object.assign({}, raw, {
       index,
-      length: raw.length || 260,
-      lead: raw.lead ?? 0.03,
-      hold: raw.hold ?? (last ? 0.3 : 0.25),
-      // Vídeos encadeados quase não precisam de fusão: só o bastante para esconder uma diferença pequena
-      blend: last ? 0 : raw.blend ?? 0.04,
+      video,
+      fps,
+      frames,
+      duration: frames / fps,
+      lead: Math.max(0, +raw.lead || 0),
+      hold: Math.max(0, raw.hold == null ? 1 : +raw.hold || 0),
+      blend: index < C.scenes.length - 1 ? BLEND : 0,
+      w: motion ? weights(motion) : null,
+      goal: 0, // quadro que o scroll pede
+      at: -1, // quadro já pedido ao vídeo
+      o: -1,
     });
-    s.beats = (raw.beats || []).map((b) => Object.assign({ at: [0.6, 0.97] }, b));
-    s.seq = FRAMES[s.id] ? new Sequence(s, FRAMES[s.id]) : null;
-    s.ph = null; // criado quando o trecho chega perto da tela
-    return s;
   });
+
+  // Mesma quantidade de mudança na imagem por scroll em todos os vídeos
+  let wsum = 0;
+  let wn = 0;
+  scenes.forEach((s) => {
+    if (s.w) for (let f = 1; f < s.frames; f++, wn++) wsum += s.w[f];
+  });
+  const wmean = wn ? wsum / wn : 1;
 
   let total = 0;
   scenes.forEach((s) => {
+    const n = s.frames;
+    const cum = new Float32Array(n);
+    let mean = wmean;
+    if (s.w) {
+      let acc = 0;
+      for (let f = 1; f < n; f++) cum[f] = acc += s.w[f];
+      mean = acc / (n - 1);
+      for (let f = 1; f < n; f++) cum[f] /= acc;
+    } else {
+      for (let f = 1; f < n; f++) cum[f] = f / (n - 1);
+    }
+    s.cum = cum;
+    const leadVh = s.lead * pace;
+    const videoVh = pace * s.duration * (mean / wmean);
+    s.len = leadVh + videoVh + s.hold * pace;
+    s.qa = leadVh / s.len; // fim do lead
+    s.qb = (leadVh + videoVh) / s.len; // fim do vídeo (começo do hold)
+    s.blendQ = (s.blend * pace) / s.len;
     s.start = total;
-    total += s.length;
+    total += s.len;
   });
-  film.style.setProperty('--film-len', total);
+  film.style.setProperty('--film-len', total.toFixed(2));
 
-  function placeholder(s) {
-    if (!s.ph) s.ph = new Stills(s.placeholder || {});
-    return s.ph;
+  // Quadro do vídeo (com fração) num ponto q do trecho, de 0 a 1
+  function frameAt(s, q) {
+    if (q <= s.qa) return 0;
+    if (q >= s.qb) return s.frames - 1;
+    const u = (q - s.qa) / (s.qb - s.qa);
+    const c = s.cum;
+    let lo = 0;
+    let hi = c.length - 1;
+    while (hi - lo > 1) {
+      const mid = (lo + hi) >> 1;
+      if (c[mid] <= u) lo = mid;
+      else hi = mid;
+    }
+    const span = c[hi] - c[lo];
+    return lo + (span > 0 ? (u - c[lo]) / span : 0);
   }
 
-  // Posição do vídeo (0 a 1) num ponto do trecho: parado no começo (lead), andando, e parado
-  // no fim (hold) com o ambiente pronto enquanto o título é lido.
-  function framePos(s, p) {
-    if (reduce.matches) return p <= s.lead ? 0 : 1; // sem animação: o começo e, depois, o ambiente pronto
-    return clamp((p - s.lead) / (1 - s.lead - s.hold));
+  // Ponto q do trecho em que o vídeo chega a t segundos (negativo = no lead; além do fim = no hold)
+  function qAt(s, t) {
+    if (t <= 0) return s.lead > 0 ? s.qa * clamp((t + s.lead) / s.lead) : 0;
+    if (t >= s.duration) return s.hold > 0 ? s.qb + (1 - s.qb) * clamp((t - s.duration) / s.hold) : 1;
+    const f = Math.min(t * s.fps, s.frames - 1);
+    const i = Math.min(s.frames - 2, Math.floor(f));
+    const u = s.cum[i] + (s.cum[i + 1] - s.cum[i]) * (f - i);
+    return s.qa + clamp(u) * (s.qb - s.qa);
   }
 
-  function paint(g, s, p) {
-    g.globalAlpha = 1;
-    g.fillStyle = INK;
-    g.fillRect(0, 0, view.w, view.h);
-    const fp = framePos(s, p);
-    // Com vídeo, fica no escuro só até chegar o primeiro quadro (as fotos entram se o vídeo falhar)
-    if (s.seq && !s.seq.broken) {
-      s.seq.draw(g, fp);
+  /* ------------------------------------------------------------ camadas (fotos e vídeo) */
+  scenes.forEach((s) => {
+    const layer = document.createElement('div');
+    layer.className = 'film__scene';
+    const pos = s.focus ? s.focus[0] * 100 + '% ' + s.focus[1] * 100 + '%' : '';
+    s.stills = (s.stills || []).slice(0, 2).map((src) => {
+      const img = document.createElement('img');
+      img.className = 'film__still';
+      img.alt = '';
+      img.decoding = 'async';
+      img.dataset.src = 'assets/img/' + src;
+      if (pos) img.style.objectPosition = pos;
+      layer.appendChild(img);
+      return img;
+    });
+    if (s.video) {
+      const v = document.createElement('video');
+      v.className = 'film__video';
+      v.muted = true;
+      v.defaultMuted = true;
+      v.playsInline = true;
+      v.setAttribute('muted', '');
+      v.setAttribute('playsinline', '');
+      v.setAttribute('webkit-playsinline', '');
+      v.setAttribute('disableremoteplayback', '');
+      v.disablePictureInPicture = true;
+      v.preload = 'auto';
+      if (pos) v.style.objectPosition = pos;
+      v.addEventListener('loadedmetadata', kick);
+      v.addEventListener('seeked', () => {
+        if (!s.live && !s.unlocking) showVideo(s);
+        seek(s); // o próximo quadro já é pedido aqui, sem esperar a tela pintar de novo
+      });
+      // O vídeo só anda com o scroll: se o navegador começar a tocar sozinho, para
+      v.addEventListener('play', () => {
+        if (!s.unlocking) v.pause();
+      });
+      layer.appendChild(v);
+      s.el = v;
+    }
+    media.appendChild(layer);
+    s.layer = layer;
+  });
+
+  // As fotos de um trecho só são baixadas quando ele chega perto
+  function loadStills(s) {
+    if (!s || s.stillsOn) return;
+    s.stillsOn = true;
+    s.stills.forEach((img) => (img.src = img.dataset.src));
+  }
+
+  function setOpacity(s, a) {
+    if (s.o === a) return;
+    s.o = a;
+    s.layer.style.opacity = a;
+    s.layer.style.visibility = a > 0 ? 'visible' : 'hidden';
+  }
+
+  // Põe o trecho no quadro f: o vídeo, se já estiver pronto, ou a passagem da 1ª para a 2ª foto
+  function place(s, f) {
+    s.goal = Math.round(clamp(f, 0, s.frames - 1));
+    if (!s.live || stillMode()) {
+      const mix = ramp(0.45, 0.85, f / (s.frames - 1));
+      if (mix !== s.mix) {
+        s.mix = mix;
+        s.layer.style.setProperty('--mix', mix.toFixed(3));
+      }
+    }
+  }
+
+  /* ------------------------------------------------------------ vídeos */
+  const stillMode = () => reduce.matches; // com "reduzir movimento", só as fotos
+  const portrait = () => window.innerWidth < window.innerHeight * 0.9;
+  const fileFor = (s) => (portrait() && s.video.tall) || s.video.src;
+  let loading = false;
+
+  // Baixa um vídeo por vez, inteiro: primeiro o do ponto em que a pessoa está, depois os seguintes
+  function pump() {
+    if (loading || stillMode()) return;
+    const from = Math.max(0, now.index);
+    const order = scenes.slice(from).concat(scenes.slice(0, from).reverse());
+    const s = order.find((x) => x.video && x.file !== fileFor(x));
+    if (!s) return;
+    const file = fileFor(s);
+    loading = true;
+    loadStills(s);
+    const done = (url) => {
+      attach(s, file, url);
+      loading = false;
+      pump();
+    };
+    if (!window.fetch || !window.URL || !URL.createObjectURL) {
+      done(file);
       return;
     }
-    placeholder(s).draw(g, fp);
+    fetch(file)
+      .then((r) => {
+        if (!r.ok) throw new Error(r.status);
+        return r.blob();
+      })
+      .then((blob) => done(URL.createObjectURL(blob)), () => done(file)); // se falhar, o navegador tenta sozinho
   }
 
-  /* ------------------------------------------------------------ títulos e régua */
+  function attach(s, file, url) {
+    if (s.url && s.url.indexOf('blob:') === 0) URL.revokeObjectURL(s.url);
+    s.file = file;
+    s.url = url;
+    s.at = -1;
+    s.live = false;
+    s.layer.classList.remove('is-live', 'is-painted');
+    s.el.src = url;
+    unlock(s);
+  }
+
+  // No iPhone o vídeo só mostra imagem depois de um play(): toca e para na mesma hora, sem som
+  // e ainda escondido. Depois disso ele é levado ao quadro certo e aparece.
+  function unlock(s) {
+    const v = s.el;
+    s.unlocking = true;
+    let timer = 0;
+    const stop = () => {
+      clearTimeout(timer);
+      if (!s.unlocking) return;
+      v.pause();
+      s.unlocking = false;
+      s.at = -1;
+      kick();
+    };
+    timer = setTimeout(stop, 1500); // se o navegador não responder ao play(), segue sem ele
+    let p = null;
+    try {
+      p = v.play();
+    } catch (e) {
+      p = null;
+    }
+    if (p && p.then) p.then(stop, stop);
+    else stop();
+  }
+
+  // O vídeo aparece por cima das fotos assim que o primeiro quadro dele está na tela. Quando o
+  // navegador confirma que o quadro foi pintado, as fotos de baixo deixam de ser desenhadas.
+  function showVideo(s) {
+    const go = () => {
+      if (s.live) return;
+      s.live = true;
+      s.layer.classList.add('is-live');
+    };
+    if (s.el.requestVideoFrameCallback) {
+      s.el.requestVideoFrameCallback(() => {
+        go();
+        s.layer.classList.add('is-painted');
+      });
+      setTimeout(go, 800);
+    } else {
+      go();
+    }
+  }
+
+  // Pede ao vídeo o quadro do scroll. Só um pedido por vez: se o vídeo ainda está buscando,
+  // o próximo sai quando ele terminar (evento seeked), já com o quadro mais recente.
+  function seek(s) {
+    if (!s.url || s.goal === s.at || s.unlocking || s.o <= 0) return;
+    const v = s.el;
+    if (v.readyState < 1 || v.seeking) return;
+    s.at = s.goal;
+    v.currentTime = (s.goal + 0.5) / s.fps; // o meio do quadro: o navegador mostra exatamente esse
+  }
+
+  /* ------------------------------------------------------------ títulos */
   function beatHTML(b) {
     const tag = b.hero ? 'h1' : 'h2';
     let h = '';
@@ -296,47 +327,27 @@
   }
 
   scenes.forEach((s) => {
-    s.beats.forEach((b) => {
-      const el = document.createElement('article');
-      el.className = 'beat beat--' + (b.align || 'left') + (b.hero ? ' beat--hero' : '');
-      el.innerHTML = beatHTML(b);
-      beatsRoot.appendChild(el);
-      b.el = el;
+    s.beats = (s.beats || []).map((raw) => {
+      const b = Object.assign({}, raw);
+      const t = Array.isArray(b.time) ? b.time : [];
+      b.q0 = t[0] == null ? 0 : qAt(s, +t[0]);
+      b.q1 = t[1] == null ? 1 : qAt(s, +t[1]);
+      b.fade = Math.max(0.001, Math.min(FADE / s.len, (b.q1 - b.q0) / 4));
+      b.el = document.createElement('article');
+      b.el.className = 'beat beat--' + (b.align || 'left') + (b.hero ? ' beat--hero' : '');
+      b.el.innerHTML = beatHTML(b);
+      beatsRoot.appendChild(b.el);
       b.o = -1;
       b.y = 0;
+      return b;
     });
   });
 
-  ruler.innerHTML =
-    '<ol class="ruler__list">' +
-    scenes
-      .map(
-        (s) =>
-          '<li class="ruler__seg" style="--len:' + s.length + '">' +
-          '<button class="ruler__btn" type="button" data-go="' + s.index + '">' +
-          '<span class="ruler__num">' + pad(s.index + 1) + '</span><span class="ruler__name">' + esc(s.label) + '</span></button>' +
-          '<span class="ruler__buffer" aria-hidden="true"></span></li>'
-      )
-      .join('') +
-    '</ol><span class="ruler__fill" aria-hidden="true"></span><span class="ruler__cursor" aria-hidden="true"></span>';
-  const segs = Array.from(ruler.querySelectorAll('.ruler__seg'));
-  const btns = Array.from(ruler.querySelectorAll('.ruler__btn'));
-
-  // Faixa clara na régua: quanto do vídeo de cada trecho já foi baixado
-  function buffer(s) {
-    const v = s.seq && !s.seq.broken ? s.seq.progress() : 1;
-    segs[s.index].style.setProperty('--buf', v.toFixed(3));
-  }
-
-  const now = { index: -1, shown: [] };
-
   // Cada título entra subindo, fica parado enquanto é lido e sai para cima, tudo preso ao scroll
-  function beatState(s, b, p) {
-    const [a, z] = b.at;
-    if (p < a || p > z) return [0, 0];
-    const f = Math.min(0.05, (z - a) / 4);
-    const tin = a <= 0 && s.index === 0 ? 1 : clamp((p - a) / f);
-    const tout = z >= 1 && s.index === scenes.length - 1 ? 1 : clamp((z - p) / f);
+  function beatState(s, b, q) {
+    if (q < b.q0 || q > b.q1) return [0, 0];
+    const tin = b.q0 <= 0 && s.index === 0 ? 1 : clamp((q - b.q0) / b.fade);
+    const tout = b.q1 >= 1 && s.index === scenes.length - 1 ? 1 : clamp((b.q1 - q) / b.fade);
     const o = Math.min(tin, tout);
     if (reduce.matches) return [o, 0];
     const y = tin < 1 ? (1 - easeOut(tin)) * 42 : tout < 1 ? -(1 - easeOut(tout)) * 42 : 0;
@@ -352,33 +363,35 @@
     b.el.classList.toggle('is-on', o > 0.02);
   }
 
-  function ui(i, s, p) {
+  const now = { index: -1, shown: [], l: -1, c: -1 };
+
+  function ui(i, s, q) {
     if (i !== now.index) {
       now.index = i;
-      btns.forEach((b, j) => (j === i ? b.setAttribute('aria-current', 'step') : b.removeAttribute('aria-current')));
-      const next = scenes[i + 1];
-      if (next && !next.seq) placeholder(next); // já começa a baixar as fotos do próximo
+      loadStills(s);
+      loadStills(scenes[i + 1]);
       pump();
     }
-    let lead = null;
+    let l = 0;
+    let c = 0;
     const shown = [];
     s.beats.forEach((b) => {
-      const [o, y] = beatState(s, b, p);
+      const [o, y] = beatState(s, b, q);
       setBeat(b, o, y);
-      if (o > 0) {
-        shown.push(b);
-        if (!lead || o > lead.o) lead = b;
-      }
+      if (o > 0) shown.push(b);
+      if (b.align === 'center') c = Math.max(c, o);
+      else l = Math.max(l, o);
     });
     now.shown.forEach((b) => {
       if (!shown.includes(b)) setBeat(b, 0, 0);
     });
     now.shown = shown;
-    stage.dataset.align = lead ? lead.align || 'left' : 'none';
-    ruler.style.setProperty('--t', cur.toFixed(4));
+    // A sombra que deixa o título legível acompanha o título
+    if (l !== now.l) stage.style.setProperty('--shade-l', (now.l = l).toFixed(3));
+    if (c !== now.c) stage.style.setProperty('--shade-c', (now.c = c).toFixed(3));
   }
 
-  /* ------------------------------------------------------------ desenho e scroll */
+  /* ------------------------------------------------------------ scroll */
   const metrics = { top: 0, dist: 1 };
   let cur = 0;
   let target = 0;
@@ -389,36 +402,37 @@
   function draw() {
     const pos = cur * total;
     let i = 0;
-    while (i < scenes.length - 1 && pos >= scenes[i].start + scenes[i].length) i++;
+    while (i < scenes.length - 1 && pos >= scenes[i].start + scenes[i].len) i++;
     const s = scenes[i];
-    const p = clamp((pos - s.start) / s.length);
-    ui(i, s, p);
-    // Depois do filme, a tela já não mostra o canvas: não precisa desenhar
-    if (window.scrollY > metrics.top + metrics.dist + window.innerHeight) return;
-    paint(ctx, s, p);
+    const q = clamp((pos - s.start) / s.len);
+    ui(i, s, q);
     const next = scenes[i + 1];
-    if (next && s.blend > 0 && p > 1 - s.blend) {
-      paint(lctx, next, 0);
-      ctx.globalAlpha = ramp(1 - s.blend, 1, p);
-      ctx.drawImage(layer, 0, 0);
-      ctx.globalAlpha = 1;
+    scenes.forEach((x) => {
+      if (x !== s && x !== next) setOpacity(x, 0);
+    });
+    setOpacity(s, 1);
+    place(s, frameAt(s, q));
+    if (next) {
+      // O próximo trecho espera no primeiro quadro, por cima, e aparece na emenda
+      setOpacity(next, s.blendQ > 0 ? ramp(1 - s.blendQ, 1, q) : 0);
+      place(next, 0);
     }
   }
 
   function readScroll() {
     target = clamp((window.scrollY - metrics.top) / metrics.dist);
+    // Salto grande de uma vez (página recarregada no meio, tecla End): vai direto, sem passar pelo filme todo
+    if (Math.abs(target - cur) * total > 150) {
+      cur = target;
+      dirty = true;
+    }
   }
 
   function kick() {
     if (!raf) raf = requestAnimationFrame(tick);
   }
 
-  function requestDraw() {
-    dirty = true;
-    kick();
-  }
-
-  // O vídeo segue o scroll com um pouco de inércia, para não "pular" de quadro em quadro
+  // O filme segue o scroll com um pouco de inércia: desliza em vez de pular de um quadro a outro
   function tick(t) {
     raf = 0;
     const dt = last ? Math.min(64, t - last) : 16;
@@ -427,70 +441,79 @@
     if (reduce.matches) {
       cur = target;
     } else {
-      cur += (target - cur) * (1 - Math.exp(-dt / 95));
-      if (Math.abs(target - cur) * total < 0.04) cur = target;
+      cur += (target - cur) * (1 - Math.exp(-dt / 120));
+      if (Math.abs(target - cur) * total < 0.02) cur = target;
     }
     if (cur !== prev || dirty) {
       dirty = false;
       draw();
     }
+    scenes.forEach(seek);
     if (cur !== target) kick();
     else last = 0;
   }
 
-  function resize() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = Math.max(1, Math.round(stage.clientWidth * dpr));
-    const h = Math.max(1, Math.round(stage.clientHeight * dpr));
-    if (w !== canvas.width || h !== canvas.height) {
-      canvas.width = layer.width = w;
-      canvas.height = layer.height = h;
-    }
-    view.w = w;
-    view.h = h;
-    view.dpr = dpr;
-    view.portrait = h > w * 1.05;
-    scenes.forEach((s) => {
-      if (s.seq) s.seq.choose();
-      buffer(s);
-    });
+  let wasPortrait = portrait();
+  function measure(first) {
     metrics.top = film.getBoundingClientRect().top + window.scrollY;
     metrics.dist = Math.max(1, film.offsetHeight - stage.offsetHeight);
     readScroll();
-    cur = target;
-    requestDraw();
-    pump();
+    if (first === true) cur = target;
+    dirty = true;
+    kick();
+    // Celular girado: troca para o vídeo do formato certo
+    if (portrait() !== wasPortrait) {
+      wasPortrait = portrait();
+      pump();
+    }
   }
 
-  // Vai para o começo de um trecho (o primeiro, para o topo)
+  // Vai para um trecho: o fim do vídeo, com o ambiente pronto e o título dele na tela
   function goTo(i) {
     const s = scenes[i];
     if (!s) return;
-    const p = i === 0 ? 0 : s.lead + 0.005;
-    const y = metrics.top + ((s.start + s.length * p) / total) * metrics.dist;
+    const q = Math.max(0, s.qb - 0.002);
+    const y = metrics.top + ((s.start + s.len * q) / total) * metrics.dist;
     window.scrollTo({ top: Math.round(y), behavior: reduce.matches ? 'auto' : 'smooth' });
   }
-
-  ruler.addEventListener('click', (e) => {
-    const b = e.target.closest('[data-go]');
-    if (b) goTo(Number(b.dataset.go));
-  });
 
   window.addEventListener('scroll', () => {
     readScroll();
     kick();
   }, { passive: true });
-  window.addEventListener('resize', resize);
-  if (reduce.addEventListener) reduce.addEventListener('change', requestDraw);
+  window.addEventListener('resize', measure);
+  const onReduce = () => {
+    film.classList.toggle('is-still', reduce.matches);
+    scenes.forEach((s) => (s.mix = -1));
+    dirty = true;
+    kick();
+    pump();
+  };
+  if (reduce.addEventListener) reduce.addEventListener('change', onReduce);
+  else if (reduce.addListener) reduce.addListener(onReduce);
+  // No iPhone em modo economia, o vídeo só aparece depois de um toque: o primeiro toque destrava
+  window.addEventListener('touchstart', () => {
+    scenes.forEach((s) => {
+      if (s.url && !s.live && !s.unlocking) unlock(s);
+    });
+  }, { once: true, passive: true });
 
+  film.classList.toggle('is-still', reduce.matches);
   film.classList.add('is-ready'); // a seção ganha a altura do filme antes da primeira medida
-  resize();
+  measure(true);
+  loadStills(scenes[0]);
+  pump();
 
   window.NUVO_FILM = {
     goTo,
     goToScene(id) {
       const s = scenes.find((x) => x.id === id);
       if (s) goTo(s.index);
+    },
+    // Posição da página em que o trecho chega a t segundos do vídeo (para links e testes)
+    scrollFor(id, t) {
+      const s = scenes.find((x) => x.id === id);
+      return s ? metrics.top + ((s.start + s.len * qAt(s, t)) / total) * metrics.dist : null;
     },
   };
 })();

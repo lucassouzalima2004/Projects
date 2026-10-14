@@ -1,7 +1,7 @@
 /* =============================================================================
    NUVO Woodwork
-   Layout: the page opens as a film. A drafting sheet on an ebony ground turns
-   into finished rooms as you scroll, measured by a tape-rule at the bottom.
+   Layout: the page opens as a film. The scroll flies the camera through a
+   house while each room is built and finished, with its title over it.
    After the film, linen bands (the real work) alternate with ebony bands
    (the process and the conversation). Bronze is the logo's own colour.
    ========================================================================== */
@@ -84,7 +84,6 @@
   --max: 1320px;
   --section: clamp(88px, 11vw, 160px);
   --header-h: 76px;
-  --ruler-h: 62px;
 
   --ease: cubic-bezier(.25, .7, .2, 1);
   --ease-out: cubic-bezier(.16, 1, .3, 1);
@@ -93,10 +92,7 @@
 }
 
 @media (max-width: 720px) {
-  :root {
-    --header-h: 64px;
-    --ruler-h: 52px;
-  }
+  :root { --header-h: 64px; }
 }
 
 /* ---------------------------------------------------------------- Base */
@@ -395,38 +391,57 @@ body.menu-open { overflow: hidden; }
   overflow: hidden;
 }
 
-.film__canvas {
+/* The house: one layer per video, stacked in order; film.js fades the next one in at each seam */
+.film__media,
+.film__scene,
+.film__still,
+.film__video {
   position: absolute;
   inset: 0;
+}
+.film__scene { visibility: hidden; }
+.film__still,
+.film__video {
   width: 100%;
   height: 100%;
+  object-fit: cover;
 }
+/* While a video loads (or if it can't), its first and last frames cross-fade with the scroll */
+.film__still + .film__still { opacity: var(--mix, 0); }
+.film__video {
+  opacity: 0;
+  transition: opacity .35s var(--ease);
+}
+.film__scene.is-live .film__video { opacity: 1; }
+.film__scene.is-painted .film__still {
+  visibility: hidden;
+  transition: visibility 0s .35s; /* depois que o vídeo terminou de aparecer */
+}
+.film.is-still .film__video { display: none; }
+.film.is-still .film__still { visibility: visible; }
 
-/* Shade that keeps the titles readable over bright rooms */
+/* Shade that keeps the titles readable over bright rooms. It comes and goes with the
+   title on screen (film.js sets --shade-l for left titles and --shade-c for centred ones). */
 .film__shade {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background:
-    linear-gradient(180deg, rgba(20, 17, 15, .55) 0%, rgba(20, 17, 15, 0) 20%),
-    linear-gradient(0deg, rgba(20, 17, 15, .7) 0%, rgba(20, 17, 15, 0) 26%);
+  background: linear-gradient(180deg, rgba(20, 17, 15, .5) 0%, rgba(20, 17, 15, 0) 18%);
 }
 .film__shade::before,
 .film__shade::after {
   content: "";
   position: absolute;
   inset: 0;
-  opacity: 0;
-  transition: opacity .9s var(--ease);
 }
 .film__shade::before {
+  opacity: var(--shade-l, 0);
   background: linear-gradient(90deg, rgba(20, 17, 15, .84) 0%, rgba(20, 17, 15, .55) 32%, rgba(20, 17, 15, 0) 66%);
 }
 .film__shade::after {
+  opacity: var(--shade-c, 0);
   background: radial-gradient(ellipse 64% 60% at 50% 50%, rgba(20, 17, 15, .74), rgba(20, 17, 15, .12));
 }
-.film__stage[data-align="left"] .film__shade::before,
-.film__stage[data-align="center"] .film__shade::after { opacity: 1; }
 
 /* Chapter titles over the film: big, on the left, moving with the scroll (film.js sets --o and --y) */
 .film__beats { position: absolute; inset: 0; pointer-events: none; }
@@ -521,131 +536,15 @@ body.menu-open { overflow: hidden; }
 .film__noscript h1 { margin: 0; font: 400 var(--fs-hero)/1 var(--font-display); }
 .film__noscript em { color: var(--bronze-light); }
 
-.film__skip {
-  position: absolute;
-  right: var(--gutter);
-  bottom: calc(var(--ruler-h) + env(safe-area-inset-bottom) + 14px);
-  display: inline-flex;
-  align-items: center;
-  gap: .5em;
-  padding: .4em 0;
-  font: 400 .66rem/1 var(--font-mono);
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  text-decoration: none;
-  color: var(--sand);
-  transition: color .3s;
-}
-.film__skip svg { width: 15px; height: 15px; }
-.film__skip:hover { color: var(--linen); }
-
-/* The tape-rule: rooms, progress and how much of each video has loaded */
-.ruler {
-  --t: 0;
-  position: absolute;
-  left: var(--gutter);
-  right: var(--gutter);
-  bottom: calc(14px + env(safe-area-inset-bottom));
-  height: calc(var(--ruler-h) - 16px);
-}
-.ruler__list {
-  display: flex;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.ruler__seg {
-  position: relative;
-  flex: var(--len) 1 0;
-  min-width: 0;
-  border-left: 1px solid rgba(242, 236, 227, .5);
-}
-.ruler__seg:last-child { border-right: 1px solid rgba(242, 236, 227, .5); }
-.ruler__seg::before,
-.ruler__seg::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-}
-.ruler__seg::before {
-  height: 7px;
-  background: repeating-linear-gradient(90deg, rgba(242, 236, 227, .28) 0 1px, transparent 1px 9px);
-}
-.ruler__seg::after {
-  height: 13px;
-  background: repeating-linear-gradient(90deg, transparent 0 44px, rgba(242, 236, 227, .42) 44px 45px);
-}
-.ruler__buffer {
-  position: absolute;
-  left: 0;
-  bottom: -1px;
-  width: calc(var(--buf, 0) * 100%);
-  height: 1px;
-  background: rgba(242, 236, 227, .45);
-  transition: width .4s var(--ease);
-}
-.ruler__btn {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  display: flex;
-  align-items: flex-start;
-  gap: .6em;
-  padding: 4px 0 0 9px;
-  border: 0;
-  background: none;
-  font: 400 .64rem/1 var(--font-mono);
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: var(--sand);
-  cursor: pointer;
-  overflow: hidden;
-  transition: color .3s;
-}
-.ruler__btn:hover, .ruler__btn[aria-current] { color: var(--linen); }
-.ruler__num { color: var(--bronze-light); }
-.ruler__fill {
-  position: absolute;
-  left: 0;
-  bottom: -1px;
-  width: calc(var(--t) * 100%);
-  height: 2px;
-  background: var(--bronze-light);
-  pointer-events: none;
-}
-.ruler__cursor {
-  position: absolute;
-  left: calc(var(--t) * 100%);
-  bottom: -1px;
-  width: 1px;
-  height: 26px;
-  background: var(--bronze-light);
-  pointer-events: none;
-}
-.ruler__cursor::before {
-  content: "";
-  position: absolute;
-  top: -6px;
-  left: -4px;
-  border: 4.5px solid transparent;
-  border-top: 6px solid var(--bronze-light);
-  border-bottom: 0;
-}
-
 @media (max-width: 720px) {
-  /* No celular os títulos ficam embaixo, sobre a sombra, e a régua mostra os nomes */
-  .film__shade { background: linear-gradient(0deg, rgba(20, 17, 15, .9) 0%, rgba(20, 17, 15, .55) 34%, rgba(20, 17, 15, 0) 62%); }
-  .film__shade::before { display: none; }
+  /* No celular os títulos ficam embaixo, sobre uma sombra que aparece com eles */
+  .film__shade::before { background: linear-gradient(0deg, rgba(20, 17, 15, .9) 0%, rgba(20, 17, 15, .55) 34%, rgba(20, 17, 15, 0) 62%); }
+  .film__shade::after { background: linear-gradient(0deg, rgba(20, 17, 15, .92) 0%, rgba(20, 17, 15, .7) 48%, rgba(20, 17, 15, 0) 84%); }
   .beat,
   .beat--center {
     left: var(--gutter);
     top: auto;
-    bottom: calc(var(--ruler-h) + env(safe-area-inset-bottom) + 46px);
+    bottom: calc(env(safe-area-inset-bottom) + 52px);
     width: calc(100% - 2 * var(--gutter));
     transform: translate3d(0, calc(var(--y, 0) * 1px), 0);
   }
@@ -655,9 +554,6 @@ body.menu-open { overflow: hidden; }
   .beat__actions { margin-top: 1.5rem; }
   .beat__actions .btn { flex: 1 1 100%; }
   .beat__cue { margin-top: 1.5rem; }
-  .ruler__num { display: none; }
-  .ruler__btn { padding-left: 7px; }
-  .ruler__seg::after { display: none; }
 }
 
 /* ---------------------------------------------------------------- Rooms index */

@@ -31,66 +31,71 @@ window.NUVO = {
      Um voo só, da porta da casa até a casa inteira acesa, feito de 4 vídeos
      encadeados (o último quadro de um é o primeiro do próximo; veja PROMPTS.md).
      Cada trecho usa o vídeo de mesmo id: videos/02-kitchen.mp4 →
-     tools/make-frames.sh → assets/frames/kitchen/.
-     Enquanto o vídeo não existe, o trecho mostra as fotos de "placeholder".
+     tools/make-videos.sh → assets/video/kitchen.mp4.
 
-     length ....... quanto scroll o trecho ocupa, em % da altura da tela
-     lead ......... parte do começo em que o vídeo fica parado no 1º quadro
-     hold ......... parte do fim em que o vídeo fica parado no último quadro
-                    (é quando o ambiente pronto aparece com o título)
-     focus ........ opcional, [x, y] de 0 a 1: o que manter na tela quando o
-                    celular corta as laterais (padrão: o centro)
-     placeholder .. fotos de assets/img/ mostradas se o vídeo não carregar
-                    (as imagens inicial e final do trecho, em assets/img/keys/)
+     pace ......... velocidade do filme: quanto scroll (em % da altura da tela)
+                    vale 1 segundo de vídeo, em média. Maior = mais lento.
+                    As partes com mais movimento ganham mais scroll e as partes
+                    paradas passam depressa, para o vídeo nunca parecer travado.
+
+     Em cada trecho (todos os tempos em segundos do vídeo):
+     lead ......... quanto o 1º quadro fica parado antes do vídeo andar
+     hold ......... quanto o último quadro (o ambiente pronto) fica parado no fim
+     stills ....... o 1º e o último quadro do vídeo, em assets/img/. Aparecem
+                    enquanto o vídeo carrega (e no lugar dele, se não carregar)
      beats ........ os títulos que sobem e somem com o scroll:
-                    at: [início, fim] de 0 a 1 dentro do trecho
-                    title: \n quebra a linha; *palavra* fica em itálico bronze
+                    time: [entra, sai] em segundos do vídeo. Negativo = antes do
+                    vídeo andar (durante o lead); sem o "sai" = até o fim do trecho
+                    title: \n quebra a linha; *palavra* fica em itálico dourado
                     align: 'left' (padrão) ou 'center'
      ------------------------------------------------------------------------- */
+  tour: {
+    pace: 24,
+  },
+
   scenes: [
     {
       id: 'living', // 01-living.mp4: da porta fechada até a sala pronta
       label: 'Living',
-      length: 320,
-      lead: 0.12, // a porta fica fechada enquanto o título de abertura aparece
-      placeholder: { photos: ['keys/door.webp', 'keys/living.webp'] },
+      lead: 0.3,
+      hold: 1,
+      stills: ['keys/door.webp', 'keys/living.webp'],
       beats: [
         {
-          at: [0, 0.13],
+          time: [-0.3, 0.9],
           hero: true,
           eyebrow: 'NUVO Woodwork · South Florida',
           title: 'Where wood\nbecomes *art.*',
           text: 'Custom kitchens, closets and millwork for luxury homes, designed in 3D and finished by hand.',
           cue: 'Scroll to come in',
         },
-        { at: [0.2, 0.4], eyebrow: 'Foyers & millwork', title: 'First\nimpressions\nare built.' },
-        { at: [0.62, 0.97], eyebrow: 'Living rooms & media walls', title: 'Built around\nthe way\nyou live.' },
+        { time: [1.3, 3.5], eyebrow: 'Foyers & millwork', title: 'First\nimpressions\nare built.' },
+        { time: [5.6], eyebrow: 'Living rooms & media walls', title: 'Built around\nthe way\nyou live.' },
       ],
     },
     {
       id: 'kitchen', // 02-kitchen.mp4: da sala até a cozinha pronta
       label: 'Kitchen',
-      length: 270,
-      placeholder: { photos: ['keys/kitchen.webp'] },
-      beats: [{ at: [0.42, 0.97], eyebrow: 'Kitchens', title: 'Cut on CNC.\nFinished\nby hand.' }],
+      hold: 1,
+      stills: ['keys/living.webp', 'keys/kitchen.webp'],
+      beats: [{ time: [4.2], eyebrow: 'Kitchens', title: 'Cut on CNC.\nFinished\nby hand.' }],
     },
     {
       id: 'closet', // 03-closet.mp4: da cozinha, escada acima, até o closet pronto
       label: 'Closet',
-      length: 270,
-      placeholder: { photos: ['keys/closet.webp'] },
-      beats: [{ at: [0.6, 0.97], eyebrow: 'Closets', title: 'A room made\nfor getting\nready.' }],
+      hold: 1,
+      stills: ['keys/kitchen.webp', 'keys/closet.webp'],
+      beats: [{ time: [6.1], eyebrow: 'Closets', title: 'A room made\nfor getting\nready.' }],
     },
     {
       id: 'finale', // 04-finale.mp4: do closet até a casa inteira acesa
       label: 'Your home',
-      length: 320,
-      hold: 0.32,
-      placeholder: { photos: ['keys/house.webp'] },
+      hold: 3.2,
+      stills: ['keys/closet.webp', 'keys/house.webp'],
       beats: [
-        { at: [0.34, 0.6], eyebrow: 'One house, one workshop', title: 'Every room,\none *signature.*' },
+        { time: [1.8, 4.9], eyebrow: 'One house, one workshop', title: 'Every room,\none *signature.*' },
         {
-          at: [0.66, 1],
+          time: [5.2],
           align: 'center',
           eyebrow: 'Free 3D design consultation',
           title: 'Your home\nis *next.*',
