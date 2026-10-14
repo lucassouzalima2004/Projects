@@ -1,0 +1,14 @@
+# Cabeçalhos de segurança do Cloudflare Pages (valem para todas as páginas).
+#
+# Content-Security-Policy: o navegador só carrega o que está listado aqui.
+#   - fonts.googleapis.com / fonts.gstatic.com ... fontes Poppins e IBM Plex Mono
+#   - link.msgsndr.com, *.leadconnectorhq.com ..... formulário do CRM (LeadConnector / GoHighLevel)
+# Se o CRM pedir para colocar outro script ou widget (chat, pixel), acrescente o domínio dele
+# em script-src, frame-src e connect-src, senão o navegador bloqueia.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://link.msgsndr.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.leadconnectorhq.com; frame-src https://*.leadconnectorhq.com https://link.msgsndr.com; connect-src 'self' https://*.leadconnectorhq.com https://*.msgsndr.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains

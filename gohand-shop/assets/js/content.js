@@ -20,14 +20,29 @@ window.SITE = {
 
   // WhatsApp que recebe os pedidos: código do país + número, só dígitos.
   // Ex.: celular americano (508) 555-0123  →  '15085550123'
-  // ATENÇÃO: o número abaixo é de exemplo (555-01xx não existe).
-  whatsapp: '15555550123',
+  whatsapp: '17743461245',
 
-  // Telefone para ligar. Vazio = usa o mesmo número do WhatsApp.
-  phone: '',
+  // Telefone da empresa para ligar. Vazio = usa o mesmo número do WhatsApp.
+  phone: '18883111671',
 
   email: '',     // Ex.: 'contact@gohandshop.com'. Vazio = não aparece.
   instagram: '', // Usuário sem @. Vazio = não aparece.
+  tiktok: '',    // Usuário sem @. Vazio = não aparece.
+  facebook: '',  // Endereço da página depois de facebook.com/. Vazio = não aparece.
+
+  // Endereços que aparecem no contato (e o primeiro vai para o Google).
+  addresses: [
+    {
+      label: { en: 'New Jersey', pt: 'Nova Jersey' },
+      lines: ['GoHandShop LLC', '971 US Highway 202N, Ste N', 'Branchburg, NJ 08876'],
+      street: '971 US Highway 202N, Ste N', city: 'Branchburg', region: 'NJ', zip: '08876',
+    },
+    {
+      label: { en: 'Massachusetts', pt: 'Massachusetts' },
+      lines: ['GoHandShop LLC', '56 Broad St #77143', 'Boston, MA 02109-4301'],
+      street: '56 Broad St #77143', city: 'Boston', region: 'MA', zip: '02109-4301',
+    },
+  ],
 
   hours: {
     en: 'Monday to Saturday, 7am to 7pm',
@@ -38,25 +53,40 @@ window.SITE = {
      2. ONDE ATENDE
      ------------------------------------------------------------------------- */
   location: {
-    // Nome curto da região, aparece no topo do site. Ex.: { en: 'Massachusetts', pt: 'Massachusetts' }
-    name: { en: 'United States', pt: 'Estados Unidos' },
-    // Como a região aparece no meio das frases ("... for businesses in Massachusetts").
-    // Ex.: { en: 'in Massachusetts', pt: 'em Massachusetts' }
-    in: { en: 'in the U.S.', pt: 'nos Estados Unidos' },
-    // Cidade-base. Vazio = a frase "Based in ..." não aparece.
-    base: '',
+    // Nome curto da região, aparece no topo do site.
+    name: { en: 'NJ · MA · NY · CT', pt: 'NJ · MA · NY · CT' },
+    // Como a região aparece no meio das frases ("... for businesses in New Jersey ...").
+    in: {
+      en: 'in New Jersey, Massachusetts, New York and Connecticut',
+      pt: 'em Nova Jersey, Massachusetts, Nova York e Connecticut',
+    },
+    // Onde a empresa fica. Vazio = a frase "Based in ..." não aparece.
+    base: { en: 'Branchburg, NJ and Boston, MA', pt: 'Branchburg, NJ e Boston, MA' },
   },
 
-  // Cidades atendidas, aparecem como etiquetas na seção "Where we deliver".
+  // Regiões atendidas, aparecem como etiquetas na seção "Where we deliver".
+  // main: true = destaque em laranja (onde a empresa mais atua).
   // Lista vazia = a seção some do site.
-  // Ex.: ['Framingham', 'Marlborough', 'Hudson', 'Worcester', 'Boston']
-  areas: [],
+  areas: [
+    { name: { en: 'New Jersey', pt: 'Nova Jersey' }, main: true },
+    { name: 'Massachusetts', main: true },
+    { name: { en: 'New York', pt: 'Nova York' } },
+    { name: 'Connecticut' },
+  ],
 
   /* ---------------------------------------------------------------------------
      3. SERVIÇOS, DIFERENCIAIS, PASSOS E DÚVIDAS
      icon: box, clock, route, pickup, cart, building, truck, chat, pin, camera, tag
      ------------------------------------------------------------------------- */
   services: [
+    {
+      icon: 'cart',
+      title: { en: 'Marketplace & online sellers', pt: 'Sellers e lojas online' },
+      text: {
+        en: 'Pickup and local delivery for people who sell on marketplaces and online stores, so your customers get their orders sooner.',
+        pt: 'Coleta e entrega local para quem vende em marketplaces e lojas online, para o seu cliente receber o pedido mais rápido.',
+      },
+    },
     {
       icon: 'clock',
       title: { en: 'Same-day delivery', pt: 'Entrega no mesmo dia' },
@@ -79,14 +109,6 @@ window.SITE = {
       text: {
         en: 'We collect at your door, warehouse or post office and take it where it needs to go.',
         pt: 'Buscamos na sua porta, no depósito ou no correio e levamos aonde precisar.',
-      },
-    },
-    {
-      icon: 'cart',
-      title: { en: 'Online store orders', pt: 'Pedidos de loja online' },
-      text: {
-        en: 'Local delivery for e-commerce, so your customers get their orders sooner.',
-        pt: 'Entrega local para e-commerce, para o seu cliente receber o pedido mais rápido.',
       },
     },
     {
@@ -180,6 +202,13 @@ window.SITE = {
 
   faq: [
     {
+      q: { en: 'Which areas do you cover?', pt: 'Quais regiões vocês atendem?' },
+      a: {
+        en: 'New Jersey, Massachusetts, New York and Connecticut, with most of our routes in New Jersey and Massachusetts. Send us your ZIP code and we’ll confirm.',
+        pt: 'Nova Jersey, Massachusetts, Nova York e Connecticut, com a maior parte das rotas em Nova Jersey e Massachusetts. Mande o seu ZIP code que a gente confirma.',
+      },
+    },
+    {
       q: { en: 'What can you deliver?', pt: 'O que vocês entregam?' },
       a: {
         en: 'Packages, boxes, documents, online store orders and business supplies. If it fits in our vehicle and is legal to carry, ask us.',
@@ -196,8 +225,8 @@ window.SITE = {
     {
       q: { en: 'Do you work with businesses on a regular schedule?', pt: 'Vocês atendem empresas com frequência fixa?' },
       a: {
-        en: 'Yes. That’s our focus: daily or weekly routes for stores, restaurants, online sellers and carriers that need extra drivers.',
-        pt: 'Sim, esse é o nosso foco: rotas diárias ou semanais para lojas, restaurantes, vendedores online e transportadoras que precisam de reforço.',
+        en: 'Yes. That’s our focus: small businesses and online sellers that ship every week, with daily or weekly routes, plus carriers that need extra drivers.',
+        pt: 'Sim, esse é o nosso foco: pequenas empresas e sellers que enviam toda semana, com rotas diárias ou semanais, e transportadoras que precisam de reforço.',
       },
     },
     {
@@ -224,8 +253,14 @@ window.SITE = {
   ],
 
   /* ---------------------------------------------------------------------------
-     4. ORÇAMENTO (a "etiqueta" que abre o WhatsApp com a mensagem pronta)
+     4. ORÇAMENTO
+     crmForm: id do formulário do CRM (LeadConnector / GoHighLevel). Os pedidos
+     caem direto no CRM. Vazio = aparece a "etiqueta" que abre o WhatsApp com a
+     mensagem pronta (as opções abaixo são dela).
      ------------------------------------------------------------------------- */
+  crmForm: 'j4intf8LbzEQ0gfpTXyy',
+  crmFormHeight: 745, // altura inicial em px; o script do CRM ajusta sozinho
+
   quote: {
     kinds: [
       { en: 'Packages', pt: 'Pacotes' },
@@ -250,8 +285,8 @@ window.SITE = {
   text: {
     en: {
       meta: {
-        title: 'GoHand Shop · Package delivery for businesses',
-        description: 'Package delivery contractor for businesses: same-day delivery, scheduled routes and pickups, with updates on WhatsApp.',
+        title: 'GoHand Shop · Package delivery for small businesses',
+        description: 'Package delivery for small businesses and online sellers in New Jersey, Massachusetts, New York and Connecticut: same-day delivery, scheduled routes and pickups, with updates on WhatsApp.',
       },
       ui: {
         skip: 'Skip to content',
@@ -276,7 +311,7 @@ window.SITE = {
       hero: {
         kicker: 'Package delivery · {place}',
         title: 'Your packages,\n*in good hands.*',
-        lead: '{brand} is a delivery contractor for businesses {area}: same-day deliveries, scheduled routes and pickups, with every step updated on WhatsApp.',
+        lead: '{brand} delivers for small businesses and online sellers {area}: same-day, scheduled routes and pickups, with every step updated on WhatsApp.',
         whatsapp: 'Chat on WhatsApp',
         call: 'Call {phone}',
         note: 'Free quote · English & Português',
@@ -295,7 +330,7 @@ window.SITE = {
       services: {
         kicker: 'Services',
         title: 'What we *move*',
-        lead: 'One partner for the deliveries your business can’t stop making.',
+        lead: 'One partner for small businesses and sellers who can’t stop shipping.',
         cta: 'Ask about this',
       },
       why: {
@@ -310,10 +345,11 @@ window.SITE = {
       },
       quote: {
         kicker: 'Free quote',
-        title: 'Fill out the label.\n*We deliver.*',
-        lead: 'It takes 30 seconds. We open WhatsApp with your message ready, you just hit send.',
+        title: 'Get a quote.\n*We deliver.*',
+        lead: 'It takes 30 seconds. Tell us what you ship and where, and we get back to you with a price.',
         perks: ['No contract to get a price', 'Answer the same day', 'One-time or recurring'],
         header: 'Quote request',
+        altLabel: 'Prefer to talk?',
         name: 'Your name',
         namePh: 'John Smith',
         company: 'Company',
@@ -351,10 +387,14 @@ window.SITE = {
         phone: 'Phone',
         email: 'Email',
         instagram: 'Instagram',
+        tiktok: 'TikTok',
+        facebook: 'Facebook',
         hours: 'Hours',
+        address: 'Address',
+        map: 'Open in Maps',
       },
       footer: {
-        tagline: 'Package delivery for businesses {area}.',
+        tagline: 'Package delivery for small businesses and online sellers {area}.',
         rights: 'All rights reserved.',
         top: 'Back to top',
       },
@@ -362,8 +402,8 @@ window.SITE = {
 
     pt: {
       meta: {
-        title: 'GoHand Shop · Entregas de pacotes para empresas',
-        description: 'Empresa de entregas de pacotes para empresas: entrega no mesmo dia, rotas programadas e coletas, com aviso pelo WhatsApp.',
+        title: 'GoHand Shop · Entregas para pequenas empresas',
+        description: 'Entregas de pacotes para pequenas empresas e sellers de marketplace em Nova Jersey, Massachusetts, Nova York e Connecticut: no mesmo dia, rotas programadas e coletas, com aviso pelo WhatsApp.',
       },
       ui: {
         skip: 'Pular para o conteúdo',
@@ -387,7 +427,7 @@ window.SITE = {
       hero: {
         kicker: 'Entrega de pacotes · {place}',
         title: 'Sua entrega\n*em boas mãos.*',
-        lead: 'A {brand} faz entregas para empresas {area}: no mesmo dia, em rotas programadas e com coleta, avisando cada etapa pelo WhatsApp.',
+        lead: 'A {brand} faz entregas para pequenas empresas e sellers de marketplace {area}: no mesmo dia, em rotas programadas e com coleta, avisando cada etapa pelo WhatsApp.',
         whatsapp: 'Chamar no WhatsApp',
         call: 'Ligar {phone}',
         note: 'Orçamento grátis · English & Português',
@@ -406,7 +446,7 @@ window.SITE = {
       services: {
         kicker: 'Serviços',
         title: 'O que a gente *leva*',
-        lead: 'Um parceiro só para as entregas que a sua empresa não pode parar de fazer.',
+        lead: 'Um parceiro para pequenas empresas e sellers que não podem parar de enviar.',
         cta: 'Quero esse',
       },
       why: {
@@ -421,10 +461,11 @@ window.SITE = {
       },
       quote: {
         kicker: 'Orçamento grátis',
-        title: 'Preencha a etiqueta.\n*A gente entrega.*',
-        lead: 'Leva 30 segundos. Abrimos o WhatsApp com a mensagem pronta, é só enviar.',
+        title: 'Peça seu orçamento.\n*A gente entrega.*',
+        lead: 'Leva 30 segundos. Conte o que você envia e para onde, e a gente volta com o preço.',
         perks: ['Sem contrato para saber o preço', 'Resposta no mesmo dia', 'Uma vez ou com frequência'],
         header: 'Pedido de orçamento',
+        altLabel: 'Prefere falar com a gente?',
         name: 'Seu nome',
         namePh: 'Maria Silva',
         company: 'Empresa',
@@ -462,10 +503,14 @@ window.SITE = {
         phone: 'Telefone',
         email: 'E-mail',
         instagram: 'Instagram',
+        tiktok: 'TikTok',
+        facebook: 'Facebook',
         hours: 'Horário',
+        address: 'Endereço',
+        map: 'Abrir no mapa',
       },
       footer: {
-        tagline: 'Entregas de pacotes para empresas {area}.',
+        tagline: 'Entregas para pequenas empresas e sellers {area}.',
         rights: 'Todos os direitos reservados.',
         top: 'Voltar ao topo',
       },

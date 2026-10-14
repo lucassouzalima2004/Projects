@@ -19,7 +19,7 @@
   S.brand = S.brand || 'GoHand Shop';
   S.location = Object.assign({ name: '', in: '', base: '' }, S.location);
   S.quote = Object.assign({ kinds: [], frequency: [], volume: [] }, S.quote);
-  ['areas', 'services', 'promises', 'steps', 'faq'].forEach((k) => { if (!Array.isArray(S[k])) S[k] = []; });
+  ['areas', 'addresses', 'services', 'promises', 'steps', 'faq'].forEach((k) => { if (!Array.isArray(S[k])) S[k] = []; });
 
   document.documentElement.classList.add('js');
 
@@ -58,7 +58,7 @@
         phone: prettyPhone(telNumber()),
         place: L(S.location.name),
         area: L(S.location.in),
-        base: S.location.base,
+        base: L(S.location.base),
       },
       extra
     );
@@ -197,9 +197,28 @@
     if (!has) return;
     $('#area-base').textContent = S.location.base ? tt('area.base') : '';
     $('#area-list').innerHTML = S.areas
-      .map((c, i) => `<li style="--i:${i}">${icon('pin')}${esc(L(c))}</li>`)
+      .map((c, i) => {
+        const name = c && c.name ? L(c.name) : L(c);
+        return `<li class="${c && c.main ? 'is-main' : ''}" style="--i:${i}">${icon('pin')}${esc(name)}</li>`;
+      })
       .join('');
   }
+
+  const handle = (v) => String(v || '').trim().replace(/^@/, '');
+
+  // Redes sociais preenchidas no content.js
+  function socials() {
+    const list = [];
+    if (S.instagram) list.push({ icon: 'ig', key: 'instagram', value: '@' + handle(S.instagram), href: 'https://instagram.com/' + encodeURIComponent(handle(S.instagram)) });
+    if (S.tiktok) list.push({ icon: 'tiktok', key: 'tiktok', value: '@' + handle(S.tiktok), href: 'https://www.tiktok.com/@' + encodeURIComponent(handle(S.tiktok)) });
+    if (S.facebook) {
+      const page = String(S.facebook).replace(/^https?:\/\/(www\.)?facebook\.com\//, '').replace(/\/$/, '');
+      list.push({ icon: 'fb', key: 'facebook', value: page, href: 'https://www.facebook.com/' + page.split('/').map(encodeURIComponent).join('/') });
+    }
+    return list;
+  }
+
+  const mapLink = (a) => 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(a.lines.slice(-2).join(', '));
 
   function renderContact() {
     const rows = [
@@ -207,18 +226,20 @@
       { icon: 'phone', label: tt('contact.phone'), value: prettyPhone(telNumber()), href: telLink() },
     ];
     if (S.email) rows.push({ icon: 'mail', label: tt('contact.email'), value: S.email, href: 'mailto:' + S.email });
-    if (S.instagram) {
-      const user = String(S.instagram).replace(/^@/, '');
-      rows.push({ icon: 'ig', label: tt('contact.instagram'), value: '@' + user, href: 'https://instagram.com/' + encodeURIComponent(user), ext: true });
-    }
+    socials().forEach((x) => rows.push({ icon: x.icon, label: tt('contact.' + x.key), value: x.value, href: x.href, ext: true }));
     if (S.hours) rows.push({ icon: 'clock', label: tt('contact.hours'), value: L(S.hours) });
+    S.addresses.forEach((a) => {
+      if (!a || !Array.isArray(a.lines) || !a.lines.length) return;
+      rows.push({ icon: 'pin', label: `${tt('contact.address')} · ${L(a.label)}`, lines: a.lines, href: mapLink(a), ext: true, title: tt('contact.map'), cls: 'is-address' });
+    });
 
     $('#contact-list').innerHTML = rows
       .map((r, i) => {
-        const inner = `${icon(r.icon)}<span><small>${esc(r.label)}</small><strong>${esc(r.value)}</strong></span>`;
+        const value = r.lines ? r.lines.map(esc).join('<br>') : esc(r.value);
+        const inner = `${icon(r.icon)}<span><small>${esc(r.label)}</small><strong>${value}</strong></span>`;
         return r.href
-          ? `<li style="--i:${i}"><a class="contact__item" href="${esc(r.href)}"${r.ext ? ' target="_blank" rel="noopener"' : ''}>${inner}</a></li>`
-          : `<li style="--i:${i}"><div class="contact__item">${inner}</div></li>`;
+          ? `<li class="${r.cls || ''}" style="--i:${i}"><a class="contact__item" href="${esc(r.href)}"${r.ext ? ' target="_blank" rel="noopener"' : ''}${r.title ? ` title="${esc(r.title)}"` : ''}>${inner}</a></li>`
+          : `<li class="${r.cls || ''}" style="--i:${i}"><div class="contact__item">${inner}</div></li>`;
       })
       .join('');
   }
@@ -404,6 +425,48 @@
     }
   });
 
+  /* ------------------------------------------------------------ formulário do CRM */
+  // Mesmo código de incorporação que o LeadConnector (GoHighLevel) fornece, montado aqui
+  // para o id ficar no content.js. O script deles ajusta a altura do iframe.
+  const CRM_FORM_URL = 'https://api.leadconnectorhq.com/widget/form/';
+  const CRM_SCRIPT = 'https://link.msgsndr.com/js/form_embed.js';
+
+  function setupCrm() {
+    const id = String(S.crmForm || '').trim();
+    if (!/^[A-Za-z0-9_-]+$/.test(id)) return;
+    const height = Number(S.crmFormHeight) || 745;
+    const frame = document.createElement('iframe');
+    const attrs = {
+      src: CRM_FORM_URL + id,
+      id: 'inline-' + id,
+      'data-layout': "{'id':'INLINE'}",
+      'data-trigger-type': 'alwaysShow',
+      'data-trigger-value': '',
+      'data-activation-type': 'alwaysActivated',
+      'data-activation-value': '',
+      'data-deactivation-type': 'neverDeactivate',
+      'data-deactivation-value': '',
+      'data-form-name': 'Form 0',
+      'data-height': String(height),
+      'data-layout-iframe-id': 'inline-' + id,
+      'data-form-id': id,
+      'data-cookie-consent': 'true',
+      'data-cookie-consent-provider': 'auto',
+      title: tt('quote.header'),
+    };
+    Object.keys(attrs).forEach((k) => frame.setAttribute(k, attrs[k]));
+    frame.style.height = height + 'px';
+    $('#crm-form').appendChild(frame);
+    $('#crm-form').hidden = false;
+    $('#crm-alt').hidden = false;
+    form.hidden = true;
+
+    const script = document.createElement('script');
+    script.src = CRM_SCRIPT;
+    script.async = true;
+    document.body.appendChild(script);
+  }
+
   /* ------------------------------------------------------------ dados para o Google */
   function renderSchema() {
     let tag = $('#schema');
@@ -420,10 +483,21 @@
       description: tt('meta.description'),
       telephone: '+' + telNumber(),
       url: window.location.origin + window.location.pathname,
-      areaServed: S.areas.length ? S.areas.map(L) : L(S.location.name) || undefined,
-      sameAs: S.instagram ? ['https://instagram.com/' + String(S.instagram).replace(/^@/, '')] : undefined,
+      areaServed: S.areas.length ? S.areas.map((c) => (c && c.name ? L(c.name) : L(c))) : L(S.location.name) || undefined,
+      sameAs: socials().length ? socials().map((x) => x.href) : undefined,
       email: S.email || undefined,
     };
+    const a = S.addresses[0];
+    if (a && a.street) {
+      data.address = {
+        '@type': 'PostalAddress',
+        streetAddress: a.street,
+        addressLocality: a.city,
+        addressRegion: a.region,
+        postalCode: a.zip,
+        addressCountry: 'US',
+      };
+    }
     tag.textContent = JSON.stringify(data);
   }
 
@@ -441,6 +515,8 @@
     renderQuote();
     renderSchema();
     observeReveal();
+    const crm = $('#crm-form iframe');
+    if (crm) crm.title = tt('quote.header');
   }
 
   $$('[data-lang]').forEach((b) =>
@@ -546,5 +622,6 @@
   $('#year').textContent = String(new Date().getFullYear());
 
   render();
+  setupCrm();
   runLabel();
 })();

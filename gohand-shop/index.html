@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GoHand Shop · Package delivery for businesses</title>
-  <meta name="description" content="Package delivery contractor for businesses: same-day delivery, scheduled routes and pickups, with updates on WhatsApp.">
+  <meta name="description" content="Package delivery for small businesses and online sellers in New Jersey, Massachusetts, New York and Connecticut: same-day delivery, scheduled routes and pickups, with updates on WhatsApp.">
   <meta name="theme-color" content="#E94206">
 
   <!-- Prévia do link no WhatsApp/Instagram/Facebook. O WhatsApp só mostra a imagem com o endereço completo:
@@ -13,7 +13,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="GoHand Shop">
   <meta property="og:title" content="GoHand Shop · Your packages, in good hands">
-  <meta property="og:description" content="Same-day delivery, scheduled routes and pickups for businesses. Get a quote on WhatsApp.">
+  <meta property="og:description" content="Same-day delivery, scheduled routes and pickups for small businesses and online sellers in NJ, MA, NY and CT. Get a quote on WhatsApp.">
   <meta property="og:image" content="assets/img/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -55,6 +55,8 @@
     <symbol id="i-pin" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.5s7-6.3 7-12a7 7 0 0 0-14 0c0 5.7 7 12 7 12z"/><circle cx="12" cy="9.5" r="2.5"/></g></symbol>
     <symbol id="i-camera" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h4l2-3h6l2 3h4v11.5H3z"/><circle cx="12" cy="13.5" r="3.6"/></g></symbol>
     <symbol id="i-tag" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12.2V3.5h8.7L21 12.8 12.8 21z"/><circle cx="7.8" cy="8.3" r="1.4"/></g></symbol>
+    <symbol id="i-tiktok" viewBox="0 0 24 24"><path fill="currentColor" d="M16.6 2h-3.3v13.2a2.9 2.9 0 1 1-2.9-2.9c.3 0 .6 0 .9.1V9a6.3 6.3 0 1 0 5.3 6.2V8.4a7.6 7.6 0 0 0 4.4 1.4V6.5a4.4 4.4 0 0 1-4.4-4.5z"/></symbol>
+    <symbol id="i-fb" viewBox="0 0 24 24"><path fill="currentColor" d="M13.4 21.5v-8h2.7l.4-3.2h-3.1V8.3c0-.9.3-1.5 1.6-1.5h1.7V4a22 22 0 0 0-2.5-.1c-2.4 0-4.1 1.5-4.1 4.2v2.3H7.4v3.2h2.7v8z"/></symbol>
     <symbol id="i-box" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.8 20 7v10l-8 4.2L4 17V7z"/><path d="M4.3 7.2 12 11.4l7.7-4.2M12 11.4v9.6M8 5l8 4.2"/></g></symbol>
   </svg>
 
@@ -82,7 +84,7 @@
           <button type="button" data-lang="en" aria-pressed="true">EN</button>
           <button type="button" data-lang="pt" aria-pressed="false">PT</button>
         </div>
-        <a class="btn btn--sm btn--ink header-wa" data-wa href="#" target="_blank" rel="noopener">
+        <a class="btn btn--sm btn--light header-wa" data-wa href="#" target="_blank" rel="noopener">
           <svg class="icon" aria-hidden="true"><use href="#i-wa"/></svg>
           <span data-t="ui.whatsapp">WhatsApp</span>
         </a>
@@ -108,7 +110,7 @@
           <h1 class="hero__title" id="hero-title" data-t-rich="hero.title"></h1>
           <p class="hero__lead" data-t="hero.lead"></p>
           <div class="hero__ctas">
-            <a class="btn btn--ink btn--lg" data-wa href="#" target="_blank" rel="noopener">
+            <a class="btn btn--light btn--lg" data-wa href="#" target="_blank" rel="noopener">
               <svg class="icon" aria-hidden="true"><use href="#i-wa"/></svg>
               <span data-t="hero.whatsapp"></span>
             </a>
@@ -192,9 +194,9 @@
       <div class="why__word" aria-hidden="true">go</div>
       <div class="container why__grid">
         <div class="section-head" data-reveal>
-          <p class="kicker kicker--orange" data-t="why.kicker"></p>
-          <h2 class="title title--on-dark" id="why-title" data-t-rich="why.title"></h2>
-          <p class="lead lead--on-dark" data-t="why.lead"></p>
+          <p class="kicker" data-t="why.kicker"></p>
+          <h2 class="title" id="why-title" data-t-rich="why.title"></h2>
+          <p class="lead" data-t="why.lead"></p>
         </div>
         <ul class="why__list" id="promises-list"></ul>
       </div>
@@ -225,12 +227,28 @@
           <ul class="quote__perks" id="quote-perks"></ul>
         </div>
 
-        <form class="ship" id="quote-form" novalidate data-reveal>
+        <div class="ship" data-reveal>
           <div class="ship__head">
             <svg class="logo logo--ship" viewBox="0 0 866 270" aria-hidden="true"><use href="#logo"/></svg>
             <span class="ship__title" data-t="quote.header"></span>
             <span class="ship__code" id="quote-code" aria-hidden="true">Q-0000</span>
           </div>
+
+          <!-- Formulário do CRM (crmForm no content.js). Sem ele, aparece a etiqueta abaixo, que envia pelo WhatsApp. -->
+          <div class="ship__crm" id="crm-form" hidden></div>
+          <div class="ship__alt" id="crm-alt" hidden>
+            <span data-t="quote.altLabel"></span>
+            <a class="btn btn--orange btn--sm" data-wa href="#" target="_blank" rel="noopener">
+              <svg class="icon" aria-hidden="true"><use href="#i-wa"/></svg>
+              <span data-t="ui.whatsapp"></span>
+            </a>
+            <a class="btn btn--outline btn--sm" data-tel href="#">
+              <svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg>
+              <span data-t="ui.call"></span>
+            </a>
+          </div>
+
+          <form class="ship__form" id="quote-form" novalidate>
 
           <div class="ship__row ship__row--2">
             <label class="cell">
@@ -279,7 +297,7 @@
             <div class="ship__barcode" id="quote-barcode" aria-hidden="true"></div>
             <div class="ship__actions">
               <p class="ship__error" id="quote-error" role="alert" hidden></p>
-              <button class="btn btn--ink btn--lg btn--block" type="submit">
+              <button class="btn btn--orange btn--lg btn--block" type="submit">
                 <svg class="icon" aria-hidden="true"><use href="#i-wa"/></svg>
                 <span data-t="quote.send"></span>
                 <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg>
@@ -290,7 +308,8 @@
               </a>
             </div>
           </div>
-        </form>
+          </form>
+        </div>
       </div>
     </section>
 
@@ -331,7 +350,7 @@
           <h2 class="contact__title" id="contact-title" data-t-rich="contact.title"></h2>
           <p class="lead lead--on-orange" data-t="contact.lead"></p>
           <div class="hero__ctas">
-            <a class="btn btn--ink btn--lg" data-wa href="#" target="_blank" rel="noopener">
+            <a class="btn btn--light btn--lg" data-wa href="#" target="_blank" rel="noopener">
               <svg class="icon" aria-hidden="true"><use href="#i-wa"/></svg>
               <span data-t="hero.whatsapp"></span>
             </a>
@@ -363,11 +382,11 @@
 
   <!-- Barra fixa no celular -->
   <div class="mobile-bar">
-    <a class="btn btn--ink" data-wa href="#" target="_blank" rel="noopener">
+    <a class="btn btn--orange" data-wa href="#" target="_blank" rel="noopener">
       <svg class="icon" aria-hidden="true"><use href="#i-wa"/></svg>
       <span data-t="ui.whatsapp"></span>
     </a>
-    <a class="btn btn--orange" data-tel href="#">
+    <a class="btn btn--outline" data-tel href="#">
       <svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg>
       <span data-t="ui.call"></span>
     </a>

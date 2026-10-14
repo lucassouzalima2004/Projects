@@ -73,6 +73,7 @@ jobs:
         run: |
           mkdir -p _site
           cp -R gohand-shop/. _site/
+          rm -f _site/README.md # o README é só para quem edita o site
           # O WhatsApp só mostra a imagem da prévia do link com o endereço completo
           sed -i "s#content=\"assets/img/og-image.jpg\"#content=\"https://$DOMAIN/assets/img/og-image.jpg\"#" _site/index.html
 
