@@ -114,13 +114,9 @@
   <main>
     <!-- O filme: o canvas fica preso na tela enquanto a seção rola (film.js) -->
     <section class="film" id="tour" data-film aria-label="A walk through a NUVO home, room by room">
-      <div class="film__stage" data-align="center">
+      <div class="film__stage" data-align="left">
         <canvas class="film__canvas" aria-hidden="true"></canvas>
         <div class="film__shade" aria-hidden="true"></div>
-        <div class="film__hud" data-film-hud aria-hidden="true">
-          <p class="film__where"><span class="film__num"><b data-film-num>00</b> / <span data-film-total>07</span></span><span data-film-room>Arrival</span></p>
-          <ol class="film__phases"><li>Design</li><li>Build</li><li>Installed</li></ol>
-        </div>
         <div class="film__beats" data-film-beats></div>
         <noscript>
           <div class="film__noscript">
@@ -139,7 +135,7 @@
         <header class="section-head" data-reveal>
           <p class="eyebrow">Index · 08 rooms</p>
           <h2 class="h2" id="rooms-title">Every room, <em>built to measure.</em></h2>
-          <p class="lead">Photos from real NUVO projects across South Florida. Pick a room to watch it come together again in the house above.</p>
+          <p class="lead">Photos from real NUVO projects across South Florida. Pick a room to see it built again in the house above, or plan yours with us.</p>
         </header>
 
         <ol class="index" data-index>
@@ -180,16 +176,16 @@
             </a>
           </li>
           <li>
-            <a class="index__row" href="#tour" data-scene-link="office" data-preview="assets/img/work/office.webp">
+            <a class="index__row" href="#contact" data-room="Office" data-preview="assets/img/work/office.webp">
               <span class="index__num">05</span>
               <h3 class="index__name">Home offices</h3>
               <p class="index__desc">Built-in desks, bookcases and tech storage that keep the work out of sight.</p>
-              <span class="index__go">Watch it built<svg aria-hidden="true"><use href="#i-up"/></svg></span>
+              <span class="index__go">Plan yours<svg aria-hidden="true"><use href="#i-arrow"/></svg></span>
               <img class="index__thumb" src="assets/img/work/office.webp" alt="" loading="lazy" decoding="async" width="1100" height="1556">
             </a>
           </li>
           <li>
-            <a class="index__row" href="#tour" data-scene-link="foyer" data-preview="assets/img/work/foyer.webp">
+            <a class="index__row" href="#tour" data-scene-link="living" data-preview="assets/img/work/foyer.webp">
               <span class="index__num">06</span>
               <h3 class="index__name">Foyers</h3>
               <p class="index__desc">Consoles, storage benches and paneling for the first room everyone sees.</p>
@@ -198,16 +194,16 @@
             </a>
           </li>
           <li>
-            <a class="index__row" href="#tour" data-scene-link="laundry" data-preview="assets/img/work/laundry.webp" data-caption="Camino Real Signature House">
+            <a class="index__row" href="#contact" data-room="Laundry" data-preview="assets/img/work/laundry.webp" data-caption="Camino Real Signature House">
               <span class="index__num">07</span>
               <h3 class="index__name">Laundry rooms</h3>
               <p class="index__desc">Counters over the machines, pull-out hampers, drying racks and tall storage.</p>
-              <span class="index__go">Watch it built<svg aria-hidden="true"><use href="#i-up"/></svg></span>
+              <span class="index__go">Plan yours<svg aria-hidden="true"><use href="#i-arrow"/></svg></span>
               <img class="index__thumb" src="assets/img/work/laundry.webp" alt="" loading="lazy" decoding="async" width="1100" height="734">
             </a>
           </li>
           <li>
-            <a class="index__row" href="#tour" data-scene-link="foyer" data-preview="assets/img/work/millwork.webp" data-caption="Parkland Club Residence">
+            <a class="index__row" href="#tour" data-scene-link="living" data-preview="assets/img/work/millwork.webp" data-caption="Parkland Club Residence">
               <span class="index__num">08</span>
               <h3 class="index__name">Millwork</h3>
               <p class="index__desc">Paneling, coffered ceilings, beams, staircases, custom doors and library ladders.</p>

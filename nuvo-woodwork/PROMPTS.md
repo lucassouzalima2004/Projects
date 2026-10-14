@@ -1,244 +1,224 @@
 # Vídeos da casa NUVO · prompts
 
-O site abre como um filme: uma casa de alto padrão em South Florida, e conforme a pessoa rola a página a câmera passa
-pelos ambientes e cada um se monta sozinho, de parede pelada até o móvel da Nuvo pronto. São **8 vídeos**, um por cena.
+Mesmo método do site de referência que o Guilherme mandou ("Criei um Site 3D com IA Sem Usar 3D", do Lucas Rocha):
+uma **imagem inicial**, uma **imagem final** gerada usando a primeira como referência, e um **vídeo de 10 segundos no
+Seedance 2.0** que liga as duas num voo de drone FPV contínuo, com a casa se montando na frente da câmera.
+O scroll do site controla esse vídeo: desce, o voo avança; sobe, o voo volta.
 
-Cada vídeo vira uma sequência de imagens e o scroll controla o vídeo quadro a quadro. Enquanto um vídeo não existe,
-a cena aparece como desenho técnico que vira a foto real (as cenas externas aparecem como a fachada desenhada a traço).
+A diferença para a referência: o Guilherme quer **sem a rua** e **passando pelos ambientes**, com cada um se montando
+até virar produto da Nuvo. Por isso, em vez de um vídeo só, são **4 vídeos encadeados**: o último quadro de um é o
+primeiro do próximo, e no site eles viram um voo só, da porta da casa até a casa inteira acesa.
 
-| # | Nome do arquivo | Cena | O que acontece |
-| --- | --- | --- | --- |
-| 00 | `00-arrival.mp4` | Chegada (fachada, fim de tarde) | O drone desce até a porta, que abre |
-| 01 | `01-foyer.mp4` | Hall de entrada | Painéis, aparador, banco e escada se montam |
-| 02 | `02-kitchen.mp4` | Cozinha | Ilha, armários e pendentes se montam |
-| 03 | `03-living.mp4` | Sala de TV + bar | Painel ripado, TV, nichos e bar se montam |
-| 04 | `04-office.mp4` | Escritório | Estante, escada de biblioteca, mesa e forro |
-| 05 | `05-closet.mp4` | Closet | Armários, ilha e iluminação |
-| 06 | `06-laundry.mp4` | Lavanderia | Armários, bancada sobre as máquinas, pia |
-| 07 | `07-finale.mp4` | A casa à noite (fim) | O drone se afasta da casa toda acesa |
+| Vídeo | Arquivo | Começa em | Termina em | O que se monta no caminho |
+| --- | --- | --- | --- | --- |
+| 1 | `01-living.mp4` | Imagem 1 · porta fechada | Imagem 2 · sala pronta | Hall (painéis, aparador, escada) e sala (painel de TV, aparador, nichos, bar) |
+| 2 | `02-kitchen.mp4` | último quadro do vídeo 1 | Imagem 3 · cozinha pronta | Ilha, armários, nicho iluminado, pendentes |
+| 3 | `03-closet.mp4` | último quadro do vídeo 2 | Imagem 4 · closet pronto | Escada até o andar de cima, closet (armários, ilha, iluminação) |
+| 4 | `04-finale.mp4` | último quadro do vídeo 3 | Imagem 5 · casa acesa ao entardecer | Cabeceira e escrivaninha do quarto, saída pela piscina, drone recua e mostra a casa |
 
-## Como gerar (o jeito que dá menos retrabalho)
+**Total: 5 imagens e 4 vídeos de 10 s.** Se o tempo for curto, faça só o **vídeo 1**: sozinho ele já dá o efeito
+da referência, e os outros entram no site conforme ficarem prontos.
 
-1. **Imagem final** de cada ambiente (já pronto, com a marcenaria): prompt "Imagem final" + o bloco de estilo.
-2. **Imagem inicial**: edite a imagem final com o prompt "Imagem inicial (edição)". Editar a final, em vez de gerar
-   outra do zero, mantém a mesma câmera, as mesmas paredes e a mesma luz. Assim o vídeo só precisa "montar" os móveis
-   e não inventa um ambiente diferente no meio. Serve qualquer gerador que edite imagem mantendo o enquadramento
-   (Nano Banana/Gemini, ChatGPT, Flux Kontext etc.).
-3. **Vídeo** com primeiro quadro = imagem inicial e último quadro = imagem final (o recurso de start/end frame,
-   ou "frames to video": Kling, Veo no Google Flow e outros) + o prompt "Vídeo".
-4. Exporte em **MP4, 16:9, 1080p, 5 a 8 segundos, sem áudio**, com o nome da tabela.
-5. Me mande os arquivos aqui na conversa. Eu converto e publico (veja "Depois de gerar", no fim).
+## Passo a passo
 
-Para a casa parecer uma só, use a imagem final da cena anterior como referência de estilo ao gerar a próxima.
+1. **Imagem 1** (16:9) com o prompt dela. Ela define a casa inteira: materiais, luz, paisagismo.
+2. **Imagens 2, 3 e 4**: anexe a imagem indicada como referência e cole o prompt. **Imagem 5**: anexe a Imagem 1.
+   Gere de novo até ficarem com cara da mesma casa (mesma madeira, mesma pedra, mesma luz).
+3. **Vídeo 1** no **Seedance 2.0, 10 segundos, 16:9**: Imagem 1 como `@image_1` e Imagem 2 como `@image_2`.
+4. **Vídeos 2, 3 e 4**: `@image_1` é o **último quadro do vídeo anterior** e `@image_2` é a próxima imagem.
+   Usar o último quadro de verdade (e não a imagem) é o que faz a emenda entre os vídeos sumir.
+   Para tirar o último quadro: me mande o vídeo aqui que eu devolvo o quadro em alta, ou exporte no próprio gerador.
+   Se pular essa parte e usar a imagem mesmo, o site disfarça a diferença com uma transição curta.
+5. Me mande os MP4 com os nomes da tabela. Mande também as 5 imagens: enquanto um vídeo não chega, o site
+   mostra as imagens daquele trecho.
 
-## Regras para o scroll ficar bonito
+Em gerador sem `@image`, use os campos de primeiro e último quadro (first/last frame) e cole o mesmo prompt.
+Fora do Seedance, funciona no Kling (start/end frame) e no Veo 3.1 (first/last frame).
 
-- **Câmera quase parada**, no máximo um "push-in" lento. Câmera rápida vira tremedeira no scroll.
-- **Um plano só**, sem cortes dentro do vídeo.
-- **Sem pessoas e sem texto**: a IA deforma mãos e letras.
-- **Peça principal no centro**: no celular o site corta as laterais do vídeo.
-- **Mesma luz** (fim de manhã) em todos os ambientes internos.
-- Se o vídeo sair com objeto derretendo, piscando ou mudando de forma, gere de novo antes de mandar: o scroll deixa
-  qualquer defeito bem visível, porque a pessoa pode parar em qualquer quadro.
+**Confira cada vídeo antes de mandar** (o scroll deixa a pessoa parar em qualquer quadro, então defeito aparece):
 
-## Bloco de estilo
+- O movimento começa logo no primeiro segundo.
+- O voo faz curvas de verdade, não é um zoom reto.
+- O último quadro é igual à imagem final.
+- Nada derrete, pisca ou muda de forma, e a marcenaria termina reta e precisa.
+- Não aparecem pessoas nem letras.
 
-Cole no fim de **todo prompt de imagem dos ambientes internos** (onde aparece `[style block]`):
+---
+
+## As 5 imagens
+
+### Imagem 1 · A porta (início do site)
 
 ```text
-Photorealistic architectural interior photography of a contemporary luxury home in Boca Raton, Florida. Warm minimalism: rift-cut white oak and American walnut millwork, matte lacquer, honed travertine floors, brushed brass details, hidden warm 2700K LED lighting. Soft late-morning daylight, gentle shadows. Full-frame camera, 24mm tilt-shift lens at eye level, one-point perspective, symmetrical composition with the main piece centered. Clean and uncluttered, no people, no text, no logos. 16:9.
+Ultra-photorealistic cinematic establishing frame of the front entrance of a fictional contemporary luxury residence in Boca Raton, South Florida. Eye-level camera at 1.6 meters, perfectly centered, 24mm wide-angle architectural lens. A monumental 4-meter closed pivot front door in warm American walnut with a slim vertical matte-black pull dominates the center, set into a tall wall of honed limestone beneath a deep cantilevered concrete canopy with a white-oak soffit and hidden warm lighting. Large limestone stepping pads cross a still reflecting pool toward the door. Dense high-end tropical landscaping frames both sides: royal palms, bird-of-paradise, sculpted shrubs, ornamental grasses, textured stone planters and warm garden lighting. Soft late-afternoon golden-hour sunlight, long soft shadows, realistic reflections on the water, premium architectural photography with deep foreground, midground and background separation. The interior must not be visible yet: the closed door creates mystery about what exists behind it. Perfectly symmetrical composition, physically accurate materials and lighting, genuinely buildable architecture. No street, no cars, no gate, no people, no signs, no text, no logos, no watermark, no fisheye distortion, no aerial view. --ar 16:9
 ```
 
-Negative prompt, para os geradores que aceitam:
+### Imagem 2 · A sala pronta (anexe a Imagem 1)
 
 ```text
-people, hands, text, letters, logo, watermark, camera shake, fast camera movement, cuts, fisheye, distortion, warping, melting furniture, flicker, blurry
+Use the attached image as the strict reference for the same fictional residence in Boca Raton. Preserve its architectural language, materials (honed limestone, warm American walnut, rift-cut white oak, matte-black metal), golden-hour light and color palette. The camera is now inside, past the front door and the double-height foyer, at eye level (1.4 meters) with the same 24mm architectural lens, perfectly centered on the main wall of the open living room. The wall is a floor-to-ceiling composition of vertical fluted walnut panels with a large black TV mounted flush in the center, a long floating white-oak console below it with push-to-open doors, and symmetrical backlit display niches with ceramics glowing in warm 2700K light. At the right edge, part of a wet bar with bronze-tinted glass shelves and a wine column. A low cream sofa and a wool rug in the foreground, honed travertine floor, floor-to-ceiling glass on the left with the tropical garden in golden light. Every piece of woodwork is finished, precise and immaculate: the work of a high-end custom millwork studio. Three-layer depth, premium architectural interior photography, physically accurate materials, reflections and contact shadows. No people, no pets, no text, no logos, no watermark, no fisheye, no kitchen visible. --ar 16:9
+```
+
+### Imagem 3 · A cozinha pronta (anexe a Imagem 2)
+
+```text
+Use the attached image as the strict reference for the same residence and interior style. Preserve the materials, golden-hour light, travertine floor, ceiling height and color palette. The camera is now in the open kitchen next to the living room, at counter height (1.2 meters), 24mm lens, perfectly centered on a long white-oak island with a thick waterfall-edge white quartzite top, three sculptural brass pendant lights above it and four leather counter stools. Behind the island, a full wall of handleless walnut tall cabinets with an integrated refrigerator and ovens, and a recessed niche with backlit oak shelves in the center. A large window on the left looks onto the tropical garden in golden light. All cabinetry is finished, precise and immaculate. Three-layer depth, premium architectural interior photography, physically accurate materials and reflections. No people, no text, no logos, no watermark, no fisheye, no clutter. --ar 16:9
+```
+
+### Imagem 4 · O closet pronto (anexe a Imagem 2)
+
+```text
+Use the attached image as the strict reference for the same residence and interior style. Preserve the materials (white oak, walnut, travertine, brushed brass), warm light and color palette. The camera is now upstairs, inside the primary walk-in closet, at eye level (1.5 meters), 24mm lens, in a perfectly symmetrical view down the center. On both sides, floor-to-ceiling white-oak wardrobes with bronze-tinted glass doors and integrated warm LED lighting, with neatly hung clothes and lit shoe shelves. In the center, an island with walnut drawers and a pale stone top. At the far end, a full-height mirror and a velvet bench under a clerestory window with warm late-afternoon light. All woodwork is finished, precise and immaculate. Premium architectural interior photography, physically accurate materials and reflections. No people, no text, no logos, no brand names on clothes, no watermark, no fisheye. --ar 16:9
+```
+
+### Imagem 5 · A casa inteira acesa (anexe a Imagem 1; fim do site)
+
+```text
+Use the attached image as the strict reference for the same residence, materials and landscaping. The camera has pulled back about 40 meters and risen to 6 meters, still perfectly centered on the front entrance axis. The entire two-story contemporary residence is now visible just after sunset: cantilevered concrete volumes, honed limestone walls, the tall walnut pivot door and floor-to-ceiling glass. Every room glows with warm interior light, revealing walnut and white-oak millwork inside: the living room media wall, the kitchen, the upstairs closet. The reflecting pool mirrors the facade, royal palms frame both sides, and the sky is a soft warm afterglow fading to deep blue. Premium architectural photography, physically accurate light and reflections, perfectly symmetrical composition. No people, no cars, no street, no text, no logos, no watermark, no fisheye. --ar 16:9
 ```
 
 ---
 
-## 00 · Arrival · `00-arrival.mp4`
+## Os 4 vídeos (Seedance 2.0 · 10 segundos · 16:9)
 
-A chegada: de longe, no fim de tarde, até a porta de madeira, que abre. Aqui as duas imagens têm câmeras diferentes,
-então gere a inicial primeiro e use-a como referência para a final.
+### Vídeo 1 · Da porta à sala · `01-living.mp4`
 
-**Imagem inicial**
+`@image_1` = Imagem 1 · `@image_2` = Imagem 2
 
 ```text
-Aerial drone photograph at golden hour of a contemporary two-story luxury villa in Boca Raton, Florida. White stucco and limestone volumes, flat roofs with deep overhangs and warm teak wood soffits, floor-to-ceiling glass, a long reflecting pool in front, royal palms and a manicured tropical garden. The interior lights are starting to glow warm. The camera is high and far away, with the house centered in the frame. Photorealistic architectural photography, no people, no text, 16:9.
+STYLE: Photoreal luxury-interior film, anamorphic, natural 24fps motion, warm South Florida golden hour. Live action, NOT CGI or 3D render.
+
+SCENE: Exactly 10 seconds, 16:9, ONE CONTINUOUS FPV CINEWHOOP TAKE, NO CUTS. The flight goes through the front door of a contemporary Boca Raton residence, crosses the double-height foyer and tours the living room while its custom woodwork assembles, then resolves into a frontal hero view of the finished media wall.
+
+REFERENCES: @image_1 is the exact opening frame: the closed walnut pivot door; preserve its timber, limestone, water, plants, perspective and light. @image_2 is the exact finished living room and final frame; preserve its media wall, console, niches, bar, furniture and composition. No redesign.
+
+CAMERA: Fluid 18mm FPV cinewhoop with strong foreground parallax and real inertia, flying between 1 and 2 meters high indoors. Never use a straight push-in. Path: door push-through → S-curve through the double-height foyer → descending bank into the living room → C-curve along the media wall → settle into @image_2. Constantly vary yaw, roll and altitude; never fly straight for more than 0.6 seconds. Pass only through visible openings.
+
+LIGHT/COLOR: Golden sun shafts through floor-to-ceiling glass; warm 2700K lights activate as each piece finishes. Amber walnut, pale white oak, honed travertine and limestone, brushed brass, matte black; accurate glass and stone reflections.
+
+CONSTRUCTION: A physical construction wave travels just ahead of the camera. The architecture is already there (walls, floors, windows); only the woodwork and furniture assemble. No instant appearance or morphing. Wall panels rise and lock, fluted walnut slats click into place one by one, cabinet boxes slide in and seat, doors close flush, shelves slot into niches, stone tops lower with weight, LED strips ignite. Real gravity, inertia, shadows and occlusion; never block the camera.
+
+ACTION:
+0:00–0:01.0 — Motion immediately. The walnut pivot door in @image_1 swings open on its pivot while the drone accelerates over the stepping pads and through the gap.
+0:01.0–0:03.5 — Inside the bare double-height foyer: full-height white-oak wall paneling rises from the floor and locks, a floating walnut console seats against the wall and its LED strip ignites, and the floating staircase's oak treads slot into the wall one by one in the background. Bank right beneath the staircase landing.
+0:03.5–0:07.5 — Descend into the open living room and perform a 60-degree C-curve along the main wall: vertical fluted walnut panels assemble outward from the center, the long floating white-oak console slides in and locks, the backlit niches fill and light up one by one, the TV mounts flush, and on the right the wet bar's bronze glass shelves slot in. The sofa and rug settle with weight.
+0:07.5–0:10.0 — Decelerate, level the horizon and arc back into the precise symmetrical frontal composition of @image_2. At exactly 10 seconds, match @image_2.
+
+COMPOSITION/PHYSICS: Three-layer depth: close architecture or plants in the foreground, woodwork assembling in the midground, finished room in the background. Real mass, grounded shadows, stable geometry.
+
+TECHNICAL: Natural motion blur; no jitter, duplicate frames or geometry drift. Fast but readable; crisp, precise final woodwork.
+
+AUDIO: No music or dialogue.
+
+CONSTRAINTS: No cuts, transitions, teleportation, straight-only flight, slow motion, particles, dissolves, morphs, people, pets, vehicles, text or logos. Lock @image_1 as the opening and @image_2 as the exact design and final frame.
 ```
 
-**Imagem final** (com a inicial como referência)
+### Vídeo 2 · Da sala à cozinha · `02-kitchen.mp4`
+
+`@image_1` = último quadro do vídeo 1 (ou a Imagem 2) · `@image_2` = Imagem 3
 
 ```text
-The same villa, now seen at eye level from the front walkway at golden hour: a monumental 3-meter tall walnut pivot door in the center, slightly open, with warm light spilling from the entrance hall inside. Limestone steps cross the reflecting pool to the door, and palms frame both sides. Symmetrical, centered composition. Photorealistic, no people, no text, 16:9.
+STYLE: Photoreal luxury-interior film, anamorphic, natural 24fps motion, warm South Florida golden hour. Live action, NOT CGI or 3D render.
+
+SCENE: Exactly 10 seconds, 16:9, ONE CONTINUOUS FPV CINEWHOOP TAKE, NO CUTS. The flight leaves the finished living room, flows through an open passage into the kitchen while its custom cabinetry assembles, then resolves into a frontal hero view of the finished island.
+
+REFERENCES: @image_1 is the exact opening frame: the finished living room; preserve everything in it. @image_2 is the exact finished kitchen and final frame; preserve the island, walnut cabinetry, niche, pendants, stools and composition. No redesign.
+
+CAMERA: Fluid 18mm FPV cinewhoop with strong foreground parallax and real inertia, flying between 0.9 and 1.8 meters high. Never use a straight push-in. Path: lateral bank away from the media wall → glide through the open passage → drop to counter height → C-curve around the island → rise and settle into @image_2. Constantly vary yaw, roll and altitude; never fly straight for more than 0.6 seconds. Pass only through visible openings.
+
+LIGHT/COLOR: Golden sun through the garden window; warm 2700K lights activate as each piece finishes. Amber walnut, pale white oak, white quartzite, honed travertine, brushed brass; accurate stone, glass and metal reflections.
+
+CONSTRUCTION: A physical construction wave travels just ahead of the camera. The kitchen architecture is already there (walls, floor, window); only the cabinetry, appliances and lighting assemble. No instant appearance or morphing. Cabinet boxes rise and lock, doors close flush, the stone slab lowers with weight, appliances slide in and seat, shelves slot in, pendants descend on their cables and ignite. Real gravity, inertia, shadows and occlusion; never block the camera.
+
+ACTION:
+0:00–0:01.5 — Motion immediately. Bank left away from the media wall in @image_1 and glide past the edge of the bar toward the open passage; the living room stays finished behind.
+0:01.5–0:04.0 — Enter the bare kitchen: white walls, travertine floor, plumbing ready. Drop to counter height as the island's oak cabinet boxes rise from the floor and the thick waterfall quartzite slab lowers onto them with weight.
+0:04.0–0:07.5 — C-curve around the island: handleless walnut tall cabinets slide in and lock along the back wall from left to right, the refrigerator and ovens seat flush, the oak shelves slot into the backlit niche, the three brass pendants descend and illuminate, and the leather stools slide into alignment.
+0:07.5–0:10.0 — Rise to 1.2 meters, level the horizon and settle into the precise symmetrical composition of @image_2. At exactly 10 seconds, match @image_2.
+
+COMPOSITION/PHYSICS: Three-layer depth: close cabinetry or stools in the foreground, cabinetry assembling in the midground, finished kitchen in the background. Real mass, grounded shadows, stable geometry.
+
+TECHNICAL: Natural motion blur; no jitter, duplicate frames or geometry drift. Fast but readable; crisp, precise final cabinetry.
+
+AUDIO: No music or dialogue.
+
+CONSTRAINTS: No cuts, transitions, teleportation, straight-only flight, slow motion, particles, dissolves, morphs, people, pets, text or logos. Lock @image_1 as the opening and @image_2 as the exact design and final frame.
 ```
 
-**Vídeo**
+### Vídeo 3 · Da cozinha ao closet · `03-closet.mp4`
+
+`@image_1` = último quadro do vídeo 2 (ou a Imagem 3) · `@image_2` = Imagem 4
 
 ```text
-One continuous cinematic drone shot. The camera glides slowly down and forward from high above the villa toward the front entrance, keeping the house centered, and settles at eye level in front of the tall walnut pivot door. As the camera arrives, the door swings open and warm light pours out. Golden hour, palm leaves moving gently, soft reflections on the pool. Smooth and stable, no cuts, no people.
+STYLE: Photoreal luxury-interior film, anamorphic, natural 24fps motion, warm South Florida late-afternoon light. Live action, NOT CGI or 3D render.
+
+SCENE: Exactly 10 seconds, 16:9, ONE CONTINUOUS FPV CINEWHOOP TAKE, NO CUTS. The flight leaves the finished kitchen, climbs the floating staircase to the upper floor, enters the primary suite and tours the walk-in closet while it assembles, then resolves into a symmetrical hero view down the finished closet.
+
+REFERENCES: @image_1 is the exact opening frame: the finished kitchen; preserve everything in it. @image_2 is the exact finished walk-in closet and final frame; preserve its wardrobes, glass doors, island, mirror, bench and composition. No redesign.
+
+CAMERA: Fluid 18mm FPV cinewhoop with strong foreground parallax and real inertia. Never use a straight push-in. Path: pivot away from the island → rising spiral up the floating oak staircase → glide along the upstairs hallway → through the open double doors of the primary suite → S-curve down the closet aisle → settle into @image_2. Constantly vary yaw, roll and altitude; never fly straight for more than 0.6 seconds. Pass only through visible openings.
+
+LIGHT/COLOR: Warm sun strobing through the stair glass; warm 2700K LED strips ignite as each wardrobe finishes. Pale white oak, walnut, bronze-tinted glass, pale stone, brushed brass; accurate glass and mirror reflections.
+
+CONSTRUCTION: A physical construction wave travels just ahead of the camera. The closet room is already there (walls, floor, clerestory window); only the woodwork, lighting and contents assemble. No instant appearance or morphing. Wardrobe frames rise and lock, shelves and hanging rails slot in, glass doors swing shut, drawers slide in, the stone top lowers with weight, garments slide onto the rails on their hangers, shoes settle on the lit shelves. Real gravity, inertia, shadows and occlusion; never block the camera.
+
+ACTION:
+0:00–0:01.5 — Motion immediately. Pivot right away from the island in @image_1 and accelerate toward the floating oak staircase.
+0:01.5–0:04.0 — Climb the staircase in a rising spiral, following the treads, with warm sunlight strobing through the glass; glide along the upstairs hallway past walnut paneling.
+0:04.0–0:07.5 — Pass through the open double doors into the bare walk-in closet: white-oak wardrobe frames rise along both walls and lock, shelves and rails slot in, the bronze glass doors swing shut, LED strips ignite from the back to the front, and the central island assembles drawer by drawer as its stone top settles with weight. Garments slide onto the rails and shoes settle on the lit shelves.
+0:07.5–0:10.0 — Decelerate in the center aisle, level the horizon and settle into the precise symmetrical view of @image_2. At exactly 10 seconds, match @image_2.
+
+COMPOSITION/PHYSICS: Three-layer depth: door frame or wardrobe edges in the foreground, woodwork assembling in the midground, mirror and bench in the background. Real mass, grounded shadows, stable geometry.
+
+TECHNICAL: Natural motion blur; no jitter, duplicate frames or geometry drift. Fast but readable; crisp, precise final woodwork.
+
+AUDIO: No music or dialogue.
+
+CONSTRAINTS: No cuts, transitions, teleportation, straight-only flight, slow motion, particles, dissolves, morphs, people, pets, text or logos. Lock @image_1 as the opening and @image_2 as the exact design and final frame.
 ```
 
-## 01 · Foyer · `01-foyer.mp4`
+### Vídeo 4 · Do closet à casa inteira · `04-finale.mp4`
 
-**Imagem final**
-
-```text
-Double-height entrance foyer of the same villa. Centered on the back wall: full-height fluted white oak wall paneling with a floating walnut console lit from below by a warm LED strip, and a large round mirror above it. On the right, a built-in white oak bench with hidden shoe drawers; on the left, a floating staircase with thick oak treads. Honed travertine floor, soft daylight from a tall window. [style block]
-```
-
-**Imagem inicial (edição da final)**
+`@image_1` = último quadro do vídeo 3 (ou a Imagem 4) · `@image_2` = Imagem 5
 
 ```text
-Edit this image. Keep exactly the same room, camera angle, window and daylight. Remove all the woodwork: the wall paneling, the console, the mirror, the bench and the staircase treads. Leave bare white primed drywall, a raw concrete floor and a few electrical boxes on the walls. The room is empty and unfinished. Change nothing else.
-```
+STYLE: Photoreal luxury-property film, anamorphic, natural 24fps motion, South Florida golden hour turning into sunset afterglow. Live action, NOT CGI or 3D render.
 
-**Vídeo**
+SCENE: Exactly 10 seconds, 16:9, ONE CONTINUOUS FPV CINEWHOOP TAKE, NO CUTS. The flight leaves the finished walk-in closet, crosses the primary bedroom while its last pieces of woodwork assemble, exits over the reflecting pool and rises into a frontal hero view of the whole residence glowing with warm light.
 
-```text
-Static camera with a very slow push-in. The empty, unfinished foyer builds itself: white oak panels slide up from the floor and click into place one by one across the back wall, the walnut console glides in and attaches to the wall, the mirror lowers into place, the bench assembles piece by piece, the staircase treads slot into the wall from bottom to top, and the concrete floor turns into travertine. Finally the warm LED lights fade on. Precise, satisfying architectural build, smooth motion, one continuous shot, no people.
-```
+REFERENCES: @image_1 is the exact opening frame: the finished walk-in closet; preserve everything in it. @image_2 is the exact final frame: the complete residence at sunset; preserve its architecture, facade, glowing interiors, pool, palms and composition. No redesign.
 
-## 02 · Kitchen · `02-kitchen.mp4`
+CAMERA: Fluid 18mm FPV cinewhoop with strong foreground parallax and real inertia. Never use a straight push-in. Path: turn away from the mirror → glide into the primary bedroom → bank toward the open sliding glass doors → exit onto the terrace → skim the reflecting pool → smooth ascending orbit pulling back → settle into @image_2. Constantly vary yaw, roll and altitude; never fly straight for more than 0.6 seconds. Pass only through visible openings.
 
-**Imagem final**
+LIGHT/COLOR: Warm interior light inside; outside, the sun dips below the horizon as the camera rises and every window glows warm against a soft afterglow sky fading to deep blue. Walnut, white oak, limestone, concrete, black metal; accurate glass and water reflections.
 
-```text
-Open kitchen of the same villa. Centered: a long island in white oak with a thick waterfall-edge white quartzite top and three sculptural pendant lights above it. Behind it, a full wall of handleless walnut tall cabinets with an integrated refrigerator and ovens, and a recessed niche with backlit oak shelves in the middle. A large window on the left looks onto the tropical garden. [style block]
-```
+CONSTRUCTION: Only the bedroom's last woodwork assembles, as a physical wave just ahead of the camera: walnut headboard wall panels rise and lock one by one, a built-in white-oak desk niche seats beside the window, bedside lights activate. No instant appearance or morphing. Real gravity, inertia, shadows and occlusion; never block the camera. Everything outside is already complete.
 
-**Imagem inicial (edição da final)**
+ACTION:
+0:00–0:01.5 — Motion immediately. Turn away from the mirror in @image_1 and glide out of the closet into the primary bedroom.
+0:01.5–0:04.0 — In the bedroom, the full-height walnut headboard wall assembles panel by panel and the built-in white-oak desk niche seats beside the window; bedside lights activate. Bank toward the open sliding glass doors.
+0:04.0–0:06.5 — Exit onto the terrace, descend and skim 40 cm above the reflecting pool, producing ripples and reflections of the glowing facade.
+0:06.5–0:10.0 — Accelerate into a smooth ascending orbit around the front while pulling back. Reveal the completed residence with warm light in every room, level the horizon and align with the central entrance axis. At exactly 10 seconds, arrive at the precise symmetrical composition of @image_2.
 
-```text
-Edit this image. Keep exactly the same kitchen space, camera angle, window and daylight. Remove all the cabinets, the island, the countertops, the shelves and the pendant lights. Leave bare primed walls with plumbing and electrical stubs, a raw concrete floor and empty ceiling junction boxes. The space is an empty shell before installation. Change nothing else.
-```
+COMPOSITION/PHYSICS: Three-layer depth: close architecture or palms in the foreground, glowing rooms and pool in the midground, the residence and sky in the background. Real mass, grounded shadows, water ripples, rotor downwash, stable geometry.
 
-**Vídeo**
+TECHNICAL: Natural motion blur; no jitter, duplicate frames or geometry drift. Fast but readable; crisp final architecture.
 
-```text
-Static camera, slow push-in toward the island. The kitchen assembles itself: the island cabinet boxes rise from the floor and the quartzite slab lowers softly onto them, walnut panels slide in and click into place from left to right across the back wall, the doors close flush, the shelves slot into the niche, and the pendant lights descend from the ceiling and glow on. Precise, smooth, satisfying build, one continuous shot, no people.
-```
+AUDIO: No music or dialogue.
 
-## 03 · Living (sala de TV + bar) · `03-living.mp4`
-
-**Imagem final**
-
-```text
-Living room media wall of the same villa. Centered: a floor-to-ceiling wall of vertical fluted walnut panels with a large black TV mounted flush in the middle, a long floating white oak console below it with push-to-open doors, and backlit display niches with ceramics on both sides. On the right side of the room, a wet bar with bronze-tinted glass shelves and a wine column. [style block]
-```
-
-**Imagem inicial (edição da final)**
-
-```text
-Edit this image. Keep exactly the same room, camera angle and daylight. Remove the media wall, the TV, the console, the niches and the bar. Leave a bare primed drywall wall with loose cables hanging where the TV will go, a raw concrete floor and nothing else. Change nothing else.
-```
-
-**Vídeo**
-
-```text
-Static camera, slow push-in. The fluted walnut panels unfold across the wall from the center outward, the floating console slides in and locks into place, the loose cables retract into the wall as the TV mounts flush, the display niches light up one by one, and the bar shelves slot in on the right. The warm ambient lights fade on. Smooth, satisfying, architectural, one continuous shot, no people.
-```
-
-## 04 · Office · `04-office.mp4`
-
-**Imagem final**
-
-```text
-Home office of the same villa. Centered: a wall-to-wall built-in walnut bookcase with a brass library ladder on a rail, and a built-in white oak desk floating in front of it; a white oak coffered ceiling above; a leather desk chair and a warm desk lamp. A side window with a garden view. [style block]
-```
-
-**Imagem inicial (edição da final)**
-
-```text
-Edit this image. Keep exactly the same room, camera angle, window and daylight. Remove the bookcase, the ladder, the desk, the chair, the lamp and the coffered ceiling. Leave bare white walls, a flat drywall ceiling and a raw concrete floor. The room is empty. Change nothing else.
-```
-
-**Vídeo**
-
-```text
-Static camera, slow push-in. Bookcase shelves slide into the wall one row at a time from bottom to top, the brass ladder rolls in along its rail, the coffered ceiling beams lower into place, the desk extends out from the wall, books appear on the shelves and the desk lamp switches on. Calm, smooth, satisfying build, one continuous shot, no people.
-```
-
-## 05 · Closet · `05-closet.mp4`
-
-**Imagem final**
-
-```text
-Primary walk-in closet of the same villa, in a symmetrical view down the center. On both sides, floor-to-ceiling white oak wardrobes with bronze-tinted glass doors and integrated warm LED lighting, with neatly hung clothes and shoes on lit shelves. In the center, an island with walnut drawers and a pale stone top. At the far end, a full-height mirror and a velvet bench. [style block]
-```
-
-**Imagem inicial (edição da final)**
-
-```text
-Edit this image. Keep exactly the same room, camera angle and light. Remove the wardrobes, the island, the mirror, the bench, the clothes and all the lighting. Leave bare white walls and a raw concrete floor. The room is empty. Change nothing else.
-```
-
-**Vídeo**
-
-```text
-Static camera, slow push-in down the center. Wardrobe frames rise along both walls, shelves and rails slot in, the glass doors swing shut, the LED strips light up from the back to the front, the island assembles drawer by drawer and its stone top settles on it, and the clothes appear on the rails. Elegant, smooth, satisfying, one continuous shot, no people.
-```
-
-## 06 · Laundry · `06-laundry.mp4`
-
-**Imagem final**
-
-```text
-Laundry room of the same villa. Centered: a front-loading washer and dryer side by side under a white quartz countertop, flanked by tall white oak and matte cream lacquer cabinets; upper cabinets with open oak shelves; a built-in utility sink, a pull-out hamper and a hanging rod with a few shirts. A bright window. [style block]
-```
-
-**Imagem inicial (edição da final)**
-
-```text
-Edit this image. Keep exactly the same room, camera angle, window and daylight. Remove all the cabinets, the countertop, the sink, the shelves and the washer and dryer. Leave bare walls with exposed water and power hookups and a raw concrete floor. Change nothing else.
-```
-
-**Vídeo**
-
-```text
-Static camera, slow push-in. Base cabinets slide in, the washer and dryer roll into their slots, the countertop lowers onto them, the upper cabinets lift into place, the sink drops in and folded towels stack themselves on the shelves. Bright, clean, smooth, one continuous shot, no people.
-```
-
-## 07 · Finale · `07-finale.mp4`
-
-O fecho: a casa inteira acesa à noite, a câmera se afastando. É sobre esse vídeo que aparece o "Your home is next"
-com o botão da consultoria grátis. Como na chegada, gere a inicial e use-a como referência para a final.
-
-**Imagem inicial**
-
-```text
-The same villa at blue hour, seen at eye level from across the reflecting pool. Every room glows with warm interior light behind the floor-to-ceiling glass, and the walnut and oak millwork is visible inside. Palms in silhouette, reflections on the water, a deep blue sky. Centered, symmetrical composition. Photorealistic architectural photography, no people, no text, 16:9.
-```
-
-**Imagem final** (com a inicial como referência)
-
-```text
-The same villa at night, seen from high above and far away: the whole house glowing warmly among dark palms, the reflecting pool lit, a deep blue night sky. The house is small and centered in the frame. Photorealistic, no people, no text, 16:9.
-```
-
-**Vídeo**
-
-```text
-One continuous cinematic drone shot. The camera slowly pulls back and rises from the reflecting pool, revealing the whole villa glowing at blue hour, interior lights warm and steady, palms swaying gently, soft reflections on the water. Smooth and stable, no cuts, no people.
+CONSTRAINTS: No cuts, transitions, teleportation, straight-only flight, slow motion, particles, dissolves, morphs, people, pets, vehicles, text or logos. Lock @image_1 as the opening and @image_2 as the exact design and final frame.
 ```
 
 ---
-
-## Versão vertical para celular (opcional)
-
-Sem ela, o site recorta o centro do vídeo 16:9 para o celular em pé (por isso a peça principal no centro).
-Se quiser caprichar, gere também uma versão vertical de cada cena: os mesmos prompts, trocando `16:9` por
-`vertical 9:16, tall composition`, e as imagens inicial e final também em 9:16. Nome: `02-kitchen-mobile.mp4`.
 
 ## Depois de gerar
 
-Me mande os MP4 aqui (pode ser um de cada vez). Eu rodo, na pasta `nuvo-woodwork/`:
+Me mande os MP4 (pode ser um de cada vez) e as imagens. Eu rodo, na pasta `nuvo-woodwork/`:
 
 ```bash
 tools/make-frames.sh
 ```
 
-O script transforma cada vídeo em imagens WebP (versão 16:9 e versão para celular), atualiza
-`assets/frames/manifest.js` e o site passa a usar o vídeo daquela cena. As cenas que ainda não têm vídeo continuam
-com o desenho técnico, então dá para publicar aos poucos.
+O script transforma cada vídeo em imagens WebP (16:9 para computador e um recorte vertical do centro para celular),
+atualiza `assets/frames/manifest.js` e o site passa a usar o vídeo daquele trecho. Os trechos que ainda não têm vídeo
+continuam com as fotos, então dá para publicar aos poucos.

@@ -10,16 +10,18 @@ O site é em inglês (o público é americano).
 
 ## O que tem no site
 
-- **O filme da casa** (topo, preso na tela durante o scroll): 8 cenas, da chegada à fachada até a casa acesa à noite.
-  Cada ambiente passa por **Design → Build → Installed** (aparece no canto), com dois textos por cena: a ideia do
-  ambiente e o que a Nuvo faz nele, com link "Plan your kitchen" que já marca o ambiente no formulário.
-  - Embaixo, uma **régua de trena** mostra onde a pessoa está, deixa pular para qualquer ambiente e, numa linha
-    clara, quanto do vídeo de cada cena já carregou.
+- **O filme da casa** (topo, preso na tela durante o scroll), no formato do site de referência que o Guilherme mandou:
+  um voo de drone contínuo, da porta fechada até a casa inteira acesa, passando pela sala, cozinha e closet, que se
+  montam na frente da câmera. São 4 vídeos de 10 s encadeados (o último quadro de um é o primeiro do próximo).
+  - Títulos grandes à esquerda (no celular, embaixo) que sobem e somem presos ao scroll, e no fim o convite para a
+    consultoria 3D grátis, com botões de agendar e ligar.
+  - Embaixo, uma **régua de trena** mostra onde a pessoa está, deixa pular para qualquer trecho e, numa linha clara,
+    quanto do vídeo de cada trecho já carregou.
   - **Skip the tour** pula direto para o resto do site.
-  - Enquanto uma cena não tem vídeo, ela aparece como **desenho técnico que vira a foto real** de um projeto da Nuvo
-    (as cenas externas aparecem como a fachada desenhada a traço, com luzes acendendo e a porta abrindo).
+  - Enquanto um trecho não tem vídeo, ele mostra **fotos reais de projetos da Nuvo** com um zoom lento.
 - **Índice de ambientes** com fotos de projetos reais. No computador, a foto acompanha o cursor; no celular, aparece
-  ao lado. Cada linha volta o filme até aquele ambiente.
+  ao lado. Cada linha volta o filme até aquele ambiente (escritório e lavanderia, que ficaram fora do voo, levam ao
+  formulário).
 - **O estúdio**: a história do Eduardo (italiano, nascido no Brasil, marceneiro há mais de 30 anos, na Flórida desde
   2015), três fotos de residências e os números.
 - **Processo** em 6 passos (como cotas de desenho técnico) e as marcas de ferragem/máquinas.
@@ -34,10 +36,12 @@ Eduardo), Instrument Sans (textos) e DM Mono (detalhes de desenho técnico), tod
 
 ## Os vídeos
 
-Os prompts de imagem e de vídeo de cada cena estão em **[PROMPTS.md](PROMPTS.md)**, com o passo a passo.
-Resumo do caminho de um vídeo até o site:
+Os prompts das 5 imagens e dos 4 vídeos estão em **[PROMPTS.md](PROMPTS.md)**, com o passo a passo
+(Seedance 2.0, 10 s, 16:9, como no site de referência). Resumo do caminho de um vídeo até o site:
 
-1. Gerar o MP4 (16:9, 1080p, 5 a 8 s, sem áudio) com o nome da tabela do PROMPTS.md, ex.: `02-kitchen.mp4`.
+1. Gerar o MP4 com o nome da tabela do PROMPTS.md, ex.: `02-kitchen.mp4`. Para emendar sem salto, o primeiro quadro
+   de cada vídeo é o último quadro do anterior. Para tirar esse quadro:
+   `ffmpeg -sseof -0.05 -i videos/01-living.mp4 -frames:v 1 -update 1 ultimo-quadro-01.png`.
 2. Colocar em `nuvo-woodwork/videos/` (essa pasta não vai para o git nem para o ar).
 3. Rodar `tools/make-frames.sh` dentro de `nuvo-woodwork/`. Precisa do ffmpeg.
 4. O script cria `assets/frames/<cena>/lg/` (16:9) e `assets/frames/<cena>/mobile/` (vertical) e reescreve
@@ -45,24 +49,24 @@ Resumo do caminho de um vídeo até o site:
 
 Detalhes:
 
-- Cada 5 s de vídeo vira 60 imagens (12 por segundo). Para mais suavidade: `FPS=16 tools/make-frames.sh`;
-  para arquivos menores: `QUALITY=60 tools/make-frames.sh`.
+- Cada 10 s de vídeo vira 120 imagens (12 por segundo), uns 6 MB no computador e 4 MB no celular por trecho.
+  Para mais suavidade: `FPS=15 tools/make-frames.sh`; para arquivos menores: `QUALITY=50 tools/make-frames.sh`.
 - Com um vídeo vertical `02-kitchen-mobile.mp4`, o celular usa ele; sem, o script recorta o centro do 16:9.
-- O site baixa primeiro um quadro a cada 16, depois os intermediários, e prioriza a cena em que a pessoa está e as
-  próximas. Cenas distantes só baixam os quadros espaçados até a pessoa chegar perto.
-- Para tirar um vídeo do ar: apague a pasta da cena em `assets/frames/` e rode `tools/make-frames.sh --manifest`.
+- O site baixa primeiro um quadro a cada 16, depois os intermediários, e prioriza o trecho em que a pessoa está e
+  os próximos. Trechos distantes só baixam os quadros espaçados até a pessoa chegar perto.
+- Para tirar um vídeo do ar: apague a pasta do trecho em `assets/frames/` e rode `tools/make-frames.sh --manifest`.
 
 ## Como editar
 
 | O quê | Onde |
 | --- | --- |
-| Textos do filme, ordem das cenas, duração de cada uma no scroll | `assets/js/content.js` → `scenes` |
+| Títulos do filme, ordem dos trechos, duração de cada um no scroll, fotos de placeholder | `assets/js/content.js` → `scenes` |
 | Telefone, e-mail e endereço do formulário | `assets/js/content.js` → `contact` (e no `index.html`) |
 | Ambientes, estúdio, processo, depoimentos, contato e rodapé | `index.html` |
 | Fotos dos projetos | `assets/img/work/` (índice e estúdio) e `assets/img/rooms/` (placeholders do filme) |
 | Cores e fontes | topo do `assets/css/styles.css` |
 
-Nos textos do filme, `*palavra*` fica em itálico bronze.
+Nos títulos do filme, `\n` quebra a linha e `*palavra*` fica em itálico dourado.
 
 ### Formulário
 
@@ -83,7 +87,7 @@ Tudo veio do site atual da Nuvo (textos, fotos, depoimentos, telefone, e-mail e 
 - [ ] Cidades atendidas: Boca Raton, Delray Beach, Parkland e Miami
 - [ ] Se o telefone (561) 770-2595 tem WhatsApp (dá para pôr um botão)
 - [ ] Endereço da oficina: 4801 Johnson Rd, Suite 4, Coconut Creek
-- [ ] Os 8 vídeos (PROMPTS.md)
+- [ ] As 5 imagens e os 4 vídeos (PROMPTS.md)
 
 ## Ver no computador
 
@@ -123,9 +127,9 @@ nuvo-woodwork → Custom domains, e o `og:image` já sai com o endereço certo.
 ```
 nuvo-woodwork/
 ├── index.html               página (logo vetorizado embutido)
-├── PROMPTS.md               prompts das imagens e vídeos das 8 cenas
+├── PROMPTS.md               prompts das 5 imagens e dos 4 vídeos
 ├── assets/css/styles.css    visual
-├── assets/js/content.js     cenas do filme (textos e tempos) e contato
+├── assets/js/content.js     trechos do filme (títulos, tempos, fotos) e contato
 ├── assets/js/film.js        o filme: canvas, scroll, carregamento dos quadros, placeholders
 ├── assets/js/app.js         menu, índice de ambientes, formulário
 ├── assets/frames/           quadros dos vídeos + manifest.js (gerados pelo script)

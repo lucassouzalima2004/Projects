@@ -13,8 +13,8 @@
 #
 # Ajustes (variáveis de ambiente):
 #   FPS=12        quadros por segundo de vídeo (mais = mais suave e mais pesado)
-#   QUALITY=68    qualidade do WebP, de 0 a 100
-#   WIDTH=1600    largura dos quadros 16:9
+#   QUALITY=60    qualidade do WebP, de 0 a 100
+#   WIDTH=1440    largura dos quadros 16:9
 #
 # Precisa do ffmpeg (com libwebp). O manifest.js é refeito no fim, então dá para
 # apagar uma pasta de assets/frames/ e rodar --manifest para tirar a cena do ar.
@@ -22,8 +22,8 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 FPS=${FPS:-12}
-QUALITY=${QUALITY:-68}
-WIDTH=${WIDTH:-1600}
+QUALITY=${QUALITY:-60}
+WIDTH=${WIDTH:-1440}
 OUT=assets/frames
 
 command -v ffmpeg >/dev/null || { echo "Instale o ffmpeg primeiro (https://ffmpeg.org)." >&2; exit 1; }
@@ -49,7 +49,7 @@ convert_video() {
   echo "✓ $id: $(ls "$OUT/$id/lg" | wc -l | tr -d ' ') quadros"
   # Sem vídeo próprio para celular, recorta o centro em 3:4
   if ! compgen -G "videos/*$id-mobile.*" >/dev/null; then
-    encode "$src" "fps=$FPS,crop='ih*3/4':ih,scale=-2:'min(1080,ih)':flags=lanczos" "$OUT/$id/mobile"
+    encode "$src" "fps=$FPS,crop='ih*3/4':ih,scale=-2:'min(960,ih)':flags=lanczos" "$OUT/$id/mobile"
     echo "  + versão para celular recortada do 16:9"
   fi
 }
