@@ -41,7 +41,8 @@ Fora do Seedance, funciona no Kling (start/end frame) e no Veo 3.1 (first/last f
 - O voo faz curvas de verdade, não é um zoom reto.
 - O último quadro é igual à imagem final.
 - Nada derrete, pisca ou muda de forma, e a marcenaria termina reta e precisa.
-- Não aparecem pessoas nem letras.
+- Não aparecem pessoas, letras nem drones (na primeira leva, o vídeo 4 mostrou drones sobre a piscina;
+  por isso os prompts agora proíbem isso).
 
 ---
 
@@ -110,7 +111,7 @@ TECHNICAL: Natural motion blur; no jitter, duplicate frames or geometry drift. F
 
 AUDIO: No music or dialogue.
 
-CONSTRAINTS: No cuts, transitions, teleportation, straight-only flight, slow motion, particles, dissolves, morphs, people, pets, vehicles, text or logos. Lock @image_1 as the opening and @image_2 as the exact design and final frame.
+CONSTRAINTS: No cuts, transitions, teleportation, straight-only flight, slow motion, particles, dissolves, morphs, visible drones or quadcopters (the camera itself is never seen), people, pets, vehicles, text or logos. Lock @image_1 as the opening and @image_2 as the exact design and final frame.
 ```
 
 ### Vídeo 2 · Da sala à cozinha · `02-kitchen.mp4`
@@ -142,7 +143,7 @@ TECHNICAL: Natural motion blur; no jitter, duplicate frames or geometry drift. F
 
 AUDIO: No music or dialogue.
 
-CONSTRAINTS: No cuts, transitions, teleportation, straight-only flight, slow motion, particles, dissolves, morphs, people, pets, text or logos. Lock @image_1 as the opening and @image_2 as the exact design and final frame.
+CONSTRAINTS: No cuts, transitions, teleportation, straight-only flight, slow motion, particles, dissolves, morphs, visible drones or quadcopters (the camera itself is never seen), people, pets, text or logos. Lock @image_1 as the opening and @image_2 as the exact design and final frame.
 ```
 
 ### Vídeo 3 · Da cozinha ao closet · `03-closet.mp4`
@@ -174,7 +175,7 @@ TECHNICAL: Natural motion blur; no jitter, duplicate frames or geometry drift. F
 
 AUDIO: No music or dialogue.
 
-CONSTRAINTS: No cuts, transitions, teleportation, straight-only flight, slow motion, particles, dissolves, morphs, people, pets, text or logos. Lock @image_1 as the opening and @image_2 as the exact design and final frame.
+CONSTRAINTS: No cuts, transitions, teleportation, straight-only flight, slow motion, particles, dissolves, morphs, visible drones or quadcopters (the camera itself is never seen), people, pets, text or logos. Lock @image_1 as the opening and @image_2 as the exact design and final frame.
 ```
 
 ### Vídeo 4 · Do closet à casa inteira · `04-finale.mp4`
@@ -200,13 +201,13 @@ ACTION:
 0:04.0–0:06.5 — Exit onto the terrace, descend and skim 40 cm above the reflecting pool, producing ripples and reflections of the glowing facade.
 0:06.5–0:10.0 — Accelerate into a smooth ascending orbit around the front while pulling back. Reveal the completed residence with warm light in every room, level the horizon and align with the central entrance axis. At exactly 10 seconds, arrive at the precise symmetrical composition of @image_2.
 
-COMPOSITION/PHYSICS: Three-layer depth: close architecture or palms in the foreground, glowing rooms and pool in the midground, the residence and sky in the background. Real mass, grounded shadows, water ripples, rotor downwash, stable geometry.
+COMPOSITION/PHYSICS: Three-layer depth: close architecture or palms in the foreground, glowing rooms and pool in the midground, the residence and sky in the background. Real mass, grounded shadows, water ripples, stable geometry.
 
 TECHNICAL: Natural motion blur; no jitter, duplicate frames or geometry drift. Fast but readable; crisp final architecture.
 
 AUDIO: No music or dialogue.
 
-CONSTRAINTS: No cuts, transitions, teleportation, straight-only flight, slow motion, particles, dissolves, morphs, people, pets, vehicles, text or logos. Lock @image_1 as the opening and @image_2 as the exact design and final frame.
+CONSTRAINTS: No cuts, transitions, teleportation, straight-only flight, slow motion, particles, dissolves, morphs, visible drones or quadcopters (the camera itself is never seen), people, pets, vehicles, text or logos. Lock @image_1 as the opening and @image_2 as the exact design and final frame.
 ```
 
 ---

@@ -40,7 +40,8 @@ window.NUVO = {
                     (é quando o ambiente pronto aparece com o título)
      focus ........ opcional, [x, y] de 0 a 1: o que manter na tela quando o
                     celular corta as laterais (padrão: o centro)
-     placeholder .. fotos de assets/img/ mostradas enquanto não há vídeo
+     placeholder .. fotos de assets/img/ mostradas se o vídeo não carregar
+                    (as imagens inicial e final do trecho, em assets/img/keys/)
      beats ........ os títulos que sobem e somem com o scroll:
                     at: [início, fim] de 0 a 1 dentro do trecho
                     title: \n quebra a linha; *palavra* fica em itálico bronze
@@ -52,7 +53,7 @@ window.NUVO = {
       label: 'Living',
       length: 320,
       lead: 0.12, // a porta fica fechada enquanto o título de abertura aparece
-      placeholder: { photos: ['rooms/foyer.webp', 'rooms/living.webp'] },
+      placeholder: { photos: ['keys/door.webp', 'keys/living.webp'] },
       beats: [
         {
           at: [0, 0.13],
@@ -70,14 +71,14 @@ window.NUVO = {
       id: 'kitchen', // 02-kitchen.mp4: da sala até a cozinha pronta
       label: 'Kitchen',
       length: 270,
-      placeholder: { photos: ['rooms/kitchen.webp', 'work/kitchen.webp'] },
-      beats: [{ at: [0.6, 0.97], eyebrow: 'Kitchens', title: 'Cut on CNC.\nFinished\nby hand.' }],
+      placeholder: { photos: ['keys/kitchen.webp'] },
+      beats: [{ at: [0.42, 0.97], eyebrow: 'Kitchens', title: 'Cut on CNC.\nFinished\nby hand.' }],
     },
     {
       id: 'closet', // 03-closet.mp4: da cozinha, escada acima, até o closet pronto
       label: 'Closet',
       length: 270,
-      placeholder: { photos: ['rooms/closet.webp', 'work/closet.webp'] },
+      placeholder: { photos: ['keys/closet.webp'] },
       beats: [{ at: [0.6, 0.97], eyebrow: 'Closets', title: 'A room made\nfor getting\nready.' }],
     },
     {
@@ -85,9 +86,9 @@ window.NUVO = {
       label: 'Your home',
       length: 320,
       hold: 0.32,
-      placeholder: { photos: ['work/aventura.webp', 'work/bar.webp'] },
+      placeholder: { photos: ['keys/house.webp'] },
       beats: [
-        { at: [0.18, 0.5], eyebrow: 'One house, one workshop', title: 'Every room,\none *signature.*' },
+        { at: [0.34, 0.6], eyebrow: 'One house, one workshop', title: 'Every room,\none *signature.*' },
         {
           at: [0.66, 1],
           align: 'center',

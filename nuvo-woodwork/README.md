@@ -36,6 +36,11 @@ logo, ébano **#14110F** e linho **#F2ECE3**. Fontes: Jost (títulos; geométric
 
 ## Os vídeos
 
+**Situação:** os 4 vídeos e as 5 imagens já estão no site (14/10). O vídeo 4 (`04-finale`) veio com drones voando
+sobre a piscina entre 2 s e 7 s; no site ele está cortado (closet → fusão → casa acesa, 4,25 s). Para ter o trecho
+completo do quarto e da piscina, gere de novo o vídeo 4 com o prompt atual do PROMPTS.md e rode o script.
+As imagens ficam em `assets/img/keys/` e aparecem no lugar de um vídeo que não carregar.
+
 Os prompts das 5 imagens e dos 4 vídeos estão em **[PROMPTS.md](PROMPTS.md)**, com o passo a passo
 (Seedance 2.0, 10 s, 16:9, como no site de referência). Resumo do caminho de um vídeo até o site:
 
@@ -49,7 +54,8 @@ Os prompts das 5 imagens e dos 4 vídeos estão em **[PROMPTS.md](PROMPTS.md)**,
 
 Detalhes:
 
-- Cada 10 s de vídeo vira 120 imagens (12 por segundo), uns 6 MB no computador e 4 MB no celular por trecho.
+- Cada 10 s de vídeo vira 120 imagens (12 por segundo), uns 4 MB no computador e 2 MB no celular por trecho
+  (os vídeos atuais são 720p; em 1080p o peso sobe um pouco e a imagem fica mais nítida).
   Para mais suavidade: `FPS=15 tools/make-frames.sh`; para arquivos menores: `QUALITY=50 tools/make-frames.sh`.
 - Com um vídeo vertical `02-kitchen-mobile.mp4`, o celular usa ele; sem, o script recorta o centro do 16:9.
 - O site baixa primeiro um quadro a cada 16, depois os intermediários, e prioriza o trecho em que a pessoa está e
@@ -63,7 +69,7 @@ Detalhes:
 | Títulos do filme, ordem dos trechos, duração de cada um no scroll, fotos de placeholder | `assets/js/content.js` → `scenes` |
 | Telefone, e-mail e endereço do formulário | `assets/js/content.js` → `contact` (e no `index.html`) |
 | Ambientes, estúdio, processo, depoimentos, contato e rodapé | `index.html` |
-| Fotos dos projetos | `assets/img/work/` (índice e estúdio) e `assets/img/rooms/` (placeholders do filme) |
+| Fotos dos projetos | `assets/img/work/` (índice e estúdio); imagens do filme em `assets/img/keys/` |
 | Cores e fontes | topo do `assets/css/styles.css` |
 
 Nos títulos do filme, `\n` quebra a linha e `*palavra*` fica em itálico dourado.
