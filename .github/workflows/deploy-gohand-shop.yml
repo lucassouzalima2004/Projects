@@ -64,8 +64,10 @@ jobs:
             curl -sS --fail-with-body -X POST -H "$auth" -H "Content-Type: application/json" \
               --data "{\"name\":\"$PROJECT\",\"production_branch\":\"${{ github.event.repository.default_branch }}\"}" "$api"
           fi
-          domain=$(curl -fsS -H "$auth" "$api/$PROJECT" | jq -r '.result.subdomain')
-          echo "DOMAIN=$domain" >> "$GITHUB_ENV"
+          project=$(curl -fsS -H "$auth" "$api/$PROJECT")
+          echo "DOMAIN=$(jq -r '.result.subdomain' <<<"$project")" >> "$GITHUB_ENV"
+          # Publica sempre como produção, seja qual for o branch do git, para o endereço principal mostrar a última versão
+          echo "PROD_BRANCH=$(jq -r '.result.production_branch' <<<"$project")" >> "$GITHUB_ENV"
 
       - name: Montar o site
         run: |
@@ -75,7 +77,7 @@ jobs:
           sed -i "s#content=\"assets/img/og-image.jpg\"#content=\"https://$DOMAIN/assets/img/og-image.jpg\"#" _site/index.html
 
       - name: Publicar
-        run: npx wrangler pages deploy _site --project-name="$PROJECT" --branch="${{ github.ref_name }}" --commit-dirty=true
+        run: npx wrangler pages deploy _site --project-name="$PROJECT" --branch="$PROD_BRANCH" --commit-dirty=true
 
       - name: Endereço do site
         run: |
