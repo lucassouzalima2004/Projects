@@ -31,8 +31,8 @@ O site é em inglês (o público é americano).
   para o Google, e respeito ao "reduzir movimento" (aí o filme mostra cada ambiente pronto, sem animação).
 
 Identidade: o logo é o oficial, vetorizado a partir do PNG do site atual. Bronze **#976421** e cinza **#8A8582** do
-logo, ébano **#14110F** e linho **#F2ECE3**. Fontes: Bodoni Moda (títulos; Bodoni é italiano, como a origem do
-Eduardo), Instrument Sans (textos) e DM Mono (detalhes de desenho técnico), todas dentro de `assets/fonts/`.
+logo, ébano **#14110F** e linho **#F2ECE3**. Fontes: Jost (títulos; geométrica como o "NUVO" do logo), Instrument Sans
+(textos) e DM Mono (detalhes), todas dentro de `assets/fonts/`.
 
 ## Os vídeos
 
