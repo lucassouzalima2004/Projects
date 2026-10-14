@@ -71,15 +71,19 @@ Para forçar um idioma: `index.html?lang=en` ou `index.html?lang=pt`.
 
 ## Publicar
 
+O site está no ar em **<https://gohand-shop.pages.dev>** (projeto `gohand-shop` no Cloudflare Pages, produção no branch `main`).
+
 ### Cloudflare Pages (já configurado)
 
 O workflow `.github/workflows/deploy-gohand-shop.yml` publica o site no Cloudflare a cada push que mexe em
-`gohand-shop/`. Na primeira vez ele cria o projeto `gohand-shop`, e o site fica em <https://gohand-shop.pages.dev>
-(se esse nome já estiver em uso, o Cloudflare acrescenta um sufixo; o endereço certo aparece no resumo da execução, em Actions).
+`gohand-shop/`, sempre como produção, então o endereço principal mostra a última versão.
 
 Ele usa os mesmos dois secrets do site da Bossa (`CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID`, em
 **Settings → Secrets and variables → Actions**; o passo a passo está no README do `nail-studio/`).
 Sem os secrets, o workflow só deixa um aviso e não publica nada.
+
+A conta do Cloudflare permite no máximo 10 projetos do Pages. Para um site novo, é preciso apagar um antigo
+(Workers & Pages → projeto → Settings → Delete project) ou pedir aumento do limite ao suporte do Cloudflare.
 
 O workflow também troca o `og:image` pelo endereço completo, que é o que o WhatsApp exige para mostrar a imagem
 da prévia. Para usar um domínio próprio, adicione o domínio no projeto em Cloudflare → Workers & Pages → Custom domains.
