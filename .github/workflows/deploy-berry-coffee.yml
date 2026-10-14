@@ -1,13 +1,15 @@
-# Publica o site da The Berry Coffee no Cloudflare Pages, sempre no mesmo link:
-#   https://theberrycoffee.pages.dev
+# Publica o site da The Berry Coffee no Cloudflare, sempre no mesmo link:
+#   https://theberrycoffee.<subdomínio-da-conta>.workers.dev
 # Cada push que mexe em berry-coffee/ (no main ou no branch claude/keen-tesla-fjkq02) atualiza esse link.
-# Cada publicação também ganha um endereço próprio (https://<código>.theberrycoffee.pages.dev), que fica de histórico.
 #
-# Usa os secrets dos outros sites do repositório (Settings → Secrets and variables → Actions):
-#   CLOUDFLARE_API_TOKEN   token do Cloudflare com a permissão "Account · Cloudflare Pages · Edit" (obrigatório)
-#   CLOUDFLARE_ACCOUNT_ID  ID da conta do Cloudflare (opcional: sem ele, o workflow descobre a conta pelo token)
+# O site vai como Worker com arquivos estáticos (Workers Static Assets), e não como projeto do
+# Cloudflare Pages: a conta já tem 100 projetos no Pages, o limite do Cloudflare (erro 8000027).
+#
+# Usa os secrets/variáveis dos outros sites do repositório (Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN   token do Cloudflare que pode publicar Workers (obrigatório)
+#   CLOUDFLARE_ACCOUNT_ID  ID da conta (opcional: sem ele, o workflow descobre a conta pelo token)
 # Enquanto o token não existir, o workflow só avisa e não falha.
-name: Deploy The Berry Coffee (Cloudflare Pages)
+name: Deploy The Berry Coffee (Cloudflare)
 
 on:
   push:
@@ -21,11 +23,11 @@ permissions:
   contents: read
 
 concurrency:
-  group: berry-coffee-pages
+  group: berry-coffee-deploy
   cancel-in-progress: false
 
 env:
-  PROJECT: theberrycoffee
+  WORKER: theberrycoffee
 
 jobs:
   check:
@@ -33,20 +35,17 @@ jobs:
     outputs:
       ready: ${{ steps.creds.outputs.ready }}
     steps:
-      - name: Conferir os secrets do Cloudflare
+      - name: Conferir o token do Cloudflare
         id: creds
         env:
           TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           if [ -n "$TOKEN" ]; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
-            [ -z "$ACCOUNT" ] && echo "Sem CLOUDFLARE_ACCOUNT_ID: a conta vai ser descoberta pelo token."
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
             echo "::warning title=Cloudflare sem credenciais::Falta o secret CLOUDFLARE_API_TOKEN. Cadastre em Settings → Secrets and variables → Actions e rode de novo (abra a execução em Actions → Re-run all jobs)."
           fi
-          true
 
   deploy:
     needs: check
@@ -54,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      ACCOUNT_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ACCOUNT_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v4
 
@@ -81,32 +80,28 @@ jobs:
           fi
           echo "CLOUDFLARE_ACCOUNT_ID=$id" >> "$GITHUB_ENV"
 
-      - name: Criar o projeto no Cloudflare Pages (só na primeira vez)
+      - name: Endereço do site e conferência do nome
         run: |
-          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects"
+          acc="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID"
           auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
-          if ! curl -fsS -o /dev/null -H "$auth" "$api/$PROJECT"; then
-            res=$(curl -sS -X POST -H "$auth" -H "Content-Type: application/json" \
-              --data "{\"name\":\"$PROJECT\",\"production_branch\":\"main\"}" "$api")
-            if [ "$(echo "$res" | jq -r '.success')" != "true" ]; then
-              echo "$res" | jq '.errors'
-              if echo "$res" | jq -e '.errors[]? | select(.code == 8000027)' > /dev/null; then
-                total=$(curl -sS -H "$auth" "$api?per_page=10" | jq -r '.result_info.total_count // (.result | length)')
-                acc="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID"
-                echo "Diagnóstico (sem nomes):"
-                echo "  projetos no Pages: $total"
-                curl -sS -H "$auth" "$acc/workers/subdomain" | jq -r '"  subdomínio workers.dev: " + (if .success then "configurado" else "não (" + ([.errors[]?.code|tostring]|join(",")) + ")" end)'
-                curl -sS -H "$auth" "$acc/workers/scripts" | jq -r '"  Workers: " + (if .success then "\(.result|length) script(s), o token consegue ler" else "o token não consegue ler (" + ([.errors[]?.code|tostring]|join(",")) + ")" end)'
-                echo "::error title=Limite de projetos do Cloudflare Pages::A conta já tem $total projeto(s) no Cloudflare Pages e o Cloudflare não deixa criar outro. Apague um projeto que não usa mais (Cloudflare → Workers & Pages) ou peça aumento do limite ao suporte do Cloudflare (código 8000027), e rode de novo."
-              fi
+          sub=$(curl -sS -H "$auth" "$acc/workers/subdomain" | jq -r '.result.subdomain // empty')
+          if [ -z "$sub" ]; then
+            echo "::error title=workers.dev::A conta não tem subdomínio workers.dev. Crie em Cloudflare → Workers & Pages → (lado direito) Subdomain e rode de novo."
+            exit 1
+          fi
+          url="https://$WORKER.$sub.workers.dev"
+          echo "SITE_URL=$url" >> "$GITHUB_ENV"
+          # Não sobrescreve um Worker com o mesmo nome que não seja este site
+          if curl -sS -H "$auth" "$acc/workers/scripts/$WORKER/settings" | jq -e '.success' > /dev/null; then
+            if curl -fsS --max-time 20 "$url/sitemap.xml" | grep -q "theberrycoffee.ie"; then
+              echo "O Worker $WORKER já é este site: vai ser atualizado."
+            else
+              echo "::error title=Nome em uso::Já existe um Worker chamado $WORKER nesta conta que não é este site. Apague ou renomeie esse Worker, ou troque WORKER no topo deste workflow."
               exit 1
             fi
+          else
+            echo "Primeira publicação: o Worker $WORKER vai ser criado."
           fi
-          info=$(curl -fsS -H "$auth" "$api/$PROJECT")
-          # Se o nome já estiver em uso no Cloudflare, o endereço ganha um sufixo; aqui pegamos o endereço real
-          echo "SITE_URL=https://$(echo "$info" | jq -r '.result.subdomain')" >> "$GITHUB_ENV"
-          # Publicar como "produção" do projeto faz o site aparecer no link principal, sem o nome do branch
-          echo "PROD_BRANCH=$(echo "$info" | jq -r '.result.production_branch')" >> "$GITHUB_ENV"
 
       - name: Montar o site
         run: |
@@ -116,13 +111,32 @@ jobs:
           rm -f _site/README.md
           # O WhatsApp só mostra a imagem da prévia do link com o endereço completo
           sed -i "s#content=\"assets/img/og-image.jpg\"#content=\"$SITE_URL/assets/img/og-image.jpg\"#" _site/index.html
+          cat > wrangler.jsonc <<EOF
+          {
+            "name": "$WORKER",
+            "compatibility_date": "2025-10-01",
+            "workers_dev": true,
+            "preview_urls": false,
+            "assets": {
+              "directory": "./_site",
+              "not_found_handling": "404-page",
+              "html_handling": "auto-trailing-slash"
+            }
+          }
+          EOF
 
       - name: Publicar
-        run: |
-          npx wrangler pages deploy _site --project-name="$PROJECT" --branch="$PROD_BRANCH" \
-            --commit-hash="$GITHUB_SHA" --commit-message="${GITHUB_REF_NAME}@${GITHUB_SHA::7}" --commit-dirty=true
+        run: npx wrangler deploy --config wrangler.jsonc
 
-      - name: Endereço do site
+      - name: Conferir o site no ar
         run: |
-          echo "Site no ar: $SITE_URL"
-          echo "### Site no ar: $SITE_URL" >> "$GITHUB_STEP_SUMMARY"
+          for i in 1 2 3 4 5 6; do
+            if curl -fsS --max-time 20 "$SITE_URL/" | grep -q "Good food"; then
+              echo "Site no ar: $SITE_URL"
+              echo "### Site no ar: $SITE_URL" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::warning title=Site ainda não respondeu::A publicação terminou, mas $SITE_URL ainda não respondeu. Tente abrir de novo em alguns minutos."
+          echo "### Publicado em: $SITE_URL (ainda carregando)" >> "$GITHUB_STEP_SUMMARY"

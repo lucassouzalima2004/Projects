@@ -1,7 +1,10 @@
 # Cabeçalhos do Cloudflare Pages (este arquivo não aparece no site).
 
-# Enquanto o site estiver só no endereço .pages.dev, o Google não indexa a prévia.
-# Quando o domínio theberrycoffee.ie for ligado ao projeto, ele fica indexável normalmente.
+# Enquanto o site estiver só no endereço .workers.dev (ou .pages.dev), o Google não indexa a prévia.
+# Quando o domínio theberrycoffee.ie for ligado ao site, ele fica indexável normalmente.
+https://:worker.:subdomain.workers.dev/*
+  X-Robots-Tag: noindex
+
 https://:project.pages.dev/*
   X-Robots-Tag: noindex
 
