@@ -105,7 +105,9 @@ O workflow `.github/workflows/deploy-berry-coffee.yml` publica a pasta `berry-co
 
 ### Ligar o deploy (uma vez só, uns 2 minutos)
 
-O workflow precisa de dois secrets no GitHub. São os mesmos que os workflows do `nail-studio` e do PurGrace usam, então isso destrava os três sites.
+O workflow precisa do secret `CLOUDFLARE_API_TOKEN`, que já está cadastrado no repositório (em 14/10/2026). O `CLOUDFLARE_ACCOUNT_ID` é opcional para este site: sem ele, o workflow descobre a conta pelo próprio token. Os workflows do `nail-studio` e do PurGrace ainda exigem os dois secrets.
+
+Se precisar refazer o token ou cadastrar o Account ID:
 
 1. **Token**: abra o link abaixo, já preenchido com a permissão *Cloudflare Pages: Edit*. Clique em *Continue to summary* → *Create Token* e copie o token (ele só aparece uma vez). Se não tiver conta no Cloudflare, crie uma grátis antes.
    <https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=%5B%7B%22key%22%3A%22page%22%2C%22type%22%3A%22edit%22%7D%5D&accountId=*&zoneId=all&name=GitHub%20Actions%20-%20Cloudflare%20Pages>

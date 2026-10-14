@@ -3,10 +3,10 @@
 # Cada push que mexe em berry-coffee/ (no main ou no branch claude/keen-tesla-fjkq02) atualiza esse link.
 # Cada publicação também ganha um endereço próprio (https://<código>.theberrycoffee.pages.dev), que fica de histórico.
 #
-# Usa os mesmos dois secrets dos outros sites do repositório (Settings → Secrets and variables → Actions):
-#   CLOUDFLARE_API_TOKEN   token do Cloudflare com a permissão "Account · Cloudflare Pages · Edit"
-#   CLOUDFLARE_ACCOUNT_ID  ID da conta do Cloudflare
-# Enquanto os secrets não existirem, o workflow só avisa e não falha.
+# Usa os secrets dos outros sites do repositório (Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN   token do Cloudflare com a permissão "Account · Cloudflare Pages · Edit" (obrigatório)
+#   CLOUDFLARE_ACCOUNT_ID  ID da conta do Cloudflare (opcional: sem ele, o workflow descobre a conta pelo token)
+# Enquanto o token não existir, o workflow só avisa e não falha.
 name: Deploy The Berry Coffee (Cloudflare Pages)
 
 on:
@@ -39,15 +39,14 @@ jobs:
           TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          if [ -n "$TOKEN" ] && [ -n "$ACCOUNT" ]; then
+          if [ -n "$TOKEN" ]; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
+            [ -z "$ACCOUNT" ] && echo "Sem CLOUDFLARE_ACCOUNT_ID: a conta vai ser descoberta pelo token."
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            missing=""
-            [ -z "$TOKEN" ] && missing="$missing CLOUDFLARE_API_TOKEN"
-            [ -z "$ACCOUNT" ] && missing="$missing CLOUDFLARE_ACCOUNT_ID"
-            echo "::warning title=Cloudflare sem credenciais::Falta:$missing. Cadastre em Settings → Secrets and variables → Actions e rode de novo (Actions → Deploy The Berry Coffee → Run workflow)."
+            echo "::warning title=Cloudflare sem credenciais::Falta o secret CLOUDFLARE_API_TOKEN. Cadastre em Settings → Secrets and variables → Actions e rode de novo (abra a execução em Actions → Re-run all jobs)."
           fi
+          true
 
   deploy:
     needs: check
@@ -55,12 +54,32 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ACCOUNT_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Instalar o wrangler
         run: npm install --no-save --no-audit --no-fund --include=optional wrangler@4
+
+      - name: Conta do Cloudflare
+        run: |
+          id="$ACCOUNT_SECRET"
+          if [ -z "$id" ]; then
+            # Sem o secret, descobre a conta pelo próprio token
+            auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+            id=$(curl -sS -H "$auth" "https://api.cloudflare.com/client/v4/accounts?per_page=50" | jq -r '.result[]?.id')
+            if [ -z "$id" ]; then
+              id=$(curl -sS -H "$auth" "https://api.cloudflare.com/client/v4/memberships?per_page=50" | jq -r '.result[]?.account.id')
+            fi
+            count=$(printf '%s\n' "$id" | grep -c . || true)
+            if [ "$count" != "1" ]; then
+              echo "::error title=Conta do Cloudflare::O token dá acesso a $count contas. Cadastre o secret CLOUDFLARE_ACCOUNT_ID com o ID da conta certa (Cloudflare → Workers & Pages → Account ID)."
+              exit 1
+            fi
+            echo "::add-mask::$id"
+            echo "Conta encontrada pelo token."
+          fi
+          echo "CLOUDFLARE_ACCOUNT_ID=$id" >> "$GITHUB_ENV"
 
       - name: Criar o projeto no Cloudflare Pages (só na primeira vez)
         run: |
