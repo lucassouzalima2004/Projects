@@ -1,11 +1,12 @@
-# Publica o site da NUVO Woodwork no Cloudflare Pages (https://nuvo-woodwork.pages.dev).
+# Publica o site da NUVO Woodwork no Cloudflare Pages (https://nuvo-woodwork.pages.dev). Com a conta no limite de
+# projetos do Pages, publica como Worker: https://nuvo-woodwork.lucassouzalima10.workers.dev
 #
 # Usa os secrets dos outros sites (Settings → Secrets and variables → Actions):
 #   CLOUDFLARE_API_TOKEN   token do Cloudflare com a permissão "Account · Cloudflare Pages · Edit" (obrigatório)
 #   CLOUDFLARE_ACCOUNT_ID  ID da conta do Cloudflare. Pode ficar em Secrets ou em Variables; se não existir,
 #                          o workflow tenta descobrir pelo próprio token (funciona quando o token vê uma conta só)
 # Sem o token, o workflow só avisa e não falha.
-name: Deploy NUVO Woodwork (Cloudflare Pages)
+name: Deploy NUVO Woodwork (Cloudflare)
 
 on:
   push:
