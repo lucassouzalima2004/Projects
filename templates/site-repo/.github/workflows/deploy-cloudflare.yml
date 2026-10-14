@@ -1,0 +1,96 @@
+# Publica a pasta site/ no Cloudflare Pages.
+#
+# O projeto no Cloudflare leva o nome deste repositório (em minúsculas) e é criado na primeira publicação.
+# Push no branch padrão publica o site oficial; push em outro branch gera uma prévia com endereço próprio.
+#
+# Precisa de dois secrets no GitHub (Settings → Secrets and variables → Actions → New repository secret):
+#   CLOUDFLARE_API_TOKEN   token do Cloudflare com a permissão "Account · Cloudflare Pages · Edit"
+#   CLOUDFLARE_ACCOUNT_ID  ID da conta do Cloudflare
+# Enquanto os secrets não existirem, o workflow só avisa e não falha.
+name: Deploy site (Cloudflare Pages)
+
+on:
+  push:
+    branches: ['**']
+    paths:
+      - 'site/**'
+      - '.github/workflows/deploy-cloudflare.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-pages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.creds.outputs.ready }}
+    steps:
+      - name: Conferir os secrets do Cloudflare
+        id: creds
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n "$TOKEN" ] && [ -n "$ACCOUNT" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=Cloudflare sem credenciais::Adicione CLOUDFLARE_API_TOKEN e CLOUDFLARE_ACCOUNT_ID em Settings → Secrets and variables → Actions e rode este workflow de novo (Actions → Deploy site → Run workflow)."
+          fi
+
+  deploy:
+    needs: check
+    if: needs.check.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      REPO: ${{ github.event.repository.name }}
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar o wrangler
+        run: npm install --no-save --no-audit --no-fund --include=optional wrangler@4
+
+      - name: Criar o projeto no Cloudflare Pages (só na primeira vez)
+        run: |
+          # Nome do projeto: o do repositório em minúsculas, só letras, números e hífens
+          project=$(printf '%s' "$REPO" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9' '-' | cut -c1-58 | sed -E 's/-+/-/g; s/^-+//; s/-+$//')
+          echo "PROJECT=$project" >> "$GITHUB_ENV"
+
+          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects"
+          auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+          if ! curl -fsS -o /dev/null -H "$auth" "$api/$project"; then
+            curl -sS --fail-with-body -X POST -H "$auth" -H "Content-Type: application/json" \
+              --data "{\"name\":\"$project\",\"production_branch\":\"$DEFAULT_BRANCH\"}" "$api"
+          fi
+          domain=$(curl -fsS -H "$auth" "$api/$project" | jq -r '.result.subdomain')
+          echo "DOMAIN=$domain" >> "$GITHUB_ENV"
+
+      - name: Montar o site
+        run: |
+          mkdir -p _site
+          cp -R site/. _site/
+          # O WhatsApp só mostra a imagem da prévia do link com o endereço completo
+          sed -i "s#content=\"assets/img/og-image.jpg\"#content=\"https://$DOMAIN/assets/img/og-image.jpg\"#" _site/index.html
+
+      - name: Publicar
+        run: npx wrangler pages deploy _site --project-name="$PROJECT" --branch="$GITHUB_REF_NAME" --commit-dirty=true | tee deploy.log
+
+      - name: Endereço do site
+        run: |
+          if [ "$GITHUB_REF_NAME" = "$DEFAULT_BRANCH" ]; then
+            url="https://$DOMAIN"
+          else
+            url=$(grep -oE 'https://[a-z0-9.-]+\.pages\.dev' deploy.log | tail -1 || true)
+          fi
+          echo "Site no ar: ${url:-veja o endereço no passo Publicar}" >> "$GITHUB_STEP_SUMMARY"
