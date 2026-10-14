@@ -49,7 +49,9 @@
 
   const L = (v) => (v && typeof v === 'object' && !Array.isArray(v) ? v[state.lang] ?? v.en ?? '' : v ?? '');
   const dict = () => S.text[state.lang] || S.text.en;
-  const t = (path) => path.split('.').reduce((o, k) => (o == null ? undefined : o[k]), dict());
+  const lookup = (obj, path) => path.split('.').reduce((o, k) => (o == null ? undefined : o[k]), obj);
+  // texto que não existe no idioma atual (ex.: o orçamento, só em inglês) sai em inglês
+  const t = (path) => lookup(dict(), path) ?? lookup(S.text.en, path);
 
   function fill(str, extra) {
     const tokens = Object.assign(
@@ -356,12 +358,15 @@
   /* ------------------------------------------------------------ orçamento */
   const form = $('#quote-form');
 
+  // A seção de orçamento é sempre em inglês, então as opções também
+  const EN = (v) => (v && typeof v === 'object' && !Array.isArray(v) ? v.en ?? '' : v ?? '');
+
   function chipGroup(name, options) {
     const prev = form.querySelector(`input[name="${name}"]:checked`);
     const prevI = prev ? Number(prev.dataset.i) : -1;
     return options
       .map(
-        (o, i) => `<label class="chip"><input type="radio" name="${name}" value="${esc(L(o))}" data-i="${i}"${i === prevI ? ' checked' : ''}><span>${esc(L(o))}</span></label>`
+        (o, i) => `<label class="chip"><input type="radio" name="${name}" value="${esc(EN(o))}" data-i="${i}"${i === prevI ? ' checked' : ''}><span>${esc(EN(o))}</span></label>`
       )
       .join('');
   }

@@ -23,6 +23,8 @@ com o formulário ligado ao CRM dele.
 - **Dúvidas frequentes** e **contato** (WhatsApp, telefone da empresa, horário, endereços de NJ e MA com link para o mapa;
   e-mail, Instagram, TikTok e Facebook aparecem quando forem preenchidos).
 - Inglês e português: o site abre em português para quem usa o celular em português e em inglês para o resto, com botão EN/PT.
+  A seção de orçamento fica sempre em inglês, igual ao formulário do CRM (pedido do cliente). Texto que não existir em `text.pt`
+  aparece em inglês.
 - Barra fixa de WhatsApp + Ligar no celular, prévia bonita do link no WhatsApp (`og-image.jpg`) e dados estruturados para o Google.
 
 Identidade visual tirada do material do cliente: laranja **#E94206** (a referência que ele mandou), asfalto **#141414** e branco,

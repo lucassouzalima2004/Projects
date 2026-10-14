@@ -279,6 +279,7 @@ window.SITE = {
 
   /* ---------------------------------------------------------------------------
      5. TEXTOS
+     Texto que faltar em pt aparece em inglês.
      Marcadores: {place} = location.name · {area} = location.in · {base} = location.base
                  {phone} = telefone · {brand} = nome
      ------------------------------------------------------------------------- */
@@ -350,6 +351,8 @@ window.SITE = {
         perks: ['No contract to get a price', 'Answer the same day', 'One-time or recurring'],
         header: 'Quote request',
         altLabel: 'Prefer to talk?',
+        altWhatsapp: 'WhatsApp',
+        altCall: 'Call',
         name: 'Your name',
         namePh: 'John Smith',
         company: 'Company',
@@ -459,31 +462,8 @@ window.SITE = {
         title: 'Simples como *rastrear* um pacote',
         stepLabel: 'Etapa',
       },
-      quote: {
-        kicker: 'Orçamento grátis',
-        title: 'Peça seu orçamento.\n*A gente entrega.*',
-        lead: 'Leva 30 segundos. Conte o que você envia e para onde, e a gente volta com o preço.',
-        perks: ['Sem contrato para saber o preço', 'Resposta no mesmo dia', 'Uma vez ou com frequência'],
-        header: 'Pedido de orçamento',
-        altLabel: 'Prefere falar com a gente?',
-        name: 'Seu nome',
-        namePh: 'Maria Silva',
-        company: 'Empresa',
-        companyPh: 'Opcional',
-        pickup: 'Coleta em',
-        pickupPh: 'Cidade ou ZIP',
-        dropoff: 'Entrega em',
-        dropoffPh: 'Cidade, ZIP ou região',
-        kind: 'O que vai enviar?',
-        frequency: 'Com que frequência?',
-        volume: 'Pacotes por viagem',
-        notes: 'Algo mais?',
-        notesPh: 'Tamanhos, horários, cuidados especiais…',
-        send: 'Enviar no WhatsApp',
-        orCall: 'Prefere falar? Ligue {phone}',
-        needName: 'Diga seu nome para sabermos com quem falar.',
-        msgIntro: 'Olá, {brand}! Quero um orçamento de entrega.',
-      },
+      // quote: a seção de orçamento fica em inglês nos dois idiomas, igual ao formulário do CRM
+      // (o site usa text.en.quote). Para traduzir, crie aqui um bloco quote como o do inglês.
       area: {
         kicker: 'Onde atendemos',
         title: 'Onde a gente *entrega*',
