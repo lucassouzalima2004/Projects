@@ -4,6 +4,8 @@ Site de uma página da Bora Decor (Roni & Dan), envelopamento de cozinhas (kitch
 Feito para receber o tráfego dos anúncios do Facebook/Instagram e transformar em pedidos de orçamento pelo WhatsApp.
 Em inglês, porque os clientes são australianos.
 
+No ar (prévia): <https://boradecor.lucassouzalima10.workers.dev>
+
 É HTML, CSS e JavaScript puros: sem build. As bibliotecas de animação (GSAP + ScrollTrigger e Lenis) ficam
 dentro de `assets/vendor/`, sem depender de CDN.
 
