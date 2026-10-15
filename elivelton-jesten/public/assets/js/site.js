@@ -1,4 +1,4 @@
-// Jesten Construções · comportamento do site (cabeçalho, menu, números, galeria, vídeos, formulários e contagem de visitas)
+// Jesten Construções · comportamento do site (cabeçalho, menu, animações, números, galeria, vídeos, formulários e contagem de visitas)
 (() => {
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -14,30 +14,80 @@
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const saveData = Boolean(navigator.connection && navigator.connection.saveData);
   const hasIO = 'IntersectionObserver' in window;
+  const motion = !reduceMotion;
 
-  // ---------- Cabeçalho: transparente sobre a foto do topo, branco depois de rolar ----------
+  // ---------- Ao rolar: cabeçalho, barra de leitura e parallax ----------
 
   const header = $('[data-header]');
   const overlay = Boolean(header?.classList.contains('hdr--overlay'));
   const navLinks = $$('.hdr__link');
+  const progress = $('[data-progress]');
+  const hero = $('.hero');
+  const heroBg = $('.hero__bg', hero || document);
+  const heroIn = $('.hero__in', hero || document);
+  const menu = $('[data-menu]');
+  const langMenu = $('[data-lang-menu]');
+
+  // Fotos com parallax: só as que estão à vista entram nas contas
+  const parallax = new Set();
+  if (motion && hasIO) {
+    const pio = new IntersectionObserver((entries) => {
+      for (const e of entries) e.isIntersecting ? parallax.add(e.target) : parallax.delete(e.target);
+      requestTick();
+    });
+    $$('img[data-parallax]').forEach((img) => pio.observe(img.parentElement));
+  }
+
+  let heroH = hero?.offsetHeight || 0;
+  addEventListener('resize', () => (heroH = hero?.offsetHeight || 0), { passive: true });
+
   let ticking = false;
+  let lastY = scrollY;
   const onScroll = () => {
     ticking = false;
     const y = scrollY;
+    // Leituras primeiro, escritas depois (sem forçar o navegador a recalcular a página a meio)
+    const docMax = Math.max(1, root.scrollHeight - innerHeight);
+    const boxes = [...parallax].map((box) => [box, box.getBoundingClientRect()]);
+
     header?.classList.toggle('is-scrolled', y > 40);
     if (overlay) header.classList.toggle('is-solid', y > 40);
+
+    // O cabeçalho sai ao descer e volta ao subir (nunca com o menu ou o idioma abertos)
+    if (header && motion) {
+      const busy = (menu && !menu.hidden) || langMenu?.open || header.contains(document.activeElement);
+      if (y < innerHeight * 0.6 || busy) header.classList.remove('is-hidden');
+      else if (Math.abs(y - lastY) > 8) header.classList.toggle('is-hidden', y > lastY);
+    }
+    if (Math.abs(y - lastY) > 8 || y < 10) lastY = y;
+
+    if (progress) progress.style.transform = `scaleX(${Math.min(1, y / docMax).toFixed(4)})`;
+
+    if (motion && hero && y <= heroH) {
+      // A foto do topo anda mais devagar que a página e o texto desvanece ao sair
+      const p = heroH ? y / heroH : 0;
+      if (heroBg) heroBg.style.translate = `0 ${(y * 0.32).toFixed(1)}px`;
+      if (heroIn) {
+        heroIn.style.opacity = String(Math.max(0, 1 - p * 1.5).toFixed(3));
+        heroIn.style.translate = `0 ${(-p * 80).toFixed(1)}px`;
+      }
+    }
+    for (const [box, r] of boxes) {
+      const img = $('img[data-parallax]', box);
+      const max = r.height * 0.06;
+      const shift = Math.max(-max, Math.min(max, (r.top + r.height / 2 - innerHeight / 2) * 0.1));
+      img.style.translate = `0 ${shift.toFixed(1)}px`;
+    }
+
     // No topo da página nenhum item do menu fica marcado
     if (y < innerHeight * 0.5) navLinks.forEach((a) => a.classList.remove('is-current'));
   };
-  addEventListener(
-    'scroll',
-    () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(onScroll);
-    },
-    { passive: true },
-  );
+  function requestTick() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(onScroll);
+  }
+  addEventListener('scroll', requestTick, { passive: true });
   onScroll();
 
   // Link do menu da secção visível
@@ -58,16 +108,32 @@
 
   // ---------- Menu do telemóvel ----------
 
-  const menu = $('[data-menu]');
   const openBtn = $('[data-menu-open]');
   const closeBtn = $('[data-menu-close]');
+  let menuTimer = 0;
   const setMenu = (open) => {
-    if (!menu || menu.hidden === !open) return;
-    menu.hidden = !open;
+    // A meio da animação de fecho o menu já conta como fechado
+    if (!menu || (!menu.hidden && !menu.classList.contains('is-closing')) === open) return;
+    clearTimeout(menuTimer);
+    menu.classList.remove('is-closing');
     openBtn?.setAttribute('aria-expanded', String(open));
     root.style.overflow = open ? 'hidden' : '';
-    if (open) closeBtn?.focus();
-    else openBtn?.focus({ preventScroll: true });
+    if (open) {
+      menu.hidden = false;
+      closeBtn?.focus();
+      return;
+    }
+    openBtn?.focus({ preventScroll: true });
+    // Sai a deslizar antes de esconder
+    if (!motion) {
+      menu.hidden = true;
+      return;
+    }
+    menu.classList.add('is-closing');
+    menuTimer = setTimeout(() => {
+      menu.hidden = true;
+      menu.classList.remove('is-closing');
+    }, 270);
   };
   openBtn?.addEventListener('click', () => setMenu(true));
   closeBtn?.addEventListener('click', () => setMenu(false));
@@ -90,7 +156,6 @@
   });
 
   // Seletor de idioma: fecha ao clicar fora; a escolha fica guardada também sem passar pelo servidor
-  const langMenu = $('[data-lang-menu]');
   document.addEventListener('click', (e) => {
     if (langMenu?.open && !langMenu.contains(e.target)) langMenu.open = false;
   });
@@ -114,7 +179,7 @@
 
   const revealables = $$('[data-reveal]');
   const reveal = (el) => el.classList.add('is-in');
-  if (hasIO && !reduceMotion) {
+  if (hasIO && motion) {
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
@@ -132,7 +197,10 @@
       list.push(el);
       groups.set(el.parentElement, list);
     }
-    for (const list of groups.values()) list.forEach((el, i) => el.style.setProperty('--reveal-delay', `${(i % 3) * 90}ms`));
+    for (const list of groups.values())
+      list.forEach((el, i) => {
+        if (!el.style.getPropertyValue('--reveal-delay')) el.style.setProperty('--reveal-delay', `${(i % 3) * 90}ms`);
+      });
     revealables.forEach((el) => io.observe(el));
   } else {
     revealables.forEach(reveal);
@@ -142,7 +210,7 @@
 
   const stats = $('[data-stats]');
   const counters = stats ? $$('[data-to]', stats).filter((el) => Number.isFinite(parseInt(el.dataset.to, 10))) : [];
-  if (counters.length && hasIO && !reduceMotion) {
+  if (counters.length && hasIO && motion) {
     counters.forEach((el) => {
       el.textContent = '0';
     });
@@ -155,6 +223,7 @@
           el.textContent = String(Math.round(parseInt(el.dataset.to, 10) * k));
         });
         if (p < 1) requestAnimationFrame(tick);
+        else stats.classList.add('is-done');
       };
       requestAnimationFrame(tick);
     };
@@ -252,20 +321,22 @@
       if (btn.dataset.filter === filter) return;
       filter = btn.dataset.filter;
       filterBtns.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      // Depois de filtrar, as obras entram só com o fade em cascata (sem a cortina)
+      grid.classList.add('is-filtered');
       let n = 0;
       for (const t of tiles) {
         const show = filter === 'all' || t.dataset.cat === filter;
         t.hidden = !show;
         if (!show) continue;
-        if (reduceMotion) {
-          reveal(t);
-          continue;
-        }
-        // As obras que ficam entram de novo em cascata
-        t.style.setProperty('--reveal-delay', `${Math.min(n++, 8) * 45}ms`);
-        t.classList.remove('is-in');
-        void t.offsetWidth;
         reveal(t);
+        // As obras que ficam entram de novo em cascata
+        if (motion && t.animate)
+          t.animate([{ opacity: 0, transform: 'translateY(22px) scale(0.98)' }, { opacity: 1, transform: 'none' }], {
+            duration: 650,
+            delay: Math.min(n++, 8) * 55,
+            easing: 'cubic-bezier(0.22, 0.7, 0.12, 1)',
+            fill: 'backwards',
+          });
       }
       if (moreWrap) moreWrap.hidden = filter !== 'all';
       setCollapsed();
@@ -316,9 +387,10 @@
       return el;
     };
 
-    const show = (p) => {
+    const show = (p, dir = '') => {
       pos = (p + order.length) % order.length;
       const w = works[order[pos]];
+      stage.dataset.dir = dir;
       stage.replaceChildren(media(w));
       title.textContent = w.title;
       meta.textContent = [w.status, w.meta].filter(Boolean).join(' · ');
@@ -345,20 +417,34 @@
       box.showModal();
     };
 
+    const close = () => {
+      if (!box.open || box.classList.contains('is-closing')) return;
+      if (!motion) return box.close();
+      box.classList.add('is-closing');
+      setTimeout(() => {
+        box.classList.remove('is-closing');
+        box.close();
+      }, 240);
+    };
     box.addEventListener('close', () => {
       stage.textContent = '';
       root.style.overflow = '';
       opener?.focus({ preventScroll: true });
     });
-    $('[data-prev]', box).addEventListener('click', () => show(pos - 1));
-    $('[data-next]', box).addEventListener('click', () => show(pos + 1));
-    $('[data-close]', box).addEventListener('click', () => box.close());
+    // Esc também fecha com o fade
+    box.addEventListener('cancel', (e) => {
+      e.preventDefault();
+      close();
+    });
+    $('[data-prev]', box).addEventListener('click', () => show(pos - 1, 'prev'));
+    $('[data-next]', box).addEventListener('click', () => show(pos + 1, 'next'));
+    $('[data-close]', box).addEventListener('click', close);
     box.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft') show(pos - 1);
-      if (e.key === 'ArrowRight') show(pos + 1);
+      if (e.key === 'ArrowLeft') show(pos - 1, 'prev');
+      if (e.key === 'ArrowRight') show(pos + 1, 'next');
     });
     box.addEventListener('click', (e) => {
-      if (e.target === box || e.target === stage) box.close();
+      if (e.target === box || e.target === stage) close();
     });
     let startX = null;
     stage.addEventListener('pointerdown', (e) => {
@@ -368,7 +454,7 @@
       if (startX == null) return;
       const dx = e.clientX - startX;
       startX = null;
-      if (Math.abs(dx) > 50) show(pos + (dx < 0 ? 1 : -1));
+      if (Math.abs(dx) > 50) show(pos + (dx < 0 ? 1 : -1), dx < 0 ? 'next' : 'prev');
     });
 
     $$('[data-work]').forEach((a) =>
@@ -382,6 +468,18 @@
       b.addEventListener('click', (e) => {
         e.preventDefault();
         open(Number(b.dataset.play), b);
+      }),
+    );
+  }
+
+  // ---------- Cartões: luz âmbar que segue o rato ----------
+
+  if (motion && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    $$('.svc, .role').forEach((card) =>
+      card.addEventListener('pointermove', (e) => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', `${Math.round(e.clientX - r.left)}px`);
+        card.style.setProperty('--my', `${Math.round(e.clientY - r.top)}px`);
       }),
     );
   }
@@ -506,24 +604,24 @@
     });
   }
 
-  // ---------- Barra do telemóvel: aparece depois do topo e some perto do formulário ----------
+  // ---------- Barra do telemóvel e WhatsApp no computador: aparecem depois do topo e somem perto do formulário ----------
 
-  const bar = $('[data-mobile-bar]');
-  const hero = $('.hero, .page-head');
+  const floats = [$('[data-mobile-bar]'), $('[data-wa-float]')].filter(Boolean);
+  const top = $('.hero, .page-head');
   const quote = $('.quote');
   const footer = $('.ftr');
-  if (bar && hasIO) {
+  if (floats.length && hasIO) {
     const seen = new Map();
     const watch = new IntersectionObserver(
       (entries) => {
         for (const e of entries) seen.set(e.target, e.isIntersecting);
-        const pastHero = hero ? seen.get(hero) === false : true;
+        const pastTop = top ? seen.get(top) === false : true;
         const nearForm = (quote && seen.get(quote)) || (footer && seen.get(footer));
-        bar.classList.toggle('is-on', pastHero && !nearForm);
+        floats.forEach((el) => el.classList.toggle('is-on', pastTop && !nearForm));
       },
       { rootMargin: '0px 0px -10% 0px' },
     );
-    [hero, quote, footer].filter(Boolean).forEach((el) => watch.observe(el));
+    [top, quote, footer].filter(Boolean).forEach((el) => watch.observe(el));
   }
 
   // Volta do envio sem JavaScript (?sent=...): limpa o endereço

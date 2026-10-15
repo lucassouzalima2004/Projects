@@ -6,8 +6,29 @@ export const PAGES = ['home', 'careers', 'privacy', 'terms'];
 
 export const esc = (s) =>
   String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-// *texto* vira destaque âmbar
-const rich = (s) => esc(s).replace(/\*(.+?)\*/g, '<mark>$1</mark>');
+// Título dividido em palavras, para entrarem uma a uma por baixo de uma máscara (o *destaque* continua âmbar)
+function words(s) {
+  const out = [];
+  let mark = false;
+  let word = '';
+  const flush = () => {
+    if (word) out.push(word);
+    word = '';
+  };
+  for (const part of String(s ?? '').split(/(\*)/)) {
+    if (part === '*') {
+      mark = !mark;
+      continue;
+    }
+    // Só o espaço normal separa palavras: o espaço fixo do francês (« ? », « : ») fica colado
+    for (const piece of part.split(/([ \t\r\n]+)/)) {
+      if (/^[ \t\r\n]+$/.test(piece)) flush();
+      else if (piece) word += mark ? `<mark>${esc(piece)}</mark>` : esc(piece);
+    }
+  }
+  flush();
+  return out.map((w, i) => `<span class="w"><span style="--i:${i}">${w}</span></span>`).join(' ');
+}
 // Troca {chave} por HTML já seguro, depois de escapar o resto do texto
 const fill = (s, vars = {}) => esc(s).replace(/\{(\w+)\}/g, (m, k) => (k in vars ? vars[k] : m));
 // < e os separadores de linha U+2028/U+2029 escapados para o JSON poder ficar dentro de <script>
@@ -39,14 +60,14 @@ const monthYear = (ym, locale) => {
 const longDate = (ts, locale) =>
   new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Lisbon' }).format(new Date(ts));
 
-function picture(item, { sizes, alt, cls = '', eager = false }) {
+function picture(item, { sizes, alt, cls = '', eager = false, attrs = '' }) {
   const set = [...(item?.img || [])].sort((a, b) => a.w - b.w);
   if (!set.length) return '';
   const src = (set.find((x) => x.w >= 800) || set[set.length - 1]).u;
   const style = [item.focus ? `object-position:${item.focus}` : '', item.color ? `background-color:${item.color}` : ''].filter(Boolean).join(';');
   return `<img class="${cls}" src="${esc(src)}" srcset="${set.map((x) => `${esc(x.u)} ${x.w}w`).join(', ')}" sizes="${sizes}" alt="${esc(alt)}" width="${item.w}" height="${item.h}"${
     eager ? ' fetchpriority="high"' : ' loading="lazy"'
-  } decoding="async"${style ? ` style="${style}"` : ''}>`;
+  } decoding="async"${style ? ` style="${style}"` : ''}${attrs ? ` ${attrs}` : ''}>`;
 }
 
 const largest = (item) => [...(item.img || [])].sort((a, b) => b.w - a.w)[0]?.u || '';
@@ -128,7 +149,7 @@ function header(ctx, overlay) {
       <button class="menu__close" type="button" aria-label="${esc(s.nav.close)}" data-menu-close>${icon('close')}</button>
     </div>
     <nav class="menu__nav" aria-label="${esc(s.nav.main)}">
-      ${footerLinks(ctx).map(([href, label]) => `<a class="menu__link" href="${href}">${esc(label)}${icon('arrow')}</a>`).join('')}
+      ${footerLinks(ctx).map(([href, label], i) => `<a class="menu__link" href="${href}" style="--i:${i}">${esc(label)}${icon('arrow')}</a>`).join('')}
     </nav>
     <div class="menu__foot">
       <a class="btn btn--primary btn--lg btn--block" href="${quoteHref}">${esc(s.nav.quote)}${icon('arrow')}</a>
@@ -156,12 +177,12 @@ function footer(ctx) {
   return `
 <footer class="ftr">
   <div class="wrap ftr__top">
-    <div class="ftr__brand">
+    <div class="ftr__brand" data-reveal>
       <a class="brand" href="${s.routes.home}" aria-label="Jesten Construções, ${esc(s.nav.home)}">${logo('logo--light')}</a>
       <p>${esc(s.footer.tagline)}</p>
       <div class="ftr__social">${social.map(([name, href, label]) => `<a class="social" href="${esc(href)}" target="_blank" rel="noopener" aria-label="${label}">${icon(name)}</a>`).join('')}</div>
     </div>
-    <div class="ftr__col">
+    <div class="ftr__col" data-reveal>
       <h2 class="ftr__h">${esc(s.footer.contacts)}</h2>
       <ul class="ftr__list">
         ${c.email ? `<li><a href="mailto:${esc(c.email)}">${esc(c.email)}</a></li>` : ''}
@@ -169,11 +190,11 @@ function footer(ctx) {
         <li><a href="${esc(c.maps || '#')}" target="_blank" rel="noopener">${esc(c.address)}<br>${esc(c.postal)}, ${esc(c.country)}</a></li>
       </ul>
     </div>
-    <div class="ftr__col">
+    <div class="ftr__col" data-reveal>
       <h2 class="ftr__h">${esc(s.footer.site)}</h2>
       <ul class="ftr__list">${footerLinks(ctx).map(([href, label]) => `<li><a href="${href}">${esc(label)}</a></li>`).join('')}</ul>
     </div>
-    <div class="ftr__col">
+    <div class="ftr__col" data-reveal>
       <h2 class="ftr__h">${esc(s.nav.company)}</h2>
       <ul class="ftr__list">
         <li>${esc(co.legal)}</li>
@@ -204,6 +225,17 @@ function mobileBar(ctx) {
   ${wa ? `<a class="mobile-bar__wa" href="${esc(waHref(wa, text))}" target="_blank" rel="noopener" aria-label="WhatsApp">${icon('whatsapp')}</a>` : ''}
   <a class="btn btn--primary mobile-bar__cta" href="${href}">${esc(label)}${icon('arrow')}</a>
 </div>`;
+}
+
+function waFloat(ctx) {
+  const { s, content } = ctx;
+  const wa = content.contacts.whatsapp;
+  if (!wa) return '';
+  const text = ctx.page === 'careers' ? s.careers.whatsappText : s.quote.whatsappText;
+  return `
+<a class="wa-float" href="${esc(waHref(wa, text))}" target="_blank" rel="noopener" aria-label="${esc(s.nav.whatsapp)}" data-wa-float>${icon('whatsapp')}<span class="wa-float__tip" aria-hidden="true">${esc(
+    s.nav.whatsapp,
+  )}</span></a>`;
 }
 
 function structuredData(ctx) {
@@ -279,12 +311,14 @@ ${page === 'home' ? `<script type="application/ld+json">${json(structuredData(ct
 </head>
 <body class="${pageClass}" data-lang="${lang}">
 <a class="skip-link" href="#main">${esc(s.nav.skip)}</a>
+<div class="progress" aria-hidden="true"><i data-progress></i></div>
 ${header(ctx, overlay)}
 <main id="main">
 ${body}
 </main>
 ${footer(ctx)}
 ${mobileBar(ctx)}
+${waFloat(ctx)}
 <script type="application/json" id="i18n">${json(clientStrings(lang))}</script>
 </body>
 </html>`;
@@ -320,7 +354,7 @@ function hero(ctx, visibleWorks) {
   <div class="wrap hero__in">
     <div class="hero__content">
       <p class="pill-eyebrow"><i></i>${esc(s.hero.kicker)}</p>
-      <h1 class="hero__title">${rich(s.hero.title)}</h1>
+      <h1 class="hero__title">${words(s.hero.title)}</h1>
       <p class="hero__lead">${esc(s.hero.lead)}</p>
       <div class="hero__actions">
         <a class="btn btn--primary btn--lg" href="#${s.anchors.quote}">${esc(s.hero.cta)}${icon('arrow')}</a>
@@ -366,12 +400,23 @@ function stats(ctx) {
     <dl class="stats" data-stats>
       ${items
         .map(
-          ([label, value, plus, count]) =>
-            `<div class="stat"><dt>${esc(label)}</dt><dd><span${count ? ` data-to="${esc(value)}"` : ''}>${esc(value)}</span>${plus ? '<span class="stat__plus">+</span>' : ''}</dd></div>`,
+          ([label, value, plus, count], i) =>
+            `<div class="stat" style="--i:${i}"><dt>${esc(label)}</dt><dd><span${count ? ` data-to="${esc(value)}"` : ''}>${esc(value)}</span>${plus ? '<span class="stat__plus">+</span>' : ''}</dd></div>`,
         )
         .join('')}
     </dl>
   </div>
+</div>`;
+}
+
+// Faixa com os serviços a passar (decorativa: o mesmo texto está nos cartões logo abaixo)
+function marquee(ctx) {
+  const { s } = ctx;
+  const items = [s.services.items[0].title, ...s.services.items[0].tags.slice(0, 3), ...s.services.items.slice(1).map((it) => it.title)];
+  const group = `<span class="marquee__group">${items.map((t) => `<span class="marquee__item">${esc(t)}</span><span class="marquee__sep"></span>`).join('')}</span>`;
+  return `
+<div class="marquee" aria-hidden="true">
+  <div class="marquee__track">${group}${group}</div>
 </div>`;
 }
 
@@ -380,8 +425,8 @@ function services(ctx) {
   return `
 <section class="section" id="${s.anchors.services}">
   <div class="wrap">
-    <header class="sec-head sec-head--split" data-reveal>
-      <div>${eyebrow(s.services.kicker)}<h2 class="h2">${rich(s.services.title)}</h2></div>
+    <header class="sec-head sec-head--split" data-reveal="text">
+      <div>${eyebrow(s.services.kicker)}<h2 class="h2">${words(s.services.title)}</h2></div>
       <p class="sec-intro">${esc(s.services.intro)}</p>
     </header>
     <div class="svc-grid">
@@ -408,18 +453,21 @@ function about(ctx) {
   return `
 <section class="section section--soft" id="${s.anchors.company}">
   <div class="wrap about">
-    <div class="about__media" data-reveal>
-      <figure class="about__main">${picture({ ...main, focus: '55% 40%' }, { sizes: '(min-width: 1000px) 38vw, 88vw', alt: s.about.photo, cls: 'about__img' })}</figure>
-      <figure class="about__second">${picture(second, { sizes: '(min-width: 1000px) 18vw, 42vw', alt: titleOf(ctx, second), cls: 'about__img' })}</figure>
-      <div class="about__badge"><strong>${esc(content.numbers.founded)}</strong><span>${esc(s.about.badge)}</span></div>
+    <div class="about__media">
+      <figure class="about__main" data-reveal="curtain">${picture(
+        { ...main, focus: '55% 40%' },
+        { sizes: '(min-width: 1000px) 38vw, 88vw', alt: s.about.photo, cls: 'about__img', attrs: 'data-parallax' },
+      )}</figure>
+      <figure class="about__second" data-reveal="curtain" style="--reveal-delay:.35s">${picture(second, { sizes: '(min-width: 1000px) 18vw, 42vw', alt: titleOf(ctx, second), cls: 'about__img' })}</figure>
+      <div class="about__badge" data-reveal style="--reveal-delay:.8s"><strong>${esc(content.numbers.founded)}</strong><span>${esc(s.about.badge)}</span></div>
     </div>
-    <div class="about__body" data-reveal>
+    <div class="about__body" data-reveal="text">
       ${eyebrow(s.about.kicker)}
-      <h2 class="h2">${rich(s.about.title)}</h2>
+      <h2 class="h2">${words(s.about.title)}</h2>
       <div class="about__text">${s.about.text.map((p) => `<p>${esc(p)}</p>`).join('')}</div>
       <ul class="values">
         ${s.about.values
-          .map((v, i) => `<li class="value"><span class="value__icon">${icon(VALUE_ICONS[i])}</span><div><h3>${esc(v.title)}</h3><p>${esc(v.text)}</p></div></li>`)
+          .map((v, i) => `<li class="value" style="--i:${i}"><span class="value__icon">${icon(VALUE_ICONS[i])}</span><div><h3>${esc(v.title)}</h3><p>${esc(v.text)}</p></div></li>`)
           .join('')}
       </ul>
       <div class="about__cta"><a class="btn btn--dark btn--lg" href="#${s.anchors.quote}">${esc(s.about.cta)}${icon('arrow')}</a></div>
@@ -478,7 +526,7 @@ function works(ctx, list) {
             } aria-hidden="true"></video>`
           : picture(w, { sizes, alt: title, cls: 'tile__media' });
       return `
-      <li class="tile${featured ? ' tile--wide' : ''}${i >= 9 ? ' tile--extra' : ''}" data-cat="${esc(w.category)}" data-reveal>
+      <li class="tile${featured ? ' tile--wide' : ''}${i >= 9 ? ' tile--extra' : ''}" data-cat="${esc(w.category)}" data-reveal="curtain">
         <a class="tile__link" href="${esc(w.kind === 'video' ? w.video.u : largest(w))}" data-work="${i}" aria-label="${esc(`${s.works.open}: ${title}`)}"${
           w.color ? ` style="background-color:${w.color}"` : ''
         }>
@@ -495,20 +543,29 @@ function works(ctx, list) {
   return `
 <section class="section" id="${s.anchors.works}">
   <div class="wrap">
-    <header class="sec-head sec-head--split" data-reveal>
-      <div>${eyebrow(s.works.kicker)}<h2 class="h2">${rich(s.works.title)}</h2></div>
+    <header class="sec-head sec-head--split" data-reveal="text">
+      <div>${eyebrow(s.works.kicker)}<h2 class="h2">${words(s.works.title)}</h2></div>
       <div class="sec-aside"><p class="sec-intro">${esc(s.works.intro)}</p>${updated}</div>
     </header>
     ${filters}
     <ul class="gallery" data-works>${tiles}
     </ul>
-    ${
-      list.length > 6
-        ? `<div class="gallery__more${list.length > 9 ? '' : ' gallery__more--m'}"><button class="btn btn--outline btn--lg" type="button" data-works-more aria-expanded="false" data-more="${esc(s.works.more)}" data-less="${esc(
-            s.works.less,
-          )}"><span>${esc(s.works.more)}</span>${icon('plus')}</button></div>`
-        : ''
-    }
+    <div class="gallery__foot">
+      ${
+        list.length > 6
+          ? `<div class="gallery__more${list.length > 9 ? '' : ' gallery__more--m'}"><button class="btn btn--outline btn--lg" type="button" data-works-more aria-expanded="false" data-more="${esc(
+              s.works.more,
+            )}" data-less="${esc(s.works.less)}"><span>${esc(s.works.more)}</span>${icon('plus')}</button></div>`
+          : ''
+      }
+      ${
+        content.contacts.instagram
+          ? `<a class="ig-link" href="${esc(content.contacts.instagram)}" target="_blank" rel="noopener"><span class="ig-link__icon">${icon('instagram')}</span><span class="ig-link__text"><small>${esc(
+              s.works.instagram,
+            )}</small><b>@${esc(content.contacts.instagram.replace(/\/+$/, '').split('/').pop())}</b></span>${icon('out', 'ig-link__go')}</a>`
+          : ''
+      }
+    </div>
   </div>
   <script type="application/json" id="works-data">${json(data)}</script>
 </section>
@@ -531,13 +588,13 @@ function method(ctx) {
   return `
 <section class="section section--dark" id="${s.anchors.method}">
   <div class="wrap">
-    <header class="sec-head sec-head--center" data-reveal>
+    <header class="sec-head sec-head--center" data-reveal="text">
       ${eyebrow(s.method.kicker, 'eyebrow--light')}
-      <h2 class="h2">${rich(s.method.title)}</h2>
+      <h2 class="h2">${words(s.method.title)}</h2>
     </header>
-    <ol class="steps" data-reveal>
+    <ol class="steps" data-reveal="steps">
       ${s.method.steps
-        .map((st, i) => `<li class="step"><span class="step__n">0${i + 1}</span><h3 class="step__title">${esc(st.title)}</h3><p class="step__text">${esc(st.text)}</p></li>`)
+        .map((st, i) => `<li class="step" style="--i:${i}"><span class="step__n">0${i + 1}</span><h3 class="step__title">${esc(st.title)}</h3><p class="step__text">${esc(st.text)}</p></li>`)
         .join('')}
     </ol>
   </div>
@@ -551,14 +608,14 @@ function hiring(ctx) {
   return `
 <section class="section section--tight">
   <div class="wrap">
-    <div class="hire" data-reveal>
-      <div class="hire__body">
+    <div class="hire">
+      <div class="hire__body" data-reveal="text">
         ${eyebrow(s.hiring.kicker, 'eyebrow--ink')}
-        <h2 class="h2 hire__title">${esc(s.hiring.title)}</h2>
+        <h2 class="h2 hire__title">${words(s.hiring.title)}</h2>
         <p class="hire__text">${esc(s.hiring.text)}</p>
         <a class="btn btn--dark btn--lg" href="${s.routes.careers}">${esc(s.hiring.cta)}${icon('arrow')}</a>
       </div>
-      <div class="hire__media">${picture({ ...photo, focus: '60% 35%' }, { sizes: '(min-width: 1000px) 42vw, 100vw', alt: '', cls: 'hire__img' })}</div>
+      <div class="hire__media" data-reveal="curtain">${picture({ ...photo, focus: '60% 35%' }, { sizes: '(min-width: 1000px) 42vw, 100vw', alt: '', cls: 'hire__img', attrs: 'data-parallax' })}</div>
     </div>
   </div>
 </section>`;
@@ -580,8 +637,8 @@ function contacts(ctx, { only, whatsappText = ctx.s.quote.whatsappText } = {}) {
   return `<ul class="contacts">${rows
     .filter(([ic]) => !only || only.includes(ic))
     .map(
-      ([ic, href, label, value, external]) => `
-      <li><a class="contact" href="${esc(href)}"${external ? ' target="_blank" rel="noopener"' : ''}>
+      ([ic, href, label, value, external], i) => `
+      <li style="--i:${i}"><a class="contact" href="${esc(href)}"${external ? ' target="_blank" rel="noopener"' : ''}>
         <span class="contact__icon">${icon(ic)}</span>
         <span class="contact__body"><span class="contact__label">${label}</span><span class="contact__value">${esc(value)}</span></span>
         ${icon(external ? 'out' : 'arrow', 'contact__go')}
@@ -652,9 +709,9 @@ function quote(ctx) {
   return `
 <section class="section section--soft" id="${s.anchors.quote}">
   <div class="wrap quote">
-    <div class="quote__intro" data-reveal>
+    <div class="quote__intro" data-reveal="text">
       ${eyebrow(s.quote.kicker)}
-      <h2 class="h2">${rich(s.quote.title)}</h2>
+      <h2 class="h2">${words(s.quote.title)}</h2>
       <p class="sec-intro">${esc(s.quote.lead)}</p>
       <p class="quote__sub">${esc(s.quote.direct)}</p>
       ${contacts(ctx)}
@@ -692,7 +749,7 @@ export function homePage(ctx) {
     meta: ctx.s.meta.home,
     pageClass: 'page-home',
     overlay: true,
-    body: [hero(ctx, list), stats(ctx), services(ctx), about(ctx), works(ctx, list), method(ctx), hiring(ctx), quote(ctx)].join('\n'),
+    body: [hero(ctx, list), stats(ctx), marquee(ctx), services(ctx), about(ctx), works(ctx, list), method(ctx), hiring(ctx), quote(ctx)].join('\n'),
   });
 }
 
@@ -711,7 +768,7 @@ export function careersPage(ctx) {
   <div class="wrap hero__in">
     <div class="hero__content">
       <p class="pill-eyebrow"><i></i>${esc(c.kicker)}</p>
-      <h1 class="hero__title">${rich(c.title.join(' '))}</h1>
+      <h1 class="hero__title">${words(c.title.join(' '))}</h1>
       <p class="hero__lead">${esc(c.lead)}</p>
       <div class="hero__actions"><a class="btn btn--primary btn--lg" href="#candidatura">${esc(f.submit)}${icon('down')}</a></div>
     </div>
@@ -719,7 +776,7 @@ export function careersPage(ctx) {
 </section>
 <section class="section">
   <div class="wrap">
-    <header class="sec-head" data-reveal>${eyebrow(c.kicker)}<h2 class="h2">${esc(c.rolesTitle)}</h2></header>
+    <header class="sec-head" data-reveal="text">${eyebrow(c.kicker)}<h2 class="h2">${words(c.rolesTitle)}</h2></header>
     <div class="roles">
       ${c.roles.map((r, i) => `<article class="role" data-reveal><span class="role__n">0${i + 1}</span><h3 class="role__title">${esc(r.title)}</h3><p>${esc(r.text)}</p></article>`).join('')}
       <aside class="offer" data-reveal>
@@ -731,9 +788,9 @@ export function careersPage(ctx) {
 </section>
 <section class="section section--soft" id="candidatura">
   <div class="wrap quote">
-    <div class="quote__intro" data-reveal>
+    <div class="quote__intro" data-reveal="text">
       ${eyebrow(f.title)}
-      <h2 class="h2">${rich(c.applyTitle)}</h2>
+      <h2 class="h2">${words(c.applyTitle)}</h2>
       <p class="sec-intro">${esc(c.lead)}</p>
       <p class="quote__sub">${esc(c.direct)}</p>
       ${contacts(ctx, { only: ['mail', 'whatsapp', 'phone'], whatsappText: c.whatsappText })}
@@ -782,7 +839,7 @@ export function legalPage(ctx, which) {
 <section class="page-head">
   <div class="wrap">
     ${eyebrow(s.legal.updated)}
-    <h1 class="h1">${esc(doc.title)}</h1>
+    <h1 class="h1">${words(doc.title)}</h1>
     <p class="page-head__lead">${esc(doc.intro)}</p>
   </div>
 </section>
@@ -805,7 +862,7 @@ export function notFoundPage(ctx) {
 <section class="page-head page-head--center">
   <div class="wrap">
     <p class="nf__code" aria-hidden="true">404</p>
-    <h1 class="h1">${esc(s.notFound.title)}</h1>
+    <h1 class="h1">${words(s.notFound.title)}</h1>
     <p class="page-head__lead">${esc(s.notFound.text)}</p>
     <a class="btn btn--primary btn--lg" href="${s.routes.home}">${esc(s.notFound.cta)}${icon('arrow')}</a>
   </div>

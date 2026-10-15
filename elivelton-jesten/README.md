@@ -19,8 +19,12 @@ e LinkedIn no orçamento, e um **painel** onde ele vê de que cidade vêm as vis
   **recrutamento** e **Orçamento**: formulário (com anexo de projeto até 10 MB) e todos os contactos diretos (e-mail,
   WhatsApp, telefones de Portugal e Espanha, Instagram, Facebook e LinkedIn quando preenchidos, morada com mapa).
 - Visual de construtora premium: Montserrat nos títulos (a mesma família do "CONSTRUÇÕES" do logótipo) e Inter no
-  texto, cantos arredondados, botões em pílula, sombras suaves e animações discretas ao rolar. No telemóvel aparece
-  uma barra fixa com WhatsApp e "Pedir orçamento" (nas carreiras, "Enviar candidatura").
+  texto, cantos arredondados, botões em pílula e sombras suaves. No telemóvel aparece uma barra fixa com WhatsApp e
+  "Pedir orçamento" (nas carreiras, "Enviar candidatura"); no computador, um botão redondo de WhatsApp.
+- Animações: títulos que entram palavra a palavra, fotos que abrem como uma cortina, parallax na foto do topo e nas
+  fotos da empresa e do recrutamento, faixa com os serviços a passar, números que contam, "Como trabalhamos" com a
+  linha a acender cada passo, cabeçalho que se esconde ao descer e volta ao subir, barra de leitura no alto, galeria
+  e menu com transições e troca suave entre páginas. Quem tem "reduzir movimento" ligado no aparelho vê tudo parado.
 - **Carreiras** (`/carreiras`): funções, o que a empresa oferece, contactos diretos e formulário de candidatura com
   currículo em PDF.
 - **Política de Privacidade** e **Termos** reescritos para o site novo (RGPD, Livro de Reclamações, resolução de litígios).

@@ -39,6 +39,7 @@ export const STRINGS = {
       home: 'Início',
       main: 'Navegação principal',
       top: 'Voltar ao topo',
+      whatsapp: 'Fale connosco no WhatsApp',
     },
     hero: {
       kicker: 'Construção civil · Portugal e Espanha',
@@ -88,6 +89,7 @@ export const STRINGS = {
       all: 'Todas',
       more: 'Ver mais obras',
       less: 'Ver menos',
+      instagram: 'Acompanhe as obras no Instagram',
       video: 'Vídeo',
       open: 'Abrir',
       categories: { estrutura: 'Estrutura', 'obra-nova': 'Obra nova', reabilitacao: 'Reabilitação', remodelacao: 'Remodelação', outro: 'Obra' },
@@ -323,6 +325,7 @@ export const STRINGS = {
       home: 'Inicio',
       main: 'Navegación principal',
       top: 'Volver arriba',
+      whatsapp: 'Escríbanos por WhatsApp',
     },
     hero: {
       kicker: 'Construcción · Portugal y España',
@@ -372,6 +375,7 @@ export const STRINGS = {
       all: 'Todas',
       more: 'Ver más obras',
       less: 'Ver menos',
+      instagram: 'Siga nuestras obras en Instagram',
       video: 'Vídeo',
       open: 'Abrir',
       categories: { estrutura: 'Estructura', 'obra-nova': 'Obra nueva', reabilitacao: 'Rehabilitación', remodelacao: 'Reforma', outro: 'Obra' },
@@ -607,6 +611,7 @@ export const STRINGS = {
       home: 'Home',
       main: 'Main navigation',
       top: 'Back to top',
+      whatsapp: 'Chat with us on WhatsApp',
     },
     hero: {
       kicker: 'Construction · Portugal and Spain',
@@ -656,6 +661,7 @@ export const STRINGS = {
       all: 'All',
       more: 'See more projects',
       less: 'See fewer',
+      instagram: 'Follow our sites on Instagram',
       video: 'Video',
       open: 'Open',
       categories: { estrutura: 'Structure', 'obra-nova': 'New build', reabilitacao: 'Refurbishment', remodelacao: 'Renovation', outro: 'Project' },
@@ -891,6 +897,7 @@ export const STRINGS = {
       home: 'Accueil',
       main: 'Navigation principale',
       top: 'Retour en haut',
+      whatsapp: 'Écrivez-nous sur WhatsApp',
     },
     hero: {
       kicker: 'Construction · Portugal et Espagne',
@@ -940,6 +947,7 @@ export const STRINGS = {
       all: 'Tous',
       more: 'Voir plus de chantiers',
       less: 'Voir moins',
+      instagram: 'Suivez nos chantiers sur Instagram',
       video: 'Vidéo',
       open: 'Ouvrir',
       categories: { estrutura: 'Structure', 'obra-nova': 'Construction neuve', reabilitacao: 'Réhabilitation', remodelacao: 'Rénovation', outro: 'Chantier' },
