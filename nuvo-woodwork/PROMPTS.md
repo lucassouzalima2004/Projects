@@ -223,3 +223,6 @@ tools/make-videos.sh
 O script prepara cada vídeo para andar liso com o scroll (16:9 para computador e um recorte do centro em 3:4 para
 celular), atualiza `assets/video/manifest.js` e o site passa a usar o vídeo daquele trecho. Os trechos que ainda não
 têm vídeo mostram as imagens, então dá para publicar aos poucos.
+
+**Baixe sempre na maior resolução** (no Flow: **1080p Upscaled**). No celular em pé o site mostra só o meio do
+vídeo, bem ampliado; com 720p a imagem fica mole, com 1080p fica bem mais nítida.

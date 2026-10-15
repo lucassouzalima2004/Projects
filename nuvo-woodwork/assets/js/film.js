@@ -9,10 +9,13 @@
    em assets/video/manifest.js. Normalmente não é preciso mexer neste arquivo.
 
    Para o vídeo deslizar:
-   • cada vídeo é baixado inteiro antes de entrar (buscar um quadro nunca espera a rede);
-   • o scroll vale mais nas partes com movimento e menos nas paradas (manifest.js);
-   • o filme segue o scroll com um pouco de inércia e só pede um quadro novo
-     quando o anterior já está na tela.
+   • o filme é desenhado num canvas com quadros que o próprio navegador
+     decodifica um pouco adiante do scroll (film-decoder.js), e dois quadros
+     vizinhos se fundem: o movimento é contínuo mesmo rolando devagar;
+   • o scroll vale mais nas partes com movimento e menos nas paradas;
+   • o filme segue o scroll com um pouco de inércia;
+   • cada vídeo começa a ser usado enquanto ainda está baixando.
+   Em navegador sem esse decodificador, o filme usa o <video> normal.
    ========================================================================== */
 (function () {
   'use strict';
@@ -22,6 +25,7 @@
   if (!C || !Array.isArray(C.scenes) || !C.scenes.length || !film) return;
 
   const VIDEOS = window.NUVO_VIDEOS || {};
+  const D = window.NUVO_DECODER; // film-decoder.js (só existe se o navegador tiver WebCodecs)
   const stage = film.querySelector('.film__stage');
   const media = film.querySelector('[data-film-media]');
   const beatsRoot = film.querySelector('[data-film-beats]');
@@ -29,6 +33,8 @@
   const pace = Math.max(4, (C.tour && C.tour.pace) || 24); // % da tela de scroll por segundo de vídeo
   const FADE = 14; // % da tela de scroll para um título entrar ou sair
   const BLEND = 0.4; // segundos de fusão na emenda entre um vídeo e o próximo
+  const KEEP_NOW = 22; // quadros decodificados guardados do trecho na tela
+  const KEEP_NEAR = 4; // e dos vizinhos (para a emenda)
 
   /* ------------------------------------------------------------ helpers */
   const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
@@ -60,7 +66,8 @@
   }
 
   const scenes = C.scenes.map((raw, index) => {
-    const video = VIDEOS[raw.id] && VIDEOS[raw.id].src ? VIDEOS[raw.id] : null;
+    const v = VIDEOS[raw.id];
+    const video = v && v.wide && v.wide.src ? v : null;
     const fps = (video && video.fps) || 24;
     const frames = Math.max(2, (video && video.frames) || 240);
     const motion = video && Array.isArray(video.motion) && video.motion.length === frames ? video.motion : null;
@@ -74,9 +81,11 @@
       hold: Math.max(0, raw.hold == null ? 1 : +raw.hold || 0),
       blend: index < C.scenes.length - 1 ? BLEND : 0,
       w: motion ? weights(motion) : null,
-      goal: 0, // quadro que o scroll pede
-      at: -1, // quadro já pedido ao vídeo
+      track: null, // quadros decodificados (modo canvas)
+      goal: 0, // quadro que o scroll pede (modo <video>)
+      at: -1, // quadro já pedido ao <video>
       o: -1,
+      tries: 0,
     });
   });
 
@@ -140,7 +149,8 @@
     return s.qa + clamp(u) * (s.qb - s.qa);
   }
 
-  /* ------------------------------------------------------------ camadas (fotos e vídeo) */
+  /* ------------------------------------------------------------ camadas (fotos e <video>) */
+  // No modo canvas as camadas ficam escondidas e as fotos delas são desenhadas no canvas
   scenes.forEach((s) => {
     const layer = document.createElement('div');
     layer.className = 'film__scene';
@@ -152,6 +162,7 @@
       img.decoding = 'async';
       img.dataset.src = 'assets/img/' + src;
       if (pos) img.style.objectPosition = pos;
+      img.addEventListener('load', repaintSoon);
       layer.appendChild(img);
       return img;
     });
@@ -198,11 +209,11 @@
     s.layer.style.visibility = a > 0 ? 'visible' : 'hidden';
   }
 
-  // Põe o trecho no quadro f: o vídeo, se já estiver pronto, ou a passagem da 1ª para a 2ª foto
+  // Modo <video>: põe o trecho no quadro f (o vídeo, se pronto, ou a passagem da 1ª para a 2ª foto)
   function place(s, f) {
     s.goal = Math.round(clamp(f, 0, s.frames - 1));
     if (!s.live || stillMode()) {
-      const mix = ramp(0.45, 0.85, f / (s.frames - 1));
+      const mix = stillMix(s, f);
       if (mix !== s.mix) {
         s.mix = mix;
         s.layer.style.setProperty('--mix', mix.toFixed(3));
@@ -210,26 +221,265 @@
     }
   }
 
-  /* ------------------------------------------------------------ vídeos */
+  // Sem vídeo, a 2ª foto (o ambiente pronto) aparece na segunda metade do trecho
+  const stillMix = (s, f) => ramp(0.45, 0.85, f / (s.frames - 1));
+
+  /* ------------------------------------------------------------ modo: canvas ou <video> */
+  let mode = 'video';
+  let modeKnown = false;
+  let canvas = null;
+  let ctx = null;
+  let view = null; // o que está na tela no modo canvas: { i, s, x, next, mix }
+  let repaint = false;
+  let snap = 0; // 0 → 1 depois que o scroll para: a fusão termina num quadro inteiro
+  let restAt = 0;
+  let heading = 1; // sentido do scroll
+  const stats = { paints: 0, exact: 0, near: 0, stills: 0 };
+  // Aparelho que não dá conta do canvas: o tempo entre uma pintura de tela e outra, durante o
+  // scroll, comparado com o ritmo normal da tela dele (base). Muito acima disso, volta para o <video>.
+  const perf = { base: 0, n: 0, slow: 0 };
+  const MEMO = 'nuvo-film-mode';
+  const remember = (v) => {
+    try {
+      sessionStorage.setItem(MEMO, v);
+    } catch (e) {
+      /* sem sessionStorage */
+    }
+  };
+  const remembered = () => {
+    try {
+      return sessionStorage.getItem(MEMO);
+    } catch (e) {
+      return null;
+    }
+  };
+
   const stillMode = () => reduce.matches; // com "reduzir movimento", só as fotos
   const portrait = () => window.innerWidth < window.innerHeight * 0.9;
-  const fileFor = (s) => (portrait() && s.video.tall) || s.video.src;
+  const infoFor = (s) => (portrait() && s.video.tall) || s.video.wide;
+  const fileFor = (s) => infoFor(s).src;
+
+  function repaintSoon() {
+    repaint = true;
+    kick();
+  }
+
+  // Usa o canvas se o navegador decodifica o vídeo do primeiro trecho (e não foi lento nesta visita)
+  function chooseMode() {
+    const first = scenes.find((s) => s.video);
+    const check = D && first && remembered() !== 'video' ? D.supported(infoFor(first)) : Promise.resolve(false);
+    return check
+      .then((ok) => ok && useCanvas(), () => {})
+      .then(() => {
+        modeKnown = true;
+        pump();
+      });
+  }
+
+  function useCanvas() {
+    const c = document.createElement('canvas');
+    const g = c.getContext('2d', { alpha: false });
+    if (!g) return;
+    canvas = c;
+    ctx = g;
+    canvas.className = 'film__canvas';
+    media.appendChild(canvas);
+    mode = 'canvas';
+    film.classList.add('is-canvas');
+    fitCanvas();
+    dirty = true;
+    kick();
+  }
+
+  // O decodificador falhou de vez (ou o aparelho ficou lento): volta para o <video>
+  function useVideo() {
+    if (mode !== 'canvas') return;
+    remember('video');
+    mode = 'video';
+    film.classList.remove('is-canvas');
+    canvas.remove();
+    canvas = ctx = null;
+    scenes.forEach((s) => {
+      if (!s.track) return;
+      s.track.sleep();
+      s.track = null;
+      s.file = null;
+    });
+    loading = false;
+    dirty = true;
+    kick();
+    pump();
+  }
+
+  // O canvas na resolução da tela (até 3x), para o vídeo ampliado não perder nitidez
+  function fitCanvas() {
+    if (!canvas) return;
+    let r = Math.min(window.devicePixelRatio || 1, 3);
+    const cw = stage.clientWidth;
+    const ch = stage.clientHeight;
+    if (cw * ch * r * r > 8.3e6) r = Math.sqrt(8.3e6 / (cw * ch)); // telas enormes: até ~4K
+    const w = Math.max(1, Math.round(cw * r));
+    const h = Math.max(1, Math.round(ch * r));
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w;
+      canvas.height = h;
+      repaint = true;
+    }
+  }
+
+  // Desenha uma imagem cobrindo o canvas (como object-fit: cover), no ponto de foco do trecho
+  function cover(img, s) {
+    const iw = img.naturalWidth || img.displayWidth || img.width;
+    const ih = img.naturalHeight || img.displayHeight || img.height;
+    if (!iw || !ih) return;
+    const W = canvas.width;
+    const H = canvas.height;
+    const k = Math.max(W / iw, H / ih);
+    const dw = iw * k;
+    const dh = ih * k;
+    const fx = s.focus ? s.focus[0] : 0.5;
+    const fy = s.focus ? s.focus[1] : 0.5;
+    ctx.drawImage(img, (W - dw) * fx, (H - dh) * fy, dw, dh);
+  }
+
+  const ready = (img) => img && img.complete && img.naturalWidth > 0;
+
+  // Um trecho no quadro x (com fração) e opacidade a. Devolve false se não tinha nada para desenhar.
+  function paintScene(s, x, a) {
+    const t = s.track;
+    if (t) {
+      const i = Math.floor(x);
+      const f = x - i;
+      const A = t.get(i);
+      if (A) {
+        ctx.globalAlpha = a;
+        cover(A, s);
+        const B = f > 0.004 ? t.get(i + 1) : null;
+        if (B) {
+          // a fusão dos dois quadros vizinhos: o movimento fica contínuo entre um quadro e outro
+          ctx.globalAlpha = a * f;
+          cover(B, s);
+        }
+        stats.exact++;
+        return true;
+      }
+      const N = t.nearest(x); // o certo ainda está decodificando: o mais perto que já está pronto
+      if (N) {
+        ctx.globalAlpha = a;
+        cover(N, s);
+        stats.near++;
+        return true;
+      }
+    }
+    // Sem quadro: as fotos do trecho
+    const [p, q] = s.stills;
+    const mix = stillMix(s, x);
+    let drew = false;
+    if (ready(p) && mix < 1) {
+      ctx.globalAlpha = a;
+      cover(p, s);
+      drew = true;
+    }
+    if (ready(q) && mix > 0) {
+      ctx.globalAlpha = drew ? a * mix : a;
+      cover(q, s);
+      drew = true;
+    }
+    if (drew) stats.stills++;
+    return drew;
+  }
+
+  function paint() {
+    repaint = false;
+    if (!ctx || !view) return;
+    const { s, next, mix } = view;
+    let x = view.x;
+    if (snap > 0) {
+      const i = Math.floor(x);
+      const f = x - i;
+      x = i + f + (Math.round(f) - f) * ramp(0, 1, snap);
+    }
+    stats.paints++;
+    if (!paintScene(s, x, 1)) {
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = '#14110F';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    if (next && mix > 0.001) paintScene(next, 0, mix);
+    ctx.globalAlpha = 1;
+  }
+
+  // Diz a cada vídeo o que decodificar: o trecho na tela onde o scroll está, o próximo o
+  // começo (para a emenda) e o anterior o fim (se a pessoa voltar). Os outros liberam a memória.
+  function drive() {
+    if (!view) return;
+    const { i, x, s } = view;
+    const q = (x / (s.frames - 1)) || 0;
+    scenes.forEach((o, k) => {
+      const t = o.track;
+      if (!t) return;
+      if (k === i) t.want(x, heading, KEEP_NOW);
+      else if (k === i + 1 && q > 0.5) t.want(0, 1, KEEP_NEAR);
+      else if (k === i - 1 && q < 0.25) t.want(o.frames - 1, -1, KEEP_NEAR);
+      else t.sleep();
+    });
+  }
+
+  // Chegou um quadro decodificado: redesenha se for de um trecho na tela
+  function onFrame(t) {
+    if (!view) return;
+    if (t === view.s.track || (view.next && t === view.next.track)) repaintSoon();
+  }
+
+  /* ------------------------------------------------------------ download */
   let loading = false;
 
-  // Baixa um vídeo por vez, inteiro: primeiro o do ponto em que a pessoa está, depois os seguintes
+  // Baixa um vídeo por vez: primeiro o do ponto em que a pessoa está, depois os seguintes
   function pump() {
-    if (loading || stillMode()) return;
+    if (loading || stillMode() || !modeKnown) return;
     const from = Math.max(0, now.index);
     const order = scenes.slice(from).concat(scenes.slice(0, from).reverse());
-    const s = order.find((x) => x.video && x.file !== fileFor(x));
+    const s = order.find((x) => x.video && x.file !== fileFor(x) && x.tries < 2);
     if (!s) return;
-    const file = fileFor(s);
+    const info = infoFor(s);
+    const file = info.src;
     loading = true;
     loadStills(s);
-    const done = (url) => {
-      attach(s, file, url);
+    s.file = file;
+    s.tries++;
+    const next = () => {
       loading = false;
       pump();
+    };
+    const failed = () => {
+      s.file = null; // tenta de novo uma vez, daqui a pouco
+      loading = false;
+      setTimeout(pump, 2500);
+    };
+
+    if (mode === 'canvas' && info.sizes) {
+      // Canvas: os bytes vão entrando no decodificador enquanto o arquivo baixa
+      if (s.track) s.track.sleep();
+      const track = new D.Track(info, { onFrame, onFail: useVideo });
+      s.track = track;
+      dirty = true;
+      kick();
+      stream(file, (chunk) => {
+        if (s.track !== track) return;
+        track.push(chunk);
+        kick();
+      }).then(() => {
+        if (s.track === track && track.done()) s.tries = 0;
+        next();
+      }, failed);
+      return;
+    }
+
+    // <video>: o arquivo inteiro primeiro (o Cloudflare não entrega pedaços e o iPhone precisa disso)
+    const done = (url) => {
+      attach(s, file, url);
+      s.tries = 0;
+      next();
     };
     if (!window.fetch || !window.URL || !URL.createObjectURL) {
       done(file);
@@ -243,6 +493,22 @@
       .then((blob) => done(URL.createObjectURL(blob)), () => done(file)); // se falhar, o navegador tenta sozinho
   }
 
+  function stream(file, onChunk) {
+    return fetch(file).then((r) => {
+      if (!r.ok) throw new Error(r.status);
+      if (!r.body || !r.body.getReader) return r.arrayBuffer().then((b) => onChunk(new Uint8Array(b)));
+      const reader = r.body.getReader();
+      const read = () =>
+        reader.read().then((x) => {
+          if (x.done) return;
+          onChunk(x.value);
+          return read();
+        });
+      return read();
+    });
+  }
+
+  /* ------------------------------------------------------------ modo <video> */
   function attach(s, file, url) {
     if (s.url && s.url.indexOf('blob:') === 0) URL.revokeObjectURL(s.url);
     s.file = file;
@@ -301,7 +567,7 @@
   // Pede ao vídeo o quadro do scroll. Só um pedido por vez: se o vídeo ainda está buscando,
   // o próximo sai quando ele terminar (evento seeked), já com o quadro mais recente.
   function seek(s) {
-    if (!s.url || s.goal === s.at || s.unlocking || s.o <= 0) return;
+    if (mode !== 'video' || !s.url || s.goal === s.at || s.unlocking || s.o <= 0) return;
     const v = s.el;
     if (v.readyState < 1 || v.seeking) return;
     s.at = s.goal;
@@ -407,14 +673,22 @@
     const q = clamp((pos - s.start) / s.len);
     ui(i, s, q);
     const next = scenes[i + 1];
-    scenes.forEach((x) => {
-      if (x !== s && x !== next) setOpacity(x, 0);
+    // O próximo trecho espera no primeiro quadro, por cima, e aparece na emenda
+    const mix = next && s.blendQ > 0 ? ramp(1 - s.blendQ, 1, q) : 0;
+    const x = frameAt(s, q);
+    if (mode === 'canvas') {
+      view = { i, s, x, next, mix };
+      drive();
+      repaint = true;
+      return;
+    }
+    scenes.forEach((o) => {
+      if (o !== s && o !== next) setOpacity(o, 0);
     });
     setOpacity(s, 1);
-    place(s, frameAt(s, q));
+    place(s, x);
     if (next) {
-      // O próximo trecho espera no primeiro quadro, por cima, e aparece na emenda
-      setOpacity(next, s.blendQ > 0 ? ramp(1 - s.blendQ, 1, q) : 0);
+      setOpacity(next, mix);
       place(next, 0);
     }
   }
@@ -435,6 +709,7 @@
   // O filme segue o scroll com um pouco de inércia: desliza em vez de pular de um quadro a outro
   function tick(t) {
     raf = 0;
+    const had = last; // havia uma pintura logo antes (o intervalo é real)
     const dt = last ? Math.min(64, t - last) : 16;
     const prev = cur;
     last = t;
@@ -444,13 +719,57 @@
       cur += (target - cur) * (1 - Math.exp(-dt / 120));
       if (Math.abs(target - cur) * total < 0.02) cur = target;
     }
+    if (cur !== prev) heading = cur > prev ? 1 : -1;
     if (cur !== prev || dirty) {
       dirty = false;
       draw();
     }
-    scenes.forEach(seek);
-    if (cur !== target) kick();
+    let more = cur !== target;
+    if (mode === 'canvas') {
+      if (more && perf.base && had) watch(t - had);
+      // Quando o scroll para, a fusão termina no quadro inteiro mais perto (imagem nítida parada)
+      if (more) restAt = 0;
+      else if (!restAt) restAt = t;
+      const sn = restAt ? clamp((t - restAt) / 220) : 0;
+      if (sn !== snap) {
+        snap = sn;
+        repaint = true;
+      }
+      if (snap < 1) more = true;
+      scenes.forEach((o) => {
+        if (!o.track || !o.track.active) return;
+        o.track.pump();
+        if (o.track.sent.size) more = true; // esperando o decodificador
+      });
+      if (repaint) paint();
+    } else {
+      scenes.forEach(seek);
+    }
+    if (more) kick();
     else last = 0;
+  }
+
+  // O ritmo normal da tela (60 ou 120 por segundo, 30 no modo economia do iPhone)
+  function probe() {
+    const ds = [];
+    let t0 = 0;
+    const step = (t) => {
+      if (t0) ds.push(t - t0);
+      t0 = t;
+      if (ds.length < 30) requestAnimationFrame(step);
+      else perf.base = clamp(ds.sort((a, b) => a - b)[15], 6, 50);
+    };
+    requestAnimationFrame(step);
+  }
+
+  // Só troca quando fica pesado de verdade: mais de 30% das pinturas com 2,5 vezes o intervalo
+  // normal (na tela de 60 por segundo, abaixo de 24 quadros por segundo)
+  function watch(dt) {
+    perf.n++;
+    if (dt > perf.base * 2.5) perf.slow++;
+    if (perf.n < 90) return;
+    if (perf.slow / perf.n > 0.3) useVideo();
+    perf.n = perf.slow = 0;
   }
 
   let wasPortrait = portrait();
@@ -459,6 +778,7 @@
     metrics.dist = Math.max(1, film.offsetHeight - stage.offsetHeight);
     readScroll();
     if (first === true) cur = target;
+    fitCanvas();
     dirty = true;
     kick();
     // Celular girado: troca para o vídeo do formato certo
@@ -491,18 +811,23 @@
   };
   if (reduce.addEventListener) reduce.addEventListener('change', onReduce);
   else if (reduce.addListener) reduce.addListener(onReduce);
-  // No iPhone em modo economia, o vídeo só aparece depois de um toque: o primeiro toque destrava
+  // No iPhone em modo economia, o <video> só aparece depois de um toque: o primeiro toque destrava
   window.addEventListener('touchstart', () => {
     scenes.forEach((s) => {
       if (s.url && !s.live && !s.unlocking) unlock(s);
     });
   }, { once: true, passive: true });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) repaintSoon();
+  });
 
   film.classList.toggle('is-still', reduce.matches);
   film.classList.add('is-ready'); // a seção ganha a altura do filme antes da primeira medida
   measure(true);
   loadStills(scenes[0]);
-  pump();
+  chooseMode();
+  if (document.readyState === 'complete') setTimeout(probe, 300);
+  else window.addEventListener('load', () => setTimeout(probe, 300), { once: true });
 
   window.NUVO_FILM = {
     goTo,
@@ -514,6 +839,16 @@
     scrollFor(id, t) {
       const s = scenes.find((x) => x.id === id);
       return s ? metrics.top + ((s.start + s.len * qAt(s, t)) / total) * metrics.dist : null;
+    },
+    // Como o filme está sendo desenhado (para testes)
+    info() {
+      return {
+        mode,
+        base: perf.base,
+        stats: Object.assign({}, stats),
+        cached: scenes.map((s) => (s.track ? s.track.cache.size : 0)),
+        loaded: scenes.map((s) => (s.track ? Math.round((s.track.have / s.track.buf.length) * 100) : s.live ? 100 : 0)),
+      };
     },
   };
 })();

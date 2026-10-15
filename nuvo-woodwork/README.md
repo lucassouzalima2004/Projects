@@ -13,9 +13,13 @@ O site é em inglês (o público é americano).
 - **O filme da casa** (topo, preso na tela durante o scroll), no formato do site de referência que o Guilherme mandou:
   um voo de drone contínuo, da porta fechada até a casa inteira acesa, passando pela sala, cozinha e closet, que se
   montam na frente da câmera. São 4 vídeos de 10 s encadeados (o último quadro de um é o primeiro do próximo).
-  - O vídeo de verdade (24 quadros por segundo) anda com o scroll e com um pouco de inércia, para deslizar em vez
-    de pular. As partes com mais movimento ganham mais scroll e as partes paradas passam depressa, então o vídeo
-    nunca fica parado enquanto a pessoa rola.
+  - O vídeo anda com o scroll e com um pouco de inércia, para deslizar em vez de pular. O navegador decodifica os
+    quadros um pouco adiante do scroll e o filme é desenhado num canvas, fundindo dois quadros vizinhos: o movimento
+    é contínuo mesmo rolando bem devagar, e a imagem para nítida num quadro inteiro quando o scroll para.
+  - As partes com mais movimento ganham mais scroll e as partes paradas passam depressa, então o vídeo nunca fica
+    parado enquanto a pessoa rola.
+  - O filme começa a ser usado enquanto o vídeo ainda baixa. Em navegador sem decodificador (WebCodecs), ou em
+    aparelho que não aguenta o canvas, o site usa sozinho o `<video>` normal.
   - Títulos grandes à esquerda (no celular, embaixo) que sobem e somem presos ao scroll, e no fim o convite para a
     consultoria 3D grátis, com botões de agendar e ligar.
   - Enquanto um vídeo carrega (ou se não carregar), o trecho mostra o primeiro e o último quadro dele, que se
@@ -56,14 +60,17 @@ Os prompts das 5 imagens e dos 4 vídeos estão em **[PROMPTS.md](PROMPTS.md)**,
 
 Detalhes:
 
-- Os vídeos saem em H.264, 24 quadros por segundo, com um quadro-chave a cada 2 quadros: o navegador consegue
-  mostrar qualquer ponto do vídeo na hora, que é o que deixa o scroll liso. Dá uns 5 MB por trecho de 10 s no
-  computador e 2 MB no celular (os vídeos atuais são 720p; em 1080p o peso sobe e a imagem fica mais nítida).
-  Para arquivos menores: `CRF=27 tools/make-videos.sh`.
-- O site baixa cada vídeo inteiro antes de usar (o Cloudflare não entrega pedaços de vídeo, e o iPhone precisa
-  disso para tocar direto do endereço). Primeiro o trecho em que a pessoa está, depois os próximos.
-- O `manifest.js` guarda quanto a imagem muda de um quadro para o outro. É assim que o site dá mais scroll às partes
-  com movimento. Se trocar um vídeo, rode o script de novo para refazer essa medida.
+- Os vídeos saem em H.264, 24 quadros por segundo, com um quadro-chave a cada 2 quadros e um pouco mais de
+  nitidez. Dá uns 6 MB por trecho de 10 s no computador e 3,5 MB no celular. A versão do celular vai mais
+  caprichada (`CRF_TALL=20`) porque na tela em pé ela é ampliada umas 3,5 vezes.
+- **Qualidade:** os vídeos atuais são 720p. No celular em pé aparece só o meio do quadro (uns 330 pixels de
+  largura), então a nitidez depende muito da resolução de origem. No Flow, baixe a versão **1080p (Upscaled)** de
+  cada vídeo e rode o script de novo: o celular passa a ter 810 × 1080 de imagem em vez de 540 × 720.
+- O `manifest.js` guarda, de cada vídeo, quanto a imagem muda de um quadro para o outro (é assim que o site dá mais
+  scroll às partes com movimento) e onde cada quadro está dentro do arquivo (é assim que o navegador decodifica os
+  quadros direto). Se trocar um vídeo, rode o script de novo.
+- O site baixa um vídeo por vez, primeiro o do trecho em que a pessoa está. O Cloudflare não entrega pedaços de
+  vídeo, então no modo `<video>` o arquivo vem inteiro antes de entrar (o iPhone precisa disso).
 - Com um vídeo vertical `02-kitchen-mobile.mp4`, o celular usa ele; sem, o script recorta o centro do 16:9 em 3:4.
 - Para tirar um vídeo do ar: apague os dois arquivos do trecho em `assets/video/` e rode
   `tools/make-videos.sh --manifest`.
@@ -142,7 +149,8 @@ nuvo-woodwork/
 ├── PROMPTS.md               prompts das 5 imagens e dos 4 vídeos
 ├── assets/css/styles.css    visual
 ├── assets/js/content.js     trechos do filme (títulos, tempos, fotos) e contato
-├── assets/js/film.js        o filme: vídeo preso ao scroll, títulos, carregamento
+├── assets/js/film.js        o filme: scroll, títulos, canvas, carregamento (e o <video> de reserva)
+├── assets/js/film-decoder.js decodifica os quadros dos vídeos direto no navegador (WebCodecs)
 ├── assets/js/app.js         menu, índice de ambientes, formulário
 ├── assets/video/            vídeos do filme + manifest.js (gerados pelo script)
 ├── assets/img/              fotos, favicon, ícone do iPhone e prévia do link

@@ -22,7 +22,10 @@
   const measure = () => {
     filmEnd = film ? film.offsetTop + film.offsetHeight - window.innerHeight : 0;
   };
-  const headerState = () => header.classList.toggle('is-solid', window.scrollY > Math.max(24, filmEnd - 8));
+  const headerState = () => {
+    header.classList.toggle('is-solid', window.scrollY > Math.max(24, filmEnd - 8));
+    document.documentElement.classList.toggle('on-film', window.scrollY < filmEnd);
+  };
   measure();
   headerState();
   window.addEventListener('scroll', headerState, { passive: true });
