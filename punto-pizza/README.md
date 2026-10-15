@@ -109,7 +109,7 @@ As fotos estão em WebP em `assets/img/`. Para trocar a do topo, mantenha o nome
 O workflow `.github/workflows/deploy-punto-pizza.yml` publica o site no Cloudflare a cada push que mexe em `punto-pizza/`
 (no `main` ou no branch `claude/inspiring-gates-bp5orb`). Vai como **Worker** chamado `puntopizza`, no mesmo esquema da
 Black Rock Floors, porque a conta já chegou ao limite de projetos do Cloudflare Pages.
-O endereço aparece no resumo de cada execução, em **Actions** (`https://puntopizza.<subdomínio da conta>.workers.dev`).
+No ar em <https://puntopizza.lucassouzalima10.workers.dev> (o endereço também aparece no resumo de cada execução, em **Actions**).
 
 - Usa o mesmo secret dos outros sites: `CLOUDFLARE_API_TOKEN` (e `CLOUDFLARE_ACCOUNT_ID`, opcional).
 - Na publicação, o workflow coloca o endereço completo no `og:image` (o WhatsApp exige), o `canonical` e o `og:url` em cada página, e gera o `sitemap.xml` e o `robots.txt`.
