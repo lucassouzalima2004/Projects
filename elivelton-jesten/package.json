@@ -1,0 +1,14 @@
+{
+  "name": "elivelton-jesten",
+  "private": true,
+  "description": "Site e painel da Jesten Construções (Cloudflare Worker)",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "media": "bash tools/make-media.sh"
+  },
+  "devDependencies": {
+    "wrangler": "^4.40.0"
+  }
+}

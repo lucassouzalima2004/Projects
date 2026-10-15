@@ -1,0 +1,29 @@
+# Cache dos arquivos estáticos. CSS e JS do site e do painel vão com ?v=<commit> no endereço, então podem ficar
+# guardados por um ano; o resto fica uma semana (fotos e vídeos novos entram pelo painel, com endereço próprio).
+/assets/*
+  X-Content-Type-Options: nosniff
+
+/assets/css/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/js/site.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/js/panel.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/js/world-dots.js
+  Cache-Control: public, max-age=86400
+
+/assets/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+
+/assets/img/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/assets/video/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/favicon.ico
+  Cache-Control: public, max-age=604800

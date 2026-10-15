@@ -1,0 +1,24 @@
+// Site da Jesten Construções: um Worker do Cloudflare que monta as páginas (PT, ES, EN, FR),
+// guarda as estatísticas de visitas, as fotos e vídeos enviados pelo painel e os pedidos do site
+// num Durable Object com SQLite (incluído no plano gratuito; não precisa criar nada no painel do Cloudflare).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "elivelton-jesten",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-01",
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": {
+    "directory": "public",
+    "binding": "ASSETS",
+    "not_found_handling": "none"
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "STORE", "class_name": "JestenStore" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["JestenStore"] }],
+  "vars": {
+    // Trocado pelo commit no deploy; vai no fim dos endereços do CSS e do JS para o navegador buscar a versão nova
+    "BUILD_ID": "dev"
+  }
+}
