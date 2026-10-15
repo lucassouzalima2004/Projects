@@ -1,4 +1,4 @@
-// Jesten Construções · comportamento do site (menu, galeria, vídeos, formulários e contagem de visitas)
+// Jesten Construções · comportamento do site (cabeçalho, menu, números, galeria, vídeos, formulários e contagem de visitas)
 (() => {
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -10,51 +10,51 @@
     }
   })();
   const fmt = (s, v) => String(s || '').replace(/\{(\w+)\}/g, (m, k) => (k in v ? v[k] : m));
+  const root = document.documentElement;
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const saveData = Boolean(navigator.connection && navigator.connection.saveData);
+  const hasIO = 'IntersectionObserver' in window;
 
-  // ---------- Cabeçalho e barra do telemóvel ----------
+  // ---------- Cabeçalho: transparente sobre a foto do topo, branco depois de rolar ----------
 
   const header = $('[data-header]');
-  const bar = $('[data-mobile-bar]');
-  const hero = $('.hero, .page-hero');
-  const quote = $('.quote, .apply');
-  const footer = $('.site-footer');
-  const seen = new Map();
-
-  const updateBar = () => {
-    if (!bar) return;
-    const pastHero = hero ? seen.get(hero) === false : scrollY > 400;
-    const nearForm = (quote && seen.get(quote)) || (footer && seen.get(footer));
-    bar.classList.toggle('is-on', pastHero && !nearForm);
-  };
-
-  if ('IntersectionObserver' in window) {
-    const watch = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) seen.set(e.target, e.isIntersecting);
-        updateBar();
-      },
-      { rootMargin: '0px 0px -10% 0px' },
-    );
-    [hero, quote, footer].filter(Boolean).forEach((el) => watch.observe(el));
-  }
-
+  const overlay = Boolean(header?.classList.contains('hdr--overlay'));
+  const navLinks = $$('.hdr__link');
   let ticking = false;
+  const onScroll = () => {
+    ticking = false;
+    const y = scrollY;
+    header?.classList.toggle('is-scrolled', y > 40);
+    if (overlay) header.classList.toggle('is-solid', y > 40);
+    // No topo da página nenhum item do menu fica marcado
+    if (y < innerHeight * 0.5) navLinks.forEach((a) => a.classList.remove('is-current'));
+  };
   addEventListener(
     'scroll',
     () => {
       if (ticking) return;
       ticking = true;
-      requestAnimationFrame(() => {
-        header?.classList.toggle('is-stuck', scrollY > 30);
-        // No topo da página nenhum item do menu fica marcado
-        if (scrollY < innerHeight * 0.5) $$('.nav__link.is-current').forEach((a) => a.classList.remove('is-current'));
-        ticking = false;
-      });
+      requestAnimationFrame(onScroll);
     },
     { passive: true },
   );
+  onScroll();
+
+  // Link do menu da secção visível
+  const spyLinks = navLinks.filter((a) => a.hash && a.pathname === location.pathname);
+  const sections = spyLinks.map((a) => document.getElementById(decodeURIComponent(a.hash.slice(1)))).filter(Boolean);
+  if (sections.length && hasIO) {
+    const spy = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          spyLinks.forEach((a) => a.classList.toggle('is-current', a.hash === `#${e.target.id}`));
+        }
+      },
+      { rootMargin: '-45% 0px -50% 0px' },
+    );
+    sections.forEach((s) => spy.observe(s));
+  }
 
   // ---------- Menu do telemóvel ----------
 
@@ -62,23 +62,38 @@
   const openBtn = $('[data-menu-open]');
   const closeBtn = $('[data-menu-close]');
   const setMenu = (open) => {
-    if (!menu) return;
+    if (!menu || menu.hidden === !open) return;
     menu.hidden = !open;
     openBtn?.setAttribute('aria-expanded', String(open));
-    document.documentElement.style.overflow = open ? 'hidden' : '';
+    root.style.overflow = open ? 'hidden' : '';
     if (open) closeBtn?.focus();
     else openBtn?.focus({ preventScroll: true });
   };
   openBtn?.addEventListener('click', () => setMenu(true));
   closeBtn?.addEventListener('click', () => setMenu(false));
   menu?.addEventListener('click', (e) => {
-    if (e.target.closest('a')) setMenu(false);
+    if (e.target === menu || e.target.closest('a')) setMenu(false);
   });
-  addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && menu && !menu.hidden) setMenu(false);
+  // O Tab fica dentro do menu enquanto ele está aberto
+  menu?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab') return;
+    const items = $$('a[href], button:not([disabled])', menu);
+    const first = items[0];
+    const last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
   });
 
-  // Troca de idioma: guarda a escolha também sem passar pelo servidor
+  // Seletor de idioma: fecha ao clicar fora; a escolha fica guardada também sem passar pelo servidor
+  const langMenu = $('[data-lang-menu]');
+  document.addEventListener('click', (e) => {
+    if (langMenu?.open && !langMenu.contains(e.target)) langMenu.open = false;
+  });
   $$('.lang-link').forEach((a) =>
     a.addEventListener('click', () => {
       const lang = new URL(a.href).searchParams.get('lang');
@@ -86,15 +101,25 @@
     }),
   );
 
+  addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (menu && !menu.hidden) setMenu(false);
+    if (langMenu?.open) {
+      langMenu.open = false;
+      $('summary', langMenu)?.focus();
+    }
+  });
+
   // ---------- Animações ao rolar ----------
 
-  const revealables = $$('[data-reveal], [data-gantt]');
-  if ('IntersectionObserver' in window && !reduceMotion) {
+  const revealables = $$('[data-reveal]');
+  const reveal = (el) => el.classList.add('is-in');
+  if (hasIO && !reduceMotion) {
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
           if (!e.isIntersecting) continue;
-          e.target.classList.add('is-in');
+          reveal(e.target);
           io.unobserve(e.target);
         }
       },
@@ -107,26 +132,42 @@
       list.push(el);
       groups.set(el.parentElement, list);
     }
-    for (const list of groups.values()) list.forEach((el, i) => el.style.setProperty('transition-delay', `${Math.min(i % 4, 3) * 80}ms`));
+    for (const list of groups.values()) list.forEach((el, i) => el.style.setProperty('--reveal-delay', `${(i % 3) * 90}ms`));
     revealables.forEach((el) => io.observe(el));
   } else {
-    revealables.forEach((el) => el.classList.add('is-in'));
+    revealables.forEach(reveal);
   }
 
-  // Link do menu da secção visível
-  const navLinks = $$('.nav__link');
-  const sections = navLinks.map((a) => document.getElementById(a.hash.slice(1))).filter(Boolean);
-  if (sections.length && 'IntersectionObserver' in window) {
-    const spy = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (!e.isIntersecting) continue;
-          navLinks.forEach((a) => a.classList.toggle('is-current', a.hash === `#${e.target.id}`));
-        }
+  // ---------- Números: contam até ao valor quando aparecem ----------
+
+  const stats = $('[data-stats]');
+  const counters = stats ? $$('[data-to]', stats).filter((el) => Number.isFinite(parseInt(el.dataset.to, 10))) : [];
+  if (counters.length && hasIO && !reduceMotion) {
+    counters.forEach((el) => {
+      el.textContent = '0';
+    });
+    const run = () => {
+      const start = performance.now();
+      const tick = (now) => {
+        const p = Math.min(1, (now - start) / 1700);
+        const k = 1 - (1 - p) ** 4;
+        counters.forEach((el) => {
+          el.textContent = String(Math.round(parseInt(el.dataset.to, 10) * k));
+        });
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+    const sio = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        sio.disconnect();
+        // Na abertura da página espera o cartão dos números aparecer
+        setTimeout(run, Math.max(0, 750 - performance.now()));
       },
-      { rootMargin: '-45% 0px -50% 0px' },
+      { threshold: 0.15 },
     );
-    sections.forEach((s) => spy.observe(s));
+    sio.observe(stats);
   }
 
   // ---------- Vídeo do topo ----------
@@ -157,7 +198,7 @@
     });
     heroVideo.addEventListener('pause', () => setPaused(true));
     heroVideo.addEventListener('play', () => setPaused(false));
-    if ('IntersectionObserver' in window) {
+    if (hasIO) {
       new IntersectionObserver(([e]) => {
         if (e.isIntersecting && !userPaused) heroVideo.play().catch(() => setPaused(true));
         else if (!e.isIntersecting) heroVideo.pause();
@@ -167,8 +208,7 @@
 
   // ---------- Obras: vídeos que só carregam quando aparecem ----------
 
-  const tileVideos = $$('video[data-src]');
-  if ('IntersectionObserver' in window) {
+  if (hasIO) {
     const vio = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
@@ -184,21 +224,53 @@
       },
       { rootMargin: '120px 0px', threshold: 0.25 },
     );
-    tileVideos.forEach((v) => vio.observe(v));
+    $$('video[data-src]').forEach((v) => vio.observe(v));
   }
 
+  // ---------- Obras: filtros e "ver mais" ----------
+
   const grid = $('[data-works]');
+  const tiles = grid ? $$('.tile', grid) : [];
   const more = $('[data-works-more]');
-  if (grid && more) {
-    grid.classList.add('is-collapsed');
-    more.addEventListener('click', () => {
-      const open = grid.classList.toggle('is-collapsed') === false;
-      more.setAttribute('aria-expanded', String(open));
-      more.querySelector('span').textContent = open ? more.dataset.less : more.dataset.more;
-      if (!open) grid.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
-      $$('.work--extra [data-reveal], .work--extra', grid).forEach((el) => el.classList.add('is-in'));
-    });
-  }
+  const moreWrap = more?.parentElement;
+  let expanded = false;
+  let filter = 'all';
+  const setCollapsed = () => grid?.classList.toggle('is-collapsed', Boolean(more) && filter === 'all' && !expanded);
+  setCollapsed();
+
+  more?.addEventListener('click', () => {
+    expanded = !expanded;
+    setCollapsed();
+    more.setAttribute('aria-expanded', String(expanded));
+    $('span', more).textContent = expanded ? more.dataset.less : more.dataset.more;
+    if (!expanded) grid.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+  });
+
+  const filterBtns = $$('[data-filter]');
+  filterBtns.forEach((btn) =>
+    btn.addEventListener('click', () => {
+      if (btn.dataset.filter === filter) return;
+      filter = btn.dataset.filter;
+      filterBtns.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      let n = 0;
+      for (const t of tiles) {
+        const show = filter === 'all' || t.dataset.cat === filter;
+        t.hidden = !show;
+        if (!show) continue;
+        if (reduceMotion) {
+          reveal(t);
+          continue;
+        }
+        // As obras que ficam entram de novo em cascata
+        t.style.setProperty('--reveal-delay', `${Math.min(n++, 8) * 45}ms`);
+        t.classList.remove('is-in');
+        void t.offsetWidth;
+        reveal(t);
+      }
+      if (moreWrap) moreWrap.hidden = filter !== 'all';
+      setCollapsed();
+    }),
+  );
 
   // ---------- Galeria em ecrã inteiro ----------
 
@@ -215,13 +287,11 @@
     const title = $('[data-title]', box);
     const meta = $('[data-meta]', box);
     const count = $('[data-count]', box);
-    let index = 0;
+    let order = [];
+    let pos = 0;
     let opener = null;
 
-    const show = (i) => {
-      index = (i + works.length) % works.length;
-      const w = works[index];
-      stage.textContent = '';
+    const media = (w) => {
       let el;
       if (w.kind === 'video') {
         el = document.createElement('video');
@@ -243,12 +313,18 @@
       }
       el.width = w.w;
       el.height = w.h;
-      stage.append(el);
+      return el;
+    };
+
+    const show = (p) => {
+      pos = (p + order.length) % order.length;
+      const w = works[order[pos]];
+      stage.replaceChildren(media(w));
       title.textContent = w.title;
       meta.textContent = [w.status, w.meta].filter(Boolean).join(' · ');
-      count.textContent = fmt(T.works?.of || '{n} / {total}', { n: index + 1, total: works.length });
-      // Pré-carrega a seguinte
-      const next = works[(index + 1) % works.length];
+      count.textContent = fmt(T.works?.of || '{n} / {total}', { n: pos + 1, total: order.length });
+      // Pré-carrega a foto seguinte
+      const next = works[order[(pos + 1) % order.length]];
       if (next.kind === 'image') {
         const img = new Image();
         if (next.srcset) {
@@ -259,21 +335,30 @@
       }
     };
 
-    const close = () => box.close();
+    // Navega pelas obras que estão à vista com o filtro escolhido
+    const open = (i, from) => {
+      order = tiles.filter((t) => !t.hidden).map((t) => Number($('[data-work]', t)?.dataset.work));
+      if (!order.includes(i)) order = works.map((_, k) => k);
+      opener = from;
+      show(order.indexOf(i));
+      root.style.overflow = 'hidden';
+      box.showModal();
+    };
+
     box.addEventListener('close', () => {
       stage.textContent = '';
-      document.documentElement.style.overflow = '';
+      root.style.overflow = '';
       opener?.focus({ preventScroll: true });
     });
-    $('[data-prev]', box).addEventListener('click', () => show(index - 1));
-    $('[data-next]', box).addEventListener('click', () => show(index + 1));
-    $('[data-close]', box).addEventListener('click', close);
+    $('[data-prev]', box).addEventListener('click', () => show(pos - 1));
+    $('[data-next]', box).addEventListener('click', () => show(pos + 1));
+    $('[data-close]', box).addEventListener('click', () => box.close());
     box.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft') show(index - 1);
-      if (e.key === 'ArrowRight') show(index + 1);
+      if (e.key === 'ArrowLeft') show(pos - 1);
+      if (e.key === 'ArrowRight') show(pos + 1);
     });
     box.addEventListener('click', (e) => {
-      if (e.target === box || e.target === stage) close();
+      if (e.target === box || e.target === stage) box.close();
     });
     let startX = null;
     stage.addEventListener('pointerdown', (e) => {
@@ -283,16 +368,20 @@
       if (startX == null) return;
       const dx = e.clientX - startX;
       startX = null;
-      if (Math.abs(dx) > 50) show(index + (dx < 0 ? 1 : -1));
+      if (Math.abs(dx) > 50) show(pos + (dx < 0 ? 1 : -1));
     });
 
     $$('[data-work]').forEach((a) =>
       a.addEventListener('click', (e) => {
         e.preventDefault();
-        opener = a;
-        show(Number(a.dataset.work));
-        document.documentElement.style.overflow = 'hidden';
-        box.showModal();
+        open(Number(a.dataset.work), a);
+      }),
+    );
+    // Botão "ver a equipa em obra" do topo
+    $$('[data-play]').forEach((b) =>
+      b.addEventListener('click', (e) => {
+        e.preventDefault();
+        open(Number(b.dataset.play), b);
       }),
     );
   }
@@ -415,6 +504,26 @@
       form.hidden = false;
       form.querySelector('input:not([type=hidden]), select, textarea')?.focus();
     });
+  }
+
+  // ---------- Barra do telemóvel: aparece depois do topo e some perto do formulário ----------
+
+  const bar = $('[data-mobile-bar]');
+  const hero = $('.hero, .page-head');
+  const quote = $('.quote');
+  const footer = $('.ftr');
+  if (bar && hasIO) {
+    const seen = new Map();
+    const watch = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) seen.set(e.target, e.isIntersecting);
+        const pastHero = hero ? seen.get(hero) === false : true;
+        const nearForm = (quote && seen.get(quote)) || (footer && seen.get(footer));
+        bar.classList.toggle('is-on', pastHero && !nearForm);
+      },
+      { rootMargin: '0px 0px -10% 0px' },
+    );
+    [hero, quote, footer].filter(Boolean).forEach((el) => watch.observe(el));
   }
 
   // Volta do envio sem JavaScript (?sent=...): limpa o endereço

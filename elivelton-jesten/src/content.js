@@ -25,9 +25,11 @@ const t = (pt, es, en, fr) => ({ pt, es, en, fr });
 
 const DEFAULT = {
   v: 1,
+  // Fundo do topo da página inicial (foto ou vídeo, em ecrã inteiro). O painel troca por qualquer obra.
   hero: {
-    ...clip('betonagem-loop', 576, 720, '#7d7b72'),
-    title: t('Betonagem de laje', 'Hormigonado de losa', 'Concrete pour on a slab', 'Coulage de dalle'),
+    ...photo('fundacoes-grua', [480, 800, 1200, 1600, 2048], 2048, 2048, '#5e5550'),
+    focus: '50% 58%',
+    title: t('Fundações e contenção periférica', 'Cimentación y contención perimetral', 'Foundations and perimeter retaining walls', 'Fondations et soutènement périphérique'),
     place: '',
   },
   numbers: { clients: 54, professionals: 91, ongoing: 8, founded: 2023 },

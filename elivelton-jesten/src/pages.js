@@ -40,7 +40,7 @@ const longDate = (ts, locale) =>
   new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Lisbon' }).format(new Date(ts));
 
 function picture(item, { sizes, alt, cls = '', eager = false }) {
-  const set = [...(item.img || [])].sort((a, b) => a.w - b.w);
+  const set = [...(item?.img || [])].sort((a, b) => a.w - b.w);
   if (!set.length) return '';
   const src = (set.find((x) => x.w >= 800) || set[set.length - 1]).u;
   const style = [item.focus ? `object-position:${item.focus}` : '', item.color ? `background-color:${item.color}` : ''].filter(Boolean).join(';');
@@ -50,6 +50,11 @@ function picture(item, { sizes, alt, cls = '', eager = false }) {
 }
 
 const largest = (item) => [...(item.img || [])].sort((a, b) => b.w - a.w)[0]?.u || '';
+const titleOf = (ctx, w) => w.title?.[ctx.lang] || w.title?.pt || ctx.s.works.categories[w.category] || '';
+const findWork = (ctx, id) => ctx.defaults.works.find((w) => w.id === id);
+
+const SERVICE_ICONS = ['structure', 'crane', 'building', 'roller'];
+const VALUE_ICONS = ['shield', 'square', 'clock'];
 
 // ---------- Moldura comum ----------
 
@@ -57,15 +62,21 @@ function logo(cls = '') {
   return `<svg class="logo ${cls}" viewBox="0 0 1526 420" role="img" aria-label="Jesten Construções"><use href="/assets/img/logo.svg#logo"/></svg>`;
 }
 
-function langLinks(ctx, cls) {
-  return LANGS.map((l) => {
-    const href = `${STRINGS[l].routes[ctx.page] || STRINGS[l].routes.home}?lang=${l}`;
-    const current = l === ctx.lang ? ' aria-current="true"' : '';
-    return `<a class="${cls}" href="${href}" hreflang="${STRINGS[l].locale}" lang="${STRINGS[l].locale}"${current} title="${esc(STRINGS[l].label)}">${l.toUpperCase()}</a>`;
-  }).join('');
-}
+const langHref = (ctx, l) => `${STRINGS[l].routes[ctx.page] || STRINGS[l].routes.home}?lang=${l}`;
 
 function navLinks(ctx) {
+  const { s } = ctx;
+  const home = s.routes.home;
+  return [
+    [`${home}#${s.anchors.services}`, s.nav.services],
+    [`${home}#${s.anchors.works}`, s.nav.works],
+    [`${home}#${s.anchors.company}`, s.nav.company],
+    [s.routes.careers, s.nav.careers],
+    [`${home}#${s.anchors.quote}`, s.nav.contact],
+  ];
+}
+
+function footerLinks(ctx) {
   const { s } = ctx;
   const home = s.routes.home;
   return [
@@ -78,43 +89,56 @@ function navLinks(ctx) {
   ];
 }
 
-function header(ctx) {
+function langMenu(ctx) {
+  const { s, lang } = ctx;
+  return `<details class="lang" data-lang-menu>
+        <summary class="lang__btn" aria-label="${esc(s.nav.languages)}">${icon('globe')}<span>${lang.toUpperCase()}</span>${icon('chevron', 'lang__chev')}</summary>
+        <ul class="lang__list">${LANGS.map(
+          (l) =>
+            `<li><a class="lang-link" href="${langHref(ctx, l)}" hreflang="${STRINGS[l].locale}" lang="${STRINGS[l].locale}"${l === lang ? ' aria-current="true"' : ''}><span>${esc(
+              STRINGS[l].label,
+            )}</span><b>${l.toUpperCase()}</b></a></li>`,
+        ).join('')}</ul>
+      </details>`;
+}
+
+function header(ctx, overlay) {
   const { s, content } = ctx;
-  const c = content.contacts;
-  const phones = c.phones
-    .map((p) => `<a href="${telHref(p.number)}"><span class="topbar__k">${esc(p.country)}</span> ${esc(p.number)}</a>`)
-    .join('');
   const links = navLinks(ctx);
+  const quoteHref = `${s.routes.home}#${s.anchors.quote}`;
+  const c = content.contacts;
   return `
-<div class="topbar">
-  <div class="wrap topbar__in">
-    <div class="topbar__group">${phones}${c.email ? `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>` : ''}</div>
-    <nav class="topbar__langs" aria-label="${esc(s.nav.languages)}">${langLinks(ctx, 'lang-link')}</nav>
-  </div>
-</div>
-<header class="site-header" data-header>
-  <div class="wrap site-header__in">
+<header class="hdr${overlay ? ' hdr--overlay' : ' is-solid'}" data-header>
+  <div class="wrap hdr__in">
     <a class="brand" href="${s.routes.home}" aria-label="Jesten Construções, ${esc(s.nav.home)}">${logo()}</a>
-    <nav class="nav" aria-label="${esc(s.nav.main)}">
-      ${links.map(([href, label]) => `<a class="nav__link" href="${href}">${esc(label)}</a>`).join('')}
+    <nav class="hdr__nav" aria-label="${esc(s.nav.main)}">
+      ${links.map(([href, label]) => `<a class="hdr__link" href="${href}"${href === s.routes[ctx.page] ? ' aria-current="page"' : ''}>${esc(label)}</a>`).join('')}
     </nav>
-    <a class="btn btn--amber btn--sm header__cta" href="${s.routes.home}#${s.anchors.quote}">${esc(s.nav.quote)}${icon('arrow')}</a>
-    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" data-menu-open>
-      <span class="menu-btn__label">${esc(s.nav.menu)}</span>${icon('menu')}
-    </button>
+    <div class="hdr__tools">
+      ${langMenu(ctx)}
+      <a class="btn btn--primary btn--sm hdr__cta" href="${quoteHref}">${esc(s.nav.quote)}</a>
+      <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="${esc(s.nav.menu)}" data-menu-open><span></span><span></span></button>
+    </div>
   </div>
 </header>
 <div class="menu" id="menu" data-menu hidden>
-  <div class="menu__top wrap">
-    <a class="brand" href="${s.routes.home}" aria-label="Jesten Construções, ${esc(s.nav.home)}">${logo('logo--light')}</a>
-    <button class="menu-btn menu-btn--close" type="button" data-menu-close><span class="menu-btn__label">${esc(s.nav.close)}</span>${icon('close')}</button>
-  </div>
-  <nav class="menu__nav wrap" aria-label="${esc(s.nav.main)}">
-    ${links.map(([href, label], i) => `<a class="menu__link" href="${href}"><span class="menu__n">0${i + 1}</span>${esc(label)}</a>`).join('')}
-  </nav>
-  <div class="menu__foot wrap">
-    <a class="btn btn--amber" href="${s.routes.home}#${s.anchors.quote}">${esc(s.nav.quote)}${icon('arrow')}</a>
-    <div class="menu__langs">${langLinks(ctx, 'lang-link lang-link--light')}</div>
+  <div class="menu__panel" role="dialog" aria-modal="true" aria-label="${esc(s.nav.menu)}">
+    <div class="menu__top">
+      <a class="brand" href="${s.routes.home}" aria-label="Jesten Construções, ${esc(s.nav.home)}">${logo()}</a>
+      <button class="menu__close" type="button" aria-label="${esc(s.nav.close)}" data-menu-close>${icon('close')}</button>
+    </div>
+    <nav class="menu__nav" aria-label="${esc(s.nav.main)}">
+      ${footerLinks(ctx).map(([href, label]) => `<a class="menu__link" href="${href}">${esc(label)}${icon('arrow')}</a>`).join('')}
+    </nav>
+    <div class="menu__foot">
+      <a class="btn btn--primary btn--lg btn--block" href="${quoteHref}">${esc(s.nav.quote)}${icon('arrow')}</a>
+      <div class="menu__langs">${LANGS.map(
+        (l) => `<a class="chip-link lang-link" href="${langHref(ctx, l)}" hreflang="${STRINGS[l].locale}"${l === ctx.lang ? ' aria-current="true"' : ''}>${l.toUpperCase()}</a>`,
+      ).join('')}</div>
+      <p class="menu__contacts">${c.email ? `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>` : ''}${
+        c.phones[0] ? `<a href="${telHref(c.phones[0].number)}">${esc(c.phones[0].number)}</a>` : ''
+      }</p>
+    </div>
   </div>
 </div>`;
 }
@@ -130,51 +154,55 @@ function footer(ctx) {
     ['whatsapp', c.whatsapp ? waHref(c.whatsapp, s.quote.whatsappText) : '', 'WhatsApp'],
   ].filter(([, href]) => href);
   return `
-<footer class="site-footer">
-  <div class="wrap footer__top">
-    <div class="footer__brand">
+<footer class="ftr">
+  <div class="wrap ftr__top">
+    <div class="ftr__brand">
       <a class="brand" href="${s.routes.home}" aria-label="Jesten Construções, ${esc(s.nav.home)}">${logo('logo--light')}</a>
       <p>${esc(s.footer.tagline)}</p>
+      <div class="ftr__social">${social.map(([name, href, label]) => `<a class="social" href="${esc(href)}" target="_blank" rel="noopener" aria-label="${label}">${icon(name)}</a>`).join('')}</div>
     </div>
-    <div class="footer__col">
-      <h2 class="footer__h">${esc(s.footer.contacts)}</h2>
-      <ul class="footer__list">
+    <div class="ftr__col">
+      <h2 class="ftr__h">${esc(s.footer.contacts)}</h2>
+      <ul class="ftr__list">
         ${c.email ? `<li><a href="mailto:${esc(c.email)}">${esc(c.email)}</a></li>` : ''}
-        ${c.phones.map((p) => `<li><a href="${telHref(p.number)}">${esc(p.number)}</a> <span class="footer__muted">${esc(countryName(p.country, s.locale))}</span></li>`).join('')}
+        ${c.phones.map((p) => `<li><a href="${telHref(p.number)}">${esc(p.number)}</a> <span class="ftr__muted">${esc(countryName(p.country, s.locale))}</span></li>`).join('')}
         <li><a href="${esc(c.maps || '#')}" target="_blank" rel="noopener">${esc(c.address)}<br>${esc(c.postal)}, ${esc(c.country)}</a></li>
       </ul>
     </div>
-    <div class="footer__col">
-      <h2 class="footer__h">${esc(s.footer.site)}</h2>
-      <ul class="footer__list">${navLinks(ctx).map(([href, label]) => `<li><a href="${href}">${esc(label)}</a></li>`).join('')}</ul>
+    <div class="ftr__col">
+      <h2 class="ftr__h">${esc(s.footer.site)}</h2>
+      <ul class="ftr__list">${footerLinks(ctx).map(([href, label]) => `<li><a href="${href}">${esc(label)}</a></li>`).join('')}</ul>
     </div>
-    <div class="footer__col">
-      <h2 class="footer__h">${esc(s.footer.social)}</h2>
-      <ul class="footer__list footer__social">
-        ${social.map(([name, href, label]) => `<li><a href="${esc(href)}" target="_blank" rel="noopener">${icon(name)}${label}</a></li>`).join('')}
+    <div class="ftr__col">
+      <h2 class="ftr__h">${esc(s.nav.company)}</h2>
+      <ul class="ftr__list">
+        <li>${esc(co.legal)}</li>
+        <li>NIF ${esc(co.nif)}</li>
+        ${co.alvara ? `<li>${fill(s.footer.alvara, { n: esc(co.alvara) })}</li>` : ''}
+        <li><a href="${s.routes.privacy}">${esc(s.footer.privacy)}</a></li>
+        <li><a href="${s.routes.terms}">${esc(s.footer.terms)}</a></li>
+        <li><a href="https://www.livroreclamacoes.pt/" target="_blank" rel="noopener">${esc(s.footer.complaints)}</a></li>
       </ul>
     </div>
   </div>
-  <div class="wrap footer__bottom">
+  <div class="wrap ftr__bottom">
     <p>${fill(s.footer.rights, { year })}</p>
-    <p>${esc(co.legal)} · NIF ${esc(co.nif)}${co.alvara ? ` · ${fill(s.footer.alvara, { n: esc(co.alvara) })}` : ''}</p>
-    <nav class="footer__legal" aria-label="Legal">
-      <a href="${s.routes.privacy}">${esc(s.footer.privacy)}</a>
-      <a href="${s.routes.terms}">${esc(s.footer.terms)}</a>
-      <a href="https://www.livroreclamacoes.pt/" target="_blank" rel="noopener">${esc(s.footer.complaints)}</a>
-    </nav>
-    <a class="footer__top-link" href="#top">${esc(s.nav.top)}${icon('down', 'icon--up')}</a>
+    <a class="ftr__up" href="#top">${esc(s.nav.top)}<span>${icon('down', 'icon--up')}</span></a>
   </div>
 </footer>`;
 }
 
+// Nas carreiras a barra leva à candidatura em vez do orçamento
 function mobileBar(ctx) {
   const { s, content } = ctx;
   const wa = content.contacts.whatsapp;
+  const jobs = ctx.page === 'careers';
+  const text = jobs ? s.careers.whatsappText : s.quote.whatsappText;
+  const [href, label] = jobs ? ['#candidatura', s.careers.form.submit] : [`${s.routes.home}#${s.anchors.quote}`, s.nav.quote];
   return `
 <div class="mobile-bar" data-mobile-bar>
-  ${wa ? `<a class="mobile-bar__wa" href="${esc(waHref(wa, s.quote.whatsappText))}" target="_blank" rel="noopener">${icon('whatsapp')}WhatsApp</a>` : ''}
-  <a class="mobile-bar__cta" href="${s.routes.home}#${s.anchors.quote}">${esc(s.nav.quote)}${icon('arrow')}</a>
+  ${wa ? `<a class="mobile-bar__wa" href="${esc(waHref(wa, text))}" target="_blank" rel="noopener" aria-label="WhatsApp">${icon('whatsapp')}</a>` : ''}
+  <a class="btn btn--primary mobile-bar__cta" href="${href}">${esc(label)}${icon('arrow')}</a>
 </div>`;
 }
 
@@ -210,7 +238,7 @@ function structuredData(ctx) {
   };
 }
 
-function layout(ctx, { meta, body, pageClass }) {
+function layout(ctx, { meta, body, pageClass, overlay = false }) {
   const { s, origin, build, page, lang } = ctx;
   const path = s.routes[page] || ctx.path;
   const alternates =
@@ -239,10 +267,11 @@ ${meta.description ? `<meta property="og:description" content="${esc(meta.descri
 <meta property="og:locale" content="${s.og}">
 ${LANGS.filter((l) => l !== lang).map((l) => `<meta property="og:locale:alternate" content="${STRINGS[l].og}">`).join('\n')}
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#f3f2ee">
+<meta name="theme-color" content="#0e0f11">
 <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
-<link rel="preload" href="/assets/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/montserrat.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
 <script>document.documentElement.classList.add('js')</script>
 <link rel="stylesheet" href="/assets/css/site.css?v=${build}">
 <script src="/assets/js/site.js?v=${build}" defer></script>
@@ -250,7 +279,7 @@ ${page === 'home' ? `<script type="application/ld+json">${json(structuredData(ct
 </head>
 <body class="${pageClass}" data-lang="${lang}">
 <a class="skip-link" href="#main">${esc(s.nav.skip)}</a>
-${header(ctx)}
+${header(ctx, overlay)}
 <main id="main">
 ${body}
 </main>
@@ -263,105 +292,140 @@ ${mobileBar(ctx)}
 
 // ---------- Partes da página inicial ----------
 
-function kicker(n, label, cls = '') {
-  return `<p class="kicker ${cls}"><span class="kicker__n">${n}</span><span class="kicker__label">${esc(label)}</span></p>`;
+function eyebrow(label, cls = '') {
+  return `<p class="eyebrow ${cls}">${esc(label)}</p>`;
 }
 
-function heroMedia(ctx) {
-  const { s, content } = ctx;
-  const h = content.hero;
-  const title = h.title?.[ctx.lang] || h.title?.pt || '';
-  const caption = [title, h.place].filter(Boolean).map((x) => `<span>${esc(x)}</span>`).join('');
-  let media;
+function heroBackground(ctx, h, alt) {
   if (h.kind === 'video') {
     const style = [h.color ? `background-color:${h.color}` : '', h.focus ? `object-position:${h.focus}` : ''].filter(Boolean).join(';');
-    media = `<video class="hero__video" data-hero-video autoplay muted loop playsinline preload="auto" poster="${esc(h.video.poster)}" width="${h.w}" height="${h.h}"${
+    return `<video class="hero__media" data-hero-video autoplay muted loop playsinline preload="metadata" poster="${esc(h.video.poster)}" width="${h.w}" height="${h.h}"${
       style ? ` style="${style}"` : ''
-    } aria-label="${esc(title)}"><source src="${esc(h.video.u)}" type="video/mp4"></video>
-      <button class="hero__toggle" type="button" data-hero-toggle aria-label="${esc(s.hero.pause)}">${icon('pause', 'icon--pause')}${icon('play', 'icon--play')}</button>`;
-  } else {
-    media = picture(h, { sizes: '(min-width: 1000px) 42vw, 100vw', alt: title, cls: 'hero__img', eager: true });
+    } aria-hidden="true"><source src="${esc(h.video.u)}" type="video/mp4"></video>`;
   }
-  return `
-    <figure class="hero__media">
-      <div class="hero__frame">${media}<span class="hero__corner hero__corner--tl"></span><span class="hero__corner hero__corner--br"></span></div>
-      <figcaption class="hero__caption"><span class="live"><i></i>${esc(s.hero.live)}</span>${caption}</figcaption>
-    </figure>`;
+  return picture(h, { sizes: '100vw', alt, cls: 'hero__media', eager: true });
 }
 
-function hero(ctx) {
+function hero(ctx, visibleWorks) {
   const { s, content } = ctx;
-  const n = content.numbers;
-  const facts = [
-    [s.facts.clients, n.clients, '+'],
-    [s.facts.professionals, n.professionals, '+'],
-    [s.facts.ongoing, n.ongoing, ''],
-    [s.facts.founded, n.founded, ''],
-  ];
+  const h = content.hero;
+  const caption = h.title?.[ctx.lang] || h.title?.pt || '';
+  // O botão "ver a equipa em obra" abre o primeiro vídeo da galeria
+  const videoIndex = h.kind === 'video' ? -1 : visibleWorks.findIndex((w) => w.kind === 'video');
+  const video = visibleWorks[videoIndex];
   return `
-<section class="hero">
-  <div class="wrap hero__grid">
-    <div class="hero__copy">
-      <p class="hero__kicker"><span class="hero__kicker-rule"></span>${esc(s.hero.kicker)}</p>
-      <h1 class="hero__title">${s.hero.title.map((line) => `<span class="line"><span class="line__in">${rich(line)}</span></span>`).join('')}</h1>
+<section class="hero hero--home">
+  <div class="hero__bg">${heroBackground(ctx, h, caption)}</div>
+  <div class="hero__shade" aria-hidden="true"></div>
+  <div class="wrap hero__in">
+    <div class="hero__content">
+      <p class="pill-eyebrow"><i></i>${esc(s.hero.kicker)}</p>
+      <h1 class="hero__title">${rich(s.hero.title)}</h1>
       <p class="hero__lead">${esc(s.hero.lead)}</p>
       <div class="hero__actions">
-        <a class="btn btn--amber" href="#${s.anchors.quote}">${esc(s.hero.cta)}${icon('arrow')}</a>
-        <a class="btn btn--line" href="#${s.anchors.works}">${esc(s.hero.cta2)}${icon('down')}</a>
+        <a class="btn btn--primary btn--lg" href="#${s.anchors.quote}">${esc(s.hero.cta)}${icon('arrow')}</a>
+        <a class="btn btn--glass btn--lg" href="#${s.anchors.works}">${esc(s.hero.cta2)}</a>
       </div>
     </div>
-    ${heroMedia(ctx)}
+    <div class="hero__aside">
+      ${
+        video
+          ? `<a class="play" href="${esc(video.video.u)}" data-play="${videoIndex}"><span class="play__icon">${icon('play')}</span><span class="play__text"><b>${esc(s.hero.video)}</b><small>${esc(
+              titleOf(ctx, video),
+            )}</small></span></a>`
+          : ''
+      }
+      ${
+        caption || h.kind === 'video'
+          ? `<div class="hero__meta">${
+              caption ? `<p class="hero__caption"><span class="live"><i></i>${esc(s.hero.live)}</span>${esc([caption, h.place].filter(Boolean).join(' · '))}</p>` : ''
+            }${
+              h.kind === 'video'
+                ? `<button class="hero__toggle" type="button" data-hero-toggle aria-label="${esc(s.hero.pause)}">${icon('pause', 'icon--pause')}${icon('play', 'icon--play')}</button>`
+                : ''
+            }</div>`
+          : ''
+      }
+    </div>
   </div>
+</section>`;
+}
+
+function stats(ctx) {
+  const { s, content } = ctx;
+  const n = content.numbers;
+  const items = [
+    [s.facts.clients, n.clients, true, true],
+    [s.facts.professionals, n.professionals, true, true],
+    [s.facts.ongoing, n.ongoing, false, true],
+    [s.facts.founded, n.founded, false, false],
+  ];
+  return `
+<div class="stats-wrap">
   <div class="wrap">
-    <dl class="facts">
-      ${facts
+    <dl class="stats" data-stats>
+      ${items
         .map(
-          ([label, value, suffix]) =>
-            `<div class="facts__item"><dt>${esc(label)}</dt><dd>${esc(value)}${suffix ? `<span class="facts__plus">${suffix}</span>` : ''}</dd></div>`,
+          ([label, value, plus, count]) =>
+            `<div class="stat"><dt>${esc(label)}</dt><dd><span${count ? ` data-to="${esc(value)}"` : ''}>${esc(value)}</span>${plus ? '<span class="stat__plus">+</span>' : ''}</dd></div>`,
         )
         .join('')}
     </dl>
   </div>
-</section>`;
+</div>`;
 }
 
 function services(ctx) {
   const { s } = ctx;
   return `
-<section class="section services" id="${s.anchors.services}">
+<section class="section" id="${s.anchors.services}">
   <div class="wrap">
-    <header class="section-head" data-reveal>
-      ${kicker('01', s.services.kicker)}
-      <h2 class="section-title">${rich(s.services.title)}</h2>
-      <p class="section-intro">${esc(s.services.intro)}</p>
+    <header class="sec-head sec-head--split" data-reveal>
+      <div>${eyebrow(s.services.kicker)}<h2 class="h2">${rich(s.services.title)}</h2></div>
+      <p class="sec-intro">${esc(s.services.intro)}</p>
     </header>
-    <ol class="services__list">
+    <div class="svc-grid">
       ${s.services.items
         .map(
           (it, i) => `
-      <li class="service" data-reveal>
-        <span class="service__n">0${i + 1}</span>
-        <h3 class="service__title">${esc(it.title)}</h3>
-        <div class="service__body">
-          <p>${esc(it.text)}</p>
-          <ul class="tags">${it.tags.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>
-        </div>
-      </li>`,
+      <article class="svc" data-reveal>
+        <div class="svc__top"><span class="svc__icon">${icon(SERVICE_ICONS[i])}</span><span class="svc__n">0${i + 1}</span></div>
+        <h3 class="svc__title">${esc(it.title)}</h3>
+        <p class="svc__text">${esc(it.text)}</p>
+        <ul class="chips">${it.tags.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>
+      </article>`,
         )
         .join('')}
-    </ol>
+    </div>
   </div>
 </section>`;
 }
 
-function band(ctx) {
-  const item = ctx.content.works.find((w) => w.id === 'fundacoes-grua') || ctx.defaults.works.find((w) => w.id === 'fundacoes-grua');
-  if (!item?.img) return '';
+function about(ctx) {
+  const { s, content } = ctx;
+  const main = findWork(ctx, 'armadura-fundacao');
+  const second = findWork(ctx, 'cofragem-muros');
   return `
-<figure class="band" data-reveal>
-  ${picture({ ...item, focus: '50% 62%' }, { sizes: '100vw', alt: ctx.s.band, cls: 'band__img' })}
-  <figcaption class="wrap band__caption"><span>${esc(ctx.s.band)}</span></figcaption>
-</figure>`;
+<section class="section section--soft" id="${s.anchors.company}">
+  <div class="wrap about">
+    <div class="about__media" data-reveal>
+      <figure class="about__main">${picture({ ...main, focus: '55% 40%' }, { sizes: '(min-width: 1000px) 38vw, 88vw', alt: s.about.photo, cls: 'about__img' })}</figure>
+      <figure class="about__second">${picture(second, { sizes: '(min-width: 1000px) 18vw, 42vw', alt: titleOf(ctx, second), cls: 'about__img' })}</figure>
+      <div class="about__badge"><strong>${esc(content.numbers.founded)}</strong><span>${esc(s.about.badge)}</span></div>
+    </div>
+    <div class="about__body" data-reveal>
+      ${eyebrow(s.about.kicker)}
+      <h2 class="h2">${rich(s.about.title)}</h2>
+      <div class="about__text">${s.about.text.map((p) => `<p>${esc(p)}</p>`).join('')}</div>
+      <ul class="values">
+        ${s.about.values
+          .map((v, i) => `<li class="value"><span class="value__icon">${icon(VALUE_ICONS[i])}</span><div><h3>${esc(v.title)}</h3><p>${esc(v.text)}</p></div></li>`)
+          .join('')}
+      </ul>
+      <div class="about__cta"><a class="btn btn--dark btn--lg" href="#${s.anchors.quote}">${esc(s.about.cta)}${icon('arrow')}</a></div>
+    </div>
+  </div>
+</section>`;
 }
 
 function workMeta(ctx, w) {
@@ -369,9 +433,8 @@ function workMeta(ctx, w) {
   return [s.works.categories[w.category] || '', w.place, monthYear(w.date, s.locale)].filter(Boolean);
 }
 
-function works(ctx) {
-  const { s, content, lang } = ctx;
-  const list = content.works.filter((w) => w.visible !== false);
+function works(ctx, list) {
+  const { s, content } = ctx;
   if (!list.length) return '';
   const data = list.map((w) => ({
     kind: w.kind,
@@ -380,58 +443,70 @@ function works(ctx) {
     srcset: w.kind === 'image' ? w.img.map((x) => `${x.u} ${x.w}w`).join(', ') : undefined,
     w: w.w,
     h: w.h,
-    title: w.title?.[lang] || w.title?.pt || s.works.categories[w.category] || '',
+    title: titleOf(ctx, w),
     meta: workMeta(ctx, w).join(' · '),
     status: w.status ? s.works.status[w.status] : '',
   }));
-  const updated = content.updated ? `<p class="works__updated"><span class="live"><i></i>${fill(s.works.updated, { date: esc(longDate(content.updated, s.locale)) })}</span></p>` : '';
+  const cats = [...new Set(list.map((w) => w.category))];
+  const filters =
+    cats.length > 1
+      ? `<div class="filters" role="group" aria-label="${esc(s.works.kicker)}" data-filters>
+        <button class="filter" type="button" data-filter="all" aria-pressed="true">${esc(s.works.all)}<small>${list.length}</small></button>
+        ${cats
+          .map(
+            (c) =>
+              `<button class="filter" type="button" data-filter="${esc(c)}" aria-pressed="false">${esc(s.works.categories[c] || c)}<small>${
+                list.filter((w) => w.category === c).length
+              }</small></button>`,
+          )
+          .join('')}
+      </div>`
+      : '';
+  const updated = content.updated
+    ? `<p class="works__updated"><span class="live"><i></i>${fill(s.works.updated, { date: esc(longDate(content.updated, s.locale)) })}</span></p>`
+    : '';
   const tiles = list
     .map((w, i) => {
-      // Obra enviada sem título ainda: mostra o tipo (Estrutura, Obra nova…)
-      const title = w.title?.[lang] || w.title?.pt || s.works.categories[w.category] || '';
+      const title = titleOf(ctx, w);
       const meta = workMeta(ctx, w);
       const featured = i === 0;
-      const sizes = featured ? '(min-width: 1100px) 50vw, (min-width: 700px) 66vw, 100vw' : '(min-width: 1100px) 25vw, (min-width: 700px) 33vw, 50vw';
+      const sizes = featured ? '(min-width: 1000px) 62vw, 100vw' : '(min-width: 1000px) 31vw, (min-width: 640px) 48vw, 100vw';
       const media =
         w.kind === 'video'
-          ? `<video class="work__video" muted loop playsinline preload="none" poster="${esc(w.video.poster)}" data-src="${esc(w.video.u)}" width="${w.w}" height="${w.h}"${
+          ? `<video class="tile__media" muted loop playsinline preload="none" poster="${esc(w.video.poster)}" data-src="${esc(w.video.u)}" width="${w.w}" height="${w.h}"${
               w.focus ? ` style="object-position:${w.focus}"` : ''
-            } aria-hidden="true"></video><span class="work__badge">${icon('play')}${esc(s.works.video)}</span>`
-          : picture(w, { sizes, alt: title, cls: 'work__img' });
+            } aria-hidden="true"></video>`
+          : picture(w, { sizes, alt: title, cls: 'tile__media' });
       return `
-      <li class="work${featured ? ' work--featured' : ''}${i >= 9 ? ' work--extra' : ''}" data-reveal>
-        <a class="work__open" href="${esc(w.kind === 'video' ? w.video.u : largest(w))}" data-work="${i}" aria-label="${esc(`${s.works.open}: ${title}`)}">
-          <span class="work__media"${w.color ? ` style="background-color:${w.color}"` : ''}>${media}${
-            w.status ? `<span class="work__status${w.status === 'ongoing' ? ' work__status--live' : ''}">${esc(s.works.status[w.status])}</span>` : ''
-          }</span>
+      <li class="tile${featured ? ' tile--wide' : ''}${i >= 9 ? ' tile--extra' : ''}" data-cat="${esc(w.category)}" data-reveal>
+        <a class="tile__link" href="${esc(w.kind === 'video' ? w.video.u : largest(w))}" data-work="${i}" aria-label="${esc(`${s.works.open}: ${title}`)}"${
+          w.color ? ` style="background-color:${w.color}"` : ''
+        }>
+          ${media}
+          <span class="tile__shade" aria-hidden="true"></span>
+          ${w.kind === 'video' ? `<span class="tile__badge">${icon('play')}${esc(s.works.video)}</span>` : ''}
+          ${w.status ? `<span class="tile__status${w.status === 'ongoing' ? ' tile__status--live' : ''}">${esc(s.works.status[w.status])}</span>` : ''}
+          <span class="tile__cap"><span class="tile__title">${esc(title)}</span>${meta.length ? `<span class="tile__meta">${esc(meta.join(' · '))}</span>` : ''}</span>
+          <span class="tile__go" aria-hidden="true">${icon('out')}</span>
         </a>
-        <div class="work__text">
-          <h3 class="work__title">${esc(title)}</h3>
-          ${meta.length ? `<p class="work__meta">${meta.map((m) => `<span>${esc(m)}</span>`).join('')}</p>` : ''}
-        </div>
       </li>`;
     })
     .join('');
   return `
-<section class="section works" id="${s.anchors.works}">
+<section class="section" id="${s.anchors.works}">
   <div class="wrap">
-    <header class="section-head section-head--split" data-reveal>
-      <div>
-        ${kicker('02', s.works.kicker)}
-        <h2 class="section-title">${rich(s.works.title)}</h2>
-      </div>
-      <div class="section-head__aside">
-        <p class="section-intro">${esc(s.works.intro)}</p>
-        ${updated}
-      </div>
+    <header class="sec-head sec-head--split" data-reveal>
+      <div>${eyebrow(s.works.kicker)}<h2 class="h2">${rich(s.works.title)}</h2></div>
+      <div class="sec-aside"><p class="sec-intro">${esc(s.works.intro)}</p>${updated}</div>
     </header>
-    <ul class="works__grid" data-works>${tiles}
+    ${filters}
+    <ul class="gallery" data-works>${tiles}
     </ul>
     ${
-      list.length > 9
-        ? `<div class="works__more"><button class="btn btn--line" type="button" data-works-more aria-expanded="false" data-more="${esc(s.works.more)}" data-less="${esc(s.works.less)}"><span>${esc(
-            s.works.more,
-          )}</span>${icon('plus')}</button></div>`
+      list.length > 6
+        ? `<div class="gallery__more${list.length > 9 ? '' : ' gallery__more--m'}"><button class="btn btn--outline btn--lg" type="button" data-works-more aria-expanded="false" data-more="${esc(s.works.more)}" data-less="${esc(
+            s.works.less,
+          )}"><span>${esc(s.works.more)}</span>${icon('plus')}</button></div>`
         : ''
     }
   </div>
@@ -453,57 +528,18 @@ function works(ctx) {
 
 function method(ctx) {
   const { s } = ctx;
-  // Posição de cada etapa no cronograma (em 12 colunas)
-  const spans = [
-    [0, 2.5],
-    [2, 4.5],
-    [4, 11],
-    [10.5, 12],
-  ];
   return `
-<section class="section method" id="${s.anchors.method}">
+<section class="section section--dark" id="${s.anchors.method}">
   <div class="wrap">
-    <header class="section-head" data-reveal>
-      ${kicker('03', s.method.kicker)}
-      <h2 class="section-title">${rich(s.method.title)}</h2>
+    <header class="sec-head sec-head--center" data-reveal>
+      ${eyebrow(s.method.kicker, 'eyebrow--light')}
+      <h2 class="h2">${rich(s.method.title)}</h2>
     </header>
-    <div class="gantt" data-gantt>
-      <div class="gantt__scale" aria-hidden="true"><span>${esc(s.method.start)}</span><span>${esc(s.method.end)}</span></div>
-      <ol class="gantt__rows">
-        ${s.method.steps
-          .map(
-            (st, i) => `
-        <li class="gantt__row" style="--from:${spans[i][0]};--to:${spans[i][1]};--i:${i}">
-          <div class="gantt__label"><span class="gantt__n">0${i + 1}</span><h3>${esc(st.title)}</h3><p>${esc(st.text)}</p></div>
-          <div class="gantt__track" aria-hidden="true"><span class="gantt__bar"></span></div>
-        </li>`,
-          )
-          .join('')}
-      </ol>
-    </div>
-  </div>
-</section>`;
-}
-
-function about(ctx) {
-  const { s, content } = ctx;
-  const photo = ctx.defaults.works.find((w) => w.id === 'armadura-fundacao');
-  return `
-<section class="section about" id="${s.anchors.company}">
-  <div class="wrap about__grid">
-    <header class="about__head" data-reveal>
-      ${kicker('04', s.about.kicker, 'kicker--light')}
-      <h2 class="section-title">${rich(s.about.title)}</h2>
-    </header>
-    <div class="about__text" data-reveal>${s.about.text.map((p) => `<p>${esc(p)}</p>`).join('')}</div>
-    <figure class="about__photo" data-reveal>
-      ${picture({ ...photo, focus: '55% 45%' }, { sizes: '(min-width: 1000px) 45vw, 100vw', alt: s.about.photo, cls: 'about__img' })}
-      <figcaption>${esc(s.about.photo)}</figcaption>
-    </figure>
-    <ul class="values">
-      ${s.about.values.map((v, i) => `<li class="value" data-reveal><span class="value__n">0${i + 1}</span><h3>${esc(v.title)}</h3><p>${esc(v.text)}</p></li>`).join('')}
-    </ul>
-    <p class="about__legal">${esc(content.company.legal)} · NIF ${esc(content.company.nif)} · ${esc(content.contacts.postal)}</p>
+    <ol class="steps" data-reveal>
+      ${s.method.steps
+        .map((st, i) => `<li class="step"><span class="step__n">0${i + 1}</span><h3 class="step__title">${esc(st.title)}</h3><p class="step__text">${esc(st.text)}</p></li>`)
+        .join('')}
+    </ol>
   </div>
 </section>`;
 }
@@ -511,44 +547,51 @@ function about(ctx) {
 function hiring(ctx) {
   const { s, content } = ctx;
   if (!content.hiring) return '';
+  const photo = findWork(ctx, 'escoras-estaleiro');
   return `
-<section class="hiring">
-  <div class="wrap hiring__in" data-reveal>
-    <p class="hiring__kicker">${esc(s.hiring.kicker)}</p>
-    <h2 class="hiring__title">${esc(s.hiring.title)}</h2>
-    <p class="hiring__text">${esc(s.hiring.text)}</p>
-    <a class="btn btn--ink" href="${s.routes.careers}">${esc(s.hiring.cta)}${icon('arrow')}</a>
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="hire" data-reveal>
+      <div class="hire__body">
+        ${eyebrow(s.hiring.kicker, 'eyebrow--ink')}
+        <h2 class="h2 hire__title">${esc(s.hiring.title)}</h2>
+        <p class="hire__text">${esc(s.hiring.text)}</p>
+        <a class="btn btn--dark btn--lg" href="${s.routes.careers}">${esc(s.hiring.cta)}${icon('arrow')}</a>
+      </div>
+      <div class="hire__media">${picture({ ...photo, focus: '60% 35%' }, { sizes: '(min-width: 1000px) 42vw, 100vw', alt: '', cls: 'hire__img' })}</div>
+    </div>
   </div>
 </section>`;
 }
 
-function channels(ctx) {
+// Lista de contactos diretos; nas carreiras só e-mail, WhatsApp e telefones
+function contacts(ctx, { only, whatsappText = ctx.s.quote.whatsappText } = {}) {
   const { s, content } = ctx;
   const c = content.contacts;
   const ch = s.quote.channels;
   const rows = [];
-  if (c.email) rows.push(['mail', `mailto:${c.email}`, ch.email, c.email, false]);
-  if (c.whatsapp) rows.push(['whatsapp', waHref(c.whatsapp, s.quote.whatsappText), ch.whatsapp, `+${c.whatsapp.replace(/^(\d{3})(\d{3})(\d{3})(\d+)$/, '$1 $2 $3 $4')}`, true]);
-  for (const p of c.phones) rows.push(['phone', telHref(p.number), fill(ch.phone, { country: esc(countryName(p.country, s.locale)) }), p.number, false, true]);
-  if (c.instagram) rows.push(['instagram', c.instagram, ch.instagram, '@' + (c.instagram.replace(/\/+$/, '').split('/').pop() || ''), true]);
-  if (c.facebook) rows.push(['facebook', c.facebook, ch.facebook, c.facebook.replace(/^https?:\/\/(www\.)?/, '').replace(/\/+$/, ''), true]);
-  if (c.linkedin) rows.push(['linkedin', c.linkedin, ch.linkedin, c.linkedin.replace(/^https?:\/\/(www\.)?/, '').replace(/\/+$/, ''), true]);
-  rows.push(['pin', c.maps, ch.address, `${c.address}, ${c.postal}`, true]);
-  return `<ul class="channels">${rows
+  if (c.email) rows.push(['mail', `mailto:${c.email}`, esc(ch.email), c.email, false]);
+  if (c.whatsapp) rows.push(['whatsapp', waHref(c.whatsapp, whatsappText), esc(ch.whatsapp), `+${c.whatsapp.replace(/^(\d{3})(\d{3})(\d{3})(\d+)$/, '$1 $2 $3 $4')}`, true]);
+  for (const p of c.phones) rows.push(['phone', telHref(p.number), fill(ch.phone, { country: esc(countryName(p.country, s.locale)) }), p.number, false]);
+  if (c.instagram) rows.push(['instagram', c.instagram, esc(ch.instagram), `@${c.instagram.replace(/\/+$/, '').split('/').pop() || ''}`, true]);
+  if (c.facebook) rows.push(['facebook', c.facebook, esc(ch.facebook), c.facebook.replace(/^https?:\/\/(www\.)?/, '').replace(/\/+$/, ''), true]);
+  if (c.linkedin) rows.push(['linkedin', c.linkedin, esc(ch.linkedin), c.linkedin.replace(/^https?:\/\/(www\.)?/, '').replace(/\/+$/, ''), true]);
+  rows.push(['pin', c.maps, esc(ch.address), `${c.address}, ${c.postal}`, true]);
+  return `<ul class="contacts">${rows
+    .filter(([ic]) => !only || only.includes(ic))
     .map(
-      ([ic, href, label, value, external, labelIsHtml]) => `
-      <li><a class="channel" href="${esc(href)}"${external ? ' target="_blank" rel="noopener"' : ''}>
-        <span class="channel__icon">${icon(ic)}</span>
-        <span class="channel__label">${labelIsHtml ? label : esc(label)}</span>
-        <span class="channel__value">${esc(value)}</span>
-        ${icon(external ? 'out' : 'arrow', 'channel__go')}
+      ([ic, href, label, value, external]) => `
+      <li><a class="contact" href="${esc(href)}"${external ? ' target="_blank" rel="noopener"' : ''}>
+        <span class="contact__icon">${icon(ic)}</span>
+        <span class="contact__body"><span class="contact__label">${label}</span><span class="contact__value">${esc(value)}</span></span>
+        ${icon(external ? 'out' : 'arrow', 'contact__go')}
       </a></li>`,
     )
     .join('')}</ul>`;
 }
 
-function field({ id, name, label, type = 'text', required = false, optional, attrs = '', hint = '', full = false, s }) {
-  const opt = required ? '' : `<span class="field__opt">(${esc(optional || s.form.optional)})</span>`;
+function field({ id, name, label, type = 'text', required = false, attrs = '', hint = '', full = false, s }) {
+  const opt = required ? '' : `<span class="field__opt">(${esc(s.form.optional)})</span>`;
   const input =
     type === 'textarea'
       ? `<textarea id="${id}" name="${name}" rows="5"${required ? ' required' : ''} ${attrs}></textarea>`
@@ -586,23 +629,37 @@ function formHidden(ctx, kind) {
   <div class="hp" aria-hidden="true"><label>Website <input name="website" type="text" tabindex="-1" autocomplete="off"></label></div>`;
 }
 
+function done(ctx, kind, f, visible) {
+  const { s, content } = ctx;
+  const wa = content.contacts.whatsapp;
+  return `<div class="form-done" data-done="${kind}"${visible ? '' : ' hidden'} tabindex="-1">
+        <span class="form-done__icon">${icon('check')}</span>
+        <h3 class="form-done__title">${esc(f.successTitle)}</h3>
+        <p class="form-done__text" data-done-text data-template="${esc(f.successText)}">${esc(f.successText.replace(/,? ?\{name\}/, ''))}</p>
+        ${
+          kind === 'quote' && wa
+            ? `<p class="form-done__wa"><a class="btn btn--outline" href="${esc(waHref(wa, s.quote.whatsappText))}" target="_blank" rel="noopener">${icon('whatsapp')}${esc(f.successWhatsapp)}</a></p>`
+            : ''
+        }
+        <p><button class="link-btn" type="button" data-again>${esc(f.another)}</button></p>
+      </div>`;
+}
+
 function quote(ctx) {
   const { s } = ctx;
   const f = s.quote.form;
   const sent = ctx.sent === 'quote';
   return `
-<section class="section quote" id="${s.anchors.quote}">
-  <div class="wrap quote__grid">
-    <div class="quote__intro">
-      <header class="section-head" data-reveal>
-        ${kicker('05', s.quote.kicker)}
-        <h2 class="section-title">${rich(s.quote.title)}</h2>
-        <p class="section-intro">${esc(s.quote.lead)}</p>
-      </header>
-      <h3 class="quote__direct">${esc(s.quote.direct)}</h3>
-      ${channels(ctx)}
+<section class="section section--soft" id="${s.anchors.quote}">
+  <div class="wrap quote">
+    <div class="quote__intro" data-reveal>
+      ${eyebrow(s.quote.kicker)}
+      <h2 class="h2">${rich(s.quote.title)}</h2>
+      <p class="sec-intro">${esc(s.quote.lead)}</p>
+      <p class="quote__sub">${esc(s.quote.direct)}</p>
+      ${contacts(ctx)}
     </div>
-    <div class="quote__panel" data-reveal>
+    <div class="quote__card" data-reveal>
       <form class="form" data-form="quote" action="/api/quote" method="post" enctype="multipart/form-data" novalidate data-max-mb="10"${sent ? ' hidden' : ''}>
         <h3 class="form__title">${esc(f.title)}</h3>
         ${formHidden(ctx, 'quote')}
@@ -619,7 +676,7 @@ function quote(ctx) {
           ${consent('q-consent', f.consent, s)}
         </div>
         <div class="form__foot">
-          <button class="btn btn--amber btn--wide" type="submit" data-submit>${esc(f.submit)}${icon('arrow')}</button>
+          <button class="btn btn--primary btn--lg btn--block" type="submit" data-submit>${esc(f.submit)}${icon('arrow')}</button>
           <p class="form__status" data-status role="status" aria-live="polite"></p>
         </div>
       </form>
@@ -629,23 +686,13 @@ function quote(ctx) {
 </section>`;
 }
 
-function done(ctx, kind, f, visible) {
-  const { s, content } = ctx;
-  const wa = content.contacts.whatsapp;
-  return `<div class="form-done" data-done="${kind}"${visible ? '' : ' hidden'} tabindex="-1">
-        <span class="form-done__icon">${icon('check')}</span>
-        <h3 class="form-done__title">${esc(f.successTitle)}</h3>
-        <p class="form-done__text" data-done-text data-template="${esc(f.successText)}">${esc(f.successText.replace(/,? ?\{name\}/, ''))}</p>
-        ${kind === 'quote' && wa ? `<p class="form-done__wa"><a class="btn btn--line" href="${esc(waHref(wa, s.quote.whatsappText))}" target="_blank" rel="noopener">${icon('whatsapp')}${esc(f.successWhatsapp)}</a></p>` : ''}
-        <p><button class="link-btn" type="button" data-again>${esc(f.another)}</button></p>
-      </div>`;
-}
-
 export function homePage(ctx) {
+  const list = ctx.content.works.filter((w) => w.visible !== false);
   return layout(ctx, {
     meta: ctx.s.meta.home,
     pageClass: 'page-home',
-    body: [hero(ctx), services(ctx), band(ctx), works(ctx), method(ctx), about(ctx), hiring(ctx), quote(ctx)].join('\n'),
+    overlay: true,
+    body: [hero(ctx, list), stats(ctx), services(ctx), about(ctx), works(ctx, list), method(ctx), hiring(ctx), quote(ctx)].join('\n'),
   });
 }
 
@@ -655,39 +702,43 @@ export function careersPage(ctx) {
   const { s } = ctx;
   const c = s.careers;
   const f = c.form;
-  const photo = ctx.defaults.works.find((w) => w.id === 'escoras-estaleiro');
+  const photo = findWork(ctx, 'escoras-estaleiro');
   const sent = ctx.sent === 'job';
   const body = `
-<section class="page-hero careers-hero">
-  <div class="wrap page-hero__grid">
-    <div>
-      <p class="hero__kicker"><span class="hero__kicker-rule"></span>${esc(c.kicker)}</p>
-      <h1 class="page-title">${c.title.map((line) => `<span class="line"><span class="line__in">${rich(line)}</span></span>`).join('')}</h1>
+<section class="hero hero--page">
+  <div class="hero__bg">${picture({ ...photo, focus: '55% 35%' }, { sizes: '100vw', alt: '', cls: 'hero__media', eager: true })}</div>
+  <div class="hero__shade" aria-hidden="true"></div>
+  <div class="wrap hero__in">
+    <div class="hero__content">
+      <p class="pill-eyebrow"><i></i>${esc(c.kicker)}</p>
+      <h1 class="hero__title">${rich(c.title.join(' '))}</h1>
       <p class="hero__lead">${esc(c.lead)}</p>
-      <a class="btn btn--amber" href="#candidatura">${esc(f.submit)}${icon('down')}</a>
+      <div class="hero__actions"><a class="btn btn--primary btn--lg" href="#candidatura">${esc(f.submit)}${icon('down')}</a></div>
     </div>
-    <figure class="page-hero__photo">${picture({ ...photo, focus: '45% 40%' }, { sizes: '(min-width: 1000px) 40vw, 100vw', alt: c.kicker, cls: 'page-hero__img', eager: true })}</figure>
   </div>
 </section>
-<section class="section roles">
-  <div class="wrap roles__grid">
-    <div>
-      <h2 class="roles__title">${esc(c.rolesTitle)}</h2>
-      <ol class="roles__list">${c.roles.map((r, i) => `<li class="role" data-reveal><span class="role__n">0${i + 1}</span><h3>${esc(r.title)}</h3><p>${esc(r.text)}</p></li>`).join('')}</ol>
+<section class="section">
+  <div class="wrap">
+    <header class="sec-head" data-reveal>${eyebrow(c.kicker)}<h2 class="h2">${esc(c.rolesTitle)}</h2></header>
+    <div class="roles">
+      ${c.roles.map((r, i) => `<article class="role" data-reveal><span class="role__n">0${i + 1}</span><h3 class="role__title">${esc(r.title)}</h3><p>${esc(r.text)}</p></article>`).join('')}
+      <aside class="offer" data-reveal>
+        <h3 class="offer__title">${esc(c.offerTitle)}</h3>
+        <ul class="offer__list">${c.offer.map((o) => `<li>${icon('check')}<span>${esc(o)}</span></li>`).join('')}</ul>
+      </aside>
     </div>
-    <aside class="offer" data-reveal>
-      <h2 class="offer__title">${esc(c.offerTitle)}</h2>
-      <ul class="offer__list">${c.offer.map((o) => `<li>${icon('check')}<span>${esc(o)}</span></li>`).join('')}</ul>
-    </aside>
   </div>
 </section>
-<section class="section apply" id="candidatura">
-  <div class="wrap apply__grid">
-    <header class="section-head">
-      <p class="hero__kicker"><span class="hero__kicker-rule"></span>${esc(f.title)}</p>
-      <h2 class="section-title">${rich(c.applyTitle)}</h2>
-    </header>
-    <div class="quote__panel">
+<section class="section section--soft" id="candidatura">
+  <div class="wrap quote">
+    <div class="quote__intro" data-reveal>
+      ${eyebrow(f.title)}
+      <h2 class="h2">${rich(c.applyTitle)}</h2>
+      <p class="sec-intro">${esc(c.lead)}</p>
+      <p class="quote__sub">${esc(c.direct)}</p>
+      ${contacts(ctx, { only: ['mail', 'whatsapp', 'phone'], whatsappText: c.whatsappText })}
+    </div>
+    <div class="quote__card" data-reveal>
       <form class="form" data-form="job" action="/api/job" method="post" enctype="multipart/form-data" novalidate data-max-mb="5"${sent ? ' hidden' : ''}>
         ${formHidden(ctx, 'job')}
         <div class="form__grid">
@@ -707,7 +758,7 @@ export function careersPage(ctx) {
           ${consent('j-consent', f.consent, s)}
         </div>
         <div class="form__foot">
-          <button class="btn btn--amber btn--wide" type="submit" data-submit>${esc(f.submit)}${icon('arrow')}</button>
+          <button class="btn btn--primary btn--lg btn--block" type="submit" data-submit>${esc(f.submit)}${icon('arrow')}</button>
           <p class="form__status" data-status role="status" aria-live="polite"></p>
         </div>
       </form>
@@ -715,7 +766,7 @@ export function careersPage(ctx) {
     </div>
   </div>
 </section>`;
-  return layout(ctx, { meta: s.meta.careers, pageClass: 'page-careers', body });
+  return layout(ctx, { meta: s.meta.careers, pageClass: 'page-careers', overlay: true, body });
 }
 
 // ---------- Páginas legais e 404 ----------
@@ -726,31 +777,37 @@ export function legalPage(ctx, which) {
   const email = content.contacts.email ? `<a href="mailto:${esc(content.contacts.email)}">${esc(content.contacts.email)}</a>` : 'geral@jesten.pt';
   const link = (text) =>
     text.replace(/www\.(livroreclamacoes\.pt|consumidor\.gov\.pt|cnpd\.pt|aepd\.es)/g, (m) => `<a href="https://${m}/" target="_blank" rel="noopener">${m}</a>`);
+  const n = (i) => String(i + 1).padStart(2, '0');
   const body = `
-<article class="legal">
-  <div class="wrap legal__grid">
-    <header class="legal__head">
-      <p class="hero__kicker"><span class="hero__kicker-rule"></span>${esc(s.legal.updated)}</p>
-      <h1 class="page-title page-title--sm">${esc(doc.title)}</h1>
-      <p class="legal__intro">${esc(doc.intro)}</p>
-    </header>
-    <ol class="legal__sections">
-      ${doc.sections.map(([h, p], i) => `<li class="legal__section"><h2><span class="legal__n">${String(i + 1).padStart(2, '0')}</span>${esc(h)}</h2><p>${link(fill(p, { email }))}</p></li>`).join('')}
-    </ol>
+<section class="page-head">
+  <div class="wrap">
+    ${eyebrow(s.legal.updated)}
+    <h1 class="h1">${esc(doc.title)}</h1>
+    <p class="page-head__lead">${esc(doc.intro)}</p>
   </div>
-</article>`;
+</section>
+<section class="section section--tight">
+  <div class="wrap legal">
+    <nav class="legal__toc" aria-label="${esc(doc.title)}">
+      <ol>${doc.sections.map(([h], i) => `<li><a href="#s${i + 1}"><span>${n(i)}</span>${esc(h)}</a></li>`).join('')}</ol>
+    </nav>
+    <div class="legal__body">
+      ${doc.sections.map(([h, p], i) => `<section class="legal__sec" id="s${i + 1}"><h2><span>${n(i)}</span>${esc(h)}</h2><p>${link(fill(p, { email }))}</p></section>`).join('')}
+    </div>
+  </div>
+</section>`;
   return layout(ctx, { meta: s.meta[which], pageClass: 'page-legal', body });
 }
 
 export function notFoundPage(ctx) {
   const { s } = ctx;
   const body = `
-<section class="not-found">
+<section class="page-head page-head--center">
   <div class="wrap">
-    <p class="not-found__code" aria-hidden="true">404</p>
-    <h1 class="page-title page-title--sm">${esc(s.notFound.title)}</h1>
-    <p class="hero__lead">${esc(s.notFound.text)}</p>
-    <a class="btn btn--amber" href="${s.routes.home}">${esc(s.notFound.cta)}${icon('arrow')}</a>
+    <p class="nf__code" aria-hidden="true">404</p>
+    <h1 class="h1">${esc(s.notFound.title)}</h1>
+    <p class="page-head__lead">${esc(s.notFound.text)}</p>
+    <a class="btn btn--primary btn--lg" href="${s.routes.home}">${esc(s.notFound.cta)}${icon('arrow')}</a>
   </div>
 </section>`;
   return layout({ ...ctx, page: 'notFound' }, { meta: s.meta.notFound, pageClass: 'page-404', body });

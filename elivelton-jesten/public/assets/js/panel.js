@@ -264,6 +264,8 @@ function setUnread(n) {
 function route() {
   const key = (location.hash.replace(/^#\/?/, '') || 'visitas').split('/')[0];
   const r = ROUTES[key] || ROUTES.visitas;
+  // Voltar no telemóvel com uma janela de edição aberta: fecha a janela junto com a página
+  $$('dialog[open]').forEach((d) => d.close());
   clearInterval(state.statsTimer);
   $$('.side__link[data-route]').forEach((a) => a.toggleAttribute('aria-current', a.dataset.route === key));
   $('[data-title]').textContent = r.title;
@@ -1032,6 +1034,18 @@ async function renderHome(body) {
   const c = state.content;
   const h = c.hero;
   const t = { pt: '', es: '', en: '', fr: '', ...(h.title || {}) };
+  // O topo ocupa a tela inteira: avisa quando a foto ou o vídeo é pequeno ou vertical
+  const video = h.kind === 'video';
+  const small = h.w < 1400;
+  const tall = h.h > h.w;
+  const and = (...parts) => parts.filter(Boolean).join(' e ');
+  const warn =
+    small || tall
+      ? `${video ? 'Este vídeo' : 'Esta foto'} ${and(small && `é ${video ? 'pequeno' : 'pequena'} (${h.w} px de largura)`, tall && 'está na vertical')}: no topo, que ocupa a tela inteira na horizontal, ${and(
+          small && (video ? 'fica desfocado' : 'fica desfocada'),
+          tall && 'aparece só a faixa do meio',
+        )}.`
+      : '';
   body.innerHTML = `
   <form class="stack" data-form novalidate>
     <section class="card">
@@ -1043,15 +1057,16 @@ async function renderHome(body) {
             : `<img src="${esc(bigOf(h))}" alt="">`
         }</div>
         <div class="fields">
-          <p class="muted">É o vídeo ou a foto grande ao lado do título "Construímos com rigor". Para trocar, abra uma obra em <a href="#/obras">Fotos e vídeos</a> e toque em <b>Usar no topo do site</b>.</p>
-          <label class="field"><span class="field__label">Legenda</span><input name="hpt" value="${esc(t.pt)}" maxlength="120"></label>
+          <p class="muted">É a foto (ou o vídeo) que fica de fundo no topo do site, atrás do título "Construímos com rigor". Funciona melhor uma foto na horizontal, com boa luz. Para trocar, abra uma obra em <a href="#/obras">Fotos e vídeos</a> e toque em <b>Usar no topo do site</b>.</p>
+          ${warn ? `<p class="muted"><i class="warn">${esc(warn)} Para o topo, prefira uma foto na horizontal com pelo menos 1600 px.</i></p>` : ''}
+          <label class="field"><span class="field__label">Legenda</span><input name="hpt" value="${esc(t.pt)}" maxlength="120"><span class="muted">Aparece no canto do topo, ao lado de "Em obra".</span></label>
           <details class="tr"><summary>Traduções (opcional)</summary>
             <label class="field"><span class="field__label">Espanhol</span><input name="hes" value="${esc(t.es)}" maxlength="120"></label>
             <label class="field"><span class="field__label">Inglês</span><input name="hen" value="${esc(t.en)}" maxlength="120"></label>
             <label class="field"><span class="field__label">Francês</span><input name="hfr" value="${esc(t.fr)}" maxlength="120"></label>
           </details>
           <label class="field"><span class="field__label">Local</span><input name="hplace" value="${esc(h.place)}" maxlength="80"></label>
-          <button class="btn btn--ghost" type="button" data-reset-hero>${icon('replace')}Voltar ao vídeo original</button>
+          <button class="btn btn--ghost" type="button" data-reset-hero>${icon('replace')}Voltar à foto original</button>
         </div>
       </div>
     </section>
@@ -1088,10 +1103,10 @@ async function renderHome(body) {
     }
   });
   $('[data-reset-hero]', body).addEventListener('click', async () => {
-    if (!confirm('Voltar a pôr o vídeo original (betonagem) no topo do site?')) return;
+    if (!confirm('Voltar a pôr a foto original (fundações, com a grua) no topo do site?')) return;
     c.hero = null;
     try {
-      await saveContent('O vídeo original voltou ao topo.');
+      await saveContent('A foto original voltou ao topo.');
       renderHome(body);
     } catch (err) {
       toast(errorText(err), 'error');
@@ -1258,7 +1273,14 @@ async function renderInbox(body) {
               .map(
                 (m) => `<li><button type="button" class="msg${m.read ? '' : ' is-unread'}${m.id === state.openMessage ? ' is-open' : ''}" data-open="${m.id}">
             <span class="msg__top"><b>${esc(m.data.name || '—')}</b><time>${esc(when(m.ts))}</time></span>
-            <span class="msg__kind">${m.kind === 'quote' ? `Orçamento · ${esc(QUOTE_TYPES[m.data.type] || '')}` : `Candidatura · ${esc(m.data.role === 'outro' ? m.data.roleOther || 'Outra função' : ROLES[m.data.role] || '')}`}</span>
+            <span class="msg__kind">${esc(
+              (m.kind === 'quote'
+                ? ['Orçamento', QUOTE_TYPES[m.data.type] || m.data.type]
+                : ['Candidatura', m.data.role === 'outro' ? m.data.roleOther || 'Outra função' : ROLES[m.data.role] || m.data.role]
+              )
+                .filter(Boolean)
+                .join(' · '),
+            )}</span>
             <span class="msg__text">${esc((m.data.message || m.data.location || '').slice(0, 140))}</span>
           </button></li>`,
               )

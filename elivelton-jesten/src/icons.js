@@ -19,7 +19,16 @@ const LINE = {
   "minus": "<path d=\"M5 12h14\"/>",
   "clip": "<path d=\"M20.5 11.2 12.4 19.3a5 5 0 0 1-7.1-7.1l8.6-8.6a3.4 3.4 0 0 1 4.8 4.8l-8.6 8.6a1.7 1.7 0 0 1-2.4-2.4l7.9-7.9\"/>",
   "check": "<path d=\"m4.5 12.5 5 5 10-11\"/>",
-  "menu": "<path d=\"M3 7h18M3 12h18M3 17h18\"/>"
+  "menu": "<path d=\"M3 7h18M3 12h18M3 17h18\"/>",
+  "structure": "<path d=\"M3 20h18\"/><path d=\"M5 20V9m14 11V9\"/><path d=\"M3 9h18l-2.5-5h-13z\"/><path d=\"M12 9v11\"/><path d=\"M5 14.5h14\"/>",
+  "crane": "<path d=\"M7 21V3\"/><path d=\"M4 21h6\"/><path d=\"M7 3l13 4H7\"/><path d=\"M7 8.5 11.5 4\"/><path d=\"M17 7v4\"/><rect x=\"15\" y=\"11\" width=\"4\" height=\"3.2\" rx=\".6\"/>",
+  "building": "<path d=\"M4 21V6.5L11 3v18\"/><path d=\"M11 9h8.5v12\"/><path d=\"M2.5 21h19\"/><path d=\"M7.5 8v.01M7.5 12v.01M7.5 16v.01M15 13v.01M15 17v.01\"/>",
+  "roller": "<rect x=\"3\" y=\"3.5\" width=\"14\" height=\"6\" rx=\"2\"/><path d=\"M17 6.5h3.2V12H12v3\"/><rect x=\"10.4\" y=\"15\" width=\"3.2\" height=\"6\" rx=\"1\"/>",
+  "shield": "<path d=\"M12 3l8 3v6c0 4.6-3.4 8-8 9-4.6-1-8-4.4-8-9V6z\"/><path d=\"m8.6 12 2.4 2.4 4.4-4.8\"/>",
+  "square": "<path d=\"M4 20V4l16 16z\"/><path d=\"M8 16v-5.2l5.2 5.2z\"/><path d=\"M4 8h2.6M4 12h2.6\"/>",
+  "clock": "<circle cx=\"12\" cy=\"12\" r=\"8.8\"/><path d=\"M12 7.2V12l3.2 2\"/>",
+  "globe": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M3 12h18M12 3c2.6 2.6 3.8 5.6 3.8 9s-1.2 6.4-3.8 9c-2.6-2.6-3.8-5.6-3.8-9S9.4 5.6 12 3z\"/>",
+  "chevron": "<path d=\"m6 9.5 6 6 6-6\"/>"
 };
 const FILL = {
   "play": "<path d=\"M8 5.5v13l10.5-6.5z\"/>",
@@ -30,5 +39,5 @@ export function icon(name, cls = '') {
   const c = `icon icon--${name}${cls ? ' ' + cls : ''}`;
   if (BRAND[name]) return `<svg class="${c}" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="${BRAND[name]}"/></svg>`;
   if (FILL[name]) return `<svg class="${c}" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor">${FILL[name]}</svg>`;
-  return `<svg class="${c}" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter">${LINE[name]}</svg>`;
+  return `<svg class="${c}" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${LINE[name]}</svg>`;
 }

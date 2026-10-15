@@ -10,20 +10,27 @@ e LinkedIn no orçamento, e um **painel** onde ele vê de que cidade vêm as vis
 
 **Site** em português de Portugal (`/`), espanhol (`/es/`), inglês (`/en/`) e francês (`/fr/`):
 
-- Topo com o título "Construímos com rigor." (o lema do site antigo), o vídeo real de uma betonagem a tocar em loop
-  e os números da empresa (54+ clientes, 91+ profissionais, 8 obras em curso, desde 2023).
-- **Serviços** (4), faixa com foto grande de obra, **Obras** (fotos e vídeos reais das equipas, com galeria em ecrã
-  inteiro), **Como trabalhamos** desenhado como um cronograma de obra, **Empresa**, faixa de **recrutamento** e
-  **Orçamento**: formulário (com anexo de projeto até 10 MB) e todos os contactos diretos (e-mail, WhatsApp, telefones
-  de Portugal e Espanha, Instagram, Facebook e LinkedIn quando preenchidos, morada com mapa).
-- **Carreiras** (`/carreiras`): funções, o que a empresa oferece e formulário de candidatura com currículo em PDF.
+- Topo em ecrã inteiro com uma foto real de obra (fundações, com a grua), o título "Construímos com rigor, do alicerce
+  ao acabamento." (a partir do lema do site antigo), os botões de orçamento e de obras e um botão "Ver a equipa em
+  obra" que abre o vídeo da betonagem. Logo abaixo, num cartão, os números da empresa (54+ clientes,
+  91+ profissionais, 8 obras em curso, desde 2023), que contam até ao valor quando aparecem.
+- **Serviços** (4), **Empresa** (fotos da equipa e os valores: segurança, rigor, compromisso), **Obras** (fotos e
+  vídeos reais das equipas, com filtro por tipo e galeria em ecrã inteiro), **Como trabalhamos** em 4 passos, faixa de
+  **recrutamento** e **Orçamento**: formulário (com anexo de projeto até 10 MB) e todos os contactos diretos (e-mail,
+  WhatsApp, telefones de Portugal e Espanha, Instagram, Facebook e LinkedIn quando preenchidos, morada com mapa).
+- Visual de construtora premium: Montserrat nos títulos (a mesma família do "CONSTRUÇÕES" do logótipo) e Inter no
+  texto, cantos arredondados, botões em pílula, sombras suaves e animações discretas ao rolar. No telemóvel aparece
+  uma barra fixa com WhatsApp e "Pedir orçamento" (nas carreiras, "Enviar candidatura").
+- **Carreiras** (`/carreiras`): funções, o que a empresa oferece, contactos diretos e formulário de candidatura com
+  currículo em PDF.
 - **Política de Privacidade** e **Termos** reescritos para o site novo (RGPD, Livro de Reclamações, resolução de litígios).
 - Quem abre o site com o telemóvel em espanhol, inglês ou francês cai direto na versão dessa língua (só na primeira
   visita; o botão PT/ES/EN/FR fica guardado).
 - Prévia bonita do link no WhatsApp em cada língua, dados para o Google (GeneralContractor), sitemap e hreflang.
 
-Nada de imagens de IA: tudo é foto e vídeo real das obras (Instagram e site antigo), otimizado. O vídeo do topo tem
-1,9 MB (o do site antigo tinha 36 MB). O logótipo foi redesenhado em vetor a partir do PNG do cliente.
+Nada de imagens de IA: tudo é foto e vídeo real das obras (Instagram e site antigo), otimizado. Cada vídeo tem perto
+de 2 MB (o do topo do site antigo tinha 36 MB) e só carrega quando aparece no ecrã. O logótipo foi redesenhado em
+vetor a partir do PNG do cliente.
 
 **Painel** em `/painel` (em português do Brasil, que é como o cliente fala), com senha:
 
@@ -34,7 +41,8 @@ Nada de imagens de IA: tudo é foto e vídeo real das obras (Instagram e site an
 - **Fotos e vídeos**: envia várias de uma vez direto da galeria do celular (as fotos são reduzidas no próprio aparelho),
   título, local, mês, tipo, "em curso/concluída", ponto de foco da foto, girar, ocultar, reordenar, apagar, e
   "usar no topo do site". A primeira da lista fica em destaque. Tudo publica na hora.
-- **Página inicial**: legenda do destaque do topo, os 4 números e a faixa de recrutamento.
+- **Página inicial**: foto do topo (qualquer foto ou vídeo da galeria pode ir para o topo) e a sua legenda, os 4
+  números e a faixa de recrutamento.
 - **Contatos e redes**: e-mail, telefones, WhatsApp, Instagram, **Facebook**, **LinkedIn**, morada, NIF, alvará.
 - **Mensagens**: pedidos de orçamento e candidaturas, com anexo para baixar e botões de responder por e-mail,
   WhatsApp e ligar.

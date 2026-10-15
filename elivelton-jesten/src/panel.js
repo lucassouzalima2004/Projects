@@ -7,10 +7,11 @@ export function panelPage({ build }) {
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>Painel · Jesten Construções</title>
-<meta name="theme-color" content="#131311">
+<meta name="theme-color" content="#0d0e10">
 <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
-<link rel="preload" href="/assets/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/montserrat.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/panel.css?v=${build}">
 <script src="/assets/js/panel.js?v=${build}" type="module"></script>
 </head>

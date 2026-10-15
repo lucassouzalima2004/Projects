@@ -22,7 +22,7 @@ fetch assets/carrossel/jesten-8.jpeg jesten-8.jpeg
 for i in 1 2 3; do fetch "assets/videos/obra-$i.mp4" "obra-$i.mp4"; done
 
 # Fotos: nome final e original. Cada uma sai em WebP com 480, 800, 1200 e 1600 px de largura, sem ampliar
-# (uma foto de 1080 px sai em 480, 800 e 1080).
+# (uma foto de 1080 px sai em 480, 800 e 1080). A de 2048 px ganha também a versão de 2048, que é o fundo do topo do site.
 photos=(
   "laje-sant-cugat:jesten-1.png"
   "escavacao-grua:jesten-2.png"
@@ -36,11 +36,12 @@ photos=(
 for p in "${photos[@]}"; do
   name=${p%%:*}; src=$ORIG/${p#*:}
   width=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0 "$src")
-  for w in 480 800 1200 1600; do
+  for w in 480 800 1200 1600 2048; do
     if [ "$w" -gt "$width" ]; then
       [ "$w" -eq 1200 ] && w=$width || continue
     fi
-    ffmpeg -v error -y -i "$src" -vf "scale=$w:-2:flags=lanczos" -c:v libwebp -quality 80 -compression_level 6 \
+    q=80; [ "$w" -eq 2048 ] && q=74
+    ffmpeg -v error -y -i "$src" -vf "scale=$w:-2:flags=lanczos" -c:v libwebp -quality $q -compression_level 6 \
       -frames:v 1 "$IMG/$name-$w.webp"
   done
   # Cor média, usada de fundo enquanto a foto carrega
@@ -49,17 +50,8 @@ for p in "${photos[@]}"; do
 done
 
 # Vídeos: recorte 4:5 no tamanho original (576 px de largura; ampliar só aumenta o arquivo), 24 qps, sem som,
-# H.264 com faststart. O "betonagem-loop" é o do topo do site e emenda o fim no começo (dissolve de 0,7 s)
-# para o loop não dar pulo.
+# H.264 com faststart.
 enc=(-c:v libx264 -preset slow -profile:v high -pix_fmt yuv420p -movflags +faststart -an -g 48)
-
-# Topo: betonagem (obra-1, 20,5 s a 29,7 s), recorte 576x720 a partir de y=150
-ffmpeg -v error -y -ss 21.2 -t 8.5 -i "$ORIG/obra-1.mp4" -ss 20.5 -t 0.7 -i "$ORIG/obra-1.mp4" -filter_complex "\
-  [0:v]crop=576:720:0:150,setpts=PTS-STARTPTS,fps=24[a];\
-  [1:v]crop=576:720:0:150,setpts=PTS-STARTPTS,fps=24[b];\
-  [a][b]xfade=transition=fade:duration=0.7:offset=7.8,format=yuv420p[v]" \
-  -map "[v]" "${enc[@]}" -crf 27 "$VID/betonagem-loop.mp4"
-ffmpeg -v error -y -i "$VID/betonagem-loop.mp4" -frames:v 1 -c:v libwebp -quality 82 "$VID/betonagem-loop.webp"
 
 # Obras: trechos de cada vídeo, recorte 4:5
 clip() { # clip <nome> <original> <início> <duração> <recorte do ffmpeg: largura:altura:x:y>

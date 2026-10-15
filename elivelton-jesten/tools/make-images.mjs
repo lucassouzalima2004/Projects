@@ -16,9 +16,10 @@ const symbol = (id) => {
 const logo = symbol('logo');
 const mark = symbol('mark');
 const fonts = `
-@font-face{font-family:Archivo;src:url(${pathToFileURL(new URL('public/assets/fonts/archivo.woff2', root).pathname)}) format('woff2');font-weight:100 900;font-stretch:62% 125%}
-@font-face{font-family:'Fragment Mono';src:url(${pathToFileURL(new URL('public/assets/fonts/fragment-mono.woff2', root).pathname)}) format('woff2')}`;
-const photo = pathToFileURL(new URL('public/assets/img/obras/laje-sant-cugat-1080.webp', root).pathname);
+@font-face{font-family:Montserrat;src:url(${pathToFileURL(new URL('public/assets/fonts/montserrat.woff2', root).pathname)}) format('woff2');font-weight:300 800}
+@font-face{font-family:Inter;src:url(${pathToFileURL(new URL('public/assets/fonts/inter.woff2', root).pathname)}) format('woff2');font-weight:300 700}`;
+// A mesma foto do topo do site
+const photo = pathToFileURL(new URL('public/assets/img/obras/fundacoes-grua-1600.webp', root).pathname);
 
 const TEXT = {
   pt: { title: ['Construímos', 'com <mark>rigor.</mark>'], line: 'Construção civil · Portugal e Espanha' },
@@ -32,15 +33,20 @@ const page = await browser.newPage({ viewport: { width: 1200, height: 630 }, dev
 const dir = mkdtempSync(join(tmpdir(), 'jesten-'));
 for (const [lang, t] of Object.entries(TEXT)) {
   const html = `<!doctype html><meta charset="utf-8"><style>${fonts}
-  *{box-sizing:border-box}body{margin:0;width:1200px;height:630px;display:grid;grid-template-columns:660px 540px;background:#141412;color:#eceae4;font-family:Archivo}
-  .l{padding:56px 56px 50px;display:flex;flex-direction:column}
-  svg{width:250px;color:#eceae4}
-  h1{margin:auto 0 30px;font-weight:820;font-stretch:112%;font-size:${{ pt: 62, es: 62, en: 60, fr: 54 }[lang]}px;line-height:.94;letter-spacing:-.02em;text-transform:uppercase;white-space:nowrap}
-  h1 span{display:block}mark{background:#d99b13;color:#141412;padding:0 .07em}
-  p{margin:0;font:400 17px/1.3 'Fragment Mono';letter-spacing:.06em;text-transform:uppercase;color:#a19e95;display:flex;align-items:center;gap:14px}
-  p i{width:36px;height:2px;background:#d99b13}
-  .r{background:url(${photo}) 42% 50%/cover}
-  </style><div class="l"><svg viewBox="${logo.viewBox}">${logo.body}</svg><h1>${t.title.map((x) => `<span>${x}</span>`).join('')}</h1><p><i></i>${t.line}</p></div><div class="r"></div>`;
+  *{box-sizing:border-box}
+  body{margin:0;width:1200px;height:630px;position:relative;overflow:hidden;color:#fff;font-family:Inter;
+    background:linear-gradient(90deg,rgba(10,11,13,.9) 0%,rgba(10,11,13,.66) 46%,rgba(10,11,13,.12) 100%),
+      linear-gradient(0deg,rgba(10,11,13,.55) 0%,rgba(10,11,13,0) 45%),url(${photo}) 60% 58%/cover #5e5550}
+  .in{position:absolute;inset:0;padding:58px 64px 60px;display:flex;flex-direction:column}
+  svg{width:236px;color:#fff}
+  .pill{margin-top:auto;align-self:flex-start;display:flex;align-items:center;gap:12px;padding:9px 20px 9px 15px;border:1px solid rgba(255,255,255,.24);
+    border-radius:999px;background:rgba(255,255,255,.1);font:500 19px/1.2 Montserrat}
+  .pill i{width:10px;height:10px;border-radius:50%;background:#e3a21a;box-shadow:0 0 0 5px rgba(227,162,26,.25)}
+  h1{margin:28px 0 0;font:700 ${{ pt: 92, es: 92, en: 92, fr: 86 }[lang]}px/1.02 Montserrat;letter-spacing:-.035em;white-space:nowrap}
+  h1 span{display:block}mark{background:none;color:#e3a21a}
+  </style><div class="in"><svg viewBox="${logo.viewBox}">${logo.body}</svg><p class="pill"><i></i>${t.line}</p><h1>${t.title
+    .map((x) => `<span>${x}</span>`)
+    .join('')}</h1></div>`;
   const f = join(dir, `og-${lang}.html`);
   writeFileSync(f, html);
   await page.goto(pathToFileURL(f).href);
@@ -55,7 +61,7 @@ const icon = async (size, out, radius = 0) => {
   const f = join(dir, `icon-${size}.html`);
   writeFileSync(
     f,
-    `<!doctype html><style>body{margin:0;width:${size}px;height:${size}px;background:#141412;border-radius:${radius}px;display:grid;place-items:center}svg{height:${size - pad * 2}px;color:#f2f1ec;--logo-accent:#e8a20c}</style><svg viewBox="${mark.viewBox}">${mark.body}</svg>`,
+    `<!doctype html><style>body{margin:0;width:${size}px;height:${size}px;background:#0d0e10;border-radius:${radius}px;display:grid;place-items:center}svg{height:${size - pad * 2}px;color:#fff;--logo-accent:#e3a21a}</style><svg viewBox="${mark.viewBox}">${mark.body}</svg>`,
   );
   await page.goto(pathToFileURL(f).href);
   await page.screenshot({ path: out, omitBackground: false });
