@@ -1,0 +1,24 @@
+# Cabeçalhos do Cloudflare (este arquivo não aparece no site).
+
+# Enquanto o site estiver só no endereço .workers.dev (prévia), o Google não indexa.
+# Quando o domínio do Gabriel for ligado ao site, ele fica indexável normalmente.
+https://:worker.:subdomain.workers.dev/*
+  X-Robots-Tag: noindex
+
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+# A fonte nunca muda de conteúdo: o navegador pode guardar por um ano
+/assets/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Fotos e vídeos: uma semana (se trocar um arquivo, use um nome novo para atualizar na hora)
+/assets/img/*
+  Cache-Control: public, max-age=604800
+
+/assets/video/*
+  Cache-Control: public, max-age=604800
