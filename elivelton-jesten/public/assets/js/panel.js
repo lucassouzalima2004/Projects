@@ -156,7 +156,7 @@ function renderNoPassword() {
     <div class="login__card">
       ${logoSvg()}
       <h1 class="login__title">Painel ainda sem senha</h1>
-      <p class="login__text">A senha do painel é definida no Cloudflare (secret <code>ADMIN_PASSWORD</code>). Depois de cadastrada, esta página pede a senha para entrar.</p>
+      <p class="login__text">A senha ainda não foi cadastrada. Responsável técnico: crie o secret <code>JESTEN_ADMIN_PASSWORD</code> no GitHub (Settings › Secrets and variables › Actions) e rode o deploy de novo. Depois disso, esta página pede a senha para entrar.</p>
       <a class="btn btn--line" href="/">Ver o site</a>
     </div>
   </div>`;
