@@ -110,12 +110,8 @@
   const videoBtn = $('[data-video-toggle]');
   if (video && panel) {
     const saveData = navigator.connection && navigator.connection.saveData;
-    const marks = (video.dataset.chapters || '0').trim().split(/\s+/).map(Number);
-    const reelItems = $$('.reel-item', panel);
     let userPaused = reduceMotion.matches;
     let onScreen = true;
-    let current = -1;
-    let raf = 0;
 
     // MP4 (H.264) toca em quase tudo; sem ele (alguns Chromium/Firefox no Linux), usa o WebM (VP9) de mesmo nome
     const useWebm = !video.canPlayType('video/mp4; codecs="avc1.640028"') && !!video.canPlayType('video/webm; codecs="vp9"');
@@ -143,31 +139,10 @@
       const p = video.play();
       if (p && p.catch) p.catch(() => { showState(); });
     };
-    const tick = () => {
-      raf = 0;
-      if (video.duration && reelItems.length) {
-        const t = video.currentTime;
-        let idx = 0;
-        for (let i = 0; i < marks.length; i++) if (t >= marks[i]) idx = i;
-        if (idx !== current) {
-          reelItems.forEach((el, i) => {
-            el.classList.toggle('is-active', i === idx);
-            el.classList.toggle('is-done', i < idx);
-          });
-          current = idx;
-        }
-        const start = marks[idx];
-        const end = idx + 1 < marks.length ? marks[idx + 1] : video.duration;
-        const item = reelItems[idx];
-        if (item) item.style.setProperty('--p', Math.max(0, Math.min(1, (t - start) / (end - start))).toFixed(3));
-      }
-      if (!video.paused) raf = requestAnimationFrame(tick);
-    };
 
     video.addEventListener('playing', () => {
       video.classList.add('is-playing');
       showState();
-      if (!raf) raf = requestAnimationFrame(tick);
     });
     video.addEventListener('pause', showState);
 

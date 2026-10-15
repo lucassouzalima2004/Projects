@@ -22,9 +22,11 @@
 
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
-  <link rel="preload" href="assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/video/hero-poster.webp" as="image" media="(min-aspect-ratio: 4/5)" fetchpriority="high">
   <link rel="preload" href="assets/video/hero-poster-tall.webp" as="image" media="(max-aspect-ratio: 4/5)" fetchpriority="high">
+  <link rel="preload" href="assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/cormorant-500.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/cormorant-italic-450.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="assets/css/styles.css">
   <script>document.documentElement.classList.add('js')</script>
 
@@ -97,6 +99,7 @@
       <symbol id="i-clock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></g></symbol>
       <symbol id="i-arrow" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13.5 6.5L19 12l-5.5 5.5"/></symbol>
       <symbol id="i-arrow-ne" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M9 7h8v8"/></symbol>
+      <symbol id="i-down" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M6.5 13.5L12 19l5.5-5.5"/></symbol>
       <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M5 12.5l4.2 4.2L19 7"/></symbol>
       <symbol id="i-play" viewBox="0 0 24 24"><path fill="currentColor" d="M8.5 5.8v12.4a.6.6 0 0 0 .9.5l9.8-6.2a.6.6 0 0 0 0-1L9.4 5.3a.6.6 0 0 0-.9.5z"/></symbol>
       <symbol id="i-pause" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M9 6v12M15 6v12"/></symbol>
@@ -139,10 +142,10 @@
         <img src="assets/img/logo-white.svg" width="1087" height="518" alt="Black Rock Floors">
       </a>
       <nav class="nav" aria-label="Main">
+        <a href="#about">About</a>
+        <a href="#reviews">Reviews</a>
         <a href="#services">Services</a>
         <a href="#work">Work</a>
-        <a href="#reviews">Reviews</a>
-        <a href="#about">About</a>
         <a href="#area">Service area</a>
         <a href="#faq">FAQ</a>
       </nav>
@@ -159,10 +162,10 @@
 
   <div class="menu" id="menu" data-menu hidden>
     <nav class="menu-nav" aria-label="Mobile">
-      <a href="#services"><span>01</span>Services</a>
-      <a href="#work"><span>02</span>Recent work</a>
-      <a href="#reviews"><span>03</span>Reviews</a>
-      <a href="#about"><span>04</span>About</a>
+      <a href="#about"><span>01</span>About</a>
+      <a href="#reviews"><span>02</span>Reviews</a>
+      <a href="#services"><span>03</span>Services</a>
+      <a href="#work"><span>04</span>Recent work</a>
       <a href="#area"><span>05</span>Service area</a>
       <a href="#faq"><span>06</span>FAQ</a>
       <a href="#contact"><span>07</span>Contact</a>
@@ -170,13 +173,13 @@
     <div class="menu-foot">
       <a class="btn btn--red" href="#contact">Get a free estimate</a>
       <a class="btn btn--line" href="tel:+14255434667"><svg class="i" aria-hidden="true"><use href="#i-phone"/></svg>(425) 543-4667</a>
-      <p>Mon–Fri 8&nbsp;AM–5&nbsp;PM · Sat 9&nbsp;AM–2&nbsp;PM</p>
+      <p><span class="nowrap">Mon–Fri 8&nbsp;AM–5&nbsp;PM</span> · <span class="nowrap">Sat 9&nbsp;AM–2&nbsp;PM</span></p>
     </div>
   </div>
 
   <main id="main">
 
-    <!-- 1. Topo: o painel com o vídeo -->
+    <!-- 1. Topo: o painel com o vídeo de piso e o título no centro -->
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-panel">
         <div class="hero-media">
@@ -184,64 +187,71 @@
             <source media="(max-aspect-ratio: 4/5)" srcset="assets/video/hero-poster-tall.webp" width="720" height="1280">
             <img class="hero-poster" src="assets/video/hero-poster.webp" width="1600" height="900" alt="" fetchpriority="high">
           </picture>
-          <!-- Os 3 arquivos vêm do tools/make-hero-video.sh. data-chapters: segundo em que cada capítulo começa. -->
+          <!-- Os arquivos vêm do tools/make-hero-video.sh: deitado (computador), médio e em pé (celular) -->
           <video class="hero-video" muted playsinline loop preload="none" aria-hidden="true" tabindex="-1"
                  data-src-wide="assets/video/hero-1080.mp4"
                  data-src-mid="assets/video/hero-720.mp4"
-                 data-src-tall="assets/video/hero-tall.mp4"
-                 data-chapters="0 3.7 7.1 10.5"></video>
+                 data-src-tall="assets/video/hero-tall.mp4"></video>
         </div>
 
-        <a class="g-chip" href="#reviews">
-          <svg class="g-chip-logo" aria-hidden="true"><use href="#i-google"/></svg>
-          <span class="g-chip-score">4.9</span>
-          <span class="stars" aria-hidden="true"><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg></span>
-          <span class="g-chip-count">137 Google reviews</span>
-          <span class="visually-hidden">: rated 4.9 out of 5</span>
-        </a>
-
         <div class="hero-content">
-          <p class="eyebrow eyebrow--light"><span class="hide-sm">Flooring installation ·&nbsp;</span>King &amp; Snohomish County, WA</p>
+          <p class="hero-kicker"><span class="hide-sm">Flooring installation</span> <span class="hero-kicker-dot hide-sm" aria-hidden="true"></span> <span>King &amp; Snohomish County, WA</span></p>
           <h1 class="hero-title" id="hero-title">
             <span class="line"><span>Floors done right</span></span>
-            <span class="line"><span>the first time<em class="dot">.</em></span></span>
+            <span class="line"><span><em>the first time.</em></span></span>
           </h1>
-          <p class="hero-sub">Hardwood, LVP, laminate and tile. Measured, installed and finished by one crew.</p>
+          <ul class="hero-points" role="list">
+            <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Hardwood, LVP, laminate &amp; tile.</li>
+            <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>One in-house crew, start to finish.</li>
+            <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Free in-home measure &amp; written quote.</li>
+            <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Subfloor prep included. No surprises.</li>
+          </ul>
           <div class="hero-actions">
-            <a class="btn btn--red" href="#contact">Get a free estimate<svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-            <a class="btn btn--glass" href="tel:+14255434667"><svg class="i" aria-hidden="true"><use href="#i-phone"/></svg>(425) 543-4667</a>
+            <a class="btn btn--square" href="#contact">Get a free estimate<svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+            <a class="hero-link" href="#work">View our work<svg class="i" aria-hidden="true"><use href="#i-down"/></svg></a>
           </div>
         </div>
 
-        <div class="hero-dock">
-          <ol class="reel" role="list" aria-hidden="true">
-            <li class="reel-item is-active"><span class="reel-num">01</span><span class="reel-name">Measure</span><span class="reel-bar"><i></i></span></li>
-            <li class="reel-item"><span class="reel-num">02</span><span class="reel-name">Cut</span><span class="reel-bar"><i></i></span></li>
-            <li class="reel-item"><span class="reel-num">03</span><span class="reel-name">Fit</span><span class="reel-bar"><i></i></span></li>
-            <li class="reel-item"><span class="reel-num">04</span><span class="reel-name">Finish</span><span class="reel-bar"><i></i></span></li>
-          </ol>
-          <button class="hero-toggle" type="button" data-video-toggle aria-label="Pause the background video">
-            <svg class="i i-pause" aria-hidden="true"><use href="#i-pause"/></svg>
-            <svg class="i i-play" aria-hidden="true"><use href="#i-play"/></svg>
-          </button>
-        </div>
+        <a class="hero-rating" href="#reviews">
+          <svg class="hero-rating-g" aria-hidden="true"><use href="#i-google"/></svg>
+          <span class="stars" aria-hidden="true"><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg></span>
+          <span><span class="visually-hidden">Rated </span><strong>4.9</strong><span class="visually-hidden"> out of 5</span> · 137 Google reviews</span>
+        </a>
+
+        <button class="hero-toggle" type="button" data-video-toggle aria-label="Pause the background video">
+          <svg class="i i-pause" aria-hidden="true"><use href="#i-pause"/></svg>
+          <svg class="i i-play" aria-hidden="true"><use href="#i-play"/></svg>
+        </button>
       </div>
     </section>
 
-    <!-- 2. Números -->
-    <section class="proof" aria-label="Black Rock Floors at a glance">
+    <!-- 2. O fundador, logo abaixo do topo: o cliente quer saber quem vai entrar na casa dele -->
+    <section class="founder section" id="about" aria-labelledby="about-title">
       <div class="wrap">
-        <dl class="stats">
+        <div class="founder-grid">
+          <figure class="founder-photo" data-planks>
+            <img src="assets/img/gabriel-olimpio-560.webp" srcset="assets/img/gabriel-olimpio-560.webp 560w, assets/img/gabriel-olimpio.webp 900w" sizes="(min-width: 900px) 38vw, 88vw" width="560" height="840" alt="Gabriel Olimpio, founder of Black Rock Floors, in a black Black Rock Floors polo" loading="lazy">
+          </figure>
+          <div class="founder-copy">
+            <p class="eyebrow eyebrow--light">About us</p>
+            <h2 class="h2" id="about-title" data-reveal>Meet the <em>founder.</em></h2>
+            <blockquote class="founder-quote" data-reveal>
+              <p>“Our mission is simple: quality craftsmanship, attention to detail, and honest relationships with every client.”</p>
+            </blockquote>
+            <p class="founder-text" data-reveal>I’m Gabriel Olimpio, founder of Black Rock Floors. I’m passionate about transforming homes into beautiful, functional spaces built to last.</p>
+            <div class="founder-sign" data-reveal>
+              <span class="founder-rule" aria-hidden="true"></span>
+              <p><strong>Gabriel Olimpio</strong><span>Founder · Black Rock Floors</span></p>
+            </div>
+            <a class="btn btn--red" href="#contact" data-reveal>Request a free quote<svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          </div>
+        </div>
+        <dl class="stats founder-stats">
           <div class="stat"><dt>Flooring services in-house</dt><dd><span data-count="6">6</span></dd></div>
           <div class="stat"><dt>Typical quote turnaround</dt><dd><span data-count="24">24</span><small>h</small></dd></div>
           <div class="stat"><dt>Free, no-pressure estimates</dt><dd><span data-count="100">100</span><small>%</small></dd></div>
           <div class="stat"><dt>Google rating, 137 reviews</dt><dd><span>4.9</span></dd></div>
         </dl>
-        <ul class="assurances" role="list">
-          <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Subfloor prep included</li>
-          <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Free in-home measure</li>
-          <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Written proposals</li>
-        </ul>
       </div>
     </section>
 
@@ -251,7 +261,7 @@
       <div class="wrap reviews-head">
         <div class="section-head">
           <p class="eyebrow">Google reviews</p>
-          <h2 class="h2" id="reviews-title" data-reveal>What homeowners say once the furniture goes back&nbsp;in.</h2>
+          <h2 class="h2" id="reviews-title" data-reveal>What homeowners say once the furniture goes <em>back&nbsp;in.</em></h2>
         </div>
         <div class="rating" data-reveal>
           <p class="rating-score">4.9</p>
@@ -326,7 +336,7 @@
         <div class="services-head">
           <div class="section-head">
             <p class="eyebrow eyebrow--light">Services</p>
-            <h2 class="h2" id="services-title" data-reveal>Every floor. One accountable crew.</h2>
+            <h2 class="h2" id="services-title" data-reveal>Every floor. <em>One accountable crew.</em></h2>
           </div>
           <p class="lead" data-reveal>Six services, all done in-house by the same team. Each one starts the same way: a flat, sound subfloor, because that’s what decides how a floor feels in ten years.</p>
         </div>
@@ -473,55 +483,33 @@
       <div class="wrap work-head">
         <div class="section-head">
           <p class="eyebrow">Recent work</p>
-          <h2 class="h2" id="work-title" data-reveal>Recent floors, city by city.</h2>
+          <h2 class="h2" id="work-title" data-reveal>Recent floors, <em>city by city.</em></h2>
         </div>
         <p class="lead" data-reveal>A few of the homes we’ve worked in across King and Snohomish County. Tap a photo to see it bigger.</p>
       </div>
       <div class="marquee marquee--work" data-marquee data-speed="36">
         <div class="marquee-track">
-          <button class="project" type="button" data-project><img src="assets/img/projects/bellevue-hardwood.webp" width="720" height="900" alt="Wide-plank hardwood floor in a Bellevue living room with arched windows" loading="lazy"><span class="project-meta"><span class="project-service">Hardwood installation</span><span class="project-city">Bellevue</span></span></button>
-          <button class="project" type="button" data-project><img src="assets/img/projects/kirkland-herringbone.webp" width="720" height="900" alt="Herringbone oak floor in a Kirkland living room" loading="lazy"><span class="project-meta"><span class="project-service">Herringbone oak</span><span class="project-city">Kirkland</span></span></button>
-          <button class="project" type="button" data-project><img src="assets/img/projects/redmond-lvp-kitchen.webp" width="720" height="900" alt="Kitchen with dark luxury vinyl plank in Redmond" loading="lazy"><span class="project-meta"><span class="project-service">LVP kitchen</span><span class="project-city">Redmond</span></span></button>
-          <button class="project" type="button" data-project><img src="assets/img/projects/seattle-refinishing.webp" width="720" height="900" alt="Refinished dark hardwood in a Seattle living room" loading="lazy"><span class="project-meta"><span class="project-service">Hardwood refinishing</span><span class="project-city">Seattle</span></span></button>
-          <button class="project" type="button" data-project><img src="assets/img/projects/everett-stairs.webp" width="720" height="900" alt="Open staircase and engineered oak floor in Everett" loading="lazy"><span class="project-meta"><span class="project-service">Stairs and engineered oak</span><span class="project-city">Everett</span></span></button>
-          <button class="project" type="button" data-project><img src="assets/img/projects/bothell-engineered.webp" width="720" height="900" alt="Engineered hardwood in a bright Bothell living room" loading="lazy"><span class="project-meta"><span class="project-service">Engineered hardwood</span><span class="project-city">Bothell</span></span></button>
-          <button class="project" type="button" data-project><img src="assets/img/projects/lynnwood-tile.webp" width="720" height="900" alt="Bathroom with wood-look tile floor in Lynnwood" loading="lazy"><span class="project-meta"><span class="project-service">Bathroom tile</span><span class="project-city">Lynnwood</span></span></button>
+          <button class="project" type="button" data-project><img src="assets/img/projects/bellevue-hardwood.webp" width="720" height="900" alt="Wide-plank hardwood floor in a bright Bellevue living room" loading="lazy"><span class="project-meta"><span class="project-service">Hardwood installation</span><span class="project-city">Bellevue</span></span></button>
+          <button class="project" type="button" data-project><img src="assets/img/projects/kirkland-herringbone.webp" width="720" height="900" alt="Herringbone oak floor in a Kirkland entryway" loading="lazy"><span class="project-meta"><span class="project-service">Herringbone oak</span><span class="project-city">Kirkland</span></span></button>
+          <button class="project" type="button" data-project><img src="assets/img/projects/redmond-lvp-kitchen.webp" width="720" height="900" alt="Kitchen with a light wood-look luxury vinyl plank floor in Redmond" loading="lazy"><span class="project-meta"><span class="project-service">LVP kitchen</span><span class="project-city">Redmond</span></span></button>
+          <button class="project" type="button" data-project><img src="assets/img/projects/seattle-refinishing.webp" width="720" height="900" alt="Refinished hardwood floor in a Seattle living room" loading="lazy"><span class="project-meta"><span class="project-service">Hardwood refinishing</span><span class="project-city">Seattle</span></span></button>
+          <button class="project" type="button" data-project><img src="assets/img/projects/everett-engineered-oak.webp" width="720" height="900" alt="Wide-plank engineered oak floor in an Everett living room" loading="lazy"><span class="project-meta"><span class="project-service">Engineered oak</span><span class="project-city">Everett</span></span></button>
+          <button class="project" type="button" data-project><img src="assets/img/projects/bothell-engineered.webp" width="720" height="900" alt="Light engineered hardwood floor in a Bothell living room" loading="lazy"><span class="project-meta"><span class="project-service">Engineered hardwood</span><span class="project-city">Bothell</span></span></button>
+          <button class="project" type="button" data-project><img src="assets/img/projects/lynnwood-tile.webp" width="720" height="900" alt="Bathroom with large-format porcelain floor tile in Lynnwood" loading="lazy"><span class="project-meta"><span class="project-service">Bathroom tile</span><span class="project-city">Lynnwood</span></span></button>
           <button class="project" type="button" data-project><img src="assets/img/projects/sammamish-hardwood.webp" width="720" height="900" alt="Light hardwood floor and fireplace in Sammamish" loading="lazy"><span class="project-meta"><span class="project-service">Hardwood installation</span><span class="project-city">Sammamish</span></span></button>
-          <button class="project" type="button" data-project><img src="assets/img/projects/mill-creek-laminate.webp" width="720" height="900" alt="Gray laminate floor in a Mill Creek bedroom" loading="lazy"><span class="project-meta"><span class="project-service">Laminate</span><span class="project-city">Mill Creek</span></span></button>
+          <button class="project" type="button" data-project><img src="assets/img/projects/mill-creek-laminate.webp" width="720" height="900" alt="Warm wood-look laminate floor in a Mill Creek living room" loading="lazy"><span class="project-meta"><span class="project-service">Laminate</span><span class="project-city">Mill Creek</span></span></button>
           <button class="project" type="button" data-project><img src="assets/img/projects/edmonds-oak.webp" width="720" height="900" alt="Natural oak floor in an Edmonds dining room" loading="lazy"><span class="project-meta"><span class="project-service">Natural oak</span><span class="project-city">Edmonds</span></span></button>
         </div>
       </div>
     </section>
 
-    <!-- 6. O fundador -->
-    <section class="founder section" id="about" aria-labelledby="about-title">
-      <div class="wrap founder-grid">
-        <figure class="founder-photo" data-planks>
-          <img src="assets/img/gabriel-olimpio-560.webp" srcset="assets/img/gabriel-olimpio-560.webp 560w, assets/img/gabriel-olimpio.webp 900w" sizes="(min-width: 900px) 38vw, 88vw" width="560" height="840" alt="Gabriel Olimpio, founder of Black Rock Floors, in a black Black Rock Floors polo" loading="lazy">
-        </figure>
-        <div class="founder-copy">
-          <p class="eyebrow eyebrow--light">About us</p>
-          <h2 class="h2" id="about-title" data-reveal>Meet the founder.</h2>
-          <blockquote class="founder-quote" data-reveal>
-            <p>“Our mission is simple: quality craftsmanship, attention to detail, and honest relationships with every client.”</p>
-          </blockquote>
-          <p class="founder-text" data-reveal>I’m Gabriel Olimpio, founder of Black Rock Floors. I’m passionate about transforming homes into beautiful, functional spaces built to last.</p>
-          <div class="founder-sign" data-reveal>
-            <span class="founder-rule" aria-hidden="true"></span>
-            <p><strong>Gabriel Olimpio</strong><span>Founder · Black Rock Floors</span></p>
-          </div>
-          <a class="btn btn--red" href="#contact" data-reveal>Request a free quote<svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-        </div>
-      </div>
-    </section>
-
-    <!-- 7. Por que escolher + como funciona -->
+    <!-- 6. Por que escolher + como funciona -->
     <section class="why section" id="why" aria-labelledby="why-title">
       <div class="wrap">
         <div class="why-head">
           <div class="section-head">
             <p class="eyebrow">Why homeowners choose us</p>
-            <h2 class="h2" id="why-title" data-reveal>The details you notice on a floor you walk every&nbsp;day.</h2>
+            <h2 class="h2" id="why-title" data-reveal>The details you notice on a floor you walk <em>every&nbsp;day.</em></h2>
           </div>
         </div>
         <ol class="why-grid" role="list">
@@ -563,12 +551,12 @@
       </div>
     </section>
 
-    <!-- 8. Área atendida -->
+    <!-- 7. Área atendida -->
     <section class="area section" id="area" aria-labelledby="area-title">
       <div class="wrap area-grid">
         <div class="area-copy">
           <p class="eyebrow eyebrow--light">Service area</p>
-          <h2 class="h2" id="area-title" data-reveal>Proudly serving Western Washington.</h2>
+          <h2 class="h2" id="area-title" data-reveal>Proudly serving <em>Western Washington.</em></h2>
           <p class="lead" data-reveal>King and Snohomish County, from Marysville down to Renton. Don’t see your city? Call or text. Chances are we cover it.</p>
           <div class="area-lists" data-cities>
             <div>
@@ -602,7 +590,7 @@
       </div>
     </section>
 
-    <!-- 9. Dúvidas frequentes -->
+    <!-- 8. Dúvidas frequentes -->
     <section class="faq section" id="faq" aria-labelledby="faq-title">
       <div class="wrap faq-grid">
         <div class="faq-intro">
@@ -647,12 +635,12 @@
       </div>
     </section>
 
-    <!-- 10. Contato e pedido de orçamento -->
+    <!-- 9. Contato e pedido de orçamento -->
     <section class="contact section" id="contact" aria-labelledby="contact-title">
       <div class="wrap contact-grid">
         <div class="contact-info">
           <p class="eyebrow">Contact</p>
-          <h2 class="h2" id="contact-title" data-reveal>Let’s talk about your project.</h2>
+          <h2 class="h2" id="contact-title" data-reveal>Let’s talk about <em>your project.</em></h2>
           <p class="lead" data-reveal>Call, text or send the details. Estimates are free.</p>
           <ul class="contact-list" role="list">
             <li>
@@ -669,7 +657,7 @@
             </li>
             <li>
               <span class="contact-icon"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg></span>
-              <div><p class="contact-k">Business hours</p><p class="contact-v">Mon–Fri 8&nbsp;AM–5&nbsp;PM · Sat 9&nbsp;AM–2&nbsp;PM</p><p class="contact-note">Closed Sundays</p></div>
+              <div><p class="contact-k">Business hours</p><p class="contact-v"><span class="nowrap">Mon–Fri 8&nbsp;AM–5&nbsp;PM</span> · <span class="nowrap">Sat 9&nbsp;AM–2&nbsp;PM</span></p><p class="contact-note">Closed Sundays</p></div>
             </li>
           </ul>
         </div>
@@ -737,7 +725,7 @@
   <footer class="site-footer">
     <div class="cta-band">
       <div class="wrap cta-inner">
-        <h2 class="cta-title" data-reveal>Trust the local experts<span class="dot">.</span></h2>
+        <h2 class="cta-title" data-reveal>Trust the <em>local experts.</em></h2>
         <div class="cta-side" data-reveal>
           <p>One room or the whole house. Your estimate is free.</p>
           <div class="cta-actions">

@@ -17,17 +17,30 @@ Pelo WhatsApp e pelos áudios de 13 e 14/10:
 - O domínio dele está no **Wix**. Pagamento: ele paga quando o site estiver no domínio dele.
 - Ele mesmo comentou que sabe que "esses sites são feitos por IA": o site não pode ter cara de modelo pronto.
 
+### Ajustes depois da primeira versão (áudios de 15/10)
+
+O Gabriel viu o link e gostou ("bem profissional, bem bonitão"). Pediu só estes ajustes, todos feitos:
+
+1. **O fundador logo abaixo do vídeo**, na segunda posição: "o americano gosta de saber quem vai estar na casa dele".
+   A seção *Meet the founder* agora vem logo depois do topo, com os números do site antigo embaixo.
+2. **Vídeo de piso mesmo**: o vídeo anterior parecia carpintaria ("eu vi até um 2x4"). Agora só tem piso passando:
+   sol sobre um piso de carvalho, a câmera passando por uma sala vazia com piso de madeira e os veios da madeira de perto.
+3. **Letra mais elegante, no meio**, como no anúncio da *Russet Construction* que ele mandou: título centralizado numa
+   serifada clássica (*FLOORS DONE RIGHT* em maiúsculas e *the first time.* em itálico), linha fina dos lados do local,
+   quatro itens com ✓, botão branco retangular e o link *View our work ↓*. A mesma serifada foi para os títulos do site todo.
+4. Sobre as fotos, ele mesmo entendeu que são de exemplo ("tu tá me mandando mais pra ver o layout"). Mesmo assim, as fotos
+   dos projetos agora mostram o piso em primeiro plano, sem cozinha ou escada ocupando a foto.
+
 ## O que tem no site
 
 **Página inicial** (`index.html`):
 
 - **Faixa do topo** com "aberto agora / fechado agora" calculado pelo horário de Seattle, telefone, "Text us" e horário.
-- **Painel com o vídeo** (cantos arredondados, como o da Mastery Floors), título no canto inferior esquerdo, selo do Google (4.9 · 137 reviews) e os capítulos do vídeo sincronizados: *01 Measure · 02 Cut · 03 Fit · 04 Finish*. Botão de pausar. No celular, os capítulos viram barrinhas no topo, como nos stories, e o vídeo é outro, em pé.
-- **Números** do site antigo (6 serviços, 24h, 100%, 4.9) e os 3 selos (subfloor prep, free measure, written proposals).
+- **Painel com o vídeo de piso** (cantos arredondados, como o da Mastery Floors) e o texto no centro, como no anúncio que o Gabriel mandou: local entre linhas finas, *Floors done right the first time.* em serifada, 4 itens com ✓, botão branco *Get a free estimate* e o link *View our work ↓*. Embaixo, a nota do Google (4.9 · 137 reviews) e o botão de pausar. No celular, o vídeo é outro, em pé.
+- **O fundador**, logo abaixo do topo: foto do Gabriel, a frase da missão, a bio do site antigo e, embaixo, os números do site antigo (6 serviços, 24h, 100%, 4.9).
 - **Avaliações do Google passando** em duas faixas, em sentidos opostos. Param com o mouse em cima, dá para arrastar e tem botão de pausar.
 - **Serviços** ("Every floor. One accountable crew."): lista dos 6 serviços. No computador, ao passar o mouse, a foto e o **corte técnico** do piso mudam ao lado (camadas, encaixe macho e fêmea, prego escondido, junta de dilatação, membrana do porcelanato, medidas dos degraus). Cada serviço leva à sua página.
 - **Projetos recentes passando**, com o nome da cidade e o tipo de serviço. Clicar abre a foto grande.
-- **O fundador**: foto do Gabriel, a frase da missão e a bio do site antigo.
 - **Why homeowners choose us** (os 4 itens do site antigo) e **How it works** (4 passos).
 - **Área atendida**: as 18 cidades do site antigo e um **mapa** com as cidades nas coordenadas reais, a divisa entre os condados e a montanha do logo a leste.
 - **FAQ**: as 8 perguntas do site antigo, com respostas.
@@ -43,21 +56,22 @@ o corte técnico, "Good to know", o passo a passo, os projetos, perguntas própr
 (empresa, horários, área atendida, serviços, FAQ e trilha de navegação), `sitemap.xml` e `robots.txt` gerados na publicação.
 As animações e o vídeo desligam sozinhos para quem ativou "reduzir movimento".
 
-**Testes (15/10):** Lighthouse no computador 100 em desempenho, acessibilidade, boas práticas e SEO; no celular, 96–97 em
-desempenho e 100 nos outros três. Zero problemas no teste de acessibilidade (axe) em todas as páginas.
+**Testes (15/10, depois dos ajustes):** Lighthouse no computador 100 em desempenho, acessibilidade, boas práticas e SEO;
+no celular, 94 em desempenho e 100 nos outros três. Zero problemas no teste de acessibilidade (axe) em todas as páginas.
 
 Identidade: logo vetorizado a partir do PNG que o Gabriel mandou. Preto **#0E0E0D**, osso **#EBE7E0** e o vermelho do "R"
-da camisa dele, **#C8102E**. Fonte: **Archivo** (larguras variáveis; a versão larga, em maiúsculas espaçadas, ecoa o
-"F L O O R S" do logo), dentro de `assets/fonts/`.
+da camisa dele, **#C8102E**. Fontes, dentro de `assets/fonts/`: **Cormorant Garamond** nos títulos (a serifada elegante
+que o Gabriel pediu, só nos pesos usados, 500 e 450 itálico) e **Archivo** no resto (larguras variáveis; a versão larga, em
+maiúsculas espaçadas, ecoa o "F L O O R S" do logo).
 
 ## Antes de mostrar ao Gabriel: o que é exemplo e precisa confirmar
 
 - [ ] **Avaliações do Google**: as 8 que aparecem são **exemplos escritos por nós**. Troque pelas avaliações reais do perfil do Google dele antes de ligar o domínio (`index.html`, seção 3). Enquanto isso, a prévia `.workers.dev` não aparece no Google (`noindex`).
 - [ ] **Link "Read them on Google"**: trocar pelo link do perfil do Google da empresa (Google Maps → Compartilhar).
-- [ ] **Nota e quantidade**: 4.9 e 137 avaliações vieram do site antigo. Confirmar os números de hoje (aparecem no selo do topo, nos números, na seção de avaliações, nas páginas de serviço e na `og-image.jpg`).
-- [ ] **Fotos dos projetos**: hoje são fotos de banco de imagens (Unsplash), com cidades de exemplo. Pedir ao Gabriel as fotos dos trabalhos e a cidade de cada um.
+- [ ] **Nota e quantidade**: 4.9 e 137 avaliações vieram do site antigo. Confirmar os números de hoje (aparecem na linha do Google no topo, nos números do fundador, na seção de avaliações, nas páginas de serviço e na `og-image.jpg`).
+- [ ] **Fotos dos projetos**: hoje são fotos de banco de imagens (Unsplash), recortadas no piso, com cidades de exemplo. Pedir ao Gabriel as fotos dos trabalhos e a cidade de cada um.
 - [ ] **Fotos dos serviços**: também são de banco de imagens. Trocar pelas dele quando tiver.
-- [ ] **Vídeo do topo**: provisório, montado com 4 clipes gratuitos do Mixkit (veja [O vídeo do topo](#o-vídeo-do-topo)). O ideal é a equipe dele instalando piso, com o logo nas costas, como ele sugeriu, ou um vídeo gerado por IA.
+- [ ] **Vídeo do topo**: montado com 3 clipes gratuitos de piso, do Coverr e do Mixkit (veja [O vídeo do topo](#o-vídeo-do-topo)). Dá para trocar por filmagens dos pisos que ele instalou ou por um vídeo gerado por IA (prompts prontos em `tools/PROMPTS.md`).
 - [ ] **Nome da empresa**: o logo e a camisa dizem *Black Rock Floors*; o site antigo e o e-mail dizem *Black Rock Remodeling LLC*. Hoje o site usa "Black Rock Floors" em tudo. Confirmar o nome e se quer o nome da LLC no rodapé.
 - [ ] **Número de registro na L&I**: em Washington, a lei (RCW 18.27.100) pede o número de registro de empreiteiro na propaganda que mostra o nome da empresa, e o site conta como propaganda (vale confirmar com a L&I). Pedir o número e colocar no rodapé; também passa confiança.
 - [ ] **E-mail** `br.remodelingwa@gmail.com`: confirmar que continua sendo o dele.
@@ -74,12 +88,13 @@ O conteúdo fica direto no HTML (é o que o Google lê). Cada seção do `index.
 | O quê | Onde |
 | --- | --- |
 | Avaliações do Google | `index.html`, seção 3: cada `<article class="review">` é uma avaliação |
+| Fundador e números | `index.html`, seção 2 |
 | Projetos (foto, cidade e serviço) | `index.html`, seção 5: cada `<button class="project">`. Fotos em `assets/img/projects/` (720 × 900, WebP) |
 | Textos dos serviços | `index.html`, seção 4, e a página de cada serviço (`hardwood-floor-installation/index.html` etc.) |
-| FAQ | `index.html`, seção 9, e também o bloco `FAQPage` no `<head>` (o Google lê esse) |
+| FAQ | `index.html`, seção 8, e também o bloco `FAQPage` no `<head>` (o Google lê esse) |
 | Telefone, e-mail | Estão em todas as páginas: use "buscar e substituir" na pasta inteira (`4255434667`, `543-4667`, `br.remodelingwa@gmail.com`) e em `assets/js/app.js` (`PHONE`, `EMAIL`) |
 | Horário | Texto nas páginas e `HOURS` no topo do `assets/js/app.js` (é ele que calcula o "Open now") |
-| Cores e fonte | Topo do `assets/css/styles.css` |
+| Cores e fontes | Topo do `assets/css/styles.css` |
 | Vídeo do topo | `tools/make-hero-video.sh` (veja abaixo) |
 
 Todas as fotos estão em WebP, já no tamanho certo. Ao trocar uma foto, mantenha o mesmo formato (4:5 para projetos e serviços).
@@ -88,19 +103,23 @@ Todas as fotos estão em WebP, já no tamanho certo. Ao trocar uma foto, mantenh
 
 Os arquivos em `assets/video/` saem do script `tools/make-hero-video.sh` (precisa de `ffmpeg`):
 
-- 4 clipes de 4 s com a mesma cor, emendados com fusão, escurecendo no começo e no fim para o loop não dar pulo (14,2 s no total);
-- três versões: `hero-1080` (computador), `hero-720` (telas médias) e `hero-tall` (celular em pé), cada uma em **MP4** (toca em tudo, inclusive iPhone) e em **WebM** (para navegadores sem H.264). O site escolhe sozinho;
-- os capítulos (*Measure, Cut, Fit, Finish*) começam nos segundos que estão em `data-chapters` no `<video>` do `index.html`.
+- 3 clipes só de piso, com a mesma cor (menos saturação, tom quente e os brancos mais baixos para o texto ler bem),
+  emendados com fusão e escurecendo no começo e no fim para o loop não dar pulo (14,6 s no total);
+- três versões: `hero-1080` (computador), `hero-720` (telas médias) e `hero-tall` (celular em pé), cada uma em **MP4**
+  (toca em tudo, inclusive iPhone) e em **WebM** (para navegadores sem H.264). O site escolhe sozinho.
 
-Clipes de hoje, todos na licença *Mixkit Stock Video Free License* (uso comercial liberado, sem crédito obrigatório):
-[medindo a madeira](https://mixkit.co/free-stock-video/a-person-measures-a-block-of-wood-for-construction-1445/),
-[serra de esquadria](https://mixkit.co/free-stock-video/man-in-a-carpentry-cutting-with-an-electric-saw-39699/) (recortada para o logo da serra não aparecer),
-[ajustando a tábua](https://mixkit.co/free-stock-video/hand-of-a-carpenter-leveling-a-wooden-board-39684/) e
-[superfície da madeira](https://mixkit.co/free-stock-video/detailed-tour-of-the-surface-of-a-wooden-board-34496/).
+Clipes de hoje (uso comercial liberado, sem crédito obrigatório):
 
-**Para usar as filmagens do Gabriel** (ou um vídeo gerado): grave clipes deitados (de preferência 4K ou 1080p, câmera parada
-ou andando devagar), coloque em `tools/clips/`, troque a lista `CLIPS` no começo do script e rode
-`bash tools/make-hero-video.sh`. O script mostra os segundos dos capítulos para colar no `data-chapters`.
+| Cena | Fonte | Licença |
+| --- | --- | --- |
+| Sol sobre piso de carvalho | [Coverr: A shadow on a wooden floor](https://coverr.co/videos/a-shadow-on-a-wooden-floor-04otusifny) (recortado para o sapato não aparecer) | Coverr License |
+| Câmera passando pela sala vazia com piso de madeira | [Coverr: Empty room with a window](https://coverr.co/videos/empty-room-with-a-window-peegts0hp9) (recortado para o ventilador de teto não aparecer) | Coverr License |
+| Veios da madeira de perto | [Mixkit: Detailed tour of the surface of a wooden board](https://mixkit.co/free-stock-video/detailed-tour-of-the-surface-of-a-wooden-board-34496/) | Mixkit Stock Video Free License |
+
+**Para usar as filmagens do Gabriel** (ou um vídeo gerado por IA, com os prompts de `tools/PROMPTS.md`): grave clipes
+deitados (de preferência 4K ou 1080p, câmera andando devagar rente ao piso), coloque em `tools/clips/`, troque a lista
+`CLIPS` no começo do script (cada linha diz o arquivo, onde o trecho começa, quanto dura e onde recortar a versão em pé)
+e rode `bash tools/make-hero-video.sh`.
 
 ## Publicar
 
@@ -140,11 +159,13 @@ black-rock-floors/
 ├── _headers                         cabeçalhos do Cloudflare (noindex na prévia, cache)
 ├── assets/css/styles.css            visual (cores e fonte no topo)
 ├── assets/js/app.js                 comportamento (vídeo, faixas, menu, mapa, formulário)
-├── assets/fonts/archivo-latin.woff2 fonte
+├── assets/fonts/                    fontes (Archivo e Cormorant Garamond)
 ├── assets/img/                      logo (SVG), favicon, og-image, fotos de serviços e projetos, tábuas
 ├── assets/video/                    vídeo do topo (MP4 e WebM) e o primeiro quadro
-└── tools/make-hero-video.sh         monta o vídeo do topo a partir dos clipes
+├── tools/make-hero-video.sh         monta o vídeo do topo a partir dos clipes
+└── tools/PROMPTS.md                 prompts para gerar clipes de piso por IA
 ```
 
-Créditos: fonte Archivo (SIL Open Font License); fotos de exemplo do [Unsplash](https://unsplash.com/license) (licença Unsplash);
-clipes do vídeo do [Mixkit](https://mixkit.co/license/) (Mixkit Stock Video Free License); logo e foto do Gabriel enviados por ele.
+Créditos: fontes Archivo e Cormorant Garamond (SIL Open Font License); fotos de exemplo do [Unsplash](https://unsplash.com/license)
+(licença Unsplash); clipes do vídeo do [Coverr](https://coverr.co/license) (Coverr License) e do [Mixkit](https://mixkit.co/license/)
+(Mixkit Stock Video Free License); logo e foto do Gabriel enviados por ele.
