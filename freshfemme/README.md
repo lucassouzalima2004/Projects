@@ -1,9 +1,14 @@
 # FreshFemme Thermal — tema Shopify
 
 Tema novo para a loja [freshfemme.com.br](https://freshfemme.com.br), feito do zero para a Shopify (Online Store 2.0).
-Conceito: **do calor ao frescor**. A capa é uma câmera térmica em 3D: uma mulher aparece em vermelho/laranja
-(o fogacho), borrifa o spray no pescoço e o azul gelado vai descendo pelo corpo, com a temperatura caindo no visor.
-Depois, conforme a cliente rola, o site "esfria" para tons de menta e creme.
+A capa é uma câmera térmica em 3D: uma mulher aparece em vermelho/laranja (o fogacho), borrifa o spray no
+pescoço e o azul gelado vai descendo pelo corpo, com a temperatura caindo no visor.
+
+O resto segue a identidade e a estrutura da loja atual: uma fonte só, a **Bricolage Grotesque** que a loja já usa
+(nada serifado), fundo branco, o verde-água dos botões da marca, logo no centro com o menu embaixo e a home na
+mesma ordem de hoje (Elas amam → Escolhidos para você → Kits presentes → Frete grátis → Shark Tank →
+Lançamentos → Promo da semana → Nossas categorias → valores → newsletter), com algumas seções a mais
+(como o spray funciona, resultados reais do Sérum e a Dra. Mariah).
 
 ![Capa no calor e no frescor](docs/capa.jpg)
 
@@ -11,8 +16,18 @@ Depois, conforme a cliente rola, o site "esfria" para tons de menta e creme.
 | --- | --- |
 | `freshfemme-thermal-theme.zip` | O tema pronto para subir na Shopify. |
 | `theme/` | Código-fonte do tema (Liquid, CSS, JS). |
-| `preview/` | Servidor local que mostra o tema com os produtos reais da loja, sem precisar da Shopify. |
+| `preview/` | Servidor local e gerador da prévia publicada: o tema com os produtos reais da loja, sem precisar da Shopify. |
 | `docs/` | Capturas de tela e vídeos da capa animada para mostrar ao cliente: `capa.mp4` (computador) e `capa-celular.mp4` (vertical, bom para WhatsApp). |
+
+## Prévia para o cliente
+
+Cada push em `freshfemme/` publica a prévia no Cloudflare pelo workflow
+[`deploy-freshfemme-preview.yml`](../.github/workflows/deploy-freshfemme-preview.yml), sempre no mesmo link
+(o endereço aparece no resumo da execução, em *Actions*).
+
+É o tema renderizado em páginas estáticas com os 31 produtos reais. O carrinho funciona no navegador (com a
+barra de frete grátis e os kits); o pagamento e os formulários só mostram o aviso "prévia do novo site", e o
+site não aparece no Google. Para gerar localmente: `npm run build` e `npm run serve` em `freshfemme/preview`.
 
 ## Como instalar na loja
 
