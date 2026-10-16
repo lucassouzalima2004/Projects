@@ -22,8 +22,8 @@
 
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
-  <link rel="preload" href="assets/video/hero-poster.webp?v=3" as="image" media="(min-aspect-ratio: 4/5)" fetchpriority="high">
-  <link rel="preload" href="assets/video/hero-poster-tall.webp?v=3" as="image" media="(max-aspect-ratio: 4/5)" fetchpriority="high">
+  <link rel="preload" href="assets/video/hero-poster.webp?v=4" as="image" media="(min-aspect-ratio: 4/5)" fetchpriority="high">
+  <link rel="preload" href="assets/video/hero-poster-tall.webp?v=4" as="image" media="(max-aspect-ratio: 4/5)" fetchpriority="high">
   <link rel="preload" href="assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/cormorant-500.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/cormorant-italic-450.woff2" as="font" type="font/woff2" crossorigin>
@@ -178,14 +178,37 @@
       <div class="hero-panel">
         <div class="hero-media">
           <picture>
-            <source media="(max-aspect-ratio: 4/5)" srcset="assets/video/hero-poster-tall.webp?v=3" width="720" height="1280">
-            <img class="hero-poster" src="assets/video/hero-poster.webp?v=3" width="1600" height="900" alt="" fetchpriority="high">
+            <source media="(max-aspect-ratio: 4/5)" srcset="assets/video/hero-poster-tall.webp?v=4" width="720" height="1280">
+            <img class="hero-poster" src="assets/video/hero-poster.webp?v=4" width="1600" height="900" alt="" fetchpriority="high">
           </picture>
-          <!-- Os arquivos vêm do tools/make-hero-video.sh: deitado (computador), médio e em pé (celular) -->
+          <!-- Os arquivos vêm do tools/make-hero-video.sh: deitado (computador), médio e em pé (celular).
+               O primeiro quadro de cada vídeo é o pôster, então a troca do pôster pelo vídeo não aparece. -->
           <video class="hero-video" muted playsinline loop preload="none" aria-hidden="true" tabindex="-1"
-                 data-src-wide="assets/video/hero-1080.mp4?v=3"
-                 data-src-mid="assets/video/hero-720.mp4?v=3"
-                 data-src-tall="assets/video/hero-tall.mp4?v=3"></video>
+                 data-src-wide="assets/video/hero-1080.mp4?v=4"
+                 data-src-mid="assets/video/hero-720.mp4?v=4"
+                 data-src-tall="assets/video/hero-tall.mp4?v=4"></video>
+          <script>
+            // O vídeo começa junto com a página, sem esperar o resto carregar (o assets/js/app.js cuida do resto)
+            (function (v) {
+              var saveData = !!(navigator.connection && navigator.connection.saveData);
+              // MP4 (H.264) toca em quase tudo; sem ele (alguns Chromium/Firefox no Linux), usa o WebM (VP9) de mesmo nome
+              var webm = !v.canPlayType('video/mp4; codecs="avc1.640028"') && !!v.canPlayType('video/webm; codecs="vp9"');
+              // Em pé: vídeo vertical. Celular deitado ou economia de dados: o de 720. Tela grande: o de 1080.
+              v.pickSource = function () {
+                var w = window.innerWidth, h = window.innerHeight, src;
+                if (w / h < 0.8) src = v.dataset.srcTall;
+                else if (saveData || h < 600 || w * Math.min(window.devicePixelRatio || 1, 2) <= 1700) src = v.dataset.srcMid;
+                else src = v.dataset.srcWide;
+                return webm ? src.replace(/\.mp4(?=\?|$)/, '.webm') : src;
+              };
+              v.muted = true;
+              // Aparece assim que começa a tocar (numa segunda visita, isso pode acontecer antes do app.js carregar)
+              v.addEventListener('playing', function () { v.classList.add('is-playing'); });
+              v.src = v.pickSource();
+              var p = v.play();
+              if (p && p.catch) p.catch(function () {});
+            })(document.currentScript.previousElementSibling);
+          </script>
         </div>
 
         <div class="hero-content">

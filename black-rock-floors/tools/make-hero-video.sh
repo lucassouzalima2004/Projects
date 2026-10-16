@@ -20,7 +20,7 @@ cd "$(dirname "$0")/.."
 
 OUT=assets/video
 XF=0.6     # fusão entre um clipe e o próximo
-EDGE=0.4   # escurece no começo e no fim, para o loop não dar pulo
+EDGE=0.4   # escurece na volta do loop, para não dar pulo (no arquivo final, isso fica perto do fim; veja rotate)
 # Cor: menos saturação, um tom quente e os brancos (janela, sol no piso) mais baixos, para o texto do topo ler bem
 GRADE="eq=saturation=0.66:contrast=1.05:gamma=0.96,colorbalance=rs=-0.01:bs=0.02:rh=0.04:bh=-0.04,curves=master='0/0 0.5/0.47 0.8/0.66 1/0.8'"
 
@@ -77,6 +77,18 @@ join() { # $1 = wide|tall
 join wide
 join tall
 
+# O arquivo começa no quadro 22 (0,92 s, já depois do escurecimento do começo) e o trecho de antes vai para o fim.
+# Assim o vídeo abre direto com o piso na tela, igual ao pôster, e o escurecimento do loop fica perto do fim
+# (a emenda do fim com o começo continua invisível, porque são quadros seguidos do mesmo clipe).
+START_FRAME=22
+rotate() { # $1 = wide|tall
+  ffmpeg -nostdin -v error -y -i "$WORK/$1_joined.mp4" -filter_complex \
+    "[0:v]trim=start_frame=$START_FRAME,setpts=PTS-STARTPTS[a];[0:v]trim=end_frame=$START_FRAME,setpts=PTS-STARTPTS[b];[a][b]concat=n=2:v=1:a=0[out]" \
+    -map "[out]" -c:v libx264 -crf 10 -preset veryfast "$WORK/$1_loop.mp4"
+}
+rotate wide
+rotate tall
+
 # Cada vídeo sai em MP4 (H.264, toca em tudo, inclusive iPhone) e em WebM (VP9, para navegadores sem H.264).
 # O site escolhe sozinho o formato que o aparelho consegue tocar.
 enc() { # $1 entrada, $2 saída sem extensão, $3 filtro de escala
@@ -85,13 +97,13 @@ enc() { # $1 entrada, $2 saída sem extensão, $3 filtro de escala
   ffmpeg -nostdin -v error -y -i "$1" -an -vf "$3,format=yuv420p" \
     -c:v libvpx-vp9 -b:v 0 -crf 36 -row-mt 1 -deadline good -cpu-used 2 -g 48 "$2.webm"
 }
-enc "$WORK/wide_joined.mp4" "$OUT/hero-1080" "scale=1920:1080:flags=lanczos"
-enc "$WORK/wide_joined.mp4" "$OUT/hero-720" "scale=1280:720:flags=lanczos"
-enc "$WORK/tall_joined.mp4" "$OUT/hero-tall" "scale=720:1280:flags=lanczos"
+enc "$WORK/wide_loop.mp4" "$OUT/hero-1080" "scale=1920:1080:flags=lanczos"
+enc "$WORK/wide_loop.mp4" "$OUT/hero-720" "scale=1280:720:flags=lanczos"
+enc "$WORK/tall_loop.mp4" "$OUT/hero-tall" "scale=720:1280:flags=lanczos"
 
-# Primeiro quadro (já depois do escurecimento) para aparecer enquanto o vídeo carrega
-ffmpeg -nostdin -v error -y -ss 0.9 -i "$WORK/wide_joined.mp4" -frames:v 1 -vf "scale=1600:-2:flags=lanczos" -c:v libwebp -quality 70 "$OUT/hero-poster.webp"
-ffmpeg -nostdin -v error -y -ss 0.9 -i "$WORK/tall_joined.mp4" -frames:v 1 -vf "scale=720:-2:flags=lanczos" -c:v libwebp -quality 70 "$OUT/hero-poster-tall.webp"
+# Pôster: o primeiro quadro do vídeo, para aparecer enquanto ele carrega sem a troca ser notada
+ffmpeg -nostdin -v error -y -i "$WORK/wide_loop.mp4" -frames:v 1 -vf "scale=1600:-2:flags=lanczos" -c:v libwebp -quality 70 "$OUT/hero-poster.webp"
+ffmpeg -nostdin -v error -y -i "$WORK/tall_loop.mp4" -frames:v 1 -vf "scale=720:-2:flags=lanczos" -c:v libwebp -quality 70 "$OUT/hero-poster-tall.webp"
 
 echo
 echo "Vídeo pronto: ${TOTAL} s em loop"

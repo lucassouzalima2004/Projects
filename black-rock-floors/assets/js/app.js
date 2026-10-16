@@ -105,47 +105,67 @@
   setInterval(updateStatus, 60 * 1000);
 
   /* ---------- Vídeo do topo ---------- */
+  // O vídeo já começou pelo script logo depois dele, no index.html, que também escolhe a versão (video.pickSource).
+  // Ele toca sempre que o topo está na tela, mesmo com "Reduzir movimento" ligado (pedido do cliente); o botão pausa.
   const video = $('.hero-video');
   const panel = $('.hero-panel');
   const videoBtn = $('[data-video-toggle]');
-  if (video && panel) {
-    const saveData = !!(navigator.connection && navigator.connection.saveData);
-    let userPaused = reduceMotion.matches;
+  if (video && panel && video.pickSource) {
+    let userPaused = false;
     let onScreen = true;
-    // Mudo e dentro da página: é assim que o celular (e o navegador dentro do WhatsApp ou do Instagram) deixa tocar sozinho
-    video.muted = true;
+    let anim = null;
     video.defaultMuted = true;
     video.playsInline = true;
 
-    // MP4 (H.264) toca em quase tudo; sem ele (alguns Chromium/Firefox no Linux), usa o WebM (VP9) de mesmo nome
-    const useWebm = !video.canPlayType('video/mp4; codecs="avc1.640028"') && !!video.canPlayType('video/webm; codecs="vp9"');
-    const pickSource = () => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      let src;
-      if (w / h < 0.8) src = video.dataset.srcTall;
-      // Celular deitado ou economia de dados ligada: a versão média basta (a de 1080 pesa o dobro)
-      else if (saveData || h < 600 || w * Math.min(window.devicePixelRatio || 1, 2) <= 1700) src = video.dataset.srcMid;
-      else src = video.dataset.srcWide;
-      return useWebm ? src.replace(/\.mp4(?=\?|$)/, '.webm') : src;
-    };
     // Troca de versão sem voltar ao começo: as três têm a mesma duração e as mesmas cenas
     const setSource = (src) => {
       const t = video.getAttribute('src') ? video.currentTime : 0;
       video.src = src;
       if (t > 0.5) video.addEventListener('loadedmetadata', () => { video.currentTime = t; }, { once: true });
     };
+    const isPlaying = () => (anim ? anim.classList.contains('is-playing') : !video.paused);
     const showState = () => {
-      const paused = userPaused || video.paused;
+      const paused = userPaused || !isPlaying();
       panel.classList.toggle('is-paused', paused);
       if (videoBtn) videoBtn.setAttribute('aria-label', paused ? 'Play the background video' : 'Pause the background video');
     };
+
+    // O iPhone no modo de pouca bateria (e o navegador de alguns apps) não deixa vídeo tocar sozinho, mas o Safari
+    // toca MP4 dentro de uma <img>, como um GIF: assim o topo abre com o vídeo rodando mesmo nesses casos.
+    // (Se o aparelho não animar imagens, ela fica parada no primeiro quadro, que é igual ao pôster.)
+    let triedImage = false;
+    const playAsImage = () => {
+      const src = video.pickSource();
+      if (triedImage || !/\.mp4(\?|$)/.test(src)) return;
+      triedImage = true;
+      const img = new Image();
+      img.className = 'hero-anim';
+      img.alt = '';
+      img.setAttribute('aria-hidden', 'true');
+      img.addEventListener('load', () => {
+        if (!video.paused) return;
+        anim = img;
+        video.removeAttribute('src');
+        video.load();
+        video.after(img);
+        if (!userPaused) img.classList.add('is-playing');
+        showState();
+      }, { once: true });
+      img.src = src;
+    };
+
     const play = () => {
       if (userPaused || !onScreen || document.hidden) return;
-      const src = pickSource();
+      if (anim) { anim.classList.add('is-playing'); showState(); return; }
+      const src = video.pickSource();
       if (video.getAttribute('src') !== src) setSource(src);
       const p = video.play();
-      if (p && p.catch) p.catch(() => { showState(); });
+      if (p && p.catch) {
+        p.catch((err) => {
+          showState();
+          if (err && err.name === 'NotAllowedError') playAsImage();
+        });
+      }
     };
 
     video.addEventListener('playing', () => {
@@ -156,7 +176,13 @@
 
     if (videoBtn) {
       videoBtn.addEventListener('click', () => {
-        if (video.paused) { userPaused = false; play(); } else { userPaused = true; video.pause(); }
+        if (isPlaying()) {
+          userPaused = true;
+          if (anim) anim.classList.remove('is-playing'); else video.pause();
+        } else {
+          userPaused = false;
+          play();
+        }
         showState();
       });
     }
@@ -173,10 +199,9 @@
     document.addEventListener('visibilitychange', () => { if (document.hidden) video.pause(); else play(); });
     window.addEventListener('pageshow', (e) => { if (e.persisted) play(); });
 
-    // Quando o aparelho não deixa tocar sozinho (iPhone no modo de pouca bateria, navegador de alguns apps),
-    // o vídeo começa no primeiro toque na tela
+    // Se o aparelho ainda assim não deixar tocar (navegador de alguns apps no Android), começa no primeiro toque na tela
     const kick = (e) => {
-      if (!video.paused || (videoBtn && videoBtn.contains(e.target))) return;
+      if (isPlaying() || (videoBtn && videoBtn.contains(e.target))) return;
       play();
     };
     ['touchend', 'click', 'keydown'].forEach((type) => document.addEventListener(type, kick, { capture: true, passive: true }));
@@ -190,20 +215,17 @@
       resizeT = setTimeout(() => {
         if (window.innerWidth === lastW) return;
         lastW = window.innerWidth;
-        if (!video.getAttribute('src')) return;
-        const src = pickSource();
-        if (video.getAttribute('src') === src) return;
+        const src = video.pickSource();
+        if (anim) { if (/\.mp4(\?|$)/.test(src)) anim.src = src; return; }
+        if (!video.getAttribute('src') || video.getAttribute('src') === src) return;
         video.classList.remove('is-playing');
         setSource(src);
         play();
       }, 300);
     });
 
-    reduceMotion.addEventListener('change', (e) => { if (e.matches) { userPaused = true; video.pause(); showState(); } });
-
-    if (userPaused) showState();
-    else if (document.readyState === 'complete') play();
-    else window.addEventListener('load', play, { once: true });
+    showState();
+    play();
   }
 
   /* ---------- Entrada das seções, tábuas e contadores ---------- */
@@ -347,7 +369,8 @@
     }
     step(dt, now) {
       if (!this.visible || this.drag) return;
-      const halt = this.hover || this.focus || root.classList.contains('motion-paused') || reduceMotion.matches || now < this.resumeAt;
+      // Andam mesmo com "Reduzir movimento" ligado (pedido do cliente); o botão Pause embaixo das avaliações para tudo
+      const halt = this.hover || this.focus || root.classList.contains('motion-paused') || now < this.resumeAt;
       const target = halt ? 0 : this.speed * this.dir;
       this.v += (target - this.v) * Math.min(1, dt * 4);
       if (halt && Math.abs(this.v) < 1.5) this.v = 0;

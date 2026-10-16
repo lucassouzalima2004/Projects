@@ -68,14 +68,23 @@ esses pedidos, só para os vídeos. Também foi corrigido:
 
 1. **Girar o celular** troca para o vídeo em pé ou deitado **do mesmo ponto**, em vez de voltar ao começo.
 2. **Voltar de outro app ou aba**: o vídeo continua (antes ficava congelado).
-3. **Celular que não deixa tocar sozinho** (iPhone no modo de pouca bateria, navegador de alguns apps): o vídeo começa no
-   primeiro toque na tela.
-4. **Economia de dados ligada**: o vídeo toca mesmo assim, na versão mais leve (antes nem carregava).
-5. **Celular deitado**: o topo inteiro cabe na tela (título e botões, sem a lista de itens), com o vídeo atrás.
-6. **Projetos recentes**: a faixa continua andando depois que a pessoa abre e fecha uma foto (antes parava).
+3. **Economia de dados ligada**: o vídeo toca mesmo assim, na versão mais leve (antes nem carregava).
+4. **Celular deitado**: o topo inteiro cabe na tela (título e botões, sem a lista de itens), com o vídeo atrás.
+5. **Projetos recentes**: a faixa continua andando depois que a pessoa abre e fecha uma foto (antes parava).
 
-Com **Reduzir movimento** (iPhone) ou **Remover animações** (Android) ligado no aparelho, o vídeo e as faixas ficam parados
-de propósito, com o botão de play no canto: é uma configuração de acessibilidade de quem passa mal com movimento na tela.
+Depois ele pediu: **"tem que abrir já com o vídeo rodando"**. Feito:
+
+1. O vídeo começa a carregar junto com a página (um script pequeno logo depois do `<video>` no `index.html`), em vez de
+   esperar o resto do site. Os vídeos foram gerados de novo para **começar no quadro da imagem de abertura**, com o
+   escurecimento do loop perto do fim; com o mesmo zoom e uma entrada de 0,4 s, a troca não aparece: a página já abre
+   com o piso se mexendo.
+2. Toca mesmo com **Reduzir movimento** (iPhone) ou **Remover animações** (Android) ligado no aparelho, e as faixas de
+   avaliações e projetos também andam. Antes, nesses casos, tudo ficava parado esperando o play. Os botões de pausa
+   continuam lá para quem quiser parar.
+3. **iPhone no modo de pouca bateria**, que bloqueia vídeo: o site troca o vídeo por uma imagem animada com o mesmo
+   arquivo (o Safari toca MP4 dentro de `<img>`, como um GIF), e o topo abre rodando do mesmo jeito.
+4. Se mesmo assim o aparelho bloquear (navegador de alguns apps no Android), o vídeo começa no primeiro toque na tela.
+5. Os endereços dos vídeos e dos pôsteres foram para `?v=4`, para nenhum celular usar uma cópia velha guardada.
 
 ## O que tem no site
 
@@ -147,9 +156,9 @@ O conteúdo fica direto no HTML (é o que o Google lê). Cada seção do `index.
 | Vídeo do topo | `tools/make-hero-video.sh` (veja abaixo) |
 
 Todas as fotos estão em WebP, já no tamanho certo. Ao trocar uma foto, mantenha o mesmo formato (4:5 para projetos e serviços).
-**Trocou uma foto ou o vídeo mantendo o mesmo nome de arquivo?** Aumente o número do `?v=3` no endereço dela (no `index.html`
-e no gerador das páginas de serviço): o navegador guarda fotos e vídeos por uma semana, e sem isso quem já visitou o site
-continua vendo a versão antiga.
+**Trocou uma foto ou o vídeo mantendo o mesmo nome de arquivo?** Aumente o número do `?v=` no endereço dela (no `index.html`
+e no gerador das páginas de serviço; hoje as fotos de serviço, os vídeos e os pôsteres estão em `?v=4`): o
+navegador guarda fotos e vídeos por uma semana, e sem isso quem já visitou o site continua vendo a versão antiga.
 
 ## O formulário
 
@@ -172,7 +181,8 @@ Com o serviço escolhido, é trocar o envio no `assets/js/app.js` (o trecho do f
 Os arquivos em `assets/video/` saem do script `tools/make-hero-video.sh` (precisa de `ffmpeg`):
 
 - 3 clipes só de piso, com a mesma cor (menos saturação, tom quente e os brancos mais baixos para o texto ler bem),
-  emendados com fusão e escurecendo no começo e no fim para o loop não dar pulo (14,6 s no total);
+  emendados com fusão e com um escurecimento rápido perto do fim, onde o loop volta para a primeira cena (14,6 s no
+  total). O arquivo começa já com o piso na tela, no mesmo quadro do pôster;
 - três versões: `hero-1080` (computador), `hero-720` (telas médias) e `hero-tall` (celular em pé), cada uma em **MP4**
   (toca em tudo, inclusive iPhone) e em **WebM** (para navegadores sem H.264). O site escolhe sozinho.
 
@@ -184,14 +194,16 @@ Clipes de hoje (uso comercial liberado, sem crédito obrigatório):
 | Câmera passando pela sala vazia com piso de madeira | [Coverr: Empty room with a window](https://coverr.co/videos/empty-room-with-a-window-peegts0hp9) (recortado para o ventilador de teto não aparecer) | Coverr License |
 | Veios da madeira de perto | [Mixkit: Detailed tour of the surface of a wooden board](https://mixkit.co/free-stock-video/detailed-tour-of-the-surface-of-a-wooden-board-34496/) | Mixkit Stock Video Free License |
 
-Como o vídeo se comporta (em `assets/js/app.js`):
+Como o vídeo se comporta (o começo no script logo depois do `<video>` no `index.html`, o resto no `assets/js/app.js`):
 
+- começa junto com a página; o primeiro quadro de cada vídeo é a imagem de abertura (`hero-poster`), então a troca não aparece;
 - toca mudo, dentro da página, e só com o topo na tela; pausa quando a pessoa rola para baixo ou troca de app, e continua
   de onde parou na volta;
 - escolhe a versão pelo formato da tela (em pé, celular deitado ou computador) e, ao girar o celular, troca do mesmo ponto;
 - com economia de dados ligada, nunca baixa a versão de 1080;
-- se o aparelho bloquear o vídeo (modo de pouca bateria do iPhone), começa no primeiro toque na tela;
-- com "Reduzir movimento" ligado no aparelho, espera a pessoa apertar o play.
+- toca mesmo com "Reduzir movimento" ligado no aparelho (pedido do cliente); o botão no canto pausa;
+- se o aparelho bloquear o vídeo (modo de pouca bateria do iPhone), mostra o mesmo MP4 dentro de uma `<img>`, que o Safari
+  anima como um GIF; se nem isso der, começa no primeiro toque na tela.
 
 O iPhone só toca vídeo se o servidor responder aos pedidos por pedaço (`Range`). No Cloudflare, quem faz isso é o
 `worker.js` (veja [Publicar](#publicar)). Para testar no iPhone ou no Safari pelo computador, use o `npx wrangler dev`
