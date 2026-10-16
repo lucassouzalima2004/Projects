@@ -22,6 +22,7 @@
 </style>
 </head>
 <body>
+  <!-- tools/og.html → og-image.jpg · tools/og.html?commercial → og-commercial.jpg -->
   <div class="og">
     <div class="bg"></div>
     <img class="logo" src="../assets/img/logo.svg" alt="">
@@ -31,5 +32,15 @@
       <div class="chips"><span>10-year warranty</span><span>Most kitchens $3k–$6k</span></div>
     </div>
   </div>
+  <script>
+    if (location.search.indexOf('commercial') > -1) {
+      document.querySelector('.bg').style.backgroundImage = "url('../assets/img/commercial-poster.jpg')";
+      document.querySelector('.eyebrow').textContent = 'Commercial interiors · Adelaide';
+      document.querySelector('h1').innerHTML = 'Refresh your business <em>without the downtime</em>';
+      document.querySelector('h1').style.fontSize = '54px';
+      document.querySelector('h1 em').style.fontSize = '84px';
+      document.querySelector('.chips').innerHTML = '<span>Offices · Retail · Hospitality</span><span>Strata &amp; lifts</span>';
+    }
+  </script>
 </body>
 </html>

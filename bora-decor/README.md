@@ -1,15 +1,22 @@
 # Bora Decor · site
 
-Site de uma página da Bora Decor (Roni & Dan), envelopamento de cozinhas (kitchen wrapping) em Adelaide, Austrália.
-Feito para receber o tráfego dos anúncios do Facebook/Instagram e transformar em pedidos de orçamento pelo WhatsApp.
+Site da Bora Decor (Roni & Dan), envelopamento com filme arquitetônico em Adelaide, Austrália, com duas páginas:
+
+- **Residential** (`index.html`): cozinhas. É a página dos anúncios do Facebook/Instagram, feita para virar
+  pedido de orçamento pelo WhatsApp.
+- **Commercial** (`commercial/index.html`): escritórios, lojas, hotéis, restaurantes, prédios (strata), elevadores,
+  clínicas, escolas. Foi o pedido do Roni depois da primeira prévia ("dividir em residencial e commercial").
+
+Um seletor **Residential | Commercial** no topo (e no menu e no topo do vídeo, no celular) leva de uma página
+para a outra: a pílula dourada desliza até a página escolhida.
 Em inglês, porque os clientes são australianos.
 
-No ar (prévia): <https://boradecor.lucassouzalima10.workers.dev>
+No ar (prévia): <https://boradecor.lucassouzalima10.workers.dev> e <https://boradecor.lucassouzalima10.workers.dev/commercial/>
 
 É HTML, CSS e JavaScript puros: sem build. As bibliotecas de animação (GSAP + ScrollTrigger e Lenis) ficam
 dentro de `assets/vendor/`, sem depender de CDN.
 
-## O que tem no site
+## Página Residential (cozinhas)
 
 - **Topo com vídeo** (cozinha moderna, madeira, leque de cores, mármore), título no centro igual ao anúncio
   ("Give your kitchen a new look"), botão de orçamento e destaques (garantia, preço, sem demolição).
@@ -27,11 +34,26 @@ dentro de `assets/vendor/`, sem depender de CDN.
 - **Texture. Tone. Character.**: cartões das famílias de acabamento (abrem o simulador já filtrado).
 - **O material**: BODAQ® da Hyundai L&C e os 4 benefícios da página antiga (durável, higiênico e não poroso,
   resistente a manchas e riscos, fácil de limpar), com uma faixa de nomes de acabamentos correndo.
-- **O que dá para envelopar**, **como funciona** em 4 passos, **depoimento**, **perguntas** e **pedido de orçamento**.
+- **O que dá para envelopar**, com um cartão grande "For business" que leva para a página Commercial.
+- **Como funciona** em 4 passos, **depoimento**, **perguntas** e **pedido de orçamento**.
 - **Pedido de orçamento**: nome, bairro, o que envelopar, o visual escolhido, orçamento e prazo. O botão abre o
   WhatsApp com a mensagem pronta (a pessoa só anexa as fotos). Também dá para mandar por e-mail.
 - O camaleão do logo olha para o cursor e pisca. Barra fixa de "Call / Get my free quote" no celular.
 - Quem ativou "reduzir movimento" no celular ou no computador vê tudo sem animação.
+
+## Página Commercial
+
+- **Topo com vídeo próprio** (restaurante, corredor de hotel, elevador, lobby, escritório): "Refresh your business
+  without the downtime", com destaques de pouca parada, filme com classificação de fogo e garantia de 10 anos.
+- **Where we wrap**: 12 setores, a partir do texto da Bodaq que o Roni mandou (escritórios, varejo, hotéis,
+  restaurantes, strata, elevadores, saúde, escolas, casas de repouso, shoppings, trailers/barcos e superfícies
+  danificadas). No celular vira um carrossel de deslizar.
+- **Don't rip it out. Wrap it.**: frase que acende e tabela "Full refit × Wrap with Bora" (parada, demolição,
+  lixo, custo, garantia).
+- **What we cover** (balcões, paredes, portas, elevadores, móveis, expositores), **o material** com os benefícios
+  para empresas, **mostruário** de 12 acabamentos, **como funciona** em 4 passos, **perguntas** e
+  **pedido de orçamento** para empresas (tipo de espaço, o que envelopar, prazo), que também abre o WhatsApp.
+- Sem preço: cada obra comercial é orçada à parte.
 
 ## Como editar
 
@@ -44,10 +66,14 @@ dentro de `assets/vendor/`, sem depender de CDN.
 | Acabamentos do simulador | `FINISHES` em `assets/js/textures.js` (nome, cor e tipo: solid, wood, marble, concrete, travertine) |
 | Combinações prontas | `LOOKS` no começo de `assets/js/studio.js` |
 | Fotos de antes e depois | troque `assets/img/before.jpg` e `assets/img/after.jpg` (mesma foto, mesmo enquadramento) |
-| Todos os textos | `index.html` |
+| Todos os textos | `index.html` (Residential) e `commercial/index.html` (Commercial) |
+| Campos do pedido de orçamento | no `<form>` de cada página: cada campo com `data-label` entra na mensagem do WhatsApp, na ordem da página; `data-intro` e `data-outro` são a primeira e a última frase |
 | Cores e fontes | topo de `assets/css/styles.css` |
 
-As texturas do simulador (madeira, mármore, concreto) são desenhadas pelo navegador; não há fotos de amostras.
+As texturas do simulador e do mostruário (madeira, mármore, concreto) são desenhadas pelo navegador; não há fotos de amostras.
+
+As duas páginas repetem o mesmo cabeçalho, rodapé e o bloco de ícones/logo do topo do `<body>`: ao mudar um
+telefone, link ou ícone ali, mude nas duas.
 
 ## Antes de mostrar para o cliente
 
@@ -63,17 +89,29 @@ Confirme com o Roni:
 - [ ] ID do Meta Pixel da conta de anúncios
 - [ ] Fotos e vídeos de serviços reais, assim que tiverem (antes/depois e vídeo do topo)
 
+Na página Commercial:
+
+- [ ] Instalação fora do horário comercial, nos fins de semana ou por etapas
+- [ ] "Fire-rated film": o texto diz que o BODAQ tem classificação Class A na ASTM E84 (informação da Bodaq que o
+      Roni mandou). Não fala de norma australiana; se algum cliente pedir, eles mandam a ficha técnica
+- [ ] Se fazem elevadores, trailers/RVs e barcos (estão na lista de setores, a partir do texto da Bodaq)
+
 ## Vídeo do topo e imagens
 
-O vídeo é montado por `tools/make-hero-video.sh` a partir de 5 clipes gratuitos (Mixkit e Coverr, uso comercial
-liberado, sem crédito obrigatório). Para usar vídeos de cozinhas da Bora Decor, coloque os arquivos em
-`tools/clips/`, troque a lista `CLIPS` do script e rode `bash tools/make-hero-video.sh` (precisa de ffmpeg).
-Ele gera `assets/video/hero-1080.mp4`, `hero-720.mp4`, `hero-tall.mp4` (celular), as versões `.webm` e as
-imagens `assets/img/hero-poster*.jpg`.
+Os vídeos são montados por `tools/make-hero-video.sh` a partir de clipes gratuitos (Mixkit e Coverr, uso comercial
+liberado, sem crédito obrigatório; a lista com os links está no começo do script). Precisa de ffmpeg.
+
+- `bash tools/make-hero-video.sh` → vídeo da Residential: `assets/video/hero-1080.mp4`, `hero-720.mp4`,
+  `hero-tall.mp4` (celular), as versões `.webm` e `assets/img/hero-poster*.jpg`.
+- `bash tools/make-hero-video.sh commercial` → vídeo da Commercial: `assets/video/commercial-*` e
+  `assets/img/commercial-poster*.jpg`.
+
+Para usar vídeos da Bora Decor, coloque os arquivos em `tools/clips/` e troque a lista `CLIPS_HOME` ou
+`CLIPS_COMMERCIAL` do script.
 
 - `assets/img/logo.svg`, `mark.svg` e `favicon.svg`: vetorizados do logo que o Roni mandou.
-- `assets/img/og-image.jpg` (prévia do link no WhatsApp/Facebook): feita a partir de `tools/og.html`
-  (abra num navegador com a janela em 1200×630 e tire um print).
+- `assets/img/og-image.jpg` e `og-commercial.jpg` (prévia do link no WhatsApp/Facebook): feitas a partir de
+  `tools/og.html` e `tools/og.html?commercial` (abra num navegador com a janela em 1200×630 e tire um print).
 
 ## Ver no computador
 
@@ -99,17 +137,19 @@ Actions → Variables, para o canonical, o sitemap e a prévia do link usarem o 
 
 ```
 bora-decor/
-├── index.html                 a página
+├── index.html                 página Residential (cozinhas)
+├── commercial/index.html      página Commercial
 ├── 404.html                   página de "não encontrado"
 ├── _headers                   cabeçalhos do Cloudflare (cache, noindex na prévia)
 ├── assets/css/styles.css      visual (cores e fontes no topo)
 ├── assets/js/config.js        contatos, preço, garantia, Meta Pixel
 ├── assets/js/textures.js      acabamentos e texturas do simulador
 ├── assets/js/studio.js        simulador (cozinha desenhada e animação do filme)
-├── assets/js/app.js           rolagem, animações, antes/depois, perguntas, formulário, camaleão
+├── assets/js/app.js           rolagem, animações, seletor Residential/Commercial, antes/depois, perguntas,
+│                              formulário, camaleão
 ├── assets/vendor/             GSAP + ScrollTrigger (licença padrão gratuita da GSAP) e Lenis (MIT)
 ├── assets/img/                logo, ícones, antes/depois, imagem de prévia
-├── assets/video/              vídeo do topo
+├── assets/video/              vídeos do topo (hero-* e commercial-*)
 └── tools/                     script do vídeo e a página da imagem de prévia (não vão para o ar)
 ```
 

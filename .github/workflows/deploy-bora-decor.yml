@@ -117,20 +117,26 @@ jobs:
           # Anotações internas e os scripts das imagens/vídeo não vão para o ar
           rm -rf _site/README.md _site/tools _site/.gitignore
           today=$(date -u +%F)
-          f=_site/index.html
-          # Endereço completo no og:image (o WhatsApp exige), canonical, og:url e dados para o Google
-          sed -i "s#content=\"assets/img/og-image.jpg\"#content=\"$SITE_URL/assets/img/og-image.jpg\"#" "$f"
-          sed -i "0,/<\/title>/s#</title>#</title>\n  <link rel=\"canonical\" href=\"$SITE_URL/\">\n  <meta property=\"og:url\" content=\"$SITE_URL/\">#" "$f"
-          sed -i "s#\"image\": \"assets/img/og-image.jpg\"#\"url\": \"$SITE_URL/\",\n    \"image\": \"$SITE_URL/assets/img/og-image.jpg\"#; s#\"logo\": \"assets/img/logo.svg\"#\"logo\": \"$SITE_URL/assets/img/logo.svg\"#" "$f"
+          : > pages.txt
+          # Em cada página: endereço completo no og:image (o WhatsApp exige), canonical, og:url e dados para o Google
+          { echo _site/index.html; find _site -mindepth 2 -name 'index.html' | sort; } | while read -r f; do
+            rel="${f#_site/}"
+            path="/${rel%index.html}"
+            sed -i -E "s#content=\"(\.\./)*assets/img/(og-[a-z-]+\.jpg)\"#content=\"$SITE_URL/assets/img/\2\"#" "$f"
+            sed -i "0,/<\/title>/s#</title>#</title>\n  <link rel=\"canonical\" href=\"$SITE_URL$path\">\n  <meta property=\"og:url\" content=\"$SITE_URL$path\">#" "$f"
+            sed -i -E "s#\"image\": \"(\.\./)*assets/img/(og-[a-z-]+\.jpg)\"#\"url\": \"$SITE_URL$path\",\n    \"image\": \"$SITE_URL/assets/img/\2\"#; s#\"logo\": \"(\.\./)*assets/img/logo.svg\"#\"logo\": \"$SITE_URL/assets/img/logo.svg\"#" "$f"
+            grep -n "canonical\|og:image\|\"url\"\|\"logo\"" "$f"
+            echo "$path" >> pages.txt
+          done
           sed -i "s#content=\"/assets/img/og-image.jpg\"#content=\"$SITE_URL/assets/img/og-image.jpg\"#" _site/404.html
           {
             echo '<?xml version="1.0" encoding="UTF-8"?>'
             echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
-            echo "  <url><loc>$SITE_URL/</loc><lastmod>$today</lastmod></url>"
+            while read -r p; do echo "  <url><loc>$SITE_URL$p</loc><lastmod>$today</lastmod></url>"; done < pages.txt
             echo '</urlset>'
           } > _site/sitemap.xml
           printf 'User-agent: *\nAllow: /\n\nSitemap: %s/sitemap.xml\n' "$SITE_URL" > _site/robots.txt
-          grep -n "canonical\|og:image\|\"url\"\|\"logo\"" "$f"
+          cat _site/sitemap.xml
           cat > wrangler.jsonc <<EOF
           {
             "name": "$WORKER",

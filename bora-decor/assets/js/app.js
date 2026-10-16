@@ -80,6 +80,49 @@
   });
   document.addEventListener('bora:goto', e => goTo(e.detail.target, e.detail.focus));
 
+  // ---------- Residential / Commercial: a pílula dourada desliza até a página escolhida ----------
+  $$('.seg').forEach(seg => {
+    const pill = $('.seg__pill', seg);
+    const items = $$('.seg__item', seg);
+    const active = $('.seg__item.is-active', seg) || items[0];
+    if (!pill || !active) return;
+    let sliding = false;
+    const place = (el, animate) => {
+      if (!el.offsetWidth) return;
+      pill.style.transition = animate ? '' : 'none';
+      pill.style.width = `${el.offsetWidth}px`;
+      pill.style.transform = `translateX(${el.offsetLeft}px)`;
+    };
+    // Vindo da outra página, a pílula começa do outro lado e desliza até a página atual
+    let arrived = false;
+    try { arrived = sessionStorage.getItem('bora-seg') === '1'; } catch (e) { /* sem storage */ }
+    const other = items.find(i => i !== active);
+    if (arrived && other && !reduce && other.offsetWidth) {
+      place(other, false);
+      sliding = true;
+      requestAnimationFrame(() => requestAnimationFrame(() => { place(active, true); setTimeout(() => { sliding = false; }, 700); }));
+    } else place(active, false);
+    if ('ResizeObserver' in window) new ResizeObserver(() => { if (!sliding) place(active, false); }).observe(seg);
+    // Voltando pelo botão "voltar" do navegador, a página volta como estava: põe a pílula no lugar
+    window.addEventListener('pageshow', e => {
+      if (!e.persisted) return;
+      sliding = false;
+      items.forEach(i => i.classList.remove('is-going'));
+      place(active, false);
+    });
+    items.forEach(i => i.addEventListener('click', e => {
+      if (i === active) { e.preventDefault(); closeMenu(); if (lenis) lenis.scrollTo(0, { duration: 1.2 }); else window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+      e.preventDefault();
+      try { sessionStorage.setItem('bora-seg', '1'); } catch (er) { /* sem storage */ }
+      sliding = true;
+      place(i, true);
+      i.classList.add('is-going');
+      setTimeout(() => { location.href = i.href; }, reduce ? 0 : 340);
+    }));
+  });
+  window.addEventListener('pageshow', () => { try { sessionStorage.removeItem('bora-seg'); } catch (e) { /* sem storage */ } });
+
   // ---------- Topo: fundo ao rolar, some ao descer, volta ao subir ----------
   const header = $('.header');
   const dock = $('.dock');
@@ -146,7 +189,7 @@
   if (video && !reduce && !saveData) {
     const tall = window.matchMedia('(max-aspect-ratio: 3/4)').matches;
     const big = window.innerWidth * (window.devicePixelRatio || 1) > 2000 && window.innerWidth > 1100;
-    let src = tall ? video.dataset.tall : big ? video.dataset.large : video.dataset.wide;
+    let src = tall ? video.dataset.tall : (big && video.dataset.large) || video.dataset.wide;
     if (!video.canPlayType('video/mp4; codecs="avc1.640028"') && video.canPlayType('video/webm; codecs="vp9"')) {
       src = tall ? src.replace('.mp4', '.webm') : video.dataset.wide.replace('.mp4', '.webm');
     }
@@ -280,10 +323,12 @@
     });
 
     // O "10" da garantia flutua devagar
-    gsap.fromTo('.warranty__num', { yPercent: 10 }, {
-      yPercent: -8, ease: 'none',
-      scrollTrigger: { trigger: '.numbers', start: 'top bottom', end: 'bottom top', scrub: true }
-    });
+    if ($('.warranty__num')) {
+      gsap.fromTo('.warranty__num', { yPercent: 10 }, {
+        yPercent: -8, ease: 'none',
+        scrollTrigger: { trigger: '.numbers', start: 'top bottom', end: 'bottom top', scrub: true }
+      });
+    }
 
     // Frase grande: as palavras acendem conforme a rolagem
     if (statement) {
@@ -376,17 +421,19 @@
     }
   }
 
-  // ---------- Cartões de acabamento ----------
-  const families = $$('.family');
-  if (families.length && window.BoraTextures) {
-    const paint = () => families.forEach(f => {
-      const tex = $('.family__tex', f);
-      if (tex && !tex.style.backgroundImage) tex.style.backgroundImage = `url(${window.BoraTextures.texture(f.dataset.tex, 384)})`;
-    });
+  // ---------- Texturas dos cartões e do mostruário (desenhadas quando chegam perto da tela) ----------
+  const texEls = $$('[data-tex]');
+  if (texEls.length && window.BoraTextures) {
+    const paint = el => {
+      const tex = $('.family__tex, .tile__tex', el) || el;
+      if (!tex.style.backgroundImage) tex.style.backgroundImage = `url(${window.BoraTextures.texture(el.dataset.tex, 384)})`;
+    };
     if ('IntersectionObserver' in window) {
-      const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { io.disconnect(); paint(); } }, { rootMargin: '600px 0px' });
-      io.observe($('.families'));
-    } else paint();
+      const io = new IntersectionObserver(entries => entries.forEach(e => {
+        if (e.isIntersecting) { io.unobserve(e.target); paint(e.target); }
+      }), { rootMargin: '600px 0px' });
+      texEls.forEach(el => io.observe(el));
+    } else texEls.forEach(paint);
   }
   $$('[data-goto-filter]').forEach(b => b.addEventListener('click', () => {
     document.dispatchEvent(new CustomEvent('bora:filter', { detail: { filter: b.dataset.gotoFilter } }));
@@ -413,62 +460,58 @@
   });
 
   // ---------- Pedido de orçamento ----------
+  // A mensagem é montada a partir dos campos com data-label (na ordem em que aparecem no formulário),
+  // entre o data-intro e o data-outro do <form>.
   const form = $('[data-quote-form]');
   if (form) {
     const err = $('.form__error', form);
     const look = $('[data-look-field]', form);
     document.addEventListener('bora:look', e => { if (look && !look.dataset.edited) look.value = e.detail.text; });
     if (look) look.addEventListener('input', () => { look.dataset.edited = '1'; });
+    const required = $$('[required]', form);
 
     const compose = () => {
       const fd = new FormData(form);
-      const v = k => (fd.get(k) || '').toString().trim();
-      const wraps = fd.getAll('wrap').join(', ');
-      const lines = [
-        "Hi Bora Decor! I'd like a free quote.",
-        '',
-        `Name: ${v('name')}`,
-        `Suburb: ${v('suburb')}`,
-        wraps ? `To wrap: ${wraps}` : null,
-        v('look') ? `Look I like: ${v('look')}` : null,
-        v('budget') ? `Budget: ${v('budget')}` : null,
-        v('when') ? `Timing: ${v('when')}` : null,
-        v('notes') ? `Notes: ${v('notes')}` : null,
-        '',
-        "I'll attach photos of my kitchen."
-      ].filter(l => l !== null);
+      const seen = new Set();
+      const lines = [form.dataset.intro || 'Hi Bora Decor!', ''];
+      Array.from(form.elements).forEach(el => {
+        if (!el.name || seen.has(el.name)) return;
+        seen.add(el.name);
+        const holder = el.closest('[data-label]');
+        if (!holder) return;
+        const val = fd.getAll(el.name).map(x => x.toString().trim()).filter(Boolean).join(', ');
+        if (val) lines.push(`${holder.dataset.label}: ${val}`);
+      });
+      if (form.dataset.outro) lines.push('', form.dataset.outro);
       return lines.join('\n');
     };
     const valid = () => {
-      let ok = true;
-      ['name', 'suburb'].forEach(n => {
-        const f = form.elements[n];
-        const bad = !f.value.trim();
-        f.classList.toggle('is-invalid', bad);
-        if (bad) ok = false;
-      });
-      err.hidden = ok;
-      if (!ok) (form.elements.name.value.trim() ? form.elements.suburb : form.elements.name).focus();
-      return ok;
+      const bad = required.filter(f => !f.value.trim());
+      required.forEach(f => f.classList.toggle('is-invalid', bad.includes(f)));
+      err.hidden = !bad.length;
+      if (bad.length) bad[0].focus();
+      return !bad.length;
     };
     form.addEventListener('submit', e => {
       e.preventDefault();
       if (!valid()) return;
-      track('Lead', { content_name: 'Quote form' });
+      track('Lead', { content_name: form.dataset.lead || 'Quote form' });
       const url = waLink(compose());
-      const w = window.open(url, '_blank', 'noopener');
-      if (!w) location.href = url;
+      // Sem "noopener" aqui: com ele o navegador devolve null e a página atual também iria para o WhatsApp
+      const w = window.open(url, '_blank');
+      if (w) w.opener = null; else location.href = url;
     });
-    ['name', 'suburb'].forEach(n => form.elements[n].addEventListener('input', () => {
-      form.elements[n].classList.remove('is-invalid');
-      if (form.elements.name.value.trim() && form.elements.suburb.value.trim()) err.hidden = true;
+    required.forEach(f => f.addEventListener('input', () => {
+      f.classList.remove('is-invalid');
+      if (required.every(x => x.value.trim())) err.hidden = true;
     }));
     const mail = $('[data-form-email]', form);
     if (mail) mail.addEventListener('click', e => {
       e.preventDefault();
       if (!valid()) return;
-      track('Lead', { content_name: 'Quote form (email)' });
-      const subject = `Quote request: ${form.elements.suburb.value.trim()}`;
+      track('Lead', { content_name: `${form.dataset.lead || 'Quote form'} (email)` });
+      const where = form.elements.suburb ? form.elements.suburb.value.trim() : '';
+      const subject = `${form.dataset.subject || 'Quote request'}${where ? `: ${where}` : ''}`;
       location.href = `mailto:${cfg.email || 'sales@borasigns.com.au'}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(compose())}`;
     });
   }
