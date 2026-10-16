@@ -138,6 +138,22 @@ parte, de LVP, laminada" e "bota lá, tipo, nossos trabalhos… com a cidade".
    as fotos agora estão na lista logo abaixo. O link no fim dos serviços da home e os dados para o Google seguem a
    lista nova.
 
+### Correção no iPhone (16/10, 16:52)
+
+O Lucas mandou um print do iPhone com a lista de serviços quebrada: a descrição, as etiquetas (Solid, Engineered…) e
+o link ficavam esticados, cada um com o triplo da altura, com vãos enormes entre eles. Era um defeito do motor do
+Safari (WebKit) com o alinhamento pela linha de base (`align-items: baseline` no `.svc-body`) numa grade dentro de
+outra grade: acontecia em todas as larguras comuns de iPhone (375 a 440 px), na home e na Other services, que são as
+páginas com essa lista. No Chrome e no Android não aparecia.
+
+- Correção: o bloco da descrição (`.svc-more`) passou a alinhar pelo topo, e a grade de abrir e fechar só existe
+  no computador, onde há a animação.
+- Como foi conferido: com o WebKitGTK 2.52 (o mesmo motor do Safari) e o Chrome, medindo cada elemento de todas as
+  páginas em 375, 390, 402, 430 e 440 px (celular), 768 (tablet), 1024 e 1440 (computador). Antes, a lista de
+  serviços saía até 6 vezes mais alta no WebKit; depois, as diferenças são só de uma linha de texto a mais ou a menos,
+  normais entre navegadores. Menu do celular, FAQ aberto, foto ampliada, páginas de serviço e formulário também foram
+  conferidos no WebKit.
+
 ## O que tem no site
 
 **Página inicial** (`index.html`):
@@ -173,7 +189,7 @@ com os botões de pausa.
 
 **Testes (16/10, depois da sétima rodada):** Lighthouse no computador 100 em desempenho, acessibilidade, boas práticas
 e SEO; no celular, 95 em desempenho na home e 92 na página Other services, 100 nos outros três. Zero problemas no teste de
-acessibilidade (axe) em todas as páginas.
+acessibilidade (axe) em todas as páginas. Layout conferido também no motor do Safari (WebKit), do celular ao computador.
 
 Identidade: logo vetorizado a partir do PNG que o Gabriel mandou. Preto **#0E0E0D**, osso **#EBE7E0** e o vermelho do "R"
 da camisa dele, **#C8102E**. Fontes, dentro de `assets/fonts/`: **Cormorant Garamond** nos títulos (a serifada elegante

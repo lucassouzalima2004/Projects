@@ -534,7 +534,10 @@ strong { font-weight: 640; }
   letter-spacing: -0.005em; line-height: 1.02; color: #fff;
 }
 .svc-name a { text-decoration: none; }
-.svc-more { grid-column: 1 / -1; display: grid; grid-template-rows: 1fr; }
+/* align-self: start (e não baseline, que vem do .svc-body): no Safari do iPhone, com baseline, a descrição, as
+   etiquetas e o link ficavam esticados, cada um com o triplo da altura e um vão grande entre eles. A grade de abrir
+   e fechar (0fr → 1fr) só existe no computador, onde há a animação */
+.svc-more { grid-column: 1 / -1; align-self: start; }
 .svc-more-inner { min-height: 0; overflow: hidden; display: grid; gap: 18px; justify-items: start; padding-top: 14px; }
 .svc-desc { max-width: 52ch; color: var(--on-dark-muted); }
 .svc .link-arrow { color: #fff; margin-top: 4px; }
@@ -558,7 +561,7 @@ strong { font-weight: 640; }
   .svc.is-active .svc-name, .svc.is-active .svc-num { color: #fff; }
   .svc.is-active .svc-num { color: var(--red-hi); }
   .svc:not(.is-active):hover .svc-name { color: var(--on-dark-muted); }
-  .svc-more { grid-column: 2; grid-template-rows: 0fr; transition: grid-template-rows 0.6s var(--ease-out); }
+  .svc-more { grid-column: 2; display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.6s var(--ease-out); }
   .svc.is-active .svc-more { grid-template-rows: 1fr; }
   .svc-more-inner { padding-top: 0; opacity: 0; transition: opacity 0.4s, padding 0.6s var(--ease-out); position: relative; z-index: 1; }
   .svc.is-active .svc-more-inner { opacity: 1; padding-top: 16px; padding-bottom: 6px; transition-delay: 0.08s; }
