@@ -104,6 +104,22 @@ Com o vídeo rodando no celular dele, o Gabriel pediu:
 
 Ele também propôs pagar $300 pelo site com essa aba (antes, "2 sites por $300"); o Lucas respondeu "Pode ser claro!".
 
+### Sexta rodada (16/10, fim da tarde): o texto dele para outros serviços
+
+1. **O texto da página Other services veio dele** ("essa aí seria a introdução dessa página à parte"). A página agora
+   abre com *More than flooring.* e a apresentação *Complete home remodeling services.* traz os parágrafos dele sem mudar
+   nada, com a frase final em destaque. Os cartões passaram a ser a lista dele: pintura interna e externa, cozinha,
+   banheiro, drywall, finish carpentry, portas e janelas, rodapés e guarnições, piso (leva aos 6 serviços de piso) e
+   "And more.". As frases curtas de cada cartão são nossas. O bloco da home, o formulário, o rodapé e os dados para o
+   Google seguem a mesma lista.
+2. **Vídeo "pra mostrar bem o piso"** (áudio de 15:07, mandado antes de ele ver a rodada anterior, que já clareou o
+   vídeo): a camada escura ficou mais leve também na parte de baixo, onde fica o piso, que ganhou de 10% a 12% de
+   claridade. A nota do Google embaixo ganhou um fundo de vidro escuro, como o botão de pausa, para continuar legível.
+   A foto de referência que ele cita ("a foto que eu te mandei ali em cima") deve ser uma das fotos dele de piso; ela
+   não veio separada na conversa.
+
+Ele vai mandar fotos de outros trabalhos (reformas) para colocar na página.
+
 ## O que tem no site
 
 **Página inicial** (`index.html`):
@@ -126,18 +142,17 @@ Ele também propôs pagar $300 pelo site com essa aba (antes, "2 sites por $300"
 (com um cartão de orçamento grátis ao lado), "Good to know", o passo a passo, os projetos, perguntas próprias e o formulário
 com o serviço já marcado.
 
-**Other services** (`other-services/`): a "aba" de reformas da Black Rock Remodeling que o Gabriel pediu. Topo com a foto
-do banheiro de Snohomish, a apresentação ("One company for the rest of the house", com a foto da cozinha), os cartões de
-Kitchen remodeling, Bathroom remodeling e Painting, um cartão "Something else?", o passo a passo próprio, os 6 serviços de
-piso e o formulário.
+**Other services** (`other-services/`): a "aba" de reformas da Black Rock Remodeling que o Gabriel pediu. Topo *More than
+flooring.* com a foto do banheiro de Snohomish, a apresentação com o texto dele (e a foto da cozinha), os 9 cartões (os
+7 serviços da lista dele, Flooring e "And more."), o passo a passo próprio, os 6 serviços de piso e o formulário.
 
 **Também:** página 404, prévia bonita do link no WhatsApp (`assets/img/og-image.jpg`), dados estruturados para o Google
 (empresa, horários, área atendida, serviços, FAQ e trilha de navegação), `sitemap.xml` e `robots.txt` gerados na publicação.
 Para quem ativou "reduzir movimento", as animações de entrada desligam; o vídeo e as faixas continuam (pedido do cliente),
 com os botões de pausa.
 
-**Testes (16/10, depois da quinta rodada):** Lighthouse no computador 100 em desempenho, acessibilidade, boas práticas
-e SEO; no celular, 93 em desempenho na home e na página Other services, 100 nos outros três. Zero problemas no teste de
+**Testes (16/10, depois da sexta rodada):** Lighthouse no computador 100 em desempenho, acessibilidade, boas práticas
+e SEO; no celular, 95 em desempenho na home e 93 na página Other services, 100 nos outros três. Zero problemas no teste de
 acessibilidade (axe) em todas as páginas.
 
 Identidade: logo vetorizado a partir do PNG que o Gabriel mandou. Preto **#0E0E0D**, osso **#EBE7E0** e o vermelho do "R"
@@ -155,7 +170,7 @@ maiúsculas espaçadas, ecoa o "F L O O R S" do logo).
 - [ ] **Formulário direto no e-mail**: ele quer receber os pedidos no e-mail. Falta escolher o serviço de envio (veja [O formulário](#o-formulário)).
 - [ ] **Vídeo do topo**: montado com 3 clipes gratuitos de piso, do Coverr e do Mixkit (veja [O vídeo do topo](#o-vídeo-do-topo)). Dá para trocar por filmagens dos pisos que ele instalou ou por um vídeo gerado por IA (prompts prontos em `tools/PROMPTS.md`).
 - [ ] **Nome da empresa**: o logo e a camisa dizem *Black Rock Floors*; o site antigo e o e-mail dizem *Black Rock Remodeling LLC*. Ele contou (16/10) que a empresa é a Black Rock Remodeling e que a de pisos veio depois; a página Other services diz que a Black Rock Floors é a parte de pisos da Black Rock Remodeling LLC. Confirmar se quer o nome da LLC também no rodapé.
-- [ ] **Página Other services**: os textos foram escritos por nós a partir do que ele disse ("pintura, cozinha, banheiro, etc."). Confirmar o que ele faz em cada um (armários e bancadas na cozinha? pintura só interna ou externa também?) e se falta algum serviço. Pedir **fotos de reformas dele** (cozinha, banheiro, pintura): hoje a página usa a foto do banheiro de Snohomish e a da cozinha que ele mandou como Tile, e os cartões dos serviços não têm foto.
+- [ ] **Página Other services**: a introdução e a lista de serviços são dele (16/10); as frases curtas de cada cartão e o passo a passo foram escritos por nós: pedir para ele ler. Ele vai mandar **fotos de outros trabalhos** (reformas): hoje a página usa a foto do banheiro de Snohomish e a da cozinha que ele mandou como Tile, e os cartões não têm foto.
 - [ ] **Número de registro na L&I**: em Washington, a lei (RCW 18.27.100) pede o número de registro de empreiteiro na propaganda que mostra o nome da empresa, e o site conta como propaganda (vale confirmar com a L&I). Pedir o número e colocar no rodapé; também passa confiança.
 - [ ] **E-mail** `br.remodelingwa@gmail.com`: confirmar que continua sendo o dele.
 - [ ] **Respostas do FAQ** e **textos das páginas de serviço** (o que está incluído, prazos, mover móveis, tipos de acabamento): escritos por nós com base nas práticas comuns do mercado. Pedir para ele ler.
