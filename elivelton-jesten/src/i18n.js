@@ -43,7 +43,7 @@ export const STRINGS = {
     },
     hero: {
       kicker: 'Construção civil · Portugal e Espanha',
-      title: 'Construímos com *rigor*, do alicerce ao acabamento.',
+      title: 'Construímos com *rigor*, do princípio ao fim.',
       lead: 'Estruturas em betão armado, obras novas, reabilitação e remodelação, executadas por equipas próprias e com acompanhamento técnico em todas as fases.',
       cta: 'Pedir orçamento',
       cta2: 'Ver as obras',
@@ -336,7 +336,7 @@ export const STRINGS = {
     },
     hero: {
       kicker: 'Construcción · Portugal y España',
-      title: 'Construimos con *rigor*, de los cimientos al acabado.',
+      title: 'Construimos con *rigor*, de principio a fin.',
       lead: 'Estructuras de hormigón armado, obra nueva, rehabilitación y reformas, ejecutadas por equipos propios y con supervisión técnica en todas las fases.',
       cta: 'Pedir presupuesto',
       cta2: 'Ver las obras',
@@ -629,7 +629,7 @@ export const STRINGS = {
     },
     hero: {
       kicker: 'Construction · Portugal and Spain',
-      title: 'We build with *rigour*, from foundations to finishes.',
+      title: 'We build with *rigour*, from start to finish.',
       lead: 'Reinforced concrete structures, new builds, refurbishment and renovation, carried out by our own crews with technical supervision at every stage.',
       cta: 'Request a quote',
       cta2: 'See our projects',
@@ -922,7 +922,7 @@ export const STRINGS = {
     },
     hero: {
       kicker: 'Construction · Portugal et Espagne',
-      title: 'Construire avec *rigueur*, des fondations aux finitions.',
+      title: 'Construire avec *rigueur*, du début à la fin.',
       lead: 'Structures en béton armé, constructions neuves, réhabilitation et rénovation, réalisées par nos propres équipes avec un suivi technique à chaque étape.',
       cta: 'Demander un devis',
       cta2: 'Voir nos chantiers',

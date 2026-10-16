@@ -10,10 +10,10 @@ e LinkedIn no orçamento, e um **painel** onde ele vê de que cidade vêm as vis
 
 **Site** em português de Portugal (`/`), espanhol (`/es/`), inglês (`/en/`) e francês (`/fr/`):
 
-- Topo em ecrã inteiro com uma foto real de obra (fundações, com a grua), o título "Construímos com rigor, do alicerce
-  ao acabamento." (a partir do lema do site antigo), os botões de orçamento e de obras e um botão "Ver a equipa em
-  obra" que abre o vídeo da betonagem. Logo abaixo, num cartão, os números da empresa (54+ clientes,
-  91+ profissionais, 8 obras em curso, desde 2023), que contam até ao valor quando aparecem.
+- Topo em ecrã inteiro com uma foto real de obra (fundações, com a grua), o título "Construímos com rigor, do princípio
+  ao fim." (o cliente preferiu "do princípio ao fim", que também soa bem em espanhol), os botões de orçamento e de
+  obras e um botão "Ver a equipa em obra" que abre o vídeo da betonagem. Logo abaixo, num cartão, os números da
+  empresa (54+ clientes, 91+ profissionais, 8 obras em curso, desde 2023), que contam até ao valor quando aparecem.
 - **Serviços** (4), **Empresa** (fotos da equipa e os valores: segurança, rigor, compromisso), **Obras**, **Como
   trabalhamos** em 4 passos, faixa de **recrutamento** e **Orçamento**.
 - **Obras**: 66 fotos e vídeos reais das equipas, organizados por obra (15 obras, como o depósito circular, a fundação
@@ -147,9 +147,6 @@ otimizados (baixa os originais do jesten.pt se a pasta `tools/originals/` estive
 
 ## O que ainda falta confirmar
 
-- [ ] **Links do Facebook e do LinkedIn** da Jesten (o cliente pediu o botão do Facebook; não encontrei a página).
-      Quando chegarem, é só colar em **Contatos e redes** no painel: os botões aparecem no site na hora (por baixo
-      da galeria, nos contactos do orçamento e no rodapé).
 - [ ] Confirmar o segundo telefone de Espanha: o cliente escreveu +34 642 299 985, mas o número dele no WhatsApp é
       +34 642 29 96 85 (é o que está no site).
 - [ ] Número do **alvará** de construção (IMPIC), se a empresa tiver: aparece no rodapé.
