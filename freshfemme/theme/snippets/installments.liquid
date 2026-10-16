@@ -11,19 +11,22 @@
       assign n = max_n
     endif
   endif
-  assign rate = settings.installment_interest | plus: 0 | divided_by: 100.0
-  if rate > 0
-    assign base = rate | plus: 1
-    assign factor = 1.0
-    for i in (1..n)
-      assign factor = factor | times: base
-    endfor
-    assign denom = factor | minus: 1
-    assign parcel = price | times: rate | times: factor | divided_by: denom | round
-  else
-    assign parcel = price | divided_by: n | floor
+  assign rate = settings.installment_interest | replace: ',', '.' | plus: 0 | divided_by: 100.0
+  assign parcel_money = ''
+  if n > 1
+    if rate > 0
+      assign base = rate | plus: 1
+      assign factor = 1.0
+      for i in (1..n)
+        assign factor = factor | times: base
+      endfor
+      assign denom = factor | minus: 1
+      assign parcel = price | times: rate | times: factor | divided_by: denom | round
+    else
+      assign parcel = price | divided_by: n | floor
+    endif
+    assign parcel_money = parcel | money
   endif
-  assign parcel_money = parcel | money
 -%}
 {%- if settings.show_installments and n > 1 -%}
   <span class="price__installments" data-installments>

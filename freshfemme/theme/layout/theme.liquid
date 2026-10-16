@@ -55,7 +55,7 @@
         installments: {
           show: {{ settings.show_installments | json }},
           count: {{ settings.installments | json }},
-          rate: {{ settings.installment_interest | plus: 0 | json }},
+          rate: {{ settings.installment_interest | replace: ',', '.' | plus: 0 | json }},
           min: {{ settings.installment_min | times: 100 | json }},
           pix: {{ settings.pix_discount | json }}
         },

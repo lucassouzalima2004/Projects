@@ -45,7 +45,7 @@
     },
     "categories": {
       "count": {
-        "one": "1 produto",
+        "one": "{{ count }} produto",
         "other": "{{ count }} produtos"
       }
     },
@@ -132,7 +132,7 @@
   },
   "collections": {
     "count": {
-      "one": "1 produto",
+      "one": "{{ count }} produto",
       "other": "{{ count }} produtos"
     },
     "filter": "Filtrar",
@@ -153,7 +153,7 @@
     "no_results_short": "Nada encontrado. Tente outra palavra.",
     "no_results": "Nada encontrado para \"{{ terms }}\".",
     "results_for": {
-      "one": "1 resultado para \"{{ terms }}\"",
+      "one": "{{ count }} resultado para \"{{ terms }}\"",
       "other": "{{ count }} resultados para \"{{ terms }}\""
     },
     "pages": "Páginas e artigos"

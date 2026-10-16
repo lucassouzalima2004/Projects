@@ -8,7 +8,7 @@
       <input type="hidden" name="options[prefix]" value="last">
       <button type="submit" class="btn btn--brand btn--sm">{% render 'icon', name: 'search' %}</button>
     </form>
-    {%- if search.performed -%}
+    {%- if search.performed and search.results_count > 0 -%}
       <p class="page-hero__text">{{ 'search.results_for' | t: count: search.results_count, terms: search.terms }}</p>
     {%- endif -%}
   </div>

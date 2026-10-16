@@ -12,7 +12,8 @@
         {%- for rec in recommendations.products -%}
           {% render 'product-card', product: rec, index: forloop.index0 %}
         {%- endfor -%}
-      {%- else -%}
+      {%- elsif recommendations.performed? == false -%}
+        {%- comment -%} Só no carregamento da página: a resposta de /recommendations não tem o objeto product {%- endcomment -%}
         {%- assign source = section.settings.fallback | default: product.collections.first -%}
         {%- assign shown = 0 -%}
         {%- for rec in source.products -%}

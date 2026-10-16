@@ -127,7 +127,7 @@
                 {%- endunless -%}
 
               {%- when 'kit_picker' -%}
-                {%- if block.settings.kits.size > 0 -%}
+                {%- if block.settings.kits.first -%}
                   <fieldset class="product__block kits" {{ block.shopify_attributes }}>
                     <legend class="kits__legend">{{ block.settings.heading }}</legend>
                     {%- assign kit_index = 0 -%}

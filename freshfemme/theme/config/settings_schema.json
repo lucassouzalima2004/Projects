@@ -162,7 +162,7 @@
         "type": "text",
         "id": "installment_interest",
         "label": "Juros ao mês (%)",
-        "info": "Use 0 para parcelas sem juros. Ex.: 4.27",
+        "info": "Use 0 para parcelas sem juros. Ex.: 4,27",
         "default": "4.27"
       },
       {
