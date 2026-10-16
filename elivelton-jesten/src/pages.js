@@ -720,8 +720,9 @@ function contacts(ctx, { only, whatsappText = ctx.s.quote.whatsappText } = {}) {
   if (c.email) rows.push(['mail', `mailto:${c.email}`, esc(c.emails?.length ? ch.general : ch.email), c.email, false]);
   if (c.whatsapp) rows.push(['whatsapp', waHref(c.whatsapp, whatsappText), esc(ch.whatsapp), `+${c.whatsapp.replace(/^(\d{3})(\d{3})(\d{3})(\d+)$/, '$1 $2 $3 $4')}`, true]);
   if (c.instagram) rows.push(['instagram', c.instagram, esc(ch.instagram), `@${c.instagram.replace(/\/+$/, '').split('/').pop() || ''}`, true]);
-  if (c.facebook) rows.push(['facebook', c.facebook, esc(ch.facebook), c.facebook.replace(/^https?:\/\/(www\.)?/, '').replace(/\/+$/, ''), true]);
-  if (c.linkedin) rows.push(['linkedin', c.linkedin, esc(ch.linkedin), c.linkedin.replace(/^https?:\/\/(www\.)?/, '').replace(/\/+$/, ''), true]);
+  // O endereço do Facebook e do LinkedIn pode ser comprido (profile.php?id=…): mostra-se o nome da empresa
+  if (c.facebook) rows.push(['facebook', c.facebook, esc(ch.facebook), 'Jesten Construções', true]);
+  if (c.linkedin) rows.push(['linkedin', c.linkedin, esc(ch.linkedin), 'Jesten Construções', true]);
   rows.push(['pin', c.maps, esc(ch.address), `${c.address}, ${c.postal}`, true]);
   return `<ul class="contacts">${rows
     .filter(([ic]) => !only || only.includes(ic))
