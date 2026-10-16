@@ -19,18 +19,19 @@
   S.address = Object.assign({ street: '', town: '', county: '', eircode: '' }, S.address);
   S.social = Object.assign({ instagram: '', facebook: '', tripadvisor: '', google: '' }, S.social);
   S.instagram = Object.assign({ feedUrl: '', count: 12, posts: [] }, S.instagram);
+  S.vouchers = Object.assign({ buyUrl: '' }, S.vouchers);
   S.hours = S.hours || {};
   S.specialDays = S.specialDays || {};
-  ['window', 'favourites', 'menu', 'reviews', 'ticker'].forEach((k) => { if (!Array.isArray(S[k])) S[k] = []; });
+  ['window', 'favourites', 'menu', 'awards', 'reviews', 'ticker'].forEach((k) => { if (!Array.isArray(S[k])) S[k] = []; });
 
   /* ------------------------------------------------------------ helpers */
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
   const esc = (s) =>
     String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-  const session = {
-    get(k) { try { return JSON.parse(window.sessionStorage.getItem(k)); } catch (e) { return null; } },
-    set(k, v) { try { window.sessionStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* armazenamento indisponível */ } },
+  const store = {
+    get(k) { try { return JSON.parse(window.localStorage.getItem(k)); } catch (e) { return null; } },
+    set(k, v) { try { window.localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* armazenamento indisponível */ } },
   };
   const motionOK = () => !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const setAll = (sel, fn) => $$(sel).forEach(fn);
@@ -38,11 +39,23 @@
 
   /* ------------------------------------------------------------ links and contact */
   const digits = (s) => String(s || '').replace(/\D/g, '');
+  // '085 737 2391' → '+353857372391' (número irlandês que começa com 0 ganha o +353)
+  function intlPhone(s) {
+    const raw = String(s || '').trim();
+    const d = digits(raw);
+    if (!d) return '';
+    if (raw.charAt(0) === '+') return '+' + d;
+    if (d.startsWith('00')) return '+' + d.slice(2);
+    if (d.charAt(0) === '0') return '+353' + d.slice(1);
+    return '+' + d;
+  }
+  const handle = () => String(S.social.instagram || '').replace(/^@/, '');
   const place = () => [S.name, S.address.street, S.address.town, [S.address.county, S.address.eircode].filter(Boolean).join(' ')].filter(Boolean).join(', ');
-  const igUrl = () => (S.social.instagram ? `https://www.instagram.com/${String(S.social.instagram).replace(/^@/, '')}/` : '');
+  const igUrl = () => (handle() ? `https://www.instagram.com/${handle()}/` : '');
+  const igDmUrl = () => (handle() ? `https://ig.me/m/${handle()}` : '');
   const directionsUrl = () => `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(place())}`;
   const mapsUrl = () => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place())}`;
-  const waUrl = () => `https://wa.me/${digits(S.whatsapp)}?text=${encodeURIComponent(`Hi ${S.name}! `)}`;
+  const waUrl = () => `https://wa.me/${intlPhone(S.whatsapp).slice(1)}?text=${encodeURIComponent(`Hi ${S.name}! `)}`;
 
   function link(sel, href, text) {
     setAll(sel, (a) => {
@@ -57,27 +70,32 @@
 
   function renderContact() {
     link('[data-directions]', directionsUrl());
-    link('[data-tel]', S.phone ? `tel:+${digits(S.phone)}` : '');
+    link('[data-tel]', S.phone ? `tel:${intlPhone(S.phone)}` : '');
     link('[data-wa]', S.whatsapp ? waUrl() : '');
     link('[data-email]', S.email ? `mailto:${S.email}` : '');
     link('[data-ig]', igUrl());
+    link('[data-ig-dm]', igDmUrl());
     link('[data-fb]', S.social.facebook);
     link('[data-tripadvisor]', S.social.tripadvisor);
     link('[data-review-google]', S.social.google || mapsUrl());
     setAll('[data-phone-text]', (el) => (el.textContent = S.phone || 'Call us'));
     setAll('[data-email-text]', (el) => (el.textContent = S.email || 'Email us'));
-    setAll('[data-ig-handle]', (el) => (el.textContent = '@' + String(S.social.instagram).replace(/^@/, '')));
+    setAll('[data-ig-handle]', (el) => (el.textContent = '@' + handle()));
+
+    // Gift vouchers: o botão de compra online só aparece quando existe o link
+    link('[data-voucher-mail]', S.email ? `mailto:${S.email}?subject=${encodeURIComponent('Gift voucher')}` : '');
+    if (S.vouchers.buyUrl) {
+      setAll('[data-voucher-buy]', (a) => {
+        a.href = S.vouchers.buyUrl;
+        a.hidden = false;
+      });
+      setAll('.vouchers__actions [data-tel]', (a) => a.classList.replace('btn--primary', 'btn--ghost'));
+    }
 
     const a = S.address;
     $('#visit-address').innerHTML =
       `${esc(a.street)}, ${esc(a.town)}${a.county ? `, ${esc(a.county)}` : ''}` + (a.eircode ? `<small>Eircode ${esc(a.eircode)}</small>` : '');
     setAll('[data-address-lines]', (el) => (el.innerHTML = `${esc(a.street)}<br>${esc(a.town)}${a.county ? `, ${esc(a.county)}` : ''}${a.eircode ? `<br>${esc(a.eircode)}` : ''}`));
-
-    if (S.award && S.award.title) {
-      setAll('[data-award-title]', (el) => (el.textContent = S.award.title));
-      setAll('[data-award-by]', (el) => (el.textContent = S.award.by || ''));
-      link('[data-award-url]', S.award.url);
-    }
 
     if (S.notice) {
       $('#notice-text').textContent = S.notice;
@@ -176,10 +194,12 @@
     return groups;
   }
 
-  function hoursSummary() {
+  // openOnly: só os dias abertos ("Wed–Mon 9am–4pm"), para o selo da foto de destaque
+  function hoursSummary(openOnly) {
     const label = (g) => (g.days.length === 7 ? 'Every day' : g.days.length === 1 ? DAY_SHORT[g.days[0]] : `${DAY_SHORT[g.days[0]]}–${DAY_SHORT[g.days[g.days.length - 1]]}`);
     const groups = hourGroups();
     const open = groups.filter((g) => g.sig !== 'closed').map((g) => `${label(g)} ${fmtTime(g.hours[0])}–${fmtTime(g.hours[1])}`);
+    if (openOnly) return open.join(' · ');
     const closed = groups.filter((g) => g.sig === 'closed').map((g) => `Closed ${label(g)}`);
     return open.concat(closed).join(' · ');
   }
@@ -312,21 +332,36 @@
   }
 
   /* ------------------------------------------------------------ favourites */
+  // Foto grande ao lado dos pratos, com o horário no selo
+  function renderFeature() {
+    const f = S.feature;
+    const box = $('#feature');
+    if (!f || !f.img) {
+      box.hidden = true;
+      return;
+    }
+    const when = hoursSummary(true);
+    box.innerHTML = `<img src="${esc(f.img)}" width="960" height="1200" loading="lazy" decoding="async" alt="${esc(f.alt || f.title || '')}">
+      ${when ? `<span class="feature__tag">${esc(when)}</span>` : ''}
+      ${f.title || f.note ? `<figcaption>${f.title ? `<span class="feature__title">${esc(f.title)}</span>` : ''}${f.note ? `<span class="feature__note">${esc(f.note)}</span>` : ''}</figcaption>` : ''}`;
+  }
+
   function renderFavourites() {
-    $('#plates').innerHTML = S.favourites
+    const plates = $('#plates');
+    plates.innerHTML = S.favourites
       .map(
         (f, i) => `<li class="plate-card" style="--i:${i}">
           <figure class="plate"><img src="${esc(f.img)}" width="640" height="640" loading="lazy" decoding="async" alt="${esc(f.alt || f.name)}"></figure>
-          ${f.tag ? `<span class="plate-card__tag${/^new$/i.test(f.tag) ? ' plate-card__tag--new' : ''}">${esc(f.tag)}</span>` : ''}
+          ${f.tag ? `<span class="plate-card__tag">${esc(f.tag)}</span>` : ''}
           <h3>${esc(f.name)}</h3>
           ${f.desc ? `<p>${esc(f.desc)}</p>` : ''}
         </li>`
       )
       .join('');
-    if (!S.favourites.length) $('#favourites').hidden = true;
+    if (!S.favourites.length) plates.hidden = true;
+    if (!S.favourites.length && $('#feature').hidden) $('#favourites').hidden = true;
 
     // No celular os pratos rolam para o lado: a faixa precisa ser alcançável pelo teclado
-    const plates = $('#plates');
     const sync = () => {
       if (plates.scrollWidth > plates.clientWidth + 1) plates.tabIndex = 0;
       else plates.removeAttribute('tabindex');
@@ -335,70 +370,78 @@
     window.addEventListener('resize', sync, { passive: true });
   }
 
+  /* ------------------------------------------------------------ awards */
+  // O primeiro prêmio é o destaque; os outros viram selos embaixo
+  function renderAwards() {
+    const list = S.awards.filter((a) => a && a.title);
+    const top = list[0];
+    if (!top) {
+      $('.awards__grid').hidden = true;
+      $('.award-badge').hidden = true;
+      if (!S.reviews.length) $('#awards').hidden = true;
+      return;
+    }
+
+    const photo = $('#award-photo');
+    if (top.photo) {
+      photo.innerHTML = `<img src="${esc(top.photo)}" width="800" height="1000" loading="lazy" decoding="async" alt="${esc(top.photoAlt || '')}">` +
+        (top.caption ? `<figcaption>${esc(top.caption)}</figcaption>` : '');
+    } else {
+      photo.hidden = true;
+    }
+
+    $('#award-title').textContent = top.title;
+    const year = $('#award-year');
+    year.textContent = top.year || '';
+    year.hidden = !top.year;
+    const by = $('#award-by');
+    by.textContent = top.by || '';
+    by.hidden = !top.by;
+    $('#award-quote').textContent = top.quote || '';
+    $('.awards__quote').hidden = !top.quote;
+    link('#award-url', top.url);
+
+    const more = $('#award-list');
+    more.innerHTML = list
+      .slice(1)
+      .map((a) => `<li>${icon('i-trophy')}<span>${esc([a.title, a.year].filter(Boolean).join(' '))}${a.by ? ` · ${esc(a.by)}` : ''}</span></li>`)
+      .join('');
+    more.hidden = list.length < 2;
+  }
+
   /* ------------------------------------------------------------ menu */
-  const TAGS = { v: 'Vegetarian', vg: 'Vegan', gf: 'Gluten-free', df: 'Dairy-free' };
-
-  function euro(n, add) {
-    const v = Number(n);
-    if (n === '' || n == null || Number.isNaN(v)) return '';
-    return `${add ? '+' : ''}€${Number.isInteger(v) ? v : v.toFixed(2)}`;
-  }
-
-  function itemHTML(it) {
-    const price = euro(it.price, it.add);
-    const tags = (it.tags || [])
-      .filter((t) => TAGS[t])
-      .map((t) => `<abbr class="tag tag--${t}" title="${TAGS[t]}">${t.toUpperCase()}</abbr>`)
-      .join(' ');
-    return `<li class="item">
-      <div class="item__row">
-        <span class="item__name">${esc(it.name)}${it.new ? ' <span class="tag tag--new">New</span>' : ''}${tags ? ' ' + tags : ''}</span>
-        ${price ? `<span class="item__dots" aria-hidden="true"></span><span class="item__price">${price}</span>` : ''}
-      </div>
-      ${it.desc ? `<p class="item__desc">${esc(it.desc)}</p>` : ''}
-    </li>`;
-  }
-
-  function boardHead(sec) {
+  function boardHead(title, note, id) {
     return `<div class="board__head">
-      <h3 class="board__title" id="m-${esc(sec.id)}-title">${esc(sec.title)}</h3>
-      ${sec.note ? `<span class="board__note">${esc(sec.note)}</span>` : ''}
+      <h3 class="board__title" id="${id}">${esc(title)}</h3>
+      ${note ? `<span class="board__note">${esc(note)}</span>` : ''}
     </div>`;
   }
 
+  // Sem preços: os preços mudam com frequência, então o cardápio do site mostra só os pratos
+  const itemHTML = (it) => `<li class="item">
+      <p class="item__name">${esc(it.name)}</p>
+      ${it.desc ? `<p class="item__desc">${esc(it.desc)}</p>` : ''}
+    </li>`;
+
   function renderMenu() {
-    const secs = S.menu.filter((s) => s && Array.isArray(s.items) && s.items.length);
-    $('#menu-jump').innerHTML = secs
-      .map((s) => `<a href="#m-${esc(s.id)}"${s.seasonal ? ' class="is-seasonal"' : ''}>${s.seasonal && s.emoji ? esc(s.emoji) + ' ' : ''}${esc(s.title)}</a>`)
-      .join('');
-
-    $('#specials').innerHTML = secs
-      .filter((s) => s.seasonal)
-      .map((s) => {
-        const photos = (s.photos || []).filter((p) => p && p.img);
-        const leaves = s.emoji
-          ? [12, 48, 82].map((x, n) => `<span class="special__leaf" aria-hidden="true" style="left:${x}%;top:-10px;animation-delay:${n * -3}s">${esc(s.emoji)}</span>`).join('')
-          : '';
-        return `<article class="special" id="m-${esc(s.id)}" aria-labelledby="m-${esc(s.id)}-title">
-          ${leaves}
-          ${photos.length ? `<div class="special__photos">${photos.map((p) => `<img src="${esc(p.img)}" width="640" height="800" loading="lazy" decoding="async" alt="${esc(p.alt || '')}">`).join('')}</div>` : ''}
-          <div>
-            ${boardHead(s)}
-            <ul class="board__items" role="list">${s.items.map(itemHTML).join('')}</ul>
-          </div>
-        </article>`;
-      })
-      .join('');
-
-    $('#boards').innerHTML = secs
-      .filter((s) => !s.seasonal)
+    const boards = S.menu
+      .filter((s) => s && Array.isArray(s.items) && s.items.length)
       .map(
-        (s) => `<article class="board" id="m-${esc(s.id)}" aria-labelledby="m-${esc(s.id)}-title">
-          ${boardHead(s)}
+        (s, n) => `<article class="board" aria-labelledby="board-${n}">
+          ${boardHead(s.title, s.note, `board-${n}`)}
           <ul class="board__items" role="list">${s.items.map(itemHTML).join('')}</ul>
         </article>`
-      )
-      .join('');
+      );
+
+    // Os pratos da estação mudam sempre e ficam no Instagram
+    if (igUrl()) {
+      boards.push(`<article class="board board--seasonal" aria-labelledby="board-seasonal">
+        ${boardHead('Seasonal specials', 'New every season', 'board-seasonal')}
+        <p>Chef George brings out new dishes and drinks every season. See what’s on right now on our Instagram.</p>
+        <a class="btn btn--primary" href="${esc(igUrl())}" target="_blank" rel="noopener">${icon('i-ig', 'btn__icon')}<span>See this season’s specials</span></a>
+      </article>`);
+    }
+    $('#boards').innerHTML = boards.join('');
   }
 
   /* ------------------------------------------------------------ Instagram feed */
@@ -450,9 +493,11 @@
     $$('.post', grid).forEach(observe);
   }
 
+  // O Behold atualiza o feed uma vez por dia e conta cada leitura no limite do mês:
+  // cada visitante guarda o feed por 6 horas
   function fetchFeed(url) {
-    const cached = session.get('berry-feed');
-    if (cached && cached.url === url && Date.now() - cached.t < 30 * 60 * 1000) return Promise.resolve(cached.json);
+    const cached = store.get('berry-feed');
+    if (cached && cached.url === url && Date.now() - cached.t < 6 * 60 * 60 * 1000) return Promise.resolve(cached.json);
     const ctrl = 'AbortController' in window ? new AbortController() : null;
     const timer = ctrl && setTimeout(() => ctrl.abort(), 8000);
     return fetch(url, ctrl ? { signal: ctrl.signal } : {})
@@ -462,7 +507,7 @@
       })
       .then((json) => {
         clearTimeout(timer);
-        session.set('berry-feed', { url, t: Date.now(), json });
+        store.set('berry-feed', { url, t: Date.now(), json });
         return json;
       });
   }
@@ -473,8 +518,11 @@
     if (!S.instagram.feedUrl || !('fetch' in window)) return;
     fetchFeed(S.instagram.feedUrl)
       .then((json) => {
+        // No plano grátis vêm só os 6 posts mais novos: os posts salvos completam a grade
         const posts = normalizeFeed(json);
-        if (posts.length) renderFeed(posts);
+        const code = (u) => (String(u).match(/\/(?:p|reels?|tv)\/([^/?#]+)/) || [])[1] || u;
+        const have = new Set(posts.map((p) => code(p.url)));
+        if (posts.length) renderFeed(posts.concat(fallback.filter((p) => !have.has(code(p.url)))));
         if (json && json.followersCount) {
           const count = $('[data-ig-count]');
           count.textContent = `${Number(json.followersCount).toLocaleString('en-IE')} followers`;
@@ -496,7 +544,10 @@
         </figure>`
       )
       .join('');
-    if (!S.reviews.length) $('#reviews').hidden = true;
+    if (!S.reviews.length) {
+      $('.awards__subtitle').hidden = true;
+      $('#reviews-list').hidden = true;
+    }
   }
 
   /* ------------------------------------------------------------ map (loads only on request) */
@@ -526,6 +577,9 @@
       if (!Array.isArray(h)) return;
       (byHours[h.join('-')] = byHours[h.join('-')] || { days: [], h }).days.push(DAY_NAME[k]);
     });
+    const awards = S.awards
+      .filter((a) => a && a.title)
+      .map((a) => [a.title, a.year].filter(Boolean).join(' ') + (a.by ? `, ${a.by}` : ''));
     const data = {
       '@context': 'https://schema.org',
       '@type': 'CafeOrCoffeeShop',
@@ -535,7 +589,7 @@
       url: canonical,
       image: [abs('assets/img/og-image.jpg')].concat(S.window.slice(0, 3).map((w) => abs(w.img))),
       logo: abs('assets/img/apple-touch-icon.png'),
-      telephone: S.phone ? `+${digits(S.phone)}` : undefined,
+      telephone: intlPhone(S.phone) || undefined,
       email: S.email || undefined,
       address: {
         '@type': 'PostalAddress',
@@ -546,7 +600,6 @@
         addressCountry: 'IE',
       },
       servesCuisine: ['Irish', 'Breakfast', 'Brunch', 'Coffee'],
-      priceRange: '€',
       hasMenu: canonical.split('#')[0] + '#menu',
       openingHoursSpecification: Object.values(byHours).map((g) => ({
         '@type': 'OpeningHoursSpecification',
@@ -555,7 +608,7 @@
         closes: g.h[1],
       })),
       sameAs: [igUrl(), S.social.facebook, S.social.tripadvisor].filter(Boolean),
-      award: S.award && S.award.title ? `${S.award.title}, ${S.award.by}` : undefined,
+      award: awards.length ? awards : undefined,
     };
     const el = document.createElement('script');
     el.type = 'application/ld+json';
@@ -638,7 +691,7 @@
       },
       { rootMargin: '0px 0px -8% 0px' }
     );
-    $$('[data-reveal], .plate-card, .post, .board, .special').forEach(observe);
+    $$('[data-reveal], .plate-card, .post, .board').forEach(observe);
   }
 
   /* ------------------------------------------------------------ start */
@@ -652,7 +705,9 @@
   }, 60 * 1000);
   initSlides();
   renderTicker();
+  renderFeature();
   renderFavourites();
+  renderAwards();
   renderMenu();
   renderReviews();
   initReveal();

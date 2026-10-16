@@ -5,84 +5,113 @@ O site é em inglês, porque o público do café é irlandês. É HTML, CSS e Ja
 
 ## O pedido
 
-Pelo WhatsApp e pelos áudios de 13/10:
+**Primeira versão** (WhatsApp e áudios de 13/10):
 
 - O site atual (Hostinger Website Builder, em `shop.theberrycoffee.ie`) é básico e "não conversa" com o Instagram e o Facebook, que eles atualizam todo dia.
 - O Thiago quer o site com a cara das redes sociais: a história do café, a missão, os pratos e fotos dos pratos, tudo mais integrado.
 - Ele também pediu ajuda com o domínio e o e-mail (veja [Domínio e e-mail](#domínio-e-e-mail)).
 
+**Ajustes de 15/10.** O Thiago gostou do design e pediu para refinar alguns detalhes:
+
+| Pedido | Como ficou |
+| --- | --- |
+| Trocar o telefone, que era o pessoal dele | Agora é o do café, **085 737 2391**, em todos os botões e nos dados para o Google. O botão de WhatsApp saiu, porque usava o número pessoal |
+| Sem preços, porque eles mudam sempre | O cardápio não tem preços |
+| Cardápio só com os pratos do ano todo | Só os pratos fixos. Os da estação ficam no Instagram, e o quadro *Seasonal specials* leva para lá |
+| Mais do verde suave de dentro do café, com tons claros e naturais | Paleta nova: verde-sálvia, linho e verde-escuro, no lugar do azul-marinho |
+| Manter o logotipo original | O logo é o mesmo, vetorizado do arquivo deles |
+| Fotos reais do café, dos pratos e da equipe | Todas as fotos são do café, tiradas do Instagram e do site antigo |
+| Integrar o Instagram, com posts recentes | Grade com os 12 posts mais recentes. Com o Behold, os novos entram sozinhos (veja abaixo) |
+| Mais destaque para os pratos principais e os prêmios | Foto grande do brunch ao lado dos pratos e uma seção só para o prêmio de 2026, junto com as avaliações |
+| Área de Gift Vouchers | Seção nova, com botões para ligar, mandar e-mail ou mensagem no Instagram |
+| Navegação simples, principalmente no celular | Menu com 4 itens (*Menu*, *Our story*, *Gift vouchers*, *Visit us*) e barra fixa no celular com status, cardápio e rota |
+| Alguns textos são antigos | O Jorge vai mandar os textos novos (veja [Pendências](#pendências-com-o-thiago-e-o-jorge)) |
+
 ## O que tem no site
 
-- **Topo**: a vitrine da fachada (caixilho azul-marinho, janelinhas azul-claras, as espadas-de-são-jorge do parapeito), com fotos dos pratos se alternando. A plaquinha pendurada muda sozinha pelo horário da Irlanda: *Open*, *Last orders soon!* ou *Closed*. O selo do prêmio de 2026 fica no canto.
-- **Faixa azul** com os destaques (Irish breakfast, French toast, açaí, matcha…).
-- **Pratos em destaque** em pratos azuis canelados, como a louça do café.
-- **Cardápio** com preços, quadro de destaque da estação (hoje: outono) e selos GF/DF/V/VG.
-- **História e missão**: a missão usa as palavras deles no post do prêmio. Ao lado ficam o cartão do prêmio, o recorte do jornal *Independent* e os 3 valores do café.
-- **Instagram**: grade no estilo do perfil. Com o Behold configurado, os posts novos entram sozinhos (veja abaixo).
-- **Avaliações** (as mesmas do site antigo), com links para avaliar no Google e no Tripadvisor.
-- **Visite**: endereço com Eircode, horários da semana com o dia de hoje marcado, rota no Google Maps, telefone, WhatsApp e e-mail. O mapa do Google só carrega quando a pessoa toca no botão (privacidade/GDPR).
-- Barra fixa no celular com o status (aberto/fechado) e o botão de rota, prévia bonita do link no WhatsApp (`og-image.jpg`) e dados estruturados para o Google (horários, endereço, prêmio).
+- **Topo**: a vitrine da fachada, agora em verde-sálvia, com fotos dos pratos se alternando. A plaquinha pendurada muda sozinha pelo horário da Irlanda: *Open*, *Last orders soon!* ou *Closed*. O selo do prêmio fica no canto e leva até a seção do prêmio.
+- **Faixa verde** com os destaques (Irish breakfast, French toast, açaí, matcha, gift vouchers…).
+- **Pratos em destaque**: uma foto grande do brunch, com os dias e horários, e os 4 pratos principais em pratos canelados claros.
+- **Prêmio e avaliações**: o *Exceptional Customer Service Award 2026*, com a foto do Thiago e a frase deles no post do prêmio. Embaixo ficam as avaliações de clientes, com links para avaliar no Google e no Tripadvisor.
+- **Cardápio** do ano todo, sem preços, mais o quadro *Seasonal specials*, que leva para o Instagram.
+- **História e missão**: a missão usa as palavras deles no post do prêmio. Embaixo ficam o recorte do jornal *Independent* e os 3 valores do café.
+- **Gift Vouchers**: um cartão-presente desenhado com o logo e botões para ligar, mandar e-mail ou mensagem no Instagram.
+- **Instagram**: grade no estilo do perfil. Com o Behold configurado, os posts novos entram sozinhos.
+- **Visite**: endereço com Eircode, horários da semana com o dia de hoje marcado, rota no Google Maps, telefone, e-mail e mensagem no Instagram. O mapa do Google só carrega quando a pessoa toca no botão (privacidade/GDPR).
+- Barra fixa no celular com o status (aberto/fechado), o cardápio e a rota.
+- Prévia bonita do link no WhatsApp (`og-image.jpg`) e dados estruturados para o Google (horários, endereço, telefone, prêmio).
 - Fontes hospedadas no próprio site (não chamam o Google Fonts) e animações desligadas para quem ativou "reduzir movimento".
 
 ## De onde veio o conteúdo
 
 - **Bio do Instagram** (@theberrycoffee): *"All Day Irish Breakfast & Brunch / French Toast • Pancakes / Vegetarian • Vegan • Gluten-Free • Açaí • Matcha – WED to MOND 9AM – 4PM"*.
-- **Pôster "Our New Autumn Menu"** (post de outubro/2026): preços de cafés, bolos, bebidas geladas e smoothies.
 - **Posts de setembro e outubro de 2026**:
   - o prêmio *Exceptional Customer Service Award 2026* da Arklow & District Chamber of Commerce;
-  - o Chef George apresentando o *Irish Beef & Potato Boxty*;
-  - o chocolate quente com marshmallow tostado.
-- **Site antigo**: endereço, telefone, e-mail, as duas avaliações e as fotos da fachada, dos pratos e da equipe.
+  - a volta do *Berry Brunch*: "From a classic Full Irish to fluffy pancakes… Come hungry, leave happy!";
+  - o Chef George no cardápio de outono e o chocolate quente com marshmallow tostado.
+- **Site antigo**: endereço, e-mail, as duas avaliações e as fotos da fachada, dos pratos e da equipe.
 - **Matéria do jornal** (print postado por eles): a citação do quadro *In the paper*.
+- **Thiago, em 15/10**: o telefone do café e os ajustes da tabela acima.
 
 As fotos estão em `assets/img/`, em WebP, já no tamanho certo para a web.
 
-## Antes de mostrar ao Thiago — confirmar com ele
+## Pendências com o Thiago e o Jorge
 
-- [ ] **Horário**: a bio do Instagram diz quarta a segunda, das 9h às 16h, fechado na terça. O site antigo dizia 8h–16h, e uma listagem antiga dizia domingo 10h–16h.
-- [ ] **Preços da comida** (café da manhã, brunch e almoço): não estavam no pôster, então hoje aparecem sem preço. Peça uma foto do cardápio.
-- [ ] **Pratos e descrições** (French toast, pancakes, açaí bowl, toasties): escritos a partir das fotos e da bio.
-- [ ] **História** (`index.html`, seção *Our story*):
-  - o café abriu em 2024?
-  - "o Chef George na cozinha, o Thiago e a equipe no balcão";
-  - "trouxemos um pouco do sol do Brasil".
-- [ ] **Nomes** na foto da equipe ("Thiago & Chef George") e na assinatura.
+- [ ] **Textos novos do Jorge.** O Thiago avisou que alguns textos são antigos e que o Jorge vai mandar os detalhes. Os que mais precisam da revisão dele:
+  - a história (`index.html`, seção *Our story*) e os 3 valores embaixo dela;
+  - os pratos do ano todo e as descrições (`favourites` e `menu` em `content.js`). Hoje são: Full Irish, French toast, pancakes, ovos no sourdough, açaí, toasties, pratos do chef, bolos, scones e banana bread.
+- [ ] **Outros prêmios**: só achei o de 2026. Se houver outros, entram em `awards` (veja [Como editar](#como-editar)).
+- [ ] **Gift Vouchers**: hoje o site diz que o voucher se compra no café, por telefone, e-mail ou Instagram. Se houver valores fixos ou um link de compra online, é só incluir.
+- [ ] **WhatsApp**: o botão saiu porque era o número pessoal. Se o 085 737 2391 tiver WhatsApp, preencha `whatsapp` no `content.js` e o botão volta.
+- [ ] **Instagram automático**: o Thiago precisa conectar o Instagram do café no Behold uma vez (veja abaixo).
+- [ ] **Fotos novas** (opcional): se eles tiverem fotos melhores do salão, da equipe ou dos pratos, é só trocar os arquivos.
 - [ ] **Jornal**: a citação é do *Irish Independent*? Um cliente no Tripadvisor cita "the Independent".
-- [ ] **"Stop 7 on the Arklow Pottery Trail"**: tirado do prato decorativo que aparece na parede do café.
 - [ ] **Facebook**: o site antigo apontava para `facebook.com/417483234775001`. Usei a página *The Berry Coffee | Arklow*, de 1.488 seguidores (`facebook.com/p/The-Berry-Coffee-61563827972137`).
-- [ ] **Fotos**: o ok para usar no site as fotos e as capas dos vídeos do Instagram, que são deles.
 
 ## Como editar
 
 | O quê | Onde |
 | --- | --- |
-| Telefone, WhatsApp, e-mail, endereço, redes | `assets/js/content.js`, seção 1 |
+| Telefone, WhatsApp, e-mail, endereço, redes | `assets/js/content.js`, seção 1. O botão de ligar e o Google usam o mesmo `phone` |
 | Horários, feriados e faixa de aviso no topo | `hours`, `specialDays` e `notice` em `content.js` |
+| Prêmios | `awards` em `content.js`. O primeiro da lista é o destaque |
+| Link de compra do Gift Voucher | `vouchers.buyUrl` em `content.js` |
 | Fotos da vitrine (topo) | `window` em `content.js` (fotos 4:5, em pé) |
+| Foto grande ao lado dos pratos | `feature` em `content.js` |
 | Pratos em destaque | `favourites` em `content.js` (fotos quadradas, aparecem redondas) |
-| Cardápio e preços | `menu` em `content.js` |
-| Quadro da estação | seção do `menu` com `seasonal: true` e o `emoji` que cai (🍂 ❄️ 🌸 ☀️) |
+| Cardápio do ano todo | `menu` em `content.js` |
 | Avaliações | `reviews` em `content.js` |
 | Posts do Instagram (sem Behold) | `instagram.posts` em `content.js` e as imagens em `assets/img/feed/` |
-| Títulos, história e missão | `index.html` |
+| Títulos, história, missão e textos dos vouchers | `index.html` |
+| Selo redondo do prêmio na vitrine | `index.html`, procure por `award-badge` |
 | Cores e fontes | topo de `assets/css/styles.css` |
 
 Exemplos:
 
 - **Feriado de Natal**: em `specialDays`, coloque `'2026-12-25': 'closed'`. Em `notice`, escreva `'Closed 25–26 December. Happy Christmas from all of us!'`.
+- **Novo prêmio**: em `awards`, copie o bloco `{ ... }` do prêmio de 2026 e troque os textos. O mais importante fica em primeiro.
+- **Venda de vouchers online**: cole o link em `vouchers.buyUrl` e aparece o botão *Buy a voucher online*.
 - **Testar o status** em qualquer dia e hora (hora da Irlanda): abra `index.html?now=2026-10-20T10:00`.
 
 Se a página ficar em branco depois de uma edição, quase sempre falta uma vírgula ou aspa no `content.js`. O site mostra um aviso vermelho no topo quando isso acontece.
 
 ## Instagram automático (Behold)
 
-Hoje a grade mostra os 12 últimos posts, salvos em `assets/img/feed/`. Para os posts novos entrarem sozinhos:
+Hoje a grade mostra os 12 posts mais recentes até 15/10, salvos em `assets/img/feed/`. Para os posts novos entrarem sozinhos:
 
-1. Crie uma conta grátis em <https://behold.so> e conecte o Instagram do café. A conta precisa ser profissional (Business ou Creator), o que é comum para negócios.
-2. Crie um feed do tipo **JSON** e copie o endereço (algo como `https://feeds.behold.so/…`).
-3. Cole esse endereço em `content.js`, no campo `instagram.feedUrl`.
+1. O Instagram do café precisa ser uma conta profissional (Business ou Creator). Se ainda não for, a troca é grátis e dá para desfazer, no próprio app do Instagram.
+2. Crie uma conta grátis em <https://behold.so> e conecte o Instagram do café. O Thiago precisa fazer o login no Instagram nessa hora.
+3. Crie um feed do tipo **JSON** e copie o endereço (algo como `https://feeds.behold.so/…`).
+4. Cole esse endereço em `content.js`, no campo `instagram.feedUrl`.
 
-No plano grátis o Behold atualiza o feed uma vez por dia. Se o feed falhar, o site volta para os posts salvos. Com o Behold, o número de seguidores também aparece ao lado do @.
+O plano grátis do Behold tem 1 feed com até 6 posts, atualizado uma vez por dia, e 1.200 leituras por mês.
+
+- O site mostra os 6 posts mais novos do Behold e completa a grade com os posts salvos.
+- Cada visitante guarda o feed por 6 horas, para gastar menos leituras.
+- Se o feed falhar ou passar do limite do mês, o site volta para os posts salvos.
+- Com o Behold, o número de seguidores também aparece ao lado do @.
+
+Conectado pelo login do Instagram, o Behold pede para reautorizar a conta a cada 3 meses. Conectado por um *Business Portfolio* do Facebook (com a página do Facebook ligada ao Instagram), não precisa.
 
 ## Ver no computador
 
@@ -153,8 +182,8 @@ berry-coffee/
 ├── robots.txt, sitemap.xml
 ├── _headers                cabeçalhos do Cloudflare (prévia .workers.dev fora do Google, cache das fontes)
 ├── assets/css/styles.css   visual (cores e fontes no topo do arquivo)
-├── assets/js/content.js    contato, horários, cardápio, fotos, avaliações, Instagram
-├── assets/js/app.js        comportamento (status aberto/fechado, vitrine, cardápio, feed, mapa)
+├── assets/js/content.js    contato, horários, prêmios, vouchers, cardápio, fotos, avaliações, Instagram
+├── assets/js/app.js        comportamento (status aberto/fechado, vitrine, prêmios, cardápio, feed, mapa)
 ├── assets/fonts/           Gloock, Nunito e Caveat (licença OFL, do Google Fonts)
 └── assets/img/             logo vetorizado, fotos (photos/, plates/, feed/), favicon e prévia do link
 ```
