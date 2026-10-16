@@ -86,6 +86,24 @@ Depois ele pediu: **"tem que abrir já com o vídeo rodando"**. Feito:
 4. Se mesmo assim o aparelho bloquear (navegador de alguns apps no Android), o vídeo começa no primeiro toque na tela.
 5. Os endereços dos vídeos e dos pôsteres foram para `?v=4`, para nenhum celular usar uma cópia velha guardada.
 
+### Quinta rodada (16/10, à tarde): vídeo mais claro e outros serviços
+
+Com o vídeo rodando no celular dele, o Gabriel pediu:
+
+1. **"Os vídeos estão muito escuros, consegue deixar mais claro?"** A cor do vídeo ficou clara e natural, mais perto das
+   fotos dele, e a camada escura por cima ficou bem mais leve; ela só escurece um pouco atrás do texto, e o texto ganhou
+   uma sombra curta para continuar lendo bem. O topo ficou cerca de 65% mais claro. Nas páginas de serviço, que usam
+   as fotos dele (claras, de paredes brancas), a camada continua como era, para o texto não sumir. Vídeos em `?v=5`.
+   Ele disse "como nessa foto aqui", mas a foto não veio na conversa exportada.
+2. **Uma aba "outros serviços"** (áudios 173 a 175): a empresa dele é a Black Rock Remodeling, e em vez de um segundo
+   site ele quer, neste, uma aba com pintura, cozinha, banheiro etc. Feito: o item **Other services** no menu de cima, no
+   menu do celular e no rodapé, um link no fim da seção de serviços da home e a página `other-services/`, com os três
+   serviços (Kitchen remodeling, Bathroom remodeling, Painting), um cartão "Something else?", o passo a passo e os
+   serviços de piso. O formulário ganhou as três opções. Fotos: as dele (o banheiro de Snohomish no topo e a cozinha
+   da foto do Tile), sem banco de imagens. Os textos foram escritos por nós: ver a lista abaixo.
+
+Ele também propôs pagar $300 pelo site com essa aba (antes, "2 sites por $300"); o Lucas respondeu "Pode ser claro!".
+
 ## O que tem no site
 
 **Página inicial** (`index.html`):
@@ -108,12 +126,18 @@ Depois ele pediu: **"tem que abrir já com o vídeo rodando"**. Feito:
 (com um cartão de orçamento grátis ao lado), "Good to know", o passo a passo, os projetos, perguntas próprias e o formulário
 com o serviço já marcado.
 
+**Other services** (`other-services/`): a "aba" de reformas da Black Rock Remodeling que o Gabriel pediu. Topo com a foto
+do banheiro de Snohomish, a apresentação ("One company for the rest of the house", com a foto da cozinha), os cartões de
+Kitchen remodeling, Bathroom remodeling e Painting, um cartão "Something else?", o passo a passo próprio, os 6 serviços de
+piso e o formulário.
+
 **Também:** página 404, prévia bonita do link no WhatsApp (`assets/img/og-image.jpg`), dados estruturados para o Google
 (empresa, horários, área atendida, serviços, FAQ e trilha de navegação), `sitemap.xml` e `robots.txt` gerados na publicação.
-As animações e o vídeo desligam sozinhos para quem ativou "reduzir movimento".
+Para quem ativou "reduzir movimento", as animações de entrada desligam; o vídeo e as faixas continuam (pedido do cliente),
+com os botões de pausa.
 
-**Testes (16/10, depois da terceira rodada):** Lighthouse no computador 100 em desempenho, acessibilidade, boas práticas
-e SEO; no celular, 93–94 em desempenho na home e 94 nas páginas de serviço, 100 nos outros três. Zero problemas no teste de
+**Testes (16/10, depois da quinta rodada):** Lighthouse no computador 100 em desempenho, acessibilidade, boas práticas
+e SEO; no celular, 93 em desempenho na home e na página Other services, 100 nos outros três. Zero problemas no teste de
 acessibilidade (axe) em todas as páginas.
 
 Identidade: logo vetorizado a partir do PNG que o Gabriel mandou. Preto **#0E0E0D**, osso **#EBE7E0** e o vermelho do "R"
@@ -130,7 +154,8 @@ maiúsculas espaçadas, ecoa o "F L O O R S" do logo).
 - [x] **Fotos dos serviços**: fotos reais dele (16/10).
 - [ ] **Formulário direto no e-mail**: ele quer receber os pedidos no e-mail. Falta escolher o serviço de envio (veja [O formulário](#o-formulário)).
 - [ ] **Vídeo do topo**: montado com 3 clipes gratuitos de piso, do Coverr e do Mixkit (veja [O vídeo do topo](#o-vídeo-do-topo)). Dá para trocar por filmagens dos pisos que ele instalou ou por um vídeo gerado por IA (prompts prontos em `tools/PROMPTS.md`).
-- [ ] **Nome da empresa**: o logo e a camisa dizem *Black Rock Floors*; o site antigo e o e-mail dizem *Black Rock Remodeling LLC*. Hoje o site usa "Black Rock Floors" em tudo. Confirmar o nome e se quer o nome da LLC no rodapé.
+- [ ] **Nome da empresa**: o logo e a camisa dizem *Black Rock Floors*; o site antigo e o e-mail dizem *Black Rock Remodeling LLC*. Ele contou (16/10) que a empresa é a Black Rock Remodeling e que a de pisos veio depois; a página Other services diz que a Black Rock Floors é a parte de pisos da Black Rock Remodeling LLC. Confirmar se quer o nome da LLC também no rodapé.
+- [ ] **Página Other services**: os textos foram escritos por nós a partir do que ele disse ("pintura, cozinha, banheiro, etc."). Confirmar o que ele faz em cada um (armários e bancadas na cozinha? pintura só interna ou externa também?) e se falta algum serviço. Pedir **fotos de reformas dele** (cozinha, banheiro, pintura): hoje a página usa a foto do banheiro de Snohomish e a da cozinha que ele mandou como Tile, e os cartões dos serviços não têm foto.
 - [ ] **Número de registro na L&I**: em Washington, a lei (RCW 18.27.100) pede o número de registro de empreiteiro na propaganda que mostra o nome da empresa, e o site conta como propaganda (vale confirmar com a L&I). Pedir o número e colocar no rodapé; também passa confiança.
 - [ ] **E-mail** `br.remodelingwa@gmail.com`: confirmar que continua sendo o dele.
 - [ ] **Respostas do FAQ** e **textos das páginas de serviço** (o que está incluído, prazos, mover móveis, tipos de acabamento): escritos por nós com base nas práticas comuns do mercado. Pedir para ele ler.
@@ -148,7 +173,9 @@ O conteúdo fica direto no HTML (é o que o Google lê). Cada seção do `index.
 | Avaliações do Google | `index.html`, seção 3: cada `<article class="review">` é uma avaliação |
 | Fundador e números | `index.html`, seção 2 |
 | Projetos (foto e cidade) | `index.html`, seção 5: cada `<button class="project">`. Fotos em `assets/img/projects/` (720 × 900, WebP). Para mostrar também o tipo de serviço, ponha `<span class="project-service">Hardwood</span>` antes do nome da cidade |
-| Textos dos serviços | `index.html`, seção 4, e a página de cada serviço (`hardwood-floor-installation/index.html` etc.) |
+| Textos dos serviços | `index.html`, seção 4, e o `tools/service-pages.py` (lista `SERVICES`), que gera a página de cada serviço |
+| Página Other services | `tools/service-pages.py` (lista `OTHER` e a função `other_page`). Fotos em `assets/img/other/` |
+| Menu, formulário, rodapé | No `index.html`; depois rode `python3 tools/service-pages.py` para as 7 outras páginas acompanharem (a `404.html` é à parte) |
 | FAQ | `index.html`, seção 8, e também o bloco `FAQPage` no `<head>` (o Google lê esse) |
 | Telefone, e-mail | Estão em todas as páginas: use "buscar e substituir" na pasta inteira (`4255434667`, `543-4667`, `br.remodelingwa@gmail.com`) e em `assets/js/app.js` (`PHONE`, `EMAIL`) |
 | Horário | Texto nas páginas e `HOURS` no topo do `assets/js/app.js` (é ele que calcula o "Open now") |
@@ -157,7 +184,7 @@ O conteúdo fica direto no HTML (é o que o Google lê). Cada seção do `index.
 
 Todas as fotos estão em WebP, já no tamanho certo. Ao trocar uma foto, mantenha o mesmo formato (4:5 para projetos e serviços).
 **Trocou uma foto ou o vídeo mantendo o mesmo nome de arquivo?** Aumente o número do `?v=` no endereço dela (no `index.html`
-e no gerador das páginas de serviço; hoje as fotos de serviço, os vídeos e os pôsteres estão em `?v=4`): o
+e no `tools/service-pages.py`; hoje as fotos de serviço estão em `?v=4`, os vídeos e os pôsteres em `?v=5`): o
 navegador guarda fotos e vídeos por uma semana, e sem isso quem já visitou o site continua vendo a versão antiga.
 
 ## O formulário
@@ -180,9 +207,11 @@ Com o serviço escolhido, é trocar o envio no `assets/js/app.js` (o trecho do f
 
 Os arquivos em `assets/video/` saem do script `tools/make-hero-video.sh` (precisa de `ffmpeg`):
 
-- 3 clipes só de piso, com a mesma cor (menos saturação, tom quente e os brancos mais baixos para o texto ler bem),
-  emendados com fusão e com um escurecimento rápido perto do fim, onde o loop volta para a primeira cena (14,6 s no
-  total). O arquivo começa já com o piso na tela, no mesmo quadro do pôster;
+- 3 clipes só de piso, emendados com fusão e com um escurecimento rápido perto do fim, onde o loop volta para a primeira
+  cena (14,6 s no total). O arquivo começa já com o piso na tela, no mesmo quadro do pôster;
+- a mesma cor nos três: clara e natural, como as fotos do Gabriel (ele achou a primeira versão escura), com um tom quente
+  e os brancos só um pouco mais baixos para a janela não estourar. A leitura do texto fica por conta da camada leve por
+  cima (mais escura só atrás do texto) e da sombra do texto, no `assets/css/styles.css`;
 - três versões: `hero-1080` (computador), `hero-720` (telas médias) e `hero-tall` (celular em pé), cada uma em **MP4**
   (toca em tudo, inclusive iPhone) e em **WebM** (para navegadores sem H.264). O site escolhe sozinho.
 
@@ -267,15 +296,17 @@ cd /tmp/brf && npx wrangler@4 dev --ip 0.0.0.0 --port 8787
 black-rock-floors/
 ├── index.html                       página inicial
 ├── <serviço>/index.html             6 páginas de serviço
+├── other-services/index.html        cozinha, banheiro e pintura (a "aba" de outros serviços)
 ├── 404.html                         página "não encontrada"
 ├── _headers                         cabeçalhos do Cloudflare (noindex na prévia, cache)
 ├── worker.js                        Worker que entrega os vídeos por pedaço (para o iPhone tocar)
 ├── assets/css/styles.css            visual (cores e fonte no topo)
 ├── assets/js/app.js                 comportamento (vídeo, faixas, menu, mapa, formulário)
 ├── assets/fonts/                    fontes (Archivo e Cormorant Garamond)
-├── assets/img/                      logo (SVG), favicon, og-image, fotos de serviços e projetos, tábuas
+├── assets/img/                      logo (SVG), favicon, og-image, fotos de serviços, projetos e outros serviços, tábuas
 ├── assets/video/                    vídeo do topo (MP4 e WebM) e o primeiro quadro
 ├── tools/make-hero-video.sh         monta o vídeo do topo a partir dos clipes
+├── tools/service-pages.py           gera as páginas de serviço e a Other services a partir do index.html
 └── tools/PROMPTS.md                 prompts para gerar clipes de piso por IA
 ```
 

@@ -21,8 +21,9 @@ cd "$(dirname "$0")/.."
 OUT=assets/video
 XF=0.6     # fusão entre um clipe e o próximo
 EDGE=0.4   # escurece na volta do loop, para não dar pulo (no arquivo final, isso fica perto do fim; veja rotate)
-# Cor: menos saturação, um tom quente e os brancos (janela, sol no piso) mais baixos, para o texto do topo ler bem
-GRADE="eq=saturation=0.66:contrast=1.05:gamma=0.96,colorbalance=rs=-0.01:bs=0.02:rh=0.04:bh=-0.04,curves=master='0/0 0.5/0.47 0.8/0.66 1/0.8'"
+# Cor: clara e natural, como as fotos do Gabriel (ele achou a primeira versão escura demais), com um tom quente e
+# os brancos (janela, sol no piso) só um pouco mais baixos, para não estourar
+GRADE="eq=saturation=0.84:contrast=1.03:gamma=1.04,colorbalance=rs=-0.01:bs=0.02:rh=0.03:bh=-0.03,curves=master='0/0 0.5/0.53 0.8/0.81 1/0.93'"
 
 CLIPS=(
   "light|https://cdn.coverr.co/videos/coverr-a-shadow-on-a-wooden-floor-2090/1080p.mp4|2.0|4.5|0.50|1240:698:340:0"

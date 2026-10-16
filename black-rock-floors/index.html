@@ -22,8 +22,8 @@
 
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
-  <link rel="preload" href="assets/video/hero-poster.webp?v=4" as="image" media="(min-aspect-ratio: 4/5)" fetchpriority="high">
-  <link rel="preload" href="assets/video/hero-poster-tall.webp?v=4" as="image" media="(max-aspect-ratio: 4/5)" fetchpriority="high">
+  <link rel="preload" href="assets/video/hero-poster.webp?v=5" as="image" media="(min-aspect-ratio: 4/5)" fetchpriority="high">
+  <link rel="preload" href="assets/video/hero-poster-tall.webp?v=5" as="image" media="(max-aspect-ratio: 4/5)" fetchpriority="high">
   <link rel="preload" href="assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/cormorant-500.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/cormorant-italic-450.woff2" as="font" type="font/woff2" crossorigin>
@@ -38,7 +38,7 @@
         "@type": "HomeAndConstructionBusiness",
         "@id": "#business",
         "name": "Black Rock Floors",
-        "description": "Flooring contractor in King and Snohomish County, Washington: hardwood, luxury vinyl plank, laminate and tile installation, hardwood refinishing and stair treads.",
+        "description": "Flooring contractor in King and Snohomish County, Washington: hardwood, luxury vinyl plank, laminate and tile installation, hardwood refinishing and stair treads, plus kitchen and bathroom remodeling and painting.",
         "url": "./",
         "logo": "assets/img/logo-ink.svg",
         "image": "assets/img/og-image.jpg",
@@ -58,14 +58,17 @@
         ],
         "hasOfferCatalog": {
           "@type": "OfferCatalog",
-          "name": "Flooring services",
+          "name": "Services",
           "itemListElement": [
             { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Hardwood floor installation", "url": "hardwood-floor-installation/" } },
             { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Luxury vinyl plank installation", "url": "luxury-vinyl-plank/" } },
             { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Laminate flooring installation", "url": "laminate-flooring/" } },
             { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Tile installation", "url": "tile-installation/" } },
             { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Hardwood floor refinishing", "url": "hardwood-floor-refinishing/" } },
-            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Stair treads and risers", "url": "stair-treads/" } }
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Stair treads and risers", "url": "stair-treads/" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Kitchen remodeling", "url": "other-services/" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Bathroom remodeling", "url": "other-services/" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Painting", "url": "other-services/" } }
           ]
         }
       },
@@ -139,6 +142,7 @@
         <a href="#about">About</a>
         <a href="#reviews">Reviews</a>
         <a href="#services">Services</a>
+        <a href="other-services/">Other services</a>
         <a href="#work">Work</a>
         <a href="#area">Service area</a>
         <a href="#faq">FAQ</a>
@@ -159,10 +163,11 @@
       <a href="#about"><span>01</span>About</a>
       <a href="#reviews"><span>02</span>Reviews</a>
       <a href="#services"><span>03</span>Services</a>
-      <a href="#work"><span>04</span>Recent work</a>
-      <a href="#area"><span>05</span>Service area</a>
-      <a href="#faq"><span>06</span>FAQ</a>
-      <a href="#contact"><span>07</span>Contact</a>
+      <a href="other-services/"><span>04</span>Other services</a>
+      <a href="#work"><span>05</span>Recent work</a>
+      <a href="#area"><span>06</span>Service area</a>
+      <a href="#faq"><span>07</span>FAQ</a>
+      <a href="#contact"><span>08</span>Contact</a>
     </nav>
     <div class="menu-foot">
       <a class="btn btn--red" href="#contact">Get a free estimate</a>
@@ -178,15 +183,15 @@
       <div class="hero-panel">
         <div class="hero-media">
           <picture>
-            <source media="(max-aspect-ratio: 4/5)" srcset="assets/video/hero-poster-tall.webp?v=4" width="720" height="1280">
-            <img class="hero-poster" src="assets/video/hero-poster.webp?v=4" width="1600" height="900" alt="" fetchpriority="high">
+            <source media="(max-aspect-ratio: 4/5)" srcset="assets/video/hero-poster-tall.webp?v=5" width="720" height="1280">
+            <img class="hero-poster" src="assets/video/hero-poster.webp?v=5" width="1600" height="900" alt="" fetchpriority="high">
           </picture>
           <!-- Os arquivos vêm do tools/make-hero-video.sh: deitado (computador), médio e em pé (celular).
                O primeiro quadro de cada vídeo é o pôster, então a troca do pôster pelo vídeo não aparece. -->
           <video class="hero-video" muted playsinline loop preload="none" aria-hidden="true" tabindex="-1"
-                 data-src-wide="assets/video/hero-1080.mp4?v=4"
-                 data-src-mid="assets/video/hero-720.mp4?v=4"
-                 data-src-tall="assets/video/hero-tall.mp4?v=4"></video>
+                 data-src-wide="assets/video/hero-1080.mp4?v=5"
+                 data-src-mid="assets/video/hero-720.mp4?v=5"
+                 data-src-tall="assets/video/hero-tall.mp4?v=5"></video>
           <script>
             // O vídeo começa junto com a página, sem esperar o resto carregar (o assets/js/app.js cuida do resto)
             (function (v) {
@@ -464,6 +469,13 @@
             <p class="svc-stage-cap"><span data-stage-num>01</span><span data-stage-name>Hardwood</span></p>
           </div>
         </div>
+
+        <!-- A "aba" que o Gabriel pediu: reformas da Black Rock Remodeling, numa página só -->
+        <a class="svc-other" href="other-services/">
+          <span class="svc-other-label">Beyond floors</span>
+          <span class="svc-other-title">Kitchens, bathrooms <em>&amp; painting.</em></span>
+          <span class="link-arrow">Other services<svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></span>
+        </a>
       </div>
     </section>
 
@@ -688,6 +700,9 @@
                   <option>Tile</option>
                   <option>Hardwood refinishing</option>
                   <option>Stair treads</option>
+                  <option>Kitchen remodeling</option>
+                  <option>Bathroom remodeling</option>
+                  <option>Painting</option>
                   <option>Not sure yet</option>
                 </select>
               </div>
@@ -724,7 +739,7 @@
     <div class="wrap footer-grid">
       <div class="footer-brand">
         <img src="assets/img/logo-white.svg" width="1087" height="518" alt="Black Rock Floors" loading="lazy">
-        <p><strong>Black Rock Floors</strong>: flooring specialists serving King &amp; Snohomish County, Washington. Hardwood, luxury vinyl plank, laminate, tile, hardwood refinishing and stair treads.</p>
+        <p><strong>Black Rock Floors</strong>: flooring specialists serving King &amp; Snohomish County, Washington. Hardwood, luxury vinyl plank, laminate, tile, hardwood refinishing and stair treads, plus kitchens, bathrooms and painting.</p>
       </div>
       <nav class="footer-col" aria-label="Footer">
         <h3>Navigation</h3>
@@ -746,6 +761,7 @@
           <li><a href="tile-installation/">Tile</a></li>
           <li><a href="hardwood-floor-refinishing/">Hardwood Refinishing</a></li>
           <li><a href="stair-treads/">Stair Treads</a></li>
+          <li><a href="other-services/">Other services</a></li>
         </ul>
       </div>
       <div class="footer-col">
