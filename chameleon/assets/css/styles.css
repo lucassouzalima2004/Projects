@@ -1709,6 +1709,21 @@ html.js .g-item.is-in { opacity: 1; transform: none; }
   .g-cap .g-cat { display: none; }
 }
 
+/* Tablets (toque, sem mouse): a foto de cada serviço fica ao lado do texto */
+@media (min-width: 701px) and (hover: none), (min-width: 701px) and (pointer: coarse) {
+  .svc { grid-template-columns: clamp(48px, 7vw, 110px) 1fr clamp(200px, 30vw, 340px); }
+  .svc-arrow { display: none; }
+  .svc-thumb {
+    display: block;
+    grid-column: 3;
+    grid-row: 1;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 14px;
+  }
+}
+
 /* Quem pediu menos movimento no aparelho vê tudo parado e visível */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

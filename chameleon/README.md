@@ -35,7 +35,7 @@ um neon de verdade: *MAKE YOUR BRAND* e, embaixo, *impossible to miss* escrito c
 2. **Marcas passando**: Tooleys, MASQ, Erlis Group, Evri, Ryde, FedEx… A velocidade acompanha a rolagem e inverte quando a pessoa sobe.
 3. **Manifesto** ("Why Chameleon"): as palavras acendem conforme a rolagem, com fotos pequenas no meio do texto; embaixo, 3 diferenciais.
 4. **Serviços** (6): iluminados, neon de LED, fachadas, envelopamento, paredes e interiores, grande formato. No computador, a foto
-   segue o mouse e a linha acende na cor do serviço; no celular, a foto aparece em cada serviço.
+   segue o mouse e a linha acende na cor do serviço; no celular e no tablet, a foto aparece em cada serviço.
 5. **Trabalhos em destaque** (8 projetos): no computador, a página "anda de lado" enquanto a pessoa rola, com a cor mudando a cada
    cartão; no celular, os cartões passam com o dedo. No fim, o cartão *your sign could be next*.
 6. **Flip the switch**: um interruptor que liga e desliga o neon "good vibes only" (ele acende sozinho quando a seção aparece).
@@ -52,10 +52,10 @@ um neon de verdade: *MAKE YOUR BRAND* e, embaixo, *impossible to miss* escrito c
 Quem ativou "reduzir movimento" no aparelho vê a página parada (sem vídeo, sem rolagem suave); com o modo economia de dados, o
 vídeo não carrega e fica a imagem de capa.
 
-**Testes (16/10):** Lighthouse no computador 95 em desempenho e no celular 88, acessibilidade 96, boas práticas 100 e SEO 100
+**Testes (16/10):** Lighthouse no computador 98 em desempenho e no celular 88 a 90, acessibilidade 96, boas práticas 100 e SEO 100
 (o que tira os pontos de acessibilidade são as palavras ainda apagadas do manifesto antes de rolar, de propósito). Zero problemas
 no teste de acessibilidade (axe), no computador e no celular. Formulário, filtros, foto grande, menu do celular e interruptor
-testados no Chromium.
+testados no Chromium, em celular (390 px), tablet (820 px) e notebooks de 1024, 1280 e 1440 px.
 
 Identidade: preto **#09090B**, osso **#F2EEE6**, papel **#EBE6DC** e a cor do neon, que muda. Fontes, dentro de `assets/fonts/`:
 **Big Shoulders Display** nos títulos (nasceu da sinalização de Chicago), **Sacramento** no neon (traço contínuo, como o tubo),
