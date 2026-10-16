@@ -16,7 +16,7 @@
     },
     "related": {
       "type": "related-products",
-      "settings": { "eyebrow": "Combina com você", "heading": "Você também vai <em>amar</em>", "limit": 4, "background": "paper" }
+      "settings": { "eyebrow": "", "heading": "Você também vai <em>amar</em>", "limit": 4, "background": "paper" }
     },
     "trust": {
       "type": "trust-bar",

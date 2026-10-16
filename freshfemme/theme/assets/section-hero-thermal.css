@@ -81,33 +81,6 @@
 .thermal--fallback .hero-thermal__fallback { display: block; }
 .thermal--fallback .hero-thermal__canvas { display: none; }
 
-/* visor da câmera */
-.hero-hud {
-  position: absolute;
-  left: 50%;
-  top: calc(var(--header-h) + 12px);
-  height: calc(64svh - 24px);
-  width: min(92vw, 560px);
-  transform: translateX(-50%);
-  pointer-events: none;
-  font-size: 0.66rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  color: rgb(255 255 255 / 0.7);
-}
-.hero-hud__corner { position: absolute; width: 26px; height: 26px; border: 1.5px solid rgb(255 255 255 / 0.55); }
-.hero-hud__corner--tl { top: 0; left: 0; border-right: 0; border-bottom: 0; }
-.hero-hud__corner--tr { top: 0; right: 0; border-left: 0; border-bottom: 0; }
-.hero-hud__corner--bl { bottom: 0; left: 0; border-right: 0; border-top: 0; }
-.hero-hud__corner--br { bottom: 0; right: 0; border-left: 0; border-top: 0; }
-.hero-hud__rec { position: absolute; top: 10px; left: 38px; display: inline-flex; align-items: center; gap: 8px; }
-.hero-hud__rec i { width: 7px; height: 7px; border-radius: 50%; background: #ff3b30; animation: rec-blink 1.6s steps(2, start) infinite; }
-.hero-hud__mode { position: absolute; top: 10px; right: 38px; display: grid; text-align: right; }
-.hero-hud__mode > span { grid-area: 1 / 1; opacity: 0; transition: opacity 0.4s; }
-.hero-thermal:not(.is-spraying):not(.is-cold) .hero-hud__mode-hot { opacity: 1; color: #ff9a5a; }
-.hero-thermal.is-spraying .hero-hud__mode-spray { opacity: 1; color: #fff; }
-.hero-thermal.is-cold .hero-hud__mode-cold { opacity: 1; color: var(--c-ice); }
-
 /* conteúdo */
 .hero-thermal__content {
   position: relative;
@@ -119,13 +92,6 @@
   justify-items: center;
 }
 .hero-thermal__copy { display: grid; gap: 18px; justify-items: center; max-width: 560px; }
-.hero-thermal__eyebrow {
-  display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px 8px 10px; border-radius: 999px;
-  background: rgb(255 255 255 / 0.07); border: 1px solid rgb(255 255 255 / 0.14); backdrop-filter: blur(10px);
-  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em;
-}
-.hero-thermal__eyebrow .icon { width: 17px; height: 17px; color: #ffb21a; transition: color 1s; }
-.hero-thermal.is-cold .hero-thermal__eyebrow .icon { color: var(--c-ice); }
 .hero-thermal__title {
   font-size: calc(clamp(32px, 3.7vw, 56px) * var(--heading-scale));
   line-height: 1.02;
@@ -171,36 +137,16 @@
 }
 .hero-thermal__scale-labels { display: flex; justify-content: space-between; width: 100%; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(255 255 255 / 0.45); }
 
-.hero-thermal__badges {
-  position: relative;
-  display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
-  padding-bottom: 44px;
-}
-.hero-thermal__badge {
-  display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 999px;
-  background: rgb(255 255 255 / 0.06); border: 1px solid rgb(255 255 255 / 0.12); backdrop-filter: blur(10px);
-  font-size: 0.85rem; font-weight: 500; color: rgb(255 255 255 / 0.86);
-}
-.hero-thermal__badge .icon { width: 18px; height: 18px; color: var(--c-ice); }
-
 .hero-thermal__disclaimer { position: absolute; left: 0; right: 0; bottom: 14px; text-align: center; font-size: 0.68rem; color: rgb(255 255 255 / 0.4); }
 
 /* entrada da capa */
 html.js .hero-in { opacity: 0; transform: translateY(22px); filter: blur(8px); animation: hero-in 1.2s var(--ease-out) forwards; animation-delay: var(--d, 0s); }
 @keyframes hero-in { to { opacity: 1; transform: none; filter: none; } }
-@keyframes rec-blink { 50% { opacity: 0.2; } }
 
-@media (max-width: 1199px) {
-  .hero-hud__rec-label { display: none; }
-}
 @media (max-width: 989px) {
   .hero-thermal__word { inset: 0 0 auto; height: calc(64svh + var(--header-h) * 0.4 + 20px); font-size: 34vw; padding: var(--header-h) 0 0; }
-  .hero-hud { font-size: 0.6rem; }
 }
 @media (max-width: 749px) {
-  .hero-thermal__badges { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; padding-bottom: 40px; mask-image: linear-gradient(90deg, #000 85%, transparent); }
-  .hero-thermal__badges::-webkit-scrollbar { display: none; }
-  .hero-thermal__badge { flex: none; }
   .hero-thermal__gauge { position: absolute; top: calc(-64svh + var(--header-h) + 54px); right: var(--gutter); left: auto; width: auto; justify-items: end; gap: 2px; display: none; }
 }
 
@@ -208,7 +154,6 @@ html.js .hero-in { opacity: 0; transform: translateY(22px); filter: blur(8px); a
 @media (min-width: 990px) {
   .hero-thermal { min-height: max(720px, 100svh); }
   .hero-thermal__stage { position: absolute; inset: 0; height: auto; margin: 0; }
-  .hero-hud { top: calc(var(--header-h) + 20px); height: calc(100% - var(--header-h) - 64px); width: min(40vw, 620px); }
   .hero-thermal__content {
     position: absolute;
     inset: var(--header-h) 0 0;
@@ -223,11 +168,6 @@ html.js .hero-in { opacity: 0; transform: translateY(22px); filter: blur(8px); a
   .hero-thermal__copy { grid-column: 1; justify-items: start; max-width: 500px; }
   .hero-thermal__actions { justify-content: flex-start; }
   .hero-thermal__gauge { grid-column: 3; justify-self: end; justify-items: end; text-align: right; width: min(300px, 100%); }
-  .hero-thermal__badges {
-    position: absolute; right: var(--gutter); bottom: 40px; left: auto; width: auto; padding: 0;
-    flex-direction: column; align-items: flex-end; max-width: none;
-  }
-  .hero-thermal__gauge { margin-bottom: 180px; }
   .hero-thermal__word { padding-bottom: 0; }
   .hero-thermal__disclaimer { left: var(--gutter); right: auto; text-align: left; }
 }

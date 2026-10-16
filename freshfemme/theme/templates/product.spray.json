@@ -125,11 +125,8 @@
         "n2"
       ],
       "settings": {
-        "eyebrow": "Como funciona",
+        "eyebrow": "",
         "heading": "Do calor ao <em>frescor</em> em um borrifo.",
-        "ring_text": "Frescor imediato · Alívio dos fogachos",
-        "tag_hot": "Fogacho",
-        "tag_cold": "Alívio na hora",
         "image": "shopify://shop_images/FreshFemme-mao.jpg"
       }
     },
@@ -149,14 +146,14 @@
         "v1"
       ],
       "settings": {
-        "eyebrow": "A prova real",
+        "eyebrow": "",
         "heading": "O spray que <em>encantou os Sharks</em>",
         "text": "<p>Premiado duas vezes a nível nacional e apresentado no Shark Tank Brasil.</p>",
         "youtube_id": "57_30YCA27Y",
         "poster": "shopify://shop_images/capaVideo.png",
         "video_label": "Shark Tank Brasil · Temporada 10",
-        "badge_mark": "TV",
-        "badge": "Exibido no Sony Channel"
+        "badge_mark": "",
+        "badge": ""
       }
     },
     "faq": {
@@ -190,7 +187,7 @@
         "q3"
       ],
       "settings": {
-        "eyebrow": "Dúvidas",
+        "eyebrow": "",
         "heading": "Perguntas <em>frequentes</em>",
         "text": "",
         "button_label": "Falar com a equipe",
@@ -201,7 +198,7 @@
     "related": {
       "type": "related-products",
       "settings": {
-        "eyebrow": "Combina com você",
+        "eyebrow": "",
         "heading": "Você também vai <em>amar</em>",
         "limit": 4,
         "background": "paper"

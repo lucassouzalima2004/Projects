@@ -7,7 +7,7 @@
         "i2": { "type": "info", "settings": { "icon": "truck", "title": "Pedidos", "text": "<p>Acompanhe seu pedido em Minha conta.</p>" } }
       },
       "block_order": ["i1", "i2"],
-      "settings": { "eyebrow": "Fale com a gente" }
+      "settings": { "eyebrow": "" }
     },
     "faq": {
       "type": "faq",
@@ -16,7 +16,7 @@
         "q2": { "type": "question", "settings": { "question": "Tem frete grátis?", "answer": "<p>Sim, para todo o Brasil em compras acima de R$ 150.</p>" } }
       },
       "block_order": ["q1", "q2"],
-      "settings": { "eyebrow": "Dúvidas", "heading": "Perguntas <em>frequentes</em>", "text": "", "button_label": "", "button_link": "", "schema": true }
+      "settings": { "eyebrow": "", "heading": "Perguntas <em>frequentes</em>", "text": "", "button_label": "", "button_link": "", "schema": true }
     }
   },
   "order": ["main", "faq"]

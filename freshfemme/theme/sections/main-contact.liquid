@@ -1,7 +1,7 @@
 {{ 'template-pages.css' | asset_url | stylesheet_tag }}
 <section class="page-hero">
   <div class="container page-hero__inner">
-    <p class="eyebrow" data-reveal>{{ section.settings.eyebrow }}</p>
+    {%- if section.settings.eyebrow != blank -%}<p class="eyebrow" data-reveal>{{ section.settings.eyebrow }}</p>{%- endif -%}
     <h1 class="h1" data-reveal="words">{{ page.title }}</h1>
     {%- if page.content != blank -%}<div class="rte page-hero__text" data-reveal>{{ page.content }}</div>{%- endif -%}
   </div>
@@ -42,7 +42,7 @@
   "name": "Contato",
   "class": "section-main-contact",
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Chamada", "default": "Fale com a gente" }
+    { "type": "text", "id": "eyebrow", "label": "Chamada" }
   ],
   "blocks": [
     {

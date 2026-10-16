@@ -19,10 +19,6 @@
 
         <div class="story__stage" data-tilt="7">
           <span class="story__halo" aria-hidden="true"></span>
-          <svg class="story__ring" viewBox="0 0 200 200" aria-hidden="true">
-            <defs><path id="StoryRing-{{ section.id }}" d="M100,100 m-88,0 a88,88 0 1,1 176,0 a88,88 0 1,1 -176,0"/></defs>
-            <text><textPath href="#StoryRing-{{ section.id }}">{{ section.settings.ring_text | upcase }} ✦ {{ section.settings.ring_text | upcase }} ✦</textPath></text>
-          </svg>
           <div class="story__photo">
             {%- if image != blank -%}
               {%- assign image_alt = image.alt | default: product.title -%}
@@ -34,8 +30,6 @@
           <span class="story__mist" aria-hidden="true">
             {%- for i in (1..14) -%}<i style="--k: {{ i }}"></i>{%- endfor -%}
           </span>
-          <span class="story__tag story__tag--hot" aria-hidden="true">{% render 'icon', name: 'flame' %} {{ section.settings.tag_hot }}</span>
-          <span class="story__tag story__tag--cold" aria-hidden="true">{% render 'icon', name: 'snow' %} {{ section.settings.tag_cold }}</span>
         </div>
       </div>
     </div>
@@ -97,12 +91,9 @@
   "settings": [
     { "type": "product", "id": "product", "label": "Produto" },
     { "type": "image_picker", "id": "image", "label": "Imagem", "info": "Se vazio, usa a foto principal do produto." },
-    { "type": "text", "id": "eyebrow", "label": "Chamada", "default": "Como funciona" },
+    { "type": "text", "id": "eyebrow", "label": "Chamada" },
     { "type": "inline_richtext", "id": "heading", "label": "Título", "default": "Do calor ao <em>frescor</em> em um borrifo." },
-    { "type": "richtext", "id": "text", "label": "Texto" },
-    { "type": "text", "id": "ring_text", "label": "Texto que gira em volta", "default": "Frescor imediato · Alívio dos fogachos" },
-    { "type": "text", "id": "tag_hot", "label": "Etiqueta quente", "default": "Fogacho" },
-    { "type": "text", "id": "tag_cold", "label": "Etiqueta fria", "default": "Alívio na hora" }
+    { "type": "richtext", "id": "text", "label": "Texto" }
   ],
   "blocks": [
     {

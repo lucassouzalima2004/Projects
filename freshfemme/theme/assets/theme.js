@@ -759,6 +759,22 @@
     });
   }
 
+  /* mensagens que se revezam (barra de anúncios) */
+  function initRotators(root = document) {
+    $$('[data-rotator]', root).forEach((el) => {
+      if (el.dataset.ready) return;
+      el.dataset.ready = '1';
+      const items = Array.from(el.children);
+      if (items.length < 2 || reduced) return;
+      let i = 0;
+      setInterval(() => {
+        items[i].classList.remove('is-active');
+        i = (i + 1) % items.length;
+        items[i].classList.add('is-active');
+      }, (parseFloat(el.dataset.interval) || 5) * 1000);
+    });
+  }
+
   /* ---------------- boot ---------------- */
   function initAll(root = document) {
     initReveal(root);
@@ -770,6 +786,7 @@
     initCountdowns(root);
     initProduct(root);
     initStory(root);
+    initRotators(root);
     initRecommendations(root);
     initCollection(root);
     bindQuantity(root);

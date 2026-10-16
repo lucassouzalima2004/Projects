@@ -8,13 +8,6 @@
           <span class="founder__monogram" aria-hidden="true">{{ section.settings.monogram }}</span>
         {%- endif -%}
       </div>
-      <span class="founder__seal" aria-hidden="true">
-        <svg viewBox="0 0 120 120">
-          <defs><path id="FounderSeal-{{ section.id }}" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"/></defs>
-          <text><textPath href="#FounderSeal-{{ section.id }}">{{ section.settings.seal_text | upcase }} ✦ </textPath></text>
-        </svg>
-        {% render 'icon', name: 'heart' %}
-      </span>
     </div>
 
     <div class="founder__copy">
@@ -58,12 +51,11 @@
       "default": "center center"
     },
     { "type": "text", "id": "monogram", "label": "Iniciais (quando não há foto)", "default": "MM" },
-    { "type": "text", "id": "eyebrow", "label": "Chamada", "default": "Quem criou" },
+    { "type": "text", "id": "eyebrow", "label": "Chamada" },
     { "type": "inline_richtext", "id": "quote", "label": "Frase", "default": "Antes de ser farmacêutica e empreendedora, eu sou <em>mulher.</em>" },
     { "type": "richtext", "id": "text", "label": "Texto", "default": "<p>Eu também sei o que é sentir no corpo as transformações que chegam com o tempo. Foi vivendo isso, e ouvindo tantas outras mulheres, que decidi usar meu conhecimento para deixar essa fase mais leve.</p>" },
     { "type": "text", "id": "name", "label": "Nome", "default": "Mariá Martelli Milan" },
     { "type": "text", "id": "role", "label": "Cargo", "default": "Farmacêutica Bioquímica · CRF 14 459 · Fundadora" },
-    { "type": "text", "id": "seal_text", "label": "Texto do selo", "default": "Feito por mulher para mulheres 40+" },
     { "type": "text", "id": "button_label", "label": "Texto do link", "default": "Conheça nossa história" },
     { "type": "url", "id": "button_link", "label": "Link" }
   ],

@@ -11,31 +11,6 @@
     assign sub_title = title_parts[1]
   endif
   assign t = product.title | downcase
-  assign tone = 'brand'
-  assign category = 'products.card.category_default' | t
-  if t contains 'spray'
-    assign category = 'products.card.category_spray' | t
-    assign tone = 'ice'
-  endif
-  if t contains 'sérum' or t contains 'serum'
-    assign category = 'products.card.category_serum' | t
-    assign tone = 'brand'
-  endif
-  if t contains 'vivaage'
-    assign category = 'products.card.category_supplement' | t
-    assign tone = 'lilac'
-    if t contains 'slim'
-      assign tone = 'sage'
-    endif
-  endif
-  if t contains 'sabonete'
-    assign category = 'products.card.category_soap' | t
-    assign tone = 'sand'
-  endif
-  if t contains 'presente'
-    assign category = 'products.card.category_gift' | t
-    assign tone = 'rose'
-  endif
   assign promo = false
   if t contains 'leve 3'
     assign promo = 'products.card.badge_3for2' | t
@@ -47,7 +22,7 @@
   assign image_alt = product.featured_image.alt | default: main_title
   assign sizes = sizes | default: '(min-width: 1200px) 300px, (min-width: 750px) 33vw, 50vw'
 -%}
-<article class="card card--{{ tone }}" {% if animate != false %}data-reveal style="--i: {{ index | default: 0 | modulo: 4 }}"{% endif %}>
+<article class="card" {% if animate != false %}data-reveal style="--i: {{ index | default: 0 | modulo: 4 }}"{% endif %}>
   <a href="{{ product.url }}" class="card__media{% if second %} card__media--swap{% endif %}" tabindex="-1" aria-hidden="true">
     {%- if product.featured_image -%}
       {{ product.featured_image | image_url: width: 900 | image_tag:
@@ -101,7 +76,6 @@
   {%- endif -%}
 
   <div class="card__info">
-    <span class="card__category">{{ category }}</span>
     <h3 class="card__title">
       <a href="{{ product.url }}" class="card__link">{{ main_title }}</a>
     </h3>

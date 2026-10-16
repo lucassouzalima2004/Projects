@@ -5,13 +5,20 @@
     "announcement": {
       "type": "announcement-bar",
       "blocks": {
-        "m1": { "type": "message", "settings": { "text": "<strong>Frete grátis</strong> para todo o Brasil acima de R$ 150", "link": "" } },
-        "m2": { "type": "message", "settings": { "text": "Spray premiado <strong>2x</strong> a nível nacional", "link": "" } },
-        "m3": { "type": "message", "settings": { "text": "Visto no <strong>Shark Tank Brasil</strong>", "link": "" } },
-        "m4": { "type": "message", "settings": { "text": "Aprovado pela <strong>Anvisa</strong> · Vegano · Não testado em animais", "link": "" } }
+        "m1": {
+          "type": "message",
+          "settings": {
+            "text": "<strong>FRETE GRÁTIS</strong> para todo o Brasil em compras acima de <strong>R$ 150,00</strong>",
+            "link": ""
+          }
+        }
       },
-      "block_order": ["m1", "m2", "m3", "m4"],
-      "settings": { "speed": 44 }
+      "block_order": [
+        "m1"
+      ],
+      "settings": {
+        "interval": 5
+      }
     },
     "header": {
       "type": "header",
@@ -22,5 +29,8 @@
       }
     }
   },
-  "order": ["announcement", "header"]
+  "order": [
+    "announcement",
+    "header"
+  ]
 }

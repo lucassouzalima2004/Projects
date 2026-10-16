@@ -33,20 +33,6 @@
     {%- endif -%}
   </div>
 
-  {%- comment -%} Visor da câmera térmica {%- endcomment -%}
-  <div class="hero-hud" aria-hidden="true">
-    <span class="hero-hud__corner hero-hud__corner--tl"></span>
-    <span class="hero-hud__corner hero-hud__corner--tr"></span>
-    <span class="hero-hud__corner hero-hud__corner--bl"></span>
-    <span class="hero-hud__corner hero-hud__corner--br"></span>
-    <span class="hero-hud__rec"><i></i> REC<span class="hero-hud__rec-label"> · {{ section.settings.hud_label }}</span></span>
-    <span class="hero-hud__mode" data-hud-mode>
-      <span class="hero-hud__mode-hot">{{ 'sections.hero.mode_hot' | t }}</span>
-      <span class="hero-hud__mode-spray">{{ 'sections.hero.mode_spray' | t }}</span>
-      <span class="hero-hud__mode-cold">{{ 'sections.hero.mode_cold' | t }}</span>
-    </span>
-  </div>
-
   <div class="hero-thermal__content container container--wide">
     <div class="hero-thermal__copy">
       {%- if section.settings.eyebrow != blank -%}
@@ -92,17 +78,6 @@
     </div>
   </div>
 
-  {%- if section.blocks.size > 0 -%}
-    <div class="hero-thermal__badges container container--wide">
-      {%- for block in section.blocks -%}
-        <span class="hero-thermal__badge hero-in" style="--d: {{ forloop.index0 | times: 0.1 | plus: 1 }}s" {{ block.shopify_attributes }}>
-          {% render 'icon', name: block.settings.icon %}
-          <span>{{ block.settings.text }}</span>
-        </span>
-      {%- endfor -%}
-    </div>
-  {%- endif -%}
-
   {%- if section.settings.disclaimer != blank -%}
     <p class="hero-thermal__disclaimer">{{ section.settings.disclaimer }}</p>
   {%- endif -%}
@@ -113,13 +88,12 @@
 {
   "name": "Capa térmica",
   "class": "section-hero-thermal",
-  "max_blocks": 4,
   "settings": [
     {
       "type": "paragraph",
       "content": "Animação em 3D: a mulher aparece como numa câmera térmica, borrifa o spray no pescoço e o frio desce pelo corpo."
     },
-    { "type": "text", "id": "eyebrow", "label": "Chamada", "default": "Premiado 2x · Visto no Shark Tank Brasil" },
+    { "type": "text", "id": "eyebrow", "label": "Chamada (opcional)" },
     { "type": "inline_richtext", "id": "heading", "label": "Título", "default": "Alívio imediato do <em>fogacho</em>, em segundos." },
     { "type": "textarea", "id": "text", "label": "Texto", "default": "O Spray Refrescante FreshFemme leva frescor na hora em que o calor sobe. Natural, vegano e aprovado pela Anvisa." },
     { "type": "text", "id": "primary_label", "label": "Botão principal", "default": "Quero o spray" },
@@ -135,9 +109,8 @@
     { "type": "text", "id": "word_cold", "label": "No frescor", "default": "frescor" },
     {
       "type": "header",
-      "content": "Visor da câmera"
+      "content": "Termômetro"
     },
-    { "type": "text", "id": "hud_label", "label": "Nome no visor", "default": "FRESHFEMME THERMAL" },
     { "type": "text", "id": "temp_hot", "label": "Temperatura no calor (°C)", "default": "38.4" },
     { "type": "text", "id": "temp_cold", "label": "Temperatura depois do spray (°C)", "default": "31.2" },
     { "type": "text", "id": "disclaimer", "label": "Aviso", "default": "*Representação artística do efeito refrescante." },
@@ -148,39 +121,6 @@
       "info": "Opcional. Se vazio, o tema usa uma imagem própria da cena."
     }
   ],
-  "blocks": [
-    {
-      "type": "badge",
-      "name": "Selo",
-      "settings": [
-        {
-          "type": "select",
-          "id": "icon",
-          "label": "Ícone",
-          "options": [
-            { "value": "award", "label": "Prêmio" },
-            { "value": "shield", "label": "Escudo" },
-            { "value": "leaf", "label": "Folha" },
-            { "value": "paw", "label": "Patinha" },
-            { "value": "snow", "label": "Floco de neve" },
-            { "value": "flask", "label": "Frasco" },
-            { "value": "star", "label": "Estrela" }
-          ],
-          "default": "award"
-        },
-        { "type": "text", "id": "text", "label": "Texto", "default": "Premiado 2x no Brasil" }
-      ]
-    }
-  ],
-  "presets": [
-    {
-      "name": "Capa térmica",
-      "blocks": [
-        { "type": "badge", "settings": { "icon": "shield", "text": "Aprovado pela Anvisa" } },
-        { "type": "badge", "settings": { "icon": "star", "text": "97% de aprovação nos testes" } },
-        { "type": "badge", "settings": { "icon": "leaf", "text": "Natural e vegano" } }
-      ]
-    }
-  ]
+  "presets": [{ "name": "Capa térmica" }]
 }
 {% endschema %}

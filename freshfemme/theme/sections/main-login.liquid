@@ -3,7 +3,6 @@
   <div class="container">
     <div class="auth-card" data-reveal="scale">
       <div id="LoginBox">
-        <p class="eyebrow">{{ shop.name }}</p>
         <h1 class="h2">{{ 'customer.login.title' | t }}</h1>
         {%- form 'customer_login', class: 'auth-card__form' -%}
           {%- if form.errors -%}<div class="form-message form-message--error">{{ form.errors | default_errors }}</div>{%- endif -%}
