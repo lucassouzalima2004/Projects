@@ -982,6 +982,18 @@ a.contact-v:hover { text-decoration: underline; }
   .map-grid text, .map-scale text, .map-north text, .map-county text { font-size: 13px; }
 }
 
+/* Celular deitado: o topo inteiro cabe na tela, com o vídeo atrás */
+@media (orientation: landscape) and (max-height: 540px) {
+  :root { --topbar-h: 0px; }
+  .topbar { display: none; }
+  .hero-panel { height: calc(100svh - var(--topbar-h) - var(--header-h) - var(--hero-pad) - 6px); min-height: 300px; }
+  .hero-content { gap: 12px; padding: 16px 24px 60px; }
+  .hero-title { font-size: clamp(2.1rem, 0.9rem + 3.4vw, 3.1rem); }
+  .hero-points { display: none; }
+  .hero-actions { flex-direction: row; width: auto; margin-top: 2px; }
+  .hero-actions .btn { width: auto; }
+}
+
 /* ---------- Menos movimento ---------- */
 
 @media (prefers-reduced-motion: reduce) {

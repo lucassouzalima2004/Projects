@@ -109,9 +109,13 @@
   const panel = $('.hero-panel');
   const videoBtn = $('[data-video-toggle]');
   if (video && panel) {
-    const saveData = navigator.connection && navigator.connection.saveData;
+    const saveData = !!(navigator.connection && navigator.connection.saveData);
     let userPaused = reduceMotion.matches;
     let onScreen = true;
+    // Mudo e dentro da página: é assim que o celular (e o navegador dentro do WhatsApp ou do Instagram) deixa tocar sozinho
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
 
     // MP4 (H.264) toca em quase tudo; sem ele (alguns Chromium/Firefox no Linux), usa o WebM (VP9) de mesmo nome
     const useWebm = !video.canPlayType('video/mp4; codecs="avc1.640028"') && !!video.canPlayType('video/webm; codecs="vp9"');
@@ -120,13 +124,16 @@
       const h = window.innerHeight;
       let src;
       if (w / h < 0.8) src = video.dataset.srcTall;
-      else src = w * Math.min(window.devicePixelRatio || 1, 2) > 1700 ? video.dataset.srcWide : video.dataset.srcMid;
+      // Celular deitado ou economia de dados ligada: a versão média basta (a de 1080 pesa o dobro)
+      else if (saveData || h < 600 || w * Math.min(window.devicePixelRatio || 1, 2) <= 1700) src = video.dataset.srcMid;
+      else src = video.dataset.srcWide;
       return useWebm ? src.replace(/\.mp4(?=\?|$)/, '.webm') : src;
     };
-    const load = () => {
-      const src = pickSource();
-      if (video.getAttribute('src') === src) return;
+    // Troca de versão sem voltar ao começo: as três têm a mesma duração e as mesmas cenas
+    const setSource = (src) => {
+      const t = video.getAttribute('src') ? video.currentTime : 0;
       video.src = src;
+      if (t > 0.5) video.addEventListener('loadedmetadata', () => { video.currentTime = t; }, { once: true });
     };
     const showState = () => {
       const paused = userPaused || video.paused;
@@ -134,8 +141,9 @@
       if (videoBtn) videoBtn.setAttribute('aria-label', paused ? 'Play the background video' : 'Pause the background video');
     };
     const play = () => {
-      if (saveData && !video.getAttribute('src') && !userPaused) return;
-      load();
+      if (userPaused || !onScreen || document.hidden) return;
+      const src = pickSource();
+      if (video.getAttribute('src') !== src) setSource(src);
       const p = video.play();
       if (p && p.catch) p.catch(() => { showState(); });
     };
@@ -157,29 +165,43 @@
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(([e]) => {
         onScreen = e.isIntersecting;
-        if (!onScreen) video.pause();
-        else if (!userPaused) play();
+        if (onScreen) play(); else video.pause();
       }, { threshold: 0.15 }).observe(panel);
     }
 
-    // Girou o celular: troca para o vídeo em pé ou deitado
+    // Foi para outro app ou aba: pausa. Voltou: continua de onde parou (o celular não retoma sozinho)
+    document.addEventListener('visibilitychange', () => { if (document.hidden) video.pause(); else play(); });
+    window.addEventListener('pageshow', (e) => { if (e.persisted) play(); });
+
+    // Quando o aparelho não deixa tocar sozinho (iPhone no modo de pouca bateria, navegador de alguns apps),
+    // o vídeo começa no primeiro toque na tela
+    const kick = (e) => {
+      if (!video.paused || (videoBtn && videoBtn.contains(e.target))) return;
+      play();
+    };
+    ['touchend', 'click', 'keydown'].forEach((type) => document.addEventListener(type, kick, { capture: true, passive: true }));
+
+    // Girou o celular: troca para o vídeo em pé ou deitado, do mesmo ponto
+    // (a barra de endereço e o teclado só mudam a altura, então só a largura conta)
+    let lastW = window.innerWidth;
     let resizeT = 0;
     window.addEventListener('resize', () => {
       clearTimeout(resizeT);
       resizeT = setTimeout(() => {
+        if (window.innerWidth === lastW) return;
+        lastW = window.innerWidth;
         if (!video.getAttribute('src')) return;
         const src = pickSource();
-        if (video.getAttribute('src') !== src) {
-          video.classList.remove('is-playing');
-          video.src = src;
-          if (!userPaused && onScreen) play();
-        }
+        if (video.getAttribute('src') === src) return;
+        video.classList.remove('is-playing');
+        setSource(src);
+        play();
       }, 300);
     });
 
     reduceMotion.addEventListener('change', (e) => { if (e.matches) { userPaused = true; video.pause(); showState(); } });
 
-    if (userPaused || saveData) showState();
+    if (userPaused) showState();
     else if (document.readyState === 'complete') play();
     else window.addEventListener('load', play, { once: true });
   }
@@ -221,6 +243,9 @@
   }
 
   /* ---------- Faixas que passam (avaliações e projetos) ---------- */
+  // Foco que veio do teclado (no toque e no clique o navegador não mostra o contorno de foco)
+  const keyboardFocus = (el) => { try { return el.matches(':focus-visible'); } catch (err) { return true; } };
+
   class Marquee {
     constructor(el) {
       this.el = el;
@@ -270,6 +295,8 @@
       el.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') this.hover = true; });
       el.addEventListener('pointerleave', () => { this.hover = false; });
       el.addEventListener('focusin', (e) => {
+        // Só o teclado segura a faixa; no toque (e quando a foto ampliada fecha) ela continua andando
+        if (!keyboardFocus(e.target)) return;
         this.focus = true;
         // Traz para a tela o cartão que recebeu o foco pelo teclado
         const item = e.target.closest('.marquee-track > *');

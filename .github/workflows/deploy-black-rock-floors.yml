@@ -4,6 +4,8 @@
 #
 # O site vai como Worker com arquivos estáticos (Workers Static Assets), como a The Berry Coffee,
 # e não como projeto do Cloudflare Pages: a conta já tem 100 projetos no Pages, o limite do Cloudflare.
+# O script do Worker (black-rock-floors/worker.js) só roda para os vídeos: entrega o pedaço do arquivo que o
+# navegador pede (cabeçalho Range), sem o qual o iPhone e o Safari não tocam o vídeo do topo.
 #
 # Usa os mesmos secrets dos outros sites do repositório (Settings → Secrets and variables → Actions):
 #   CLOUDFLARE_API_TOKEN   token do Cloudflare que pode publicar Workers (obrigatório)
@@ -114,8 +116,8 @@ jobs:
         run: |
           mkdir -p _site
           cp -R black-rock-floors/. _site/
-          # Anotações internas e o script do vídeo não vão para o ar
-          rm -rf _site/README.md _site/tools _site/.gitignore
+          # Anotações internas, o script do vídeo e o do Worker não vão para o ar como arquivos
+          rm -rf _site/README.md _site/tools _site/.gitignore _site/worker.js
           today=$(date -u +%F)
           : > pages.txt
           # Em cada página: endereço completo no og:image (o WhatsApp exige), canonical e og:url
@@ -138,13 +140,16 @@ jobs:
           cat > wrangler.jsonc <<EOF
           {
             "name": "$WORKER",
+            "main": "./black-rock-floors/worker.js",
             "compatibility_date": "2025-10-01",
             "workers_dev": true,
             "preview_urls": false,
             "assets": {
               "directory": "./_site",
+              "binding": "ASSETS",
               "not_found_handling": "404-page",
-              "html_handling": "auto-trailing-slash"
+              "html_handling": "auto-trailing-slash",
+              "run_worker_first": ["/assets/video/*"]
             }
           }
           EOF
@@ -160,6 +165,13 @@ jobs:
               echo "### Site no ar: $WORKERS_URL" >> "$GITHUB_STEP_SUMMARY"
               if [ "$SITE_URL" != "$WORKERS_URL" ]; then
                 echo "Endereço oficial (canonical e sitemap): $SITE_URL" >> "$GITHUB_STEP_SUMMARY"
+              fi
+              # O vídeo precisa responder com um pedaço (206), senão o iPhone não toca
+              code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 -H 'Range: bytes=0-1' "$WORKERS_URL/assets/video/hero-tall.mp4" || true)
+              if [ "$code" = "206" ]; then
+                echo "Vídeo responde por pedaço (206): toca no iPhone."
+              else
+                echo "::warning title=Vídeo sem Range::O vídeo respondeu $code em vez de 206 a um pedido por pedaço. O iPhone pode não tocar o vídeo do topo: confira o worker.js e o run_worker_first."
               fi
               exit 0
             fi

@@ -59,6 +59,24 @@ Ele também perguntou se o formulário vai para o e-mail dele. Hoje o formulári
 pedido pronto para `br.remodelingwa@gmail.com`; o pedido só chega se o visitante apertar "enviar" lá. Para chegar direto, o
 site precisa de um serviço de envio de formulários (veja [O formulário](#o-formulário)).
 
+### Vídeo no celular (16/10)
+
+O Lucas viu que o vídeo do topo não rodava direito no celular. O motivo principal: o iPhone (Safari e qualquer navegador
+no iOS) e o Safari do Mac só tocam vídeo se o servidor entregar **o pedaço do arquivo que eles pedem** (cabeçalho `Range`,
+resposta 206), e os arquivos estáticos do Cloudflare sempre vêm inteiros. Agora um Worker pequeno (`worker.js`) responde a
+esses pedidos, só para os vídeos. Também foi corrigido:
+
+1. **Girar o celular** troca para o vídeo em pé ou deitado **do mesmo ponto**, em vez de voltar ao começo.
+2. **Voltar de outro app ou aba**: o vídeo continua (antes ficava congelado).
+3. **Celular que não deixa tocar sozinho** (iPhone no modo de pouca bateria, navegador de alguns apps): o vídeo começa no
+   primeiro toque na tela.
+4. **Economia de dados ligada**: o vídeo toca mesmo assim, na versão mais leve (antes nem carregava).
+5. **Celular deitado**: o topo inteiro cabe na tela (título e botões, sem a lista de itens), com o vídeo atrás.
+6. **Projetos recentes**: a faixa continua andando depois que a pessoa abre e fecha uma foto (antes parava).
+
+Com **Reduzir movimento** (iPhone) ou **Remover animações** (Android) ligado no aparelho, o vídeo e as faixas ficam parados
+de propósito, com o botão de play no canto: é uma configuração de acessibilidade de quem passa mal com movimento na tela.
+
 ## O que tem no site
 
 **Página inicial** (`index.html`):
@@ -166,6 +184,19 @@ Clipes de hoje (uso comercial liberado, sem crédito obrigatório):
 | Câmera passando pela sala vazia com piso de madeira | [Coverr: Empty room with a window](https://coverr.co/videos/empty-room-with-a-window-peegts0hp9) (recortado para o ventilador de teto não aparecer) | Coverr License |
 | Veios da madeira de perto | [Mixkit: Detailed tour of the surface of a wooden board](https://mixkit.co/free-stock-video/detailed-tour-of-the-surface-of-a-wooden-board-34496/) | Mixkit Stock Video Free License |
 
+Como o vídeo se comporta (em `assets/js/app.js`):
+
+- toca mudo, dentro da página, e só com o topo na tela; pausa quando a pessoa rola para baixo ou troca de app, e continua
+  de onde parou na volta;
+- escolhe a versão pelo formato da tela (em pé, celular deitado ou computador) e, ao girar o celular, troca do mesmo ponto;
+- com economia de dados ligada, nunca baixa a versão de 1080;
+- se o aparelho bloquear o vídeo (modo de pouca bateria do iPhone), começa no primeiro toque na tela;
+- com "Reduzir movimento" ligado no aparelho, espera a pessoa apertar o play.
+
+O iPhone só toca vídeo se o servidor responder aos pedidos por pedaço (`Range`). No Cloudflare, quem faz isso é o
+`worker.js` (veja [Publicar](#publicar)). Para testar no iPhone ou no Safari pelo computador, use o `npx wrangler dev`
+(veja [Ver no computador](#ver-no-computador)): o `python3 -m http.server` não aceita esses pedidos.
+
 **Para usar as filmagens do Gabriel** (ou um vídeo gerado por IA, com os prompts de `tools/PROMPTS.md`): grave clipes
 deitados (de preferência 4K ou 1080p, câmera andando devagar rente ao piso), coloque em `tools/clips/`, troque a lista
 `CLIPS` no começo do script (cada linha diz o arquivo, onde o trecho começa, quanto dura e onde recortar a versão em pé)
@@ -180,7 +211,11 @@ No ar em <https://blackrockfloors.lucassouzalima10.workers.dev> (o endereço tam
 
 - Usa o mesmo secret dos outros sites: `CLOUDFLARE_API_TOKEN` (e `CLOUDFLARE_ACCOUNT_ID`, opcional).
 - Na publicação, o workflow coloca o endereço completo no `og:image` (o WhatsApp exige), o `canonical` e o `og:url` em cada página, e gera o `sitemap.xml` e o `robots.txt`.
-- O README e a pasta `tools/` não vão para o ar.
+- O README, a pasta `tools/` e o `worker.js` não vão para o ar como arquivos.
+- O `worker.js` é o script do Worker e só roda para os vídeos (`run_worker_first` no `wrangler.jsonc` que o workflow monta):
+  ele entrega o pedaço do vídeo que o navegador pede (`Range`), sem o qual o iPhone não toca o vídeo. O resto do site sai
+  direto dos arquivos, sem passar pelo script e sem contar no limite de pedidos do plano grátis. No fim, o workflow confere
+  se o vídeo responde a esse pedido.
 - No endereço `.workers.dev`, o site vai com `noindex` (arquivo `_headers`): o Google não indexa a prévia.
 
 ### Ligar o domínio do Gabriel (que está no Wix)
@@ -199,6 +234,21 @@ python3 -m http.server 8000
 # abra http://localhost:8000
 ```
 
+Para ver do jeito que fica no Cloudflare, com o `worker.js` (precisa para o vídeo tocar no Safari e no iPhone), monte a pasta
+como o workflow faz e rode o `wrangler dev`, a partir da raiz do repositório:
+
+```bash
+mkdir -p /tmp/brf && cp -R black-rock-floors/. /tmp/brf/_site && cp black-rock-floors/worker.js /tmp/brf/
+rm -rf /tmp/brf/_site/README.md /tmp/brf/_site/tools /tmp/brf/_site/worker.js
+cat > /tmp/brf/wrangler.jsonc <<'EOF'
+{ "name": "blackrockfloors", "main": "./worker.js", "compatibility_date": "2025-10-01",
+  "assets": { "directory": "./_site", "binding": "ASSETS", "not_found_handling": "404-page",
+              "html_handling": "auto-trailing-slash", "run_worker_first": ["/assets/video/*"] } }
+EOF
+cd /tmp/brf && npx wrangler@4 dev --ip 0.0.0.0 --port 8787
+# abra http://localhost:8787 (ou, no celular na mesma rede, http://<ip do computador>:8787)
+```
+
 ## Estrutura
 
 ```
@@ -207,6 +257,7 @@ black-rock-floors/
 ├── <serviço>/index.html             6 páginas de serviço
 ├── 404.html                         página "não encontrada"
 ├── _headers                         cabeçalhos do Cloudflare (noindex na prévia, cache)
+├── worker.js                        Worker que entrega os vídeos por pedaço (para o iPhone tocar)
 ├── assets/css/styles.css            visual (cores e fonte no topo)
 ├── assets/js/app.js                 comportamento (vídeo, faixas, menu, mapa, formulário)
 ├── assets/fonts/                    fontes (Archivo e Cormorant Garamond)
