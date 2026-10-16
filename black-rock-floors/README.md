@@ -112,6 +112,9 @@ O conteúdo fica direto no HTML (é o que o Google lê). Cada seção do `index.
 | Vídeo do topo | `tools/make-hero-video.sh` (veja abaixo) |
 
 Todas as fotos estão em WebP, já no tamanho certo. Ao trocar uma foto, mantenha o mesmo formato (4:5 para projetos e serviços).
+**Trocou uma foto ou o vídeo mantendo o mesmo nome de arquivo?** Aumente o número do `?v=3` no endereço dela (no `index.html`
+e no gerador das páginas de serviço): o navegador guarda fotos e vídeos por uma semana, e sem isso quem já visitou o site
+continua vendo a versão antiga.
 
 ## O vídeo do topo
 

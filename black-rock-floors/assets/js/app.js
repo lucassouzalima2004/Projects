@@ -121,7 +121,7 @@
       let src;
       if (w / h < 0.8) src = video.dataset.srcTall;
       else src = w * Math.min(window.devicePixelRatio || 1, 2) > 1700 ? video.dataset.srcWide : video.dataset.srcMid;
-      return useWebm ? src.replace(/\.mp4$/, '.webm') : src;
+      return useWebm ? src.replace(/\.mp4(?=\?|$)/, '.webm') : src;
     };
     const load = () => {
       const src = pickSource();

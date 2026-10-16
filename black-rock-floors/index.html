@@ -22,8 +22,8 @@
 
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
-  <link rel="preload" href="assets/video/hero-poster.webp" as="image" media="(min-aspect-ratio: 4/5)" fetchpriority="high">
-  <link rel="preload" href="assets/video/hero-poster-tall.webp" as="image" media="(max-aspect-ratio: 4/5)" fetchpriority="high">
+  <link rel="preload" href="assets/video/hero-poster.webp?v=3" as="image" media="(min-aspect-ratio: 4/5)" fetchpriority="high">
+  <link rel="preload" href="assets/video/hero-poster-tall.webp?v=3" as="image" media="(max-aspect-ratio: 4/5)" fetchpriority="high">
   <link rel="preload" href="assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/cormorant-500.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/cormorant-italic-450.woff2" as="font" type="font/woff2" crossorigin>
@@ -178,14 +178,14 @@
       <div class="hero-panel">
         <div class="hero-media">
           <picture>
-            <source media="(max-aspect-ratio: 4/5)" srcset="assets/video/hero-poster-tall.webp" width="720" height="1280">
-            <img class="hero-poster" src="assets/video/hero-poster.webp" width="1600" height="900" alt="" fetchpriority="high">
+            <source media="(max-aspect-ratio: 4/5)" srcset="assets/video/hero-poster-tall.webp?v=3" width="720" height="1280">
+            <img class="hero-poster" src="assets/video/hero-poster.webp?v=3" width="1600" height="900" alt="" fetchpriority="high">
           </picture>
           <!-- Os arquivos vêm do tools/make-hero-video.sh: deitado (computador), médio e em pé (celular) -->
           <video class="hero-video" muted playsinline loop preload="none" aria-hidden="true" tabindex="-1"
-                 data-src-wide="assets/video/hero-1080.mp4"
-                 data-src-mid="assets/video/hero-720.mp4"
-                 data-src-tall="assets/video/hero-tall.mp4"></video>
+                 data-src-wide="assets/video/hero-1080.mp4?v=3"
+                 data-src-mid="assets/video/hero-720.mp4?v=3"
+                 data-src-tall="assets/video/hero-tall.mp4?v=3"></video>
         </div>
 
         <div class="hero-content">
@@ -339,7 +339,7 @@
           <ol class="svc-list" role="list">
             <li class="svc is-active" data-svc>
               <figure class="svc-media">
-                <img src="assets/img/services/hardwood-640.webp" srcset="assets/img/services/hardwood-640.webp 640w, assets/img/services/hardwood.webp 1000w" sizes="(min-width: 700px) 40vw, 92vw" width="640" height="800" alt="Empty room with a newly installed brown hardwood floor" loading="lazy">
+                <img src="assets/img/services/hardwood-640.webp?v=3" srcset="assets/img/services/hardwood-640.webp?v=3 640w, assets/img/services/hardwood.webp?v=3 1000w" sizes="(min-width: 700px) 40vw, 92vw" width="640" height="800" alt="Empty room with a newly installed brown hardwood floor" loading="lazy">
               </figure>
               <div class="svc-body">
                 <span class="svc-num">01</span>
@@ -355,7 +355,7 @@
             </li>
             <li class="svc" data-svc>
               <figure class="svc-media">
-                <img src="assets/img/services/lvp-640.webp" srcset="assets/img/services/lvp-640.webp 640w, assets/img/services/lvp.webp 1000w" sizes="(min-width: 700px) 40vw, 92vw" width="640" height="800" alt="Empty room with a gray wood-look luxury vinyl plank floor" loading="lazy">
+                <img src="assets/img/services/lvp-640.webp?v=3" srcset="assets/img/services/lvp-640.webp?v=3 640w, assets/img/services/lvp.webp?v=3 1000w" sizes="(min-width: 700px) 40vw, 92vw" width="640" height="800" alt="Empty room with a gray wood-look luxury vinyl plank floor" loading="lazy">
               </figure>
               <div class="svc-body">
                 <span class="svc-num">02</span>
@@ -371,7 +371,7 @@
             </li>
             <li class="svc" data-svc>
               <figure class="svc-media">
-                <img src="assets/img/services/laminate-640.webp" srcset="assets/img/services/laminate-640.webp 640w, assets/img/services/laminate.webp 1000w" sizes="(min-width: 700px) 40vw, 92vw" width="640" height="800" alt="Empty white room with a dark wood-look laminate floor" loading="lazy">
+                <img src="assets/img/services/laminate-640.webp?v=3" srcset="assets/img/services/laminate-640.webp?v=3 640w, assets/img/services/laminate.webp?v=3 1000w" sizes="(min-width: 700px) 40vw, 92vw" width="640" height="800" alt="Empty white room with a dark wood-look laminate floor" loading="lazy">
               </figure>
               <div class="svc-body">
                 <span class="svc-num">03</span>
@@ -387,7 +387,7 @@
             </li>
             <li class="svc" data-svc>
               <figure class="svc-media">
-                <img src="assets/img/services/tile-640.webp" srcset="assets/img/services/tile-640.webp 640w, assets/img/services/tile.webp 1000w" sizes="(min-width: 700px) 40vw, 92vw" width="640" height="800" alt="Hallway with a polished, marble-look porcelain tile floor" loading="lazy">
+                <img src="assets/img/services/tile-640.webp?v=3" srcset="assets/img/services/tile-640.webp?v=3 640w, assets/img/services/tile.webp?v=3 1000w" sizes="(min-width: 700px) 40vw, 92vw" width="640" height="800" alt="Hallway with a polished, marble-look porcelain tile floor" loading="lazy">
               </figure>
               <div class="svc-body">
                 <span class="svc-num">04</span>
@@ -403,7 +403,7 @@
             </li>
             <li class="svc" data-svc>
               <figure class="svc-media">
-                <img src="assets/img/services/refinishing-640.webp" srcset="assets/img/services/refinishing-640.webp 640w, assets/img/services/refinishing.webp 1000w" sizes="(min-width: 700px) 40vw, 92vw" width="640" height="800" alt="Empty room with a glossy, freshly refinished oak floor" loading="lazy">
+                <img src="assets/img/services/refinishing-640.webp?v=3" srcset="assets/img/services/refinishing-640.webp?v=3 640w, assets/img/services/refinishing.webp?v=3 1000w" sizes="(min-width: 700px) 40vw, 92vw" width="640" height="800" alt="Empty room with a glossy, freshly refinished oak floor" loading="lazy">
               </figure>
               <div class="svc-body">
                 <span class="svc-num">05</span>
@@ -419,7 +419,7 @@
             </li>
             <li class="svc" data-svc>
               <figure class="svc-media">
-                <img src="assets/img/services/stairs-640.webp" srcset="assets/img/services/stairs-640.webp 640w, assets/img/services/stairs.webp 1000w" sizes="(min-width: 700px) 40vw, 92vw" width="640" height="800" alt="Stair treads that match the hallway floor, with a white wall and a handrail" loading="lazy">
+                <img src="assets/img/services/stairs-640.webp?v=3" srcset="assets/img/services/stairs-640.webp?v=3 640w, assets/img/services/stairs.webp?v=3 1000w" sizes="(min-width: 700px) 40vw, 92vw" width="640" height="800" alt="Stair treads that match the hallway floor, with a white wall and a handrail" loading="lazy">
               </figure>
               <div class="svc-body">
                 <span class="svc-num">06</span>
@@ -456,16 +456,16 @@
       </div>
       <div class="marquee marquee--work" data-marquee data-speed="36">
         <div class="marquee-track">
-          <button class="project" type="button" data-project><img src="assets/img/projects/bellevue-hardwood.webp" width="720" height="900" alt="Wide-plank hardwood floor in a bright Bellevue living room" loading="lazy"><span class="project-meta"><span class="project-service">Hardwood installation</span><span class="project-city">Bellevue</span></span></button>
-          <button class="project" type="button" data-project><img src="assets/img/projects/kirkland-herringbone.webp" width="720" height="900" alt="Herringbone oak floor in a Kirkland entryway" loading="lazy"><span class="project-meta"><span class="project-service">Herringbone oak</span><span class="project-city">Kirkland</span></span></button>
-          <button class="project" type="button" data-project><img src="assets/img/projects/redmond-lvp-kitchen.webp" width="720" height="900" alt="Kitchen with a light wood-look luxury vinyl plank floor in Redmond" loading="lazy"><span class="project-meta"><span class="project-service">LVP kitchen</span><span class="project-city">Redmond</span></span></button>
-          <button class="project" type="button" data-project><img src="assets/img/projects/seattle-refinishing.webp" width="720" height="900" alt="Refinished hardwood floor in a Seattle living room" loading="lazy"><span class="project-meta"><span class="project-service">Hardwood refinishing</span><span class="project-city">Seattle</span></span></button>
-          <button class="project" type="button" data-project><img src="assets/img/projects/everett-engineered-oak.webp" width="720" height="900" alt="Wide-plank engineered oak floor in an Everett living room" loading="lazy"><span class="project-meta"><span class="project-service">Engineered oak</span><span class="project-city">Everett</span></span></button>
-          <button class="project" type="button" data-project><img src="assets/img/projects/bothell-engineered.webp" width="720" height="900" alt="Light engineered hardwood floor in a Bothell living room" loading="lazy"><span class="project-meta"><span class="project-service">Engineered hardwood</span><span class="project-city">Bothell</span></span></button>
-          <button class="project" type="button" data-project><img src="assets/img/projects/lynnwood-tile.webp" width="720" height="900" alt="Bathroom with large-format porcelain floor tile in Lynnwood" loading="lazy"><span class="project-meta"><span class="project-service">Bathroom tile</span><span class="project-city">Lynnwood</span></span></button>
-          <button class="project" type="button" data-project><img src="assets/img/projects/sammamish-hardwood.webp" width="720" height="900" alt="Light hardwood floor and fireplace in Sammamish" loading="lazy"><span class="project-meta"><span class="project-service">Hardwood installation</span><span class="project-city">Sammamish</span></span></button>
-          <button class="project" type="button" data-project><img src="assets/img/projects/mill-creek-laminate.webp" width="720" height="900" alt="Warm wood-look laminate floor in a Mill Creek living room" loading="lazy"><span class="project-meta"><span class="project-service">Laminate</span><span class="project-city">Mill Creek</span></span></button>
-          <button class="project" type="button" data-project><img src="assets/img/projects/edmonds-oak.webp" width="720" height="900" alt="Natural oak floor in an Edmonds dining room" loading="lazy"><span class="project-meta"><span class="project-service">Natural oak</span><span class="project-city">Edmonds</span></span></button>
+          <button class="project" type="button" data-project><img src="assets/img/projects/bellevue-hardwood.webp?v=3" width="720" height="900" alt="Wide-plank hardwood floor in a bright Bellevue living room" loading="lazy"><span class="project-meta"><span class="project-service">Hardwood installation</span><span class="project-city">Bellevue</span></span></button>
+          <button class="project" type="button" data-project><img src="assets/img/projects/kirkland-herringbone.webp?v=3" width="720" height="900" alt="Herringbone oak floor in a Kirkland entryway" loading="lazy"><span class="project-meta"><span class="project-service">Herringbone oak</span><span class="project-city">Kirkland</span></span></button>
+          <button class="project" type="button" data-project><img src="assets/img/projects/redmond-lvp-kitchen.webp?v=3" width="720" height="900" alt="Kitchen with a light wood-look luxury vinyl plank floor in Redmond" loading="lazy"><span class="project-meta"><span class="project-service">LVP kitchen</span><span class="project-city">Redmond</span></span></button>
+          <button class="project" type="button" data-project><img src="assets/img/projects/seattle-refinishing.webp?v=3" width="720" height="900" alt="Refinished hardwood floor in a Seattle living room" loading="lazy"><span class="project-meta"><span class="project-service">Hardwood refinishing</span><span class="project-city">Seattle</span></span></button>
+          <button class="project" type="button" data-project><img src="assets/img/projects/everett-engineered-oak.webp?v=3" width="720" height="900" alt="Wide-plank engineered oak floor in an Everett living room" loading="lazy"><span class="project-meta"><span class="project-service">Engineered oak</span><span class="project-city">Everett</span></span></button>
+          <button class="project" type="button" data-project><img src="assets/img/projects/bothell-engineered.webp?v=3" width="720" height="900" alt="Light engineered hardwood floor in a Bothell living room" loading="lazy"><span class="project-meta"><span class="project-service">Engineered hardwood</span><span class="project-city">Bothell</span></span></button>
+          <button class="project" type="button" data-project><img src="assets/img/projects/lynnwood-tile.webp?v=3" width="720" height="900" alt="Bathroom with large-format porcelain floor tile in Lynnwood" loading="lazy"><span class="project-meta"><span class="project-service">Bathroom tile</span><span class="project-city">Lynnwood</span></span></button>
+          <button class="project" type="button" data-project><img src="assets/img/projects/sammamish-hardwood.webp?v=3" width="720" height="900" alt="Light hardwood floor and fireplace in Sammamish" loading="lazy"><span class="project-meta"><span class="project-service">Hardwood installation</span><span class="project-city">Sammamish</span></span></button>
+          <button class="project" type="button" data-project><img src="assets/img/projects/mill-creek-laminate.webp?v=3" width="720" height="900" alt="Warm wood-look laminate floor in a Mill Creek living room" loading="lazy"><span class="project-meta"><span class="project-service">Laminate</span><span class="project-city">Mill Creek</span></span></button>
+          <button class="project" type="button" data-project><img src="assets/img/projects/edmonds-oak.webp?v=3" width="720" height="900" alt="Natural oak floor in an Edmonds dining room" loading="lazy"><span class="project-meta"><span class="project-service">Natural oak</span><span class="project-city">Edmonds</span></span></button>
         </div>
       </div>
     </section>
