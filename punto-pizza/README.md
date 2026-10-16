@@ -147,7 +147,9 @@ No ar em <https://puntopizza.lucassouzalima10.workers.dev> (o endereço também 
 
 - Usa o mesmo secret dos outros sites: `CLOUDFLARE_API_TOKEN` (e `CLOUDFLARE_ACCOUNT_ID`, opcional).
 - Na publicação, o workflow coloca o endereço completo no `og:image` (o WhatsApp exige), o `canonical` e o `og:url` em cada página, e gera o `sitemap.xml` e o `robots.txt`.
-- O README e a pasta `tools/` não vão para o ar.
+- O README e as pastas `tools/` e `worker/` não vão para o ar.
+- `worker/index.js` é um script pequeno que só cuida de `/assets/video/*`: responde aos pedidos "em pedaços" (Range, status 206),
+  sem os quais o **Safari e o iPhone não tocam o vídeo**. O resto do site vem direto dos arquivos.
 - No endereço `.workers.dev`, o site vai com `noindex` (arquivo `_headers`): a prévia não concorre no Google com o site atual dele.
 
 ### Ligar o domínio do Carlos (`puntopizzaverona.it`)
@@ -188,6 +190,7 @@ punto-pizza/
 │   ├── menu/                     fotos de cada item do menu (do app)
 │   ├── cut/                      pizzas recortadas (fundo transparente)
 │   └── scene/                    quadros dos clipes, usados no "metodo"
+├── worker/index.js               serve o vídeo em pedaços (Safari e iPhone)
 └── tools/make-hero-video.sh      monta o vídeo do topo (fotos de origem em tools/src/)
 ```
 

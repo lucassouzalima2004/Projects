@@ -3,7 +3,8 @@
 # Cada push que mexe em punto-pizza/ (no main ou no branch claude/inspiring-gates-bp5orb) atualiza esse link.
 #
 # Vai como Worker com arquivos estáticos (Workers Static Assets), como a Black Rock Floors e a The Berry Coffee,
-# porque a conta já chegou ao limite de projetos do Cloudflare Pages.
+# porque a conta já chegou ao limite de projetos do Cloudflare Pages. O script punto-pizza/worker/index.js só cuida
+# dos vídeos (respostas em pedaços, que o Safari e o iPhone exigem); o resto vem direto dos arquivos.
 #
 # Usa os mesmos secrets dos outros sites do repositório (Settings → Secrets and variables → Actions):
 #   CLOUDFLARE_API_TOKEN   token do Cloudflare que pode publicar Workers (obrigatório)
@@ -115,7 +116,7 @@ jobs:
           mkdir -p _site
           cp -R punto-pizza/. _site/
           # Anotações internas e o script do vídeo não vão para o ar
-          rm -rf _site/README.md _site/tools _site/.gitignore
+          rm -rf _site/README.md _site/tools _site/worker _site/.gitignore
           today=$(date -u +%F)
           : > pages.txt
           # Em cada página: endereço completo no og:image (o WhatsApp exige), canonical e og:url
@@ -138,13 +139,16 @@ jobs:
           cat > wrangler.jsonc <<EOF
           {
             "name": "$WORKER",
+            "main": "punto-pizza/worker/index.js",
             "compatibility_date": "2025-10-01",
             "workers_dev": true,
             "preview_urls": false,
             "assets": {
               "directory": "./_site",
+              "binding": "ASSETS",
               "not_found_handling": "404-page",
-              "html_handling": "auto-trailing-slash"
+              "html_handling": "auto-trailing-slash",
+              "run_worker_first": ["/assets/video/*"]
             }
           }
           EOF
