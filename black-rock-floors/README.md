@@ -43,6 +43,22 @@ Com o site novo no ar, ele mandou: "que site que tá ficando absurdo de bom… v
    salas vazias com piso de madeira, vinílico cinza e laminado escuro, porcelanato polido, carvalho brilhando depois da
    restauração e degraus combinando com o piso do corredor.
 
+### Terceira rodada (16/10): as fotos dele
+
+"Tá perfeito." Ele pediu para trocar as fotos de banco de imagens pelas dos trabalhos dele ("fica muito fake aqueles móveis,
+o cliente pode até pensar que é uma empresa falsa") e mandou as fotos com o nome de cada uma. Feito:
+
+1. **Serviços com as fotos reais**: hardwood, LVP, laminado, porcelanato, restauração (com a lixadeira no meio do serviço)
+   e escada. Valem para a home e para o topo de cada página de serviço.
+2. **Projetos recentes**: só as seis cidades que ele mandou, cada uma com a foto e o nome da cidade, como ele pediu:
+   Seattle, Bellevue, Kirkland, Bothell, Redmond e Snohomish.
+3. **Snohomish na área atendida**: um dos trabalhos foi lá, e a cidade não estava na lista. Entrou na lista, no mapa
+   (nas coordenadas reais), no FAQ e nos dados para o Google.
+
+Ele também perguntou se o formulário vai para o e-mail dele. Hoje o formulário abre o app de e-mail **do visitante** com o
+pedido pronto para `br.remodelingwa@gmail.com`; o pedido só chega se o visitante apertar "enviar" lá. Para chegar direto, o
+site precisa de um serviço de envio de formulários (veja [O formulário](#o-formulário)).
+
 ## O que tem no site
 
 **Página inicial** (`index.html`):
@@ -52,9 +68,9 @@ Com o site novo no ar, ele mandou: "que site que tá ficando absurdo de bom… v
 - **O fundador**, logo abaixo do topo: foto do Gabriel, a frase da missão, a bio do site antigo e, embaixo, os números do site antigo (6 serviços, 24h, 100%, 4.9).
 - **Avaliações do Google passando** em duas faixas, em sentidos opostos. Param com o mouse em cima, dá para arrastar e tem botão de pausar.
 - **Serviços** ("Every floor. One accountable crew."): lista dos 6 serviços, cada um com uma foto em que o piso ocupa a maior parte. No computador, ao passar o mouse, a foto grande ao lado muda. Cada serviço leva à sua página.
-- **Projetos recentes passando**, com o nome da cidade e o tipo de serviço. Clicar abre a foto grande.
+- **Projetos recentes passando**: fotos reais dos trabalhos do Gabriel, com o nome da cidade. Clicar abre a foto grande.
 - **Why homeowners choose us** (os 4 itens do site antigo) e **How it works** (4 passos).
-- **Área atendida**: as 18 cidades do site antigo e um **mapa** com as cidades nas coordenadas reais, a divisa entre os condados e a montanha do logo a leste.
+- **Área atendida**: as 18 cidades do site antigo, mais Snohomish, e um **mapa** com as cidades nas coordenadas reais, a divisa entre os condados e a montanha do logo a leste.
 - **FAQ**: as 8 perguntas do site antigo, com respostas.
 - **Contato** e **pedido de orçamento**: o formulário abre o e-mail (ou o SMS) já preenchido.
 - **Rodapé** com a faixa "Trust the local experts." (do site antigo) e um desenho de tábuas com as emendas desencontradas.
@@ -69,8 +85,8 @@ com o serviço já marcado.
 (empresa, horários, área atendida, serviços, FAQ e trilha de navegação), `sitemap.xml` e `robots.txt` gerados na publicação.
 As animações e o vídeo desligam sozinhos para quem ativou "reduzir movimento".
 
-**Testes (16/10, depois da segunda rodada):** Lighthouse no computador 100 em desempenho, acessibilidade, boas práticas
-e SEO; no celular, 94 em desempenho na home e 96 nas páginas de serviço, 100 nos outros três. Zero problemas no teste de
+**Testes (16/10, depois da terceira rodada):** Lighthouse no computador 100 em desempenho, acessibilidade, boas práticas
+e SEO; no celular, 93–94 em desempenho na home e 94 nas páginas de serviço, 100 nos outros três. Zero problemas no teste de
 acessibilidade (axe) em todas as páginas.
 
 Identidade: logo vetorizado a partir do PNG que o Gabriel mandou. Preto **#0E0E0D**, osso **#EBE7E0** e o vermelho do "R"
@@ -83,15 +99,16 @@ maiúsculas espaçadas, ecoa o "F L O O R S" do logo).
 - [ ] **Avaliações do Google**: as 8 que aparecem são **exemplos escritos por nós**. Troque pelas avaliações reais do perfil do Google dele antes de ligar o domínio (`index.html`, seção 3). Enquanto isso, a prévia `.workers.dev` não aparece no Google (`noindex`).
 - [ ] **Link "Read them on Google"**: trocar pelo link do perfil do Google da empresa (Google Maps → Compartilhar).
 - [ ] **Nota e quantidade**: 4.9 e 137 avaliações vieram do site antigo. Confirmar os números de hoje (aparecem na linha do Google no topo, nos números do fundador, na seção de avaliações, nas páginas de serviço e na `og-image.jpg`).
-- [ ] **Fotos dos projetos**: hoje são fotos de banco de imagens (Unsplash), recortadas no piso, com cidades de exemplo. Pedir ao Gabriel as fotos dos trabalhos e a cidade de cada um.
-- [ ] **Fotos dos serviços**: também são de banco de imagens (Pexels), escolhidas com o piso ocupando a foto. Trocar pelas dele quando tiver, de preferência fotos em que o piso apareça mais do que os móveis (é o que ele mesmo pediu).
+- [x] **Fotos dos projetos**: fotos reais dele, com a cidade de cada trabalho (16/10).
+- [x] **Fotos dos serviços**: fotos reais dele (16/10).
+- [ ] **Formulário direto no e-mail**: ele quer receber os pedidos no e-mail. Falta escolher o serviço de envio (veja [O formulário](#o-formulário)).
 - [ ] **Vídeo do topo**: montado com 3 clipes gratuitos de piso, do Coverr e do Mixkit (veja [O vídeo do topo](#o-vídeo-do-topo)). Dá para trocar por filmagens dos pisos que ele instalou ou por um vídeo gerado por IA (prompts prontos em `tools/PROMPTS.md`).
 - [ ] **Nome da empresa**: o logo e a camisa dizem *Black Rock Floors*; o site antigo e o e-mail dizem *Black Rock Remodeling LLC*. Hoje o site usa "Black Rock Floors" em tudo. Confirmar o nome e se quer o nome da LLC no rodapé.
 - [ ] **Número de registro na L&I**: em Washington, a lei (RCW 18.27.100) pede o número de registro de empreiteiro na propaganda que mostra o nome da empresa, e o site conta como propaganda (vale confirmar com a L&I). Pedir o número e colocar no rodapé; também passa confiança.
 - [ ] **E-mail** `br.remodelingwa@gmail.com`: confirmar que continua sendo o dele.
 - [ ] **Respostas do FAQ** e **textos das páginas de serviço** (o que está incluído, prazos, mover móveis, tipos de acabamento): escritos por nós com base nas práticas comuns do mercado. Pedir para ele ler.
 - [ ] **Números**: "6 services in-house", "24h quote turnaround", "100% free estimates" (do site antigo).
-- [ ] **Cidades**: as 18 do site antigo. No print, as duas últimas ficaram cortadas: perguntar se falta alguma.
+- [ ] **Cidades**: as 18 do site antigo e Snohomish. No print, as duas últimas ficaram cortadas: perguntar se falta alguma.
 - [ ] **Horário**: seg a sex 8h–17h, sáb 9h–14h, domingo fechado (do site antigo).
 - [ ] **Instagram, Facebook, Yelp…**: o site antigo não mostrava. Se ele tiver, dá para pôr no rodapé.
 
@@ -103,7 +120,7 @@ O conteúdo fica direto no HTML (é o que o Google lê). Cada seção do `index.
 | --- | --- |
 | Avaliações do Google | `index.html`, seção 3: cada `<article class="review">` é uma avaliação |
 | Fundador e números | `index.html`, seção 2 |
-| Projetos (foto, cidade e serviço) | `index.html`, seção 5: cada `<button class="project">`. Fotos em `assets/img/projects/` (720 × 900, WebP) |
+| Projetos (foto e cidade) | `index.html`, seção 5: cada `<button class="project">`. Fotos em `assets/img/projects/` (720 × 900, WebP). Para mostrar também o tipo de serviço, ponha `<span class="project-service">Hardwood</span>` antes do nome da cidade |
 | Textos dos serviços | `index.html`, seção 4, e a página de cada serviço (`hardwood-floor-installation/index.html` etc.) |
 | FAQ | `index.html`, seção 8, e também o bloco `FAQPage` no `<head>` (o Google lê esse) |
 | Telefone, e-mail | Estão em todas as páginas: use "buscar e substituir" na pasta inteira (`4255434667`, `543-4667`, `br.remodelingwa@gmail.com`) e em `assets/js/app.js` (`PHONE`, `EMAIL`) |
@@ -115,6 +132,22 @@ Todas as fotos estão em WebP, já no tamanho certo. Ao trocar uma foto, mantenh
 **Trocou uma foto ou o vídeo mantendo o mesmo nome de arquivo?** Aumente o número do `?v=3` no endereço dela (no `index.html`
 e no gerador das páginas de serviço): o navegador guarda fotos e vídeos por uma semana, e sem isso quem já visitou o site
 continua vendo a versão antiga.
+
+## O formulário
+
+Hoje o botão *Send my request* abre o app de e-mail **do visitante** com o pedido já escrito para `br.remodelingwa@gmail.com`
+(a constante `EMAIL` no topo do `assets/js/app.js`), e *or text it to us* abre o SMS para o telefone da empresa. O pedido só
+chega se o visitante apertar "enviar" no app dele; quem não tem e-mail configurado no celular fica sem jeito de mandar.
+
+Para o pedido cair direto no e-mail do Gabriel, o site precisa de um serviço que receba o formulário e repasse por e-mail.
+Os dados de quem pede orçamento (nome, telefone, e-mail) passam por esse serviço, então a escolha é do Lucas e do Gabriel:
+
+- **FormSubmit** (formsubmit.co): grátis e sem conta. No primeiro envio, chega um e-mail para o Gabriel com um botão
+  "Activate Form"; depois disso, todo pedido chega na caixa dele.
+- **Web3Forms** (web3forms.com): grátis até 250 pedidos por mês. O Gabriel gera uma chave com o e-mail dele no site deles.
+- **Formspree** (formspree.io): grátis até 50 pedidos por mês, com painel para ver os pedidos. Precisa criar conta.
+
+Com o serviço escolhido, é trocar o envio no `assets/js/app.js` (o trecho do formulário) e manter o e-mail/SMS como plano B.
 
 ## O vídeo do topo
 
@@ -183,14 +216,6 @@ black-rock-floors/
 └── tools/PROMPTS.md                 prompts para gerar clipes de piso por IA
 ```
 
-Fotos dos serviços (Pexels, licença Pexels): [hardwood](https://www.pexels.com/photo/an-empty-room-in-a-modern-house-16641359/),
-[LVP](https://www.pexels.com/photo/empty-living-room-6835103/),
-[laminado](https://www.pexels.com/photo/spacious-empty-room-with-white-walls-7031603/),
-[porcelanato](https://www.pexels.com/photo/corridor-interior-of-classic-house-with-gray-walls-6587823/),
-[restauração](https://www.pexels.com/photo/photo-of-an-empty-room-3935338/) e
-[escada](https://www.pexels.com/photo/a-hallway-with-wooden-floors-and-white-doors-28272314/).
-
-Créditos: fontes Archivo e Cormorant Garamond (SIL Open Font License); fotos de exemplo dos serviços do
-[Pexels](https://www.pexels.com/license/) (licença Pexels) e dos projetos do [Unsplash](https://unsplash.com/license)
-(licença Unsplash), as duas com uso comercial liberado e sem crédito obrigatório; clipes do vídeo do [Coverr](https://coverr.co/license) (Coverr License) e do [Mixkit](https://mixkit.co/license/)
-(Mixkit Stock Video Free License); logo e foto do Gabriel enviados por ele.
+Créditos: fontes Archivo e Cormorant Garamond (SIL Open Font License); fotos dos serviços e dos projetos, logo e foto do
+Gabriel enviados por ele; clipes do vídeo do [Coverr](https://coverr.co/license) (Coverr License) e do [Mixkit](https://mixkit.co/license/)
+(Mixkit Stock Video Free License).

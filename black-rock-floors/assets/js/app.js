@@ -511,7 +511,10 @@
       img.src = src.getAttribute('src');
       img.alt = src.alt;
       city.textContent = $('.project-city', originals[index]).textContent;
-      service.textContent = $('.project-service', originals[index]).textContent;
+      // O tipo de serviço é opcional: os cartões de hoje mostram só a cidade
+      const kind = $('.project-service', originals[index]);
+      service.textContent = kind ? kind.textContent : '';
+      service.hidden = !kind;
     };
     document.addEventListener('click', (e) => {
       const btn = e.target.closest('[data-project]');
