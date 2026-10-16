@@ -1,6 +1,7 @@
 {%- liquid
   assign menu = section.settings.menu
   assign half = menu.links.size | plus: 1 | divided_by: 2 | floor
+  assign layout = section.settings.layout
   assign overlay = false
   if section.settings.transparent_home and template.name == 'index'
     assign overlay = true
@@ -11,7 +12,7 @@
   data-header-wrap
   data-sticky="{{ section.settings.sticky }}"
 >
-  <header class="header" data-header>
+  <header class="header header--{{ layout }}" data-header>
     <div class="container container--wide header__inner">
       <div class="header__left">
         <button
@@ -23,7 +24,11 @@
         >
           {% render 'icon', name: 'menu' %}
         </button>
-        {%- if menu != blank -%}
+        {%- if layout == 'stacked' -%}
+          <a href="{{ routes.search_url }}" class="icon-button header__search-left" data-search-open aria-label="{{ 'search.title' | t }}">
+            {% render 'icon', name: 'search' %}
+          </a>
+        {%- elsif menu != blank -%}
           <nav class="header__nav header__nav--left" aria-label="{{ 'sections.header.menu' | t }}">
             {%- for link in menu.links limit: half -%}
               {% render 'nav-item', link: link %}
@@ -58,14 +63,14 @@
       </a>
 
       <div class="header__right">
-        {%- if menu != blank and menu.links.size > half -%}
+        {%- if layout == 'split' and menu != blank and menu.links.size > half -%}
           <nav class="header__nav header__nav--right" aria-label="{{ 'sections.header.menu' | t }}">
             {%- for link in menu.links offset: half -%}
               {% render 'nav-item', link: link %}
             {%- endfor -%}
           </nav>
         {%- endif -%}
-        <a href="{{ routes.search_url }}" class="icon-button" data-search-open aria-label="{{ 'search.title' | t }}">
+        <a href="{{ routes.search_url }}" class="icon-button header__search-right" data-search-open aria-label="{{ 'search.title' | t }}">
           {% render 'icon', name: 'search' %}
         </a>
         {%- if shop.customer_accounts_enabled -%}
@@ -79,6 +84,16 @@
         </a>
       </div>
     </div>
+
+    {%- if layout == 'stacked' and menu != blank -%}
+      <nav class="header__navrow" aria-label="{{ 'sections.header.menu' | t }}">
+        <div class="container container--wide header__navrow-inner">
+          {%- for link in menu.links -%}
+            {% render 'nav-item', link: link %}
+          {%- endfor -%}
+        </div>
+      </nav>
+    {%- endif -%}
   </header>
 </div>
 
@@ -117,7 +132,7 @@
           {{ 'customer.account.title' | t }}
         </a>
       {%- endif -%}
-      <div class="footer__social" style="justify-content: center">
+      <div class="footer__social mobile-nav__social">
         {%- render 'social-links' -%}
       </div>
     </div>
@@ -134,6 +149,16 @@
       "id": "menu",
       "label": "Menu",
       "default": "main-menu"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Formato",
+      "options": [
+        { "value": "stacked", "label": "Logo no centro e menu embaixo (como a loja atual)" },
+        { "value": "split", "label": "Menu dividido dos dois lados do logo" }
+      ],
+      "default": "stacked"
     },
     {
       "type": "checkbox",

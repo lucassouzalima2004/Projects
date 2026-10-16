@@ -1,7 +1,7 @@
 <section class="section founder section--paper2">
   <div class="container founder__grid">
     <div class="founder__visual" data-reveal="clip">
-      <div class="founder__arch">
+      <div class="founder__arch" style="--pos: {{ section.settings.image_position }}">
         {%- if section.settings.image != blank -%}
           {{ section.settings.image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '400, 700, 1000, 1200', sizes: '(min-width: 990px) 40vw, 90vw', alt: section.settings.name }}
         {%- else -%}
@@ -45,6 +45,18 @@
   "class": "section-founder",
   "settings": [
     { "type": "image_picker", "id": "image", "label": "Foto" },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Enquadramento da foto",
+      "info": "Útil quando a foto é um banner largo: escolha o lado onde a pessoa está.",
+      "options": [
+        { "value": "left center", "label": "Esquerda" },
+        { "value": "center center", "label": "Centro" },
+        { "value": "right center", "label": "Direita" }
+      ],
+      "default": "center center"
+    },
     { "type": "text", "id": "monogram", "label": "Iniciais (quando não há foto)", "default": "MM" },
     { "type": "text", "id": "eyebrow", "label": "Chamada", "default": "Quem criou" },
     { "type": "inline_richtext", "id": "quote", "label": "Frase", "default": "Antes de ser farmacêutica e empreendedora, eu sou <em>mulher.</em>" },

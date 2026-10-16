@@ -5,6 +5,8 @@
   "description": "Preview local do tema FreshFemme Thermal com os produtos reais da loja",
   "scripts": {
     "dev": "node server.mjs",
+    "build": "node build.mjs",
+    "serve": "node serve-dist.mjs",
     "zip": "node zip.mjs"
   },
   "dependencies": {

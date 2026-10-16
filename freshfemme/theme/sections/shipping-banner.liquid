@@ -1,0 +1,41 @@
+{%- liquid
+  assign threshold = settings.free_shipping_threshold
+-%}
+<section class="ship-band ship-band--{{ section.settings.style }}">
+  <a class="ship-band__inner container" {% if section.settings.link != blank %}href="{{ section.settings.link }}"{% endif %}>
+    <span class="ship-band__road" aria-hidden="true">
+      <span class="ship-band__truck">{% render 'icon', name: 'truck' %}</span>
+    </span>
+    <span class="ship-band__title" data-reveal="words">{{ section.settings.heading }}</span>
+    <span class="ship-band__text" data-reveal style="--i: 2">
+      {{ section.settings.text }}
+      {%- if threshold > 0 and section.settings.show_threshold -%}
+        <strong>{{ 'sections.shipping.minimum' | t: amount: threshold }}</strong>
+      {%- endif -%}
+    </span>
+  </a>
+</section>
+
+{% schema %}
+{
+  "name": "Faixa de frete grátis",
+  "class": "section-ship-band",
+  "settings": [
+    { "type": "inline_richtext", "id": "heading", "label": "Título", "default": "Frete grátis" },
+    { "type": "text", "id": "text", "label": "Texto", "default": "para todo o Brasil" },
+    { "type": "checkbox", "id": "show_threshold", "label": "Mostrar o pedido mínimo", "info": "Usa o valor de Configurações do tema → Vendas.", "default": true },
+    { "type": "url", "id": "link", "label": "Link" },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Cor",
+      "options": [
+        { "value": "brand", "label": "Verde-água" },
+        { "value": "mint", "label": "Menta" }
+      ],
+      "default": "brand"
+    }
+  ],
+  "presets": [{ "name": "Faixa de frete grátis" }]
+}
+{% endschema %}

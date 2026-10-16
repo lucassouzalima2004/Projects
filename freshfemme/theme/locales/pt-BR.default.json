@@ -63,13 +63,17 @@
       "hours": "horas",
       "minutes": "min",
       "seconds": "seg",
-      "save": "Economize"
+      "save": "Economize",
+      "in_promo": "Na promoção"
     },
     "newsletter": {
       "email": "Seu melhor e-mail",
       "submit": "Quero receber",
       "success": "Pronto! Você vai receber nossas novidades.",
       "legal": "Sem spam. Você pode sair quando quiser."
+    },
+    "shipping": {
+      "minimum": "· pedido mínimo R$ {{ amount }}"
     }
   },
   "products": {

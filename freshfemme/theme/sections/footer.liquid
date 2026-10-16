@@ -8,7 +8,7 @@
   {%- endif -%}
 
   <div class="container">
-    <div class="footer__grid">
+    <div class="footer__grid" style="--footer-cols: {{ section.blocks.size }}">
       <div class="footer__brand">
         {%- if settings.logo_inverse != blank -%}
           {{ settings.logo_inverse | image_url: width: 480 | image_tag: loading: 'lazy', widths: '240, 480', sizes: '200px', alt: shop.name }}
@@ -18,7 +18,10 @@
         {%- if section.settings.text != blank -%}
           <p>{{ section.settings.text }}</p>
         {%- endif -%}
-        <div class="footer__social">{% render 'social-links' %}</div>
+        {%- assign social_blocks = section.blocks | where: 'type', 'social' -%}
+        {%- if social_blocks.size == 0 -%}
+          <div class="footer__social">{% render 'social-links' %}</div>
+        {%- endif -%}
       </div>
 
       {%- for block in section.blocks -%}
@@ -44,6 +47,22 @@
                   {%- assign url = parts[1] | strip -%}
                   {%- if label != blank -%}
                     <li><a href="{{ url | default: '#' }}">{{ label }}</a></li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+            {%- when 'social' -%}
+              <ul class="footer__links footer__links--social" role="list">
+                {%- assign networks = 'instagram,tiktok,youtube,facebook' | split: ',' -%}
+                {%- for network in networks -%}
+                  {%- assign key = 'social_' | append: network -%}
+                  {%- if settings[key] != blank -%}
+                    {%- case network -%}
+                      {%- when 'instagram' -%}{%- assign network_name = 'Instagram' -%}
+                      {%- when 'tiktok' -%}{%- assign network_name = 'TikTok' -%}
+                      {%- when 'youtube' -%}{%- assign network_name = 'YouTube' -%}
+                      {%- else -%}{%- assign network_name = 'Facebook' -%}
+                    {%- endcase -%}
+                    <li><a href="{{ settings[key] }}" target="_blank" rel="noopener">{% render 'icon', name: network %}{{ network_name }}</a></li>
                   {%- endif -%}
                 {%- endfor -%}
               </ul>
@@ -76,7 +95,7 @@
 {
   "name": "Rodapé",
   "class": "section-footer",
-  "max_blocks": 4,
+  "max_blocks": 5,
   "settings": [
     {
       "type": "inline_richtext",
@@ -112,6 +131,14 @@
       "settings": [
         { "type": "text", "id": "title", "label": "Título", "default": "Institucional" },
         { "type": "textarea", "id": "links", "label": "Links (um por linha: Texto | /endereço)", "default": "Quem Somos | /pages/quem-somos\nFale Conosco | /pages/contact" }
+      ]
+    },
+    {
+      "type": "social",
+      "name": "Redes sociais",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "title", "label": "Título", "default": "Conecte-se" }
       ]
     },
     {

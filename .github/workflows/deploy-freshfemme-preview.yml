@@ -1,0 +1,148 @@
+# Publica a prévia do novo tema da FreshFemme (Fabiano) no Cloudflare, sempre no mesmo link:
+#   https://freshfemme-preview.<subdomínio da conta>.workers.dev  (o endereço exato aparece no resumo da execução)
+# Cada push que mexe em freshfemme/ (no main ou no branch claude/affectionate-allen-ip4tpk) atualiza esse link.
+#
+# A prévia é o tema da Shopify renderizado em HTML estático com os produtos reais (freshfemme/preview/build.mjs).
+# O carrinho funciona no navegador; o pagamento e os formulários só avisam que é uma prévia, e o site não é
+# indexado pelo Google. A loja de verdade continua sendo o tema enviado para a Shopify.
+#
+# Vai como Worker com arquivos estáticos (Workers Static Assets), como os outros sites do repositório:
+# a conta já tem 100 projetos no Cloudflare Pages, o limite.
+#
+# Usa os mesmos secrets dos outros sites (Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN   token do Cloudflare que pode publicar Workers (obrigatório)
+#   CLOUDFLARE_ACCOUNT_ID  ID da conta (opcional: sem ele, o workflow descobre a conta pelo token)
+# Enquanto o token não existir, o workflow só avisa e não falha.
+name: Deploy FreshFemme preview (Cloudflare)
+
+on:
+  push:
+    branches: [main, claude/affectionate-allen-ip4tpk]
+    paths:
+      - 'freshfemme/**'
+      - '.github/workflows/deploy-freshfemme-preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: freshfemme-preview-deploy
+  cancel-in-progress: false
+
+env:
+  WORKER: freshfemme-preview
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.creds.outputs.ready }}
+    steps:
+      - name: Conferir o token do Cloudflare
+        id: creds
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -n "$TOKEN" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=Cloudflare sem credenciais::Falta o secret CLOUDFLARE_API_TOKEN. Cadastre em Settings → Secrets and variables → Actions e rode de novo (abra a execução em Actions → Re-run all jobs)."
+          fi
+
+  deploy:
+    needs: check
+    if: needs.check.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      ACCOUNT_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependências
+        run: |
+          npm install --no-save --no-audit --no-fund --include=optional wrangler@4
+          npm ci --prefix freshfemme/preview --no-audit --no-fund
+
+      - name: Conta do Cloudflare
+        run: |
+          id="$ACCOUNT_SECRET"
+          if [ -z "$id" ]; then
+            # Sem o secret, descobre a conta pelo próprio token
+            auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+            id=$(curl -sS -H "$auth" "https://api.cloudflare.com/client/v4/accounts?per_page=50" | jq -r '.result[]?.id')
+            if [ -z "$id" ]; then
+              id=$(curl -sS -H "$auth" "https://api.cloudflare.com/client/v4/memberships?per_page=50" | jq -r '.result[]?.account.id')
+            fi
+            count=$(printf '%s\n' "$id" | grep -c . || true)
+            if [ "$count" != "1" ]; then
+              echo "::error title=Conta do Cloudflare::O token dá acesso a $count contas. Cadastre o secret CLOUDFLARE_ACCOUNT_ID com o ID da conta certa (Cloudflare → Workers & Pages → Account ID)."
+              exit 1
+            fi
+            echo "::add-mask::$id"
+            echo "Conta encontrada pelo token."
+          fi
+          echo "CLOUDFLARE_ACCOUNT_ID=$id" >> "$GITHUB_ENV"
+
+      - name: Endereço do site e conferência do nome
+        run: |
+          acc="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID"
+          auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+          sub=$(curl -sS -H "$auth" "$acc/workers/subdomain" | jq -r '.result.subdomain // empty')
+          if [ -z "$sub" ]; then
+            echo "::error title=workers.dev::A conta não tem subdomínio workers.dev. Crie em Cloudflare → Workers & Pages → (lado direito) Subdomain e rode de novo."
+            exit 1
+          fi
+          url="https://$WORKER.$sub.workers.dev"
+          echo "WORKERS_URL=$url" >> "$GITHUB_ENV"
+          # Não sobrescreve um Worker com o mesmo nome que não seja este site
+          if curl -sS -H "$auth" "$acc/workers/scripts/$WORKER/settings" | jq -e '.success' > /dev/null; then
+            if curl -fsS --max-time 20 "$url/" | grep -q "FreshFemme"; then
+              echo "O Worker $WORKER já é este site: vai ser atualizado."
+            else
+              echo "::error title=Nome em uso::Já existe um Worker chamado $WORKER nesta conta que não é este site. Apague ou renomeie esse Worker, ou troque WORKER no topo deste workflow."
+              exit 1
+            fi
+          else
+            echo "Primeira publicação: o Worker $WORKER vai ser criado."
+          fi
+
+      - name: Montar a prévia
+        run: |
+          SITE_URL="$WORKERS_URL" node freshfemme/preview/build.mjs
+          cat > wrangler.jsonc <<EOF
+          {
+            "name": "$WORKER",
+            "compatibility_date": "2025-10-01",
+            "workers_dev": true,
+            "preview_urls": false,
+            "assets": {
+              "directory": "./freshfemme/preview/dist",
+              "not_found_handling": "404-page",
+              "html_handling": "auto-trailing-slash"
+            }
+          }
+          EOF
+
+      - name: Publicar
+        run: npx wrangler deploy --config wrangler.jsonc
+
+      - name: Conferir o site no ar
+        run: |
+          for i in 1 2 3 4 5 6; do
+            if curl -fsS --max-time 20 "$WORKERS_URL/" | grep -q "hero-thermal" \
+              && curl -fsS --max-time 20 "$WORKERS_URL/products/spray-refrescante-para-calores-menopausa-freshfemme" | grep -q "kit__label"; then
+              echo "Prévia no ar: $WORKERS_URL"
+              echo "### Prévia no ar: $WORKERS_URL" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::warning title=Site ainda não respondeu::A publicação terminou, mas $WORKERS_URL ainda não respondeu. Tente abrir de novo em alguns minutos."
+          echo "### Publicado em: $WORKERS_URL (ainda carregando)" >> "$GITHUB_STEP_SUMMARY"

@@ -4,10 +4,16 @@
   if image == blank and product != blank
     assign image = product.featured_image
   endif
+  assign lifestyle = section.settings.lifestyle_image
 -%}
 <section class="section section--tight promo">
   <div class="container">
-    <div class="promo__card promo__card--{{ section.settings.tone }}" data-reveal="scale">
+    <div class="promo__card promo__card--{{ section.settings.tone }}{% if lifestyle != blank %} promo__card--split{% endif %}" data-reveal="scale">
+      {%- if lifestyle != blank -%}
+        <div class="promo__lifestyle">
+          {{ lifestyle | image_url: width: 1400 | image_tag: loading: 'lazy', widths: '500, 800, 1100, 1400', sizes: '(min-width: 990px) 45vw, 100vw', alt: lifestyle.alt }}
+        </div>
+      {%- endif -%}
       <div class="promo__media" data-tilt="5">
         <span class="promo__blob" aria-hidden="true"></span>
         {%- if image != blank -%}
@@ -71,7 +77,8 @@
   "class": "section-promo",
   "settings": [
     { "type": "product", "id": "product", "label": "Produto" },
-    { "type": "image_picker", "id": "image", "label": "Imagem", "info": "Se vazio, usa a foto do produto." },
+    { "type": "image_picker", "id": "image", "label": "Imagem do produto", "info": "Se vazio, usa a foto do produto." },
+    { "type": "image_picker", "id": "lifestyle_image", "label": "Foto ao lado (opcional)", "info": "Ex.: a foto do casal correndo. Ocupa metade do bloco, como na loja atual." },
     { "type": "text", "id": "eyebrow", "label": "Chamada", "default": "Promo da semana" },
     { "type": "inline_richtext", "id": "heading", "label": "Título", "default": "Longevidade <em>e</em> leveza, juntas." },
     { "type": "richtext", "id": "text", "label": "Texto" },
@@ -94,11 +101,12 @@
       "id": "tone",
       "label": "Cor",
       "options": [
+        { "value": "brand", "label": "Verde-água da marca" },
         { "value": "lilac", "label": "Lilás e sálvia (VivaAge)" },
         { "value": "mint", "label": "Menta" },
         { "value": "rose", "label": "Rosé" }
       ],
-      "default": "lilac"
+      "default": "brand"
     }
   ],
   "presets": [{ "name": "Promoção com contagem" }]

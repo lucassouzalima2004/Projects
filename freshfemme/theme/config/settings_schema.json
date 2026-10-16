@@ -45,32 +45,44 @@
       {
         "type": "color",
         "id": "color_brand",
-        "label": "Verde-água da marca",
-        "default": "#3FB8B3"
+        "label": "Verde-água da marca (botões e destaques)",
+        "default": "#26A69E"
       },
       {
         "type": "color",
         "id": "color_brand_deep",
-        "label": "Verde-água escuro (textos e botões)",
-        "default": "#0E6F6B"
+        "label": "Verde-água escuro (textos e botão principal)",
+        "default": "#127A74"
+      },
+      {
+        "type": "color",
+        "id": "color_brand_soft",
+        "label": "Verde-água claro (logo)",
+        "default": "#67C7C4"
       },
       {
         "type": "color",
         "id": "color_ink",
         "label": "Texto principal",
-        "default": "#0C1D20"
+        "default": "#1E2A2D"
       },
       {
         "type": "color",
         "id": "color_paper",
         "label": "Fundo",
-        "default": "#FBF8F3"
+        "default": "#FFFFFF"
       },
       {
         "type": "color",
         "id": "color_mint",
         "label": "Menta (fundos suaves)",
-        "default": "#E4F5F1"
+        "default": "#E8F6F4"
+      },
+      {
+        "type": "color",
+        "id": "color_footer",
+        "label": "Fundo do rodapé",
+        "default": "#0F8A83"
       },
       {
         "type": "color",
@@ -81,20 +93,20 @@
       {
         "type": "color",
         "id": "color_heat",
-        "label": "Calor (destaques quentes)",
+        "label": "Calor (capa térmica)",
         "default": "#FF5A2C"
       },
       {
         "type": "color",
         "id": "color_ice",
-        "label": "Gelo (destaques frios)",
+        "label": "Gelo (capa térmica)",
         "default": "#5FE1F0"
       },
       {
         "type": "color",
         "id": "color_sale",
         "label": "Selo de desconto",
-        "default": "#FF5A2C"
+        "default": "#A3325A"
       }
     ]
   },
@@ -105,7 +117,28 @@
         "type": "font_picker",
         "id": "font_display",
         "label": "Títulos",
-        "default": "instrument_serif_n4"
+        "info": "A loja usa Bricolage Grotesque, a mesma fonte do site atual.",
+        "default": "bricolage_grotesque_n4"
+      },
+      {
+        "type": "select",
+        "id": "heading_weight",
+        "label": "Peso dos títulos",
+        "options": [
+          {
+            "value": "500",
+            "label": "Médio"
+          },
+          {
+            "value": "600",
+            "label": "Seminegrito"
+          },
+          {
+            "value": "700",
+            "label": "Negrito"
+          }
+        ],
+        "default": "600"
       },
       {
         "type": "font_picker",
@@ -198,8 +231,14 @@
         "id": "cart_type",
         "label": "Ao adicionar um produto",
         "options": [
-          { "value": "drawer", "label": "Abrir carrinho lateral" },
-          { "value": "page", "label": "Ir para a página do carrinho" }
+          {
+            "value": "drawer",
+            "label": "Abrir carrinho lateral"
+          },
+          {
+            "value": "page",
+            "label": "Ir para a página do carrinho"
+          }
         ],
         "default": "drawer"
       },
@@ -237,8 +276,14 @@
         "id": "card_image_ratio",
         "label": "Proporção da imagem",
         "options": [
-          { "value": "1", "label": "Quadrada" },
-          { "value": "0.8", "label": "Retrato" }
+          {
+            "value": "1",
+            "label": "Quadrada"
+          },
+          {
+            "value": "0.8",
+            "label": "Retrato"
+          }
         ],
         "default": "1"
       }
@@ -282,10 +327,30 @@
   {
     "name": "Redes sociais",
     "settings": [
-      { "type": "text", "id": "social_instagram", "label": "Instagram", "default": "https://www.instagram.com/freshfemmeoficial/" },
-      { "type": "text", "id": "social_tiktok", "label": "TikTok", "default": "https://www.tiktok.com/@freshfemme" },
-      { "type": "text", "id": "social_youtube", "label": "YouTube", "default": "https://www.youtube.com/@freshfemme4012" },
-      { "type": "text", "id": "social_facebook", "label": "Facebook", "default": "https://www.facebook.com/freshfemmeoficial/" }
+      {
+        "type": "text",
+        "id": "social_instagram",
+        "label": "Instagram",
+        "default": "https://www.instagram.com/freshfemmeoficial/"
+      },
+      {
+        "type": "text",
+        "id": "social_tiktok",
+        "label": "TikTok",
+        "default": "https://www.tiktok.com/@freshfemme"
+      },
+      {
+        "type": "text",
+        "id": "social_youtube",
+        "label": "YouTube",
+        "default": "https://www.youtube.com/@freshfemme4012"
+      },
+      {
+        "type": "text",
+        "id": "social_facebook",
+        "label": "Facebook",
+        "default": "https://www.facebook.com/freshfemmeoficial/"
+      }
     ]
   },
   {

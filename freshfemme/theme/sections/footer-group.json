@@ -25,12 +25,19 @@
             "title": "Atendimento",
             "links": "Fale Conosco | /pages/contact\nDúvidas Frequentes | /pages/duvidas-frequentes\nMeus Pedidos | /account\nModo de usar o Spray | /pages/modo-de-usar-spray-freshfemme\nModo de usar o Sérum | /pages/modo-de-usar-serum-freshfemme\nTrocas e devoluções | /pages/politica-de-cancelamento-devolucao-troca-e-reembolso\nPolítica de Privacidade | /pages/politica-de-privacidade"
           }
+        },
+        "conecte": {
+          "type": "social",
+          "settings": {
+            "title": "Conecte-se"
+          }
         }
       },
       "block_order": [
         "categorias",
         "institucional",
-        "atendimento"
+        "atendimento",
+        "conecte"
       ],
       "settings": {
         "statement": "Menopausa não é pausa. <em>É potência.</em>",

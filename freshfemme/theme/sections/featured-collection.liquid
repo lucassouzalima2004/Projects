@@ -66,8 +66,12 @@
           </div>
           {%- if collection != blank and section.settings.show_link -%}
             <div class="featured__more" data-reveal>
-              <a href="{{ collection.url }}" class="btn btn--outline">
-                {{ 'sections.featured.view_all' | t: title: collection.title }}
+              <a href="{{ section.settings.button_link | default: collection.url }}" class="btn btn--outline">
+                {%- if section.settings.button_label != blank -%}
+                  {{ section.settings.button_label }}
+                {%- else -%}
+                  {{ 'sections.featured.view_all' | t: title: collection.title }}
+                {%- endif %}
                 {% render 'icon', name: 'arrow' %}
               </a>
             </div>
@@ -89,6 +93,8 @@
     { "type": "richtext", "id": "text", "label": "Texto" },
     { "type": "range", "id": "columns", "label": "Colunas no computador", "min": 3, "max": 4, "step": 1, "default": 4 },
     { "type": "checkbox", "id": "show_link", "label": "Botão \"ver todos\"", "default": true },
+    { "type": "text", "id": "button_label", "label": "Texto do botão", "info": "Se vazio: \"Ver tudo em\" + nome da coleção." },
+    { "type": "url", "id": "button_link", "label": "Link do botão", "info": "Se vazio, abre a coleção." },
     {
       "type": "select",
       "id": "background",
