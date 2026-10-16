@@ -183,6 +183,13 @@ black-rock-floors/
 └── tools/PROMPTS.md                 prompts para gerar clipes de piso por IA
 ```
 
+Fotos dos serviços (Pexels, licença Pexels): [hardwood](https://www.pexels.com/photo/an-empty-room-in-a-modern-house-16641359/),
+[LVP](https://www.pexels.com/photo/empty-living-room-6835103/),
+[laminado](https://www.pexels.com/photo/spacious-empty-room-with-white-walls-7031603/),
+[porcelanato](https://www.pexels.com/photo/corridor-interior-of-classic-house-with-gray-walls-6587823/),
+[restauração](https://www.pexels.com/photo/photo-of-an-empty-room-3935338/) e
+[escada](https://www.pexels.com/photo/a-hallway-with-wooden-floors-and-white-doors-28272314/).
+
 Créditos: fontes Archivo e Cormorant Garamond (SIL Open Font License); fotos de exemplo dos serviços do
 [Pexels](https://www.pexels.com/license/) (licença Pexels) e dos projetos do [Unsplash](https://unsplash.com/license)
 (licença Unsplash), as duas com uso comercial liberado e sem crédito obrigatório; clipes do vídeo do [Coverr](https://coverr.co/license) (Coverr License) e do [Mixkit](https://mixkit.co/license/)
