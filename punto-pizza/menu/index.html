@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Menu · Punto Pizza Verona</title>
-  <meta name="description" content="Il menu di Punto Pizza a Verona: pizze classiche, speciali e mono, anche con impasto integrale o senza glutine. Margherita, Capricciosa, Luna con burrata, Ponny con sfilacci di cavallo e altre.">
-  <meta name="theme-color" content="#16110e">
+  <meta name="description" content="Il menu di Punto Pizza a Verona con le foto di ogni pizza: classiche, specialità come Fiocco, Luna e Ponny, pizze baby, fritti e bibite. Anche con impasto integrale o senza glutine.">
+  <meta name="theme-color" content="#ffffff">
 
   <!-- Prévia do link (WhatsApp, Facebook). O deploy troca o og:image pelo endereço completo e coloca o canonical. -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Punto Pizza Verona">
   <meta property="og:title" content="Menu · Punto Pizza Verona">
-  <meta property="og:description" content="Il menu di Punto Pizza a Verona: pizze classiche, speciali e mono, anche con impasto integrale o senza glutine. Margherita, Capricciosa, Luna con burrata, Ponny con sfilacci di cavallo e altre.">
+  <meta property="og:description" content="Il menu di Punto Pizza a Verona con le foto di ogni pizza: classiche, specialità come Fiocco, Luna e Ponny, pizze baby, fritti e bibite. Anche con impasto integrale o senza glutine.">
   <meta property="og:image" content="../assets/img/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -22,9 +22,10 @@
   <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
   <link rel="preload" href="../assets/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="../assets/fonts/instrument-serif-italic.woff2" as="font" type="font/woff2" crossorigin>
+
   <link rel="stylesheet" href="../assets/css/styles.css">
   <script>document.documentElement.classList.add('js')</script>
+  <script src="../assets/js/vendor/lenis.min.js" defer></script>
   <script src="../assets/js/app.js" defer></script>
   <script type="application/ld+json">
 {
@@ -41,18 +42,42 @@
           "hasMenuItem": [
             {
               "@type": "MenuItem",
-              "name": "Margherita",
-              "description": "Pomodoro e mozzarella",
+              "name": "Porchettina",
+              "description": "Porchetta croccante, crema di cipolle di Tropea e Grana a scaglie, su un letto di mozzarella. Un incontro tra croccantezza, dolcezza e sapidità. Una pizza decisa, ricca e sorprendente, pensata per chi ama i sapori veri.",
+              "image": "assets/img/menu/porchettina.webp",
               "offers": {
                 "@type": "Offer",
-                "price": "8.00",
+                "price": "11.50",
                 "priceCurrency": "EUR"
               }
             },
             {
               "@type": "MenuItem",
-              "name": "Marinara",
-              "description": "Pomodoro, olio con aglio e origano",
+              "name": "La Margherita Come Si Deve",
+              "description": "Pomodoro San Marzano DOP dell’Agro Sarnese-Nocerino, fiordilatte artigianale di piccolo caseificio locale, basilico fresco e olio extravergine d’oliva a crudo. Gli ingredienti migliori, senza compromessi. La nostra interpretazione della Margherita. Come si deve.",
+              "image": "assets/img/menu/margherita-come-si-deve.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "9.00",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Margherita",
+              "description": "Pomodoro e mozzarella di qualità. La semplicità fatta bene.",
+              "image": "assets/img/menu/margherita.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "7.00",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Crea la tua pizza bianca",
+              "description": "Base mozzarella. Parti da qui e crea la tua pizza perfetta aggiungendo gli ingredienti che preferisci. Scegli tra salumi, formaggi e verdure e costruisci la combinazione che più ti piace.",
+              "image": "assets/img/menu/crea-bianca.webp",
               "offers": {
                 "@type": "Offer",
                 "price": "6.50",
@@ -61,28 +86,20 @@
             },
             {
               "@type": "MenuItem",
-              "name": "Romana",
-              "description": "Pomodoro, mozzarella, acciughe, origano e capperi",
+              "name": "Crea la tua pizza rossa",
+              "description": "Base pomodoro. Parti da qui e crea la tua pizza perfetta aggiungendo gli ingredienti che preferisci. Scegli tra salumi, formaggi e verdure e costruisci la combinazione che più ti piace.",
+              "image": "assets/img/menu/crea-rossa.webp",
               "offers": {
                 "@type": "Offer",
-                "price": "9.50",
+                "price": "6.00",
                 "priceCurrency": "EUR"
               }
             },
             {
               "@type": "MenuItem",
-              "name": "Parmigiana",
-              "description": "Pomodoro, mozzarella, melanzane e grana",
-              "offers": {
-                "@type": "Offer",
-                "price": "9.50",
-                "priceCurrency": "EUR"
-              }
-            },
-            {
-              "@type": "MenuItem",
-              "name": "Tonno e Cipolla",
-              "description": "Pomodoro, mozzarella, tonno e cipolla",
+              "name": "Porkis",
+              "description": "Super carnivora: prosciutto cotto, wurstel, salsiccia e salamino piccante su base di pomodoro e mozzarella. Per chi ama la pizza senza limiti.",
+              "image": "assets/img/menu/porkis.webp",
               "offers": {
                 "@type": "Offer",
                 "price": "10.00",
@@ -91,48 +108,9 @@
             },
             {
               "@type": "MenuItem",
-              "name": "Armonia",
-              "description": "Pomodoro, mozzarella, zucchine, brie e rucola",
-              "offers": {
-                "@type": "Offer",
-                "price": "10.00",
-                "priceCurrency": "EUR"
-              }
-            },
-            {
-              "@type": "MenuItem",
-              "name": "Prosciutto e Funghi",
-              "description": "Pomodoro, mozzarella, prosciutto e funghi",
-              "offers": {
-                "@type": "Offer",
-                "price": "10.50",
-                "priceCurrency": "EUR"
-              }
-            },
-            {
-              "@type": "MenuItem",
-              "name": "Bontà",
-              "description": "Pomodoro, mozzarella, patatine fritte, prosciutto e grana",
-              "offers": {
-                "@type": "Offer",
-                "price": "10.50",
-                "priceCurrency": "EUR"
-              }
-            },
-            {
-              "@type": "MenuItem",
-              "name": "Friarielli e Salsiccia",
-              "description": "Friarielli e salsiccia",
-              "offers": {
-                "@type": "Offer",
-                "price": "10.50",
-                "priceCurrency": "EUR"
-              }
-            },
-            {
-              "@type": "MenuItem",
-              "name": "Svolta",
-              "description": "Pomodoro, mozzarella, pancetta, funghi freschi, stracchino e Cirio",
+              "name": "4 Formaggi",
+              "description": "Mozzarella, gorgonzola, grana e ricotta. Cremosa e avvolgente, per veri amanti dei formaggi.",
+              "image": "assets/img/menu/4-formaggi.webp",
               "offers": {
                 "@type": "Offer",
                 "price": "11.00",
@@ -141,8 +119,53 @@
             },
             {
               "@type": "MenuItem",
-              "name": "Saporita",
-              "description": "Pomodoro, mozzarella, misto bosco, scamorza e speck",
+              "name": "Friarielli e Salsiccia",
+              "description": "Friarielli saltati e salsiccia saporita su mozzarella filante. Decisa e tradizionale.",
+              "image": "assets/img/menu/friarielli-e-salsiccia.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "9.50",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Vittoria",
+              "description": "Pomodoro, mozzarella, crudo di Parma, rucola fresca e grana a scaglie. Fresca, profumata e sempre elegante.",
+              "image": "assets/img/menu/vittoria.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "11.00",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Svolta",
+              "description": "Pomodoro e mozzarella con pancetta croccante, funghi freschi, stracchino cremoso e pomodorini ciliegino. Ricca ma equilibrata, la nostra pizza firma.",
+              "image": "assets/img/menu/svolta.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "11.00",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Prosciutto e Funghi",
+              "description": "Intramontabile: prosciutto cotto e funghi su base di pomodoro e mozzarella. Un classico che piace a tutti.",
+              "image": "assets/img/menu/prosciutto-e-funghi.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "9.50",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Capricciosa",
+              "description": "La grande classica: pomodoro, mozzarella, funghi, carciofi, olive, prosciutto cotto e salamino piccante. Ricca, equilibrata, intramontabile.",
+              "image": "assets/img/menu/capricciosa.webp",
               "offers": {
                 "@type": "Offer",
                 "price": "11.00",
@@ -152,7 +175,19 @@
             {
               "@type": "MenuItem",
               "name": "Texas",
-              "description": "Pomodoro, mozzarella, patatine fritte, würstel e scamorza",
+              "description": "Pomodoro, mozzarella, patatine fritte, wurstel e provola affumicata. Ricca, golosa e molto sostanziosa.",
+              "image": "assets/img/menu/texas.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "10.50",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Dolcissima",
+              "description": "Avvolgente e cremosa: patate al forno, mascarpone e speck su base di pomodoro e mozzarella. Dolcezza e sapidità in perfetto equilibrio.",
+              "image": "assets/img/menu/dolcissima.webp",
               "offers": {
                 "@type": "Offer",
                 "price": "11.00",
@@ -161,28 +196,257 @@
             },
             {
               "@type": "MenuItem",
-              "name": "4 Stagioni",
-              "description": "Pomodoro, mozzarella, funghi, carciofi, salamino piccante e prosciutto",
+              "name": "Contadina",
+              "description": "Rustica e sostanziosa: pancetta, wurstel e patate al forno su base di pomodoro e mozzarella. Per chi ama i sapori di casa.",
+              "image": "assets/img/menu/contadina.webp",
               "offers": {
                 "@type": "Offer",
-                "price": "11.50",
+                "price": "9.50",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Saporita",
+              "description": "Intensa e affumicata: misto bosco, provola affumicata e speck su base di pomodoro e mozzarella. Per chi ama i gusti forti.",
+              "image": "assets/img/menu/saporita.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "10.50",
                 "priceCurrency": "EUR"
               }
             },
             {
               "@type": "MenuItem",
               "name": "Vegetariana",
-              "description": "Pomodoro, mozzarella, patate, radicchio, zucchine e peperoni",
+              "description": "Pomodoro, mozzarella, verdure miste di stagione: patate al forno, radicchio rosso, zucchine e peperoni. Colorata, leggera e ricca di gusto.",
+              "image": "assets/img/menu/vegetariana.webp",
               "offers": {
                 "@type": "Offer",
-                "price": "11.50",
+                "price": "10.50",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Delizia",
+              "description": "Vegetariana e profumata: radicchio rosso, misto bosco e mozzarella su base di pomodoro, completata da grana. Gusto intenso ma equilibrato.",
+              "image": "assets/img/menu/delizia.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "9.50",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Tonno e Cipolla",
+              "description": "Pomodoro, mozzarella, tonno selezionato e cipolla dolce. Semplice, saporita, senza compromessi.",
+              "image": "assets/img/menu/tonno-e-cipolla.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "9.00",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "4 Stagioni",
+              "description": "Pomodoro e mozzarella con funghi freschi, carciofi, prosciutto cotto e salamino piccante, per un equilibrio perfetto di sapori.",
+              "image": "assets/img/menu/4-stagioni.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "10.50",
                 "priceCurrency": "EUR"
               }
             },
             {
               "@type": "MenuItem",
               "name": "Estiva",
-              "description": "Pomodoro, mozzarella di bufala, Philadelphia, rucola e Cirio",
+              "description": "Fresca e leggera: mozzarella di bufala, pomodorini ciliegino, rucola e philadelphia su base di pomodoro. Perfetta per chi vuole qualcosa di fresco.",
+              "image": "assets/img/menu/estiva.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "11.00",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Parmigiana",
+              "description": "Classica e avvolgente: melanzane, grana e mozzarella su base di pomodoro. Un grande classico che non stanca mai.",
+              "image": "assets/img/menu/parmigiana.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "9.00",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Armonia",
+              "description": "Fresca e leggera: pomodoro, mozzarella, zucchine, brie e rucola. Un equilibrio delicato tra dolcezza e freschezza.",
+              "image": "assets/img/menu/armonia.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "9.50",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Verona",
+              "description": "Pomodoro, mozzarella, radicchio rosso, briè morbido e grana. Equilibrata, delicatamente amarognola e cremosa.",
+              "image": "assets/img/menu/verona.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "9.50",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Romana",
+              "description": "Decisa e saporita: acciughe, capperi e origano su base di pomodoro e mozzarella. Per chi ama i sapori veri.",
+              "image": "assets/img/menu/romana.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "8.50",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Rurale",
+              "description": "Mozzarella, pancetta, salamino piccante e patate al forno. Un mix rustico e intenso, dove la sapidità della pancetta incontra il piccante del salamino e la morbidezza delle patate al forno.",
+              "image": "assets/img/menu/rurale.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "9.50",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Etna",
+              "description": "Piccante e decisa: salamino piccante, cipolla e olio piccante su base di pomodoro e mozzarella. Per chi ama il fuoco.",
+              "image": "assets/img/menu/etna.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "9.50",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Angelo",
+              "description": "Pomodoro, mozzarella, prosciutto cotto, ricotta e grana a scaglie. Cremosa, delicata, semplicemente irresistibile.",
+              "image": "assets/img/menu/angelo.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "10.00",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Bontà",
+              "description": "Golosa e comfort: patatine fritte croccanti, prosciutto cotto e mozzarella, con una spolverata di grana. Scelta facile, amata da grandi e piccoli.",
+              "image": "assets/img/menu/bonta.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "10.50",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Marinara",
+              "description": "Pomodoro, olio extravergine all’aglio e origano. Leggera, profumata e 100% vegana.",
+              "image": "assets/img/menu/marinara.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "6.00",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Napoleone",
+              "description": "Intensa e decisa: pancetta, tonno, salamino piccante e provola affumicata su base di pomodoro e mozzarella. Sapore forte, senza compromessi.",
+              "image": "assets/img/menu/napoleone.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "10.50",
+                "priceCurrency": "EUR"
+              }
+            }
+          ]
+        },
+        {
+          "@type": "MenuSection",
+          "name": "Le nostre specialità",
+          "hasMenuItem": [
+            {
+              "@type": "MenuItem",
+              "name": "Fiocco",
+              "description": "Pomodoro, mozzarella, melanzane, prosciutto crudo e burrata. Morbida, saporita e raffinata.",
+              "image": "assets/img/menu/fiocco.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "12.50",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Golosa",
+              "description": "Esagerata e saporita: salamino piccante, salsiccia, peperoni, olive e provola affumicata. Per veri golosi.",
+              "image": "assets/img/menu/golosa.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "12.50",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Giulietta",
+              "description": "Il gusto deciso di salsiccia e pancetta incontra la cremosità del gorgonzola e la delicatezza delle patate al forno.",
+              "image": "assets/img/menu/giulietta.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "12.00",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Luna",
+              "description": "Pomodoro, mozzarella, Philadelphia, burrata e pomodorini ciliegino. Semplice, cremosa, luminosa.",
+              "image": "assets/img/menu/luna.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "12.00",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Casa",
+              "description": "Pomodoro, mozzarella, porcini, salsiccia, gorgonzola e radicchio rosso si uniscono in una delle nostre pizze più ricche e saporite.",
+              "image": "assets/img/menu/casa.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "12.00",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Ponny",
+              "description": "Pomodoro, mozzarella, sfilacci di cavallo, radicchio rosso e grana a scaglie. Decisa, intensa, per veri intenditori.",
+              "image": "assets/img/menu/ponny.webp",
               "offers": {
                 "@type": "Offer",
                 "price": "11.50",
@@ -191,8 +455,9 @@
             },
             {
               "@type": "MenuItem",
-              "name": "Capricciosa",
-              "description": "Pomodoro, mozzarella, funghi, carciofi, salamino piccante, olive e prosciutto",
+              "name": "Appetitosa",
+              "description": "Pomodoro, mozzarella, speck, salame piccante, peperoni e gorgonzola per un gusto intenso e irresistibile.",
+              "image": "assets/img/menu/appetitosa.webp",
               "offers": {
                 "@type": "Offer",
                 "price": "12.00",
@@ -201,8 +466,9 @@
             },
             {
               "@type": "MenuItem",
-              "name": "4 Formaggi",
-              "description": "Mozzarella, gorgonzola, grana e ricotta",
+              "name": "Boscaiola",
+              "description": "Pomodoro, mozzarella, misto bosco, speck, salame piccante e gorgonzola per un gusto ricco e deciso.",
+              "image": "assets/img/menu/boscaiola.webp",
               "offers": {
                 "@type": "Offer",
                 "price": "12.00",
@@ -213,61 +479,49 @@
         },
         {
           "@type": "MenuSection",
-          "name": "Pizze speciali",
+          "name": "Pizze baby",
           "hasMenuItem": [
             {
               "@type": "MenuItem",
-              "name": "Luna",
-              "description": "Pomodoro, mozzarella, burrata, Philadelphia e Cirio",
+              "name": "Margherita Baby",
+              "description": "Pomodoro e mozzarella, la semplicità che conquista sempre. Una piccola Margherita, delicata e golosa, pensata per i nostri piccoli amanti della pizza.",
+              "image": "assets/img/menu/margherita-baby.webp",
               "offers": {
                 "@type": "Offer",
-                "price": "12.50",
+                "price": "6.00",
                 "priceCurrency": "EUR"
               }
             },
             {
               "@type": "MenuItem",
-              "name": "Ponny",
-              "description": "Pomodoro, mozzarella, radicchio, sfilacci di cavallo e grana a scaglie",
+              "name": "Prosciutto cotto Baby",
+              "description": "Pomodoro, mozzarella e prosciutto, Semplice, golosa e irresistibile: la pizza perfetta per i più piccoli… e non solo!",
+              "image": "assets/img/menu/prosciutto-cotto-baby.webp",
               "offers": {
                 "@type": "Offer",
-                "price": "12.50",
-                "priceCurrency": "EUR"
-              }
-            }
-          ]
-        },
-        {
-          "@type": "MenuSection",
-          "name": "Pizze mono",
-          "hasMenuItem": [
-            {
-              "@type": "MenuItem",
-              "name": "Diavola",
-              "description": "Pomodoro, mozzarella e salamino piccante",
-              "offers": {
-                "@type": "Offer",
-                "price": "8.50",
+                "price": "7.00",
                 "priceCurrency": "EUR"
               }
             },
             {
               "@type": "MenuItem",
-              "name": "Würstel",
-              "description": "Pomodoro, mozzarella e würstel",
+              "name": "Würstel Baby",
+              "description": "Pomodoro, mozzarella e würstel. Semplice, golosa e irresistibile: la pizza perfetta per i più piccoli… e non solo!",
+              "image": "assets/img/menu/wurstel-baby.webp",
               "offers": {
                 "@type": "Offer",
-                "price": "8.50",
+                "price": "7.00",
                 "priceCurrency": "EUR"
               }
             },
             {
               "@type": "MenuItem",
-              "name": "Gran Biscotto",
-              "description": "Pomodoro, mozzarella e prosciutto cotto",
+              "name": "Marinara Baby",
+              "description": "Pomodoro, olio con aglio e origano",
+              "image": "assets/img/menu/marinara-baby.webp",
               "offers": {
                 "@type": "Offer",
-                "price": "8.50",
+                "price": "5.00",
                 "priceCurrency": "EUR"
               }
             }
@@ -280,10 +534,11 @@
             {
               "@type": "MenuItem",
               "name": "Patatine fritte",
-              "description": "Calde e croccanti, anche da mettere sulla pizza",
+              "description": "Croccanti fuori, morbide dentro.",
+              "image": "assets/img/menu/porzione-di-patatine-fritte.webp",
               "offers": {
                 "@type": "Offer",
-                "price": "5.00",
+                "price": "4.00",
                 "priceCurrency": "EUR"
               }
             }
@@ -291,92 +546,13 @@
         },
         {
           "@type": "MenuSection",
-          "name": "Bevande",
+          "name": "Bibite",
           "hasMenuItem": [
             {
               "@type": "MenuItem",
-              "name": "Coca-Cola Original",
-              "description": "Bottiglia 1,5 L",
-              "offers": {
-                "@type": "Offer",
-                "price": "5.00",
-                "priceCurrency": "EUR"
-              }
-            },
-            {
-              "@type": "MenuItem",
-              "name": "Coca-Cola Zero Zuccheri",
-              "description": "Bottiglia 1,5 L",
-              "offers": {
-                "@type": "Offer",
-                "price": "5.00",
-                "priceCurrency": "EUR"
-              }
-            },
-            {
-              "@type": "MenuItem",
-              "name": "Fanta Orange",
-              "description": "Bottiglia 1,5 L",
-              "offers": {
-                "@type": "Offer",
-                "price": "5.00",
-                "priceCurrency": "EUR"
-              }
-            },
-            {
-              "@type": "MenuItem",
-              "name": "Coca-Cola Original",
-              "description": "Lattina 33 cl",
-              "offers": {
-                "@type": "Offer",
-                "price": "3.00",
-                "priceCurrency": "EUR"
-              }
-            },
-            {
-              "@type": "MenuItem",
-              "name": "Coca-Cola Zero Zuccheri",
-              "description": "Lattina 33 cl",
-              "offers": {
-                "@type": "Offer",
-                "price": "3.00",
-                "priceCurrency": "EUR"
-              }
-            },
-            {
-              "@type": "MenuItem",
-              "name": "Fanta Original",
-              "description": "Lattina 33 cl",
-              "offers": {
-                "@type": "Offer",
-                "price": "3.00",
-                "priceCurrency": "EUR"
-              }
-            },
-            {
-              "@type": "MenuItem",
-              "name": "Tè al limone",
-              "description": "Bottiglia 50 cl",
-              "offers": {
-                "@type": "Offer",
-                "price": "3.00",
-                "priceCurrency": "EUR"
-              }
-            },
-            {
-              "@type": "MenuItem",
-              "name": "Tè alla pesca",
-              "description": "Bottiglia 50 cl",
-              "offers": {
-                "@type": "Offer",
-                "price": "3.00",
-                "priceCurrency": "EUR"
-              }
-            },
-            {
-              "@type": "MenuItem",
-              "name": "Acqua naturale",
-              "description": "Bottiglia 50 cl",
+              "name": "Acqua frizzante 50 cl",
+              "description": "Acqua frizzante 50 cl",
+              "image": "assets/img/menu/acqua-frizzante-50cl.webp",
               "offers": {
                 "@type": "Offer",
                 "price": "1.50",
@@ -385,11 +561,78 @@
             },
             {
               "@type": "MenuItem",
-              "name": "Acqua frizzante",
-              "description": "Bottiglia 50 cl",
+              "name": "Acqua naturale 50 cl",
+              "description": "Acqua naturale 50 cl",
+              "image": "assets/img/menu/acqua-naturale-50cl.webp",
               "offers": {
                 "@type": "Offer",
                 "price": "1.50",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Coca-Cola 1,5 L",
+              "description": "Coca-Cola 1,5 L",
+              "image": "assets/img/menu/coca-cola-1-5-lt.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "4.00",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Coca-Cola 33 cl",
+              "description": "Coca-Cola 33 cl",
+              "image": "assets/img/menu/coca-cola-33cl.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "2.50",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Coca-Cola Zero 1,5 L",
+              "description": "Coca-Cola Zero 1,5 L",
+              "image": "assets/img/menu/coca-cola-zero-1-5-lt.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "4.00",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Coca-Cola Zero 33 cl",
+              "description": "Coca-Cola Zero 33 cl",
+              "image": "assets/img/menu/coca-cola-zero-33cl.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "2.50",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Fanta 1,5 L",
+              "description": "Fanta 1,5 L",
+              "image": "assets/img/menu/fanta-1-5-lt.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "4.00",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Fanta 33 cl",
+              "description": "Fanta 33 cl",
+              "image": "assets/img/menu/fanta-33cl.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "2.50",
                 "priceCurrency": "EUR"
               }
             }
@@ -401,81 +644,89 @@
           "hasMenuItem": [
             {
               "@type": "MenuItem",
-              "name": "Ichnusa Non Filtrata",
-              "description": "Birra",
+              "name": "Ambar Triple Zero",
+              "description": "Birra analcolica senza glutine, 0% alcol e 0 zuccheri.",
+              "image": "assets/img/menu/birra-analcolica-senza-glutine-ambar-triple-zero.webp",
               "offers": {
                 "@type": "Offer",
-                "price": "4.00",
+                "price": "3.50",
                 "priceCurrency": "EUR"
               }
             },
             {
               "@type": "MenuItem",
-              "name": "Pedavena Senza Glutine",
-              "description": "Lattina 33 cl",
+              "name": "Birra senza glutine 33 cl",
+              "description": "Bottiglia 33 cl",
+              "image": "assets/img/menu/birra-senza-glutine-33cl.webp",
               "offers": {
                 "@type": "Offer",
-                "price": "4.00",
+                "price": "3.50",
                 "priceCurrency": "EUR"
               }
             },
             {
               "@type": "MenuItem",
-              "name": "Moretti",
-              "description": "Lattina 33 cl",
+              "name": "Corona",
+              "description": "Corona",
+              "image": "assets/img/menu/corona.webp",
               "offers": {
                 "@type": "Offer",
-                "price": "3.00",
+                "price": "3.50",
                 "priceCurrency": "EUR"
               }
             },
             {
               "@type": "MenuItem",
-              "name": "Beck's",
-              "description": "Lattina 33 cl",
+              "name": "Heineken 33 cl",
+              "description": "Heineken 33 cl",
+              "image": "assets/img/menu/heineken-33cl.webp",
               "offers": {
                 "@type": "Offer",
-                "price": "3.00",
+                "price": "2.50",
                 "priceCurrency": "EUR"
               }
             },
             {
               "@type": "MenuItem",
-              "name": "Heineken",
-              "description": "Lattina 33 cl",
+              "name": "Heineken 66 cl",
+              "description": "Heineken 66 cl",
+              "image": "assets/img/menu/heineken-66cl.webp",
               "offers": {
                 "@type": "Offer",
-                "price": "3.00",
+                "price": "3.50",
                 "priceCurrency": "EUR"
               }
             },
             {
               "@type": "MenuItem",
-              "name": "Moretti",
-              "description": "Bottiglia 66 cl",
+              "name": "Ichnusa Non Filtrata 50 cl",
+              "description": "Ichnusa Non Filtrata 50 cl",
+              "image": "assets/img/menu/ichnusa-non-filtrata-50cl.webp",
               "offers": {
                 "@type": "Offer",
-                "price": "4.00",
+                "price": "3.50",
                 "priceCurrency": "EUR"
               }
             },
             {
               "@type": "MenuItem",
-              "name": "Beck's",
-              "description": "Bottiglia 66 cl",
+              "name": "Moretti 33 cl",
+              "description": "Moretti 33 cl",
+              "image": "assets/img/menu/moretti-33cl.webp",
               "offers": {
                 "@type": "Offer",
-                "price": "4.00",
+                "price": "2.50",
                 "priceCurrency": "EUR"
               }
             },
             {
               "@type": "MenuItem",
-              "name": "Heineken",
-              "description": "Bottiglia 66 cl",
+              "name": "Moretti 66 cl",
+              "description": "Moretti 66 cl",
+              "image": "assets/img/menu/moretti-66cl.webp",
               "offers": {
                 "@type": "Offer",
-                "price": "4.00",
+                "price": "3.50",
                 "priceCurrency": "EUR"
               }
             }
@@ -506,11 +757,11 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Vai al contenuto</a>
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol><symbol id="i-arrow-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol><symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.6 3.5h2.6l1.4 4-2 1.4a12 12 0 0 0 6.5 6.5l1.4-2 4 1.4v2.6a2 2 0 0 1-2.2 2A17 17 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></symbol><symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol><symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol><symbol id="i-scooter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="17.5" r="2.5"/><circle cx="18" cy="17.5" r="2.5"/><path d="M3 9h6v5H3zM3.5 14.5h7l2 3h3M18 17.5l-3-9.5h-3.5M15 8h3"/></symbol><symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" stroke="none" d="M12 2.8l2.8 5.8 6.3.8-4.6 4.4 1.2 6.3L12 17l-5.7 3.1 1.2-6.3-4.6-4.4 6.3-.8z"/></symbol><symbol id="i-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-13.5 14-14 0 9-5 14-13 14zM5 19l8-8"/></symbol><symbol id="i-chili" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6.5c-.6-1.8.2-3 1.8-3.2M14.5 6.5c3 0 4.5 2.8 3.5 6-1.4 4.6-6.2 8-12.5 8.4 3.2-2.2 6-5.6 6-10 0-2.6 1.4-4.4 3-4.4z"/></symbol><symbol id="i-wheat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V6"/><ellipse cx="12" cy="4.4" rx="1.3" ry="2.3"/><ellipse cx="9.6" cy="8" rx="1.5" ry="2.5" transform="rotate(-35 9.6 8)"/><ellipse cx="14.4" cy="8" rx="1.5" ry="2.5" transform="rotate(35 14.4 8)"/><ellipse cx="9.6" cy="12" rx="1.5" ry="2.5" transform="rotate(-35 9.6 12)"/><ellipse cx="14.4" cy="12" rx="1.5" ry="2.5" transform="rotate(35 14.4 12)"/><ellipse cx="9.6" cy="16" rx="1.5" ry="2.5" transform="rotate(-35 9.6 16)"/><ellipse cx="14.4" cy="16" rx="1.5" ry="2.5" transform="rotate(35 14.4 16)"/></symbol><symbol id="i-gf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M5 5l14 14"/><g transform="translate(12 12) scale(.66) translate(-12 -12.5)"><path d="M12 21V6"/><ellipse cx="12" cy="4.4" rx="1.3" ry="2.3"/><ellipse cx="9.6" cy="8" rx="1.5" ry="2.5" transform="rotate(-35 9.6 8)"/><ellipse cx="14.4" cy="8" rx="1.5" ry="2.5" transform="rotate(35 14.4 8)"/><ellipse cx="9.6" cy="12" rx="1.5" ry="2.5" transform="rotate(-35 9.6 12)"/><ellipse cx="14.4" cy="12" rx="1.5" ry="2.5" transform="rotate(35 14.4 12)"/><ellipse cx="9.6" cy="16" rx="1.5" ry="2.5" transform="rotate(-35 9.6 16)"/><ellipse cx="14.4" cy="16" rx="1.5" ry="2.5" transform="rotate(35 14.4 16)"/></g></symbol><symbol id="i-flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4 0-6.5-2.6-6.5-6 0-4 3.5-6 4-10 3 1.5 5 4 5 7 1-1 1.5-2 1.5-3.5 1.8 1.6 2.5 4 2.5 6.5 0 3.4-2.5 6-6.5 6z"/></symbol><symbol id="i-bag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1 12H6zM9 8V6.5a3 3 0 0 1 6 0V8"/></symbol><symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol><symbol id="i-apple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" stroke="none" d="M16.4 12.7c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.2-2.8.8-3.5.8-.7 0-1.9-.8-3.1-.8-1.6 0-3.1.9-3.9 2.4-1.7 2.9-.4 7.2 1.2 9.6.8 1.2 1.7 2.5 3 2.4 1.2 0 1.6-.8 3.1-.8 1.4 0 1.8.8 3.1.8 1.3 0 2.1-1.2 2.9-2.4.9-1.3 1.3-2.6 1.3-2.7-.1 0-2.6-1-2.7-4zM14.1 5.6c.7-.8 1.1-1.9 1-3-1 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></symbol><symbol id="i-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" stroke="none" d="M4.6 2.9c-.3.3-.4.7-.4 1.3v15.6c0 .6.2 1 .4 1.3l.1.1 8.7-8.7v-.2L4.7 2.8zM16.3 15.4l-2.9-2.9v-.2l2.9-2.9.1.1 3.4 2c1 .6 1 1.5 0 2.1l-3.4 1.8zM16.4 15.3 13.4 12.3 4.6 21.1c.3.3.9.4 1.5 0l10.3-5.8M16.4 9.4 6.1 3.6c-.6-.4-1.2-.3-1.5 0l8.8 8.7z"/></symbol><symbol id="i-instagram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6" fill="currentColor"/></symbol><symbol id="i-facebook" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 21v-7.5h2.6l.4-3H14V8.7c0-.9.3-1.5 1.6-1.5H17V4.5c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.2H8.4v3H11V21"/></symbol><symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol><symbol id="i-dice" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/><circle cx="15" cy="15" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></symbol><symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></symbol><symbol id="i-chef" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14v6h10v-6M7 14a4 4 0 0 1-.6-7.9A5.5 5.5 0 0 1 12 3a5.5 5.5 0 0 1 5.6 3.1A4 4 0 0 1 17 14zM7 17h10"/></symbol><symbol id="i-oven" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><rect x="6.5" y="12" width="11" height="5" rx="1"/><path d="M7 6.5h.01M10 6.5h.01"/></symbol><symbol id="i-tools" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v8M5 3v4a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 1.5-2.5 4-2.5 7H17v11"/></symbol><symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7.5 3v5.5c0 4.5-3.2 8.2-7.5 9.5-4.3-1.3-7.5-5-7.5-9.5V6z"/><path d="M8.5 12l2.5 2.5 4.5-4.5"/></symbol><symbol id="i-gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8.5" width="18" height="4.5" rx="1"/><path d="M5 13v8h14v-8M12 8.5V21M12 8.5c-2-4-6-4-6-1.5S9.5 8.5 12 8.5zm0 0c2-4 6-4 6-1.5s-3.5 1.5-6 1.5z"/></symbol><symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/></symbol><symbol id="i-store" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5 5.5 4h13L20 9.5M4 9.5v10.5h16V9.5M4 9.5c0 1.5 1.3 2.5 2.7 2.5S9.3 11 9.3 9.5c0 1.5 1.3 2.5 2.7 2.5s2.7-1 2.7-2.5c0 1.5 1.3 2.5 2.6 2.5S20 11 20 9.5M10 20v-5h4v5"/></symbol><symbol id="i-beer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h10v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2zM16 10h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2M6 7a3 3 0 0 1 3-3 3 3 0 0 1 4 0 3 3 0 0 1 3 3"/></symbol></svg>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol><symbol id="i-arrow-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol><symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.6 3.5h2.6l1.4 4-2 1.4a12 12 0 0 0 6.5 6.5l1.4-2 4 1.4v2.6a2 2 0 0 1-2.2 2A17 17 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></symbol><symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol><symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol><symbol id="i-scooter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="17.5" r="2.5"/><circle cx="18" cy="17.5" r="2.5"/><path d="M3 9h6v5H3zM3.5 14.5h7l2 3h3M18 17.5l-3-9.5h-3.5M15 8h3"/></symbol><symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" stroke="none" d="M12 2.8l2.8 5.8 6.3.8-4.6 4.4 1.2 6.3L12 17l-5.7 3.1 1.2-6.3-4.6-4.4 6.3-.8z"/></symbol><symbol id="i-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-13.5 14-14 0 9-5 14-13 14zM5 19l8-8"/></symbol><symbol id="i-chili" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6.5c-.6-1.8.2-3 1.8-3.2M14.5 6.5c3 0 4.5 2.8 3.5 6-1.4 4.6-6.2 8-12.5 8.4 3.2-2.2 6-5.6 6-10 0-2.6 1.4-4.4 3-4.4z"/></symbol><symbol id="i-wheat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V6"/><ellipse cx="12" cy="4.4" rx="1.3" ry="2.3"/><ellipse cx="9.6" cy="8" rx="1.5" ry="2.5" transform="rotate(-35 9.6 8)"/><ellipse cx="14.4" cy="8" rx="1.5" ry="2.5" transform="rotate(35 14.4 8)"/><ellipse cx="9.6" cy="12" rx="1.5" ry="2.5" transform="rotate(-35 9.6 12)"/><ellipse cx="14.4" cy="12" rx="1.5" ry="2.5" transform="rotate(35 14.4 12)"/><ellipse cx="9.6" cy="16" rx="1.5" ry="2.5" transform="rotate(-35 9.6 16)"/><ellipse cx="14.4" cy="16" rx="1.5" ry="2.5" transform="rotate(35 14.4 16)"/></symbol><symbol id="i-gf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M5 5l14 14"/><g transform="translate(12 12) scale(.66) translate(-12 -12.5)"><path d="M12 21V6"/><ellipse cx="12" cy="4.4" rx="1.3" ry="2.3"/><ellipse cx="9.6" cy="8" rx="1.5" ry="2.5" transform="rotate(-35 9.6 8)"/><ellipse cx="14.4" cy="8" rx="1.5" ry="2.5" transform="rotate(35 14.4 8)"/><ellipse cx="9.6" cy="12" rx="1.5" ry="2.5" transform="rotate(-35 9.6 12)"/><ellipse cx="14.4" cy="12" rx="1.5" ry="2.5" transform="rotate(35 14.4 12)"/><ellipse cx="9.6" cy="16" rx="1.5" ry="2.5" transform="rotate(-35 9.6 16)"/><ellipse cx="14.4" cy="16" rx="1.5" ry="2.5" transform="rotate(35 14.4 16)"/></g></symbol><symbol id="i-flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4 0-6.5-2.6-6.5-6 0-4 3.5-6 4-10 3 1.5 5 4 5 7 1-1 1.5-2 1.5-3.5 1.8 1.6 2.5 4 2.5 6.5 0 3.4-2.5 6-6.5 6z"/></symbol><symbol id="i-bag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1 12H6zM9 8V6.5a3 3 0 0 1 6 0V8"/></symbol><symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol><symbol id="i-apple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" stroke="none" d="M16.4 12.7c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.2-2.8.8-3.5.8-.7 0-1.9-.8-3.1-.8-1.6 0-3.1.9-3.9 2.4-1.7 2.9-.4 7.2 1.2 9.6.8 1.2 1.7 2.5 3 2.4 1.2 0 1.6-.8 3.1-.8 1.4 0 1.8.8 3.1.8 1.3 0 2.1-1.2 2.9-2.4.9-1.3 1.3-2.6 1.3-2.7-.1 0-2.6-1-2.7-4zM14.1 5.6c.7-.8 1.1-1.9 1-3-1 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></symbol><symbol id="i-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" stroke="none" d="M4.6 2.9c-.3.3-.4.7-.4 1.3v15.6c0 .6.2 1 .4 1.3l.1.1 8.7-8.7v-.2L4.7 2.8zM16.3 15.4l-2.9-2.9v-.2l2.9-2.9.1.1 3.4 2c1 .6 1 1.5 0 2.1l-3.4 1.8zM16.4 15.3 13.4 12.3 4.6 21.1c.3.3.9.4 1.5 0l10.3-5.8M16.4 9.4 6.1 3.6c-.6-.4-1.2-.3-1.5 0l8.8 8.7z"/></symbol><symbol id="i-instagram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6" fill="currentColor"/></symbol><symbol id="i-facebook" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 21v-7.5h2.6l.4-3H14V8.7c0-.9.3-1.5 1.6-1.5H17V4.5c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.2H8.4v3H11V21"/></symbol><symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol><symbol id="i-dice" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/><circle cx="15" cy="15" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></symbol><symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></symbol><symbol id="i-chef" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14v6h10v-6M7 14a4 4 0 0 1-.6-7.9A5.5 5.5 0 0 1 12 3a5.5 5.5 0 0 1 5.6 3.1A4 4 0 0 1 17 14zM7 17h10"/></symbol><symbol id="i-oven" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><rect x="6.5" y="12" width="11" height="5" rx="1"/><path d="M7 6.5h.01M10 6.5h.01"/></symbol><symbol id="i-tools" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v8M5 3v4a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 1.5-2.5 4-2.5 7H17v11"/></symbol><symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7.5 3v5.5c0 4.5-3.2 8.2-7.5 9.5-4.3-1.3-7.5-5-7.5-9.5V6z"/><path d="M8.5 12l2.5 2.5 4.5-4.5"/></symbol><symbol id="i-gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8.5" width="18" height="4.5" rx="1"/><path d="M5 13v8h14v-8M12 8.5V21M12 8.5c-2-4-6-4-6-1.5S9.5 8.5 12 8.5zm0 0c2-4 6-4 6-1.5s-3.5 1.5-6 1.5z"/></symbol><symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/></symbol><symbol id="i-store" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5 5.5 4h13L20 9.5M4 9.5v10.5h16V9.5M4 9.5c0 1.5 1.3 2.5 2.7 2.5S9.3 11 9.3 9.5c0 1.5 1.3 2.5 2.7 2.5s2.7-1 2.7-2.5c0 1.5 1.3 2.5 2.6 2.5S20 11 20 9.5M10 20v-5h4v5"/></symbol><symbol id="i-beer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h10v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2zM16 10h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2M6 7a3 3 0 0 1 3-3 3 3 0 0 1 4 0 3 3 0 0 1 3 3"/></symbol><symbol id="i-tomato" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 6V3.5M9 6.5c1-1.5 5-1.5 6 0M8.5 5.5 12 6l3.5-.5"/></symbol><symbol id="i-cheese" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M8.5 9.5a4 4 0 0 1 4-2"/></symbol><symbol id="i-drop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5s6 6.4 6 10.5a6 6 0 0 1-12 0C6 9.9 12 3.5 12 3.5z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/></symbol><symbol id="i-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6v12M15 6v12"/></symbol><symbol id="i-play2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" stroke="none" d="M8 5.5v13l10.5-6.5z"/></symbol></svg>
 
   <header class="site-header">
     <div class="wrap header-in">
-      <a class="brand" href="../"><img src="../assets/img/logo-compact-light.svg" width="138" height="36" alt="Punto Pizza, torna alla home"></a>
+      <a class="brand" href="../"><img src="../assets/img/logo.svg" width="158" height="41" alt="Punto Pizza, torna alla home"></a>
       <nav class="nav" id="nav" aria-label="Principale">
         <a href="../">Home</a>
         <a href="../menu/" aria-current="page">Menu</a>
@@ -527,22 +778,23 @@
     </div>
   </header>
 
-  <main id="main">
-    <section class="page-hero">
-      <div class="pz-wrap pz-deco" data-pz="pomodoro, mozzarella, funghi, carciofi, salamino piccante, olive e prosciutto" data-seed="menu-hero" aria-hidden="true"></div>
+  <main id="main" tabindex="-1">
+    <section class="page-hero on-dark">
+      <div class="float a" data-speed=".12" data-spin=".06" aria-hidden="true"><img class="pop-in" src="../assets/img/cut/fiocco.webp" srcset="../assets/img/cut/fiocco-300.webp 300w, ../assets/img/cut/fiocco.webp 600w" sizes="(max-width: 900px) 170px, 28vw" alt="" width="600" height="600" fetchpriority="high"></div>
+      <div class="float b" data-speed="-.1" data-spin="-.05" aria-hidden="true"><img class="pop-in" src="../assets/img/cut/4-formaggi.webp" srcset="../assets/img/cut/4-formaggi-300.webp 300w, ../assets/img/cut/4-formaggi.webp 600w" sizes="(max-width: 900px) 170px, 28vw" alt="" width="600" height="600"></div>
       <div class="wrap">
         <ol class="crumbs">
           <li><a href="../">Home</a></li>
           <li aria-current="page">Menu</li>
         </ol>
         <p class="eyebrow">Menu</p>
-        <h1 class="display h-xl">Il menu<span class="punto" aria-hidden="true"></span></h1>
-        <p class="lead">Pizze classiche, speciali e mono, fritti e bevande. Scegli l’impasto quando ordini: classico, integrale o senza glutine.</p>
-        <div class="actions">
+        <h1 class="display h-xl" data-split>Il menu<span class="punto" aria-hidden="true"></span></h1>
+        <p class="lead rv">Pizze classiche, le nostre specialità, pizze baby, fritti e da bere. Scegli l’impasto quando ordini: classico, integrale o senza glutine.</p>
+        <div class="actions rv" style="--d:.08s">
           <a class="btn btn-rosso" href="https://url.velocissimo.app/o/157" target="_blank" rel="noopener">Ordina dall’app <span class="promo-tag">−5&nbsp;€</span></a>
-          <a class="btn btn-ghost" href="tel:+390458622340"><svg aria-hidden="true" focusable="false"><use href="#i-phone"/></svg>045 862 2340</a>
+          <a class="btn btn-glass" href="tel:+390458622340"><svg aria-hidden="true" focusable="false"><use href="#i-phone"/></svg>045 862 2340</a>
         </div>
-        <div class="impasti">
+        <div class="impasti rv" style="--d:.16s">
           <div class="impasto"><h2><svg aria-hidden="true" focusable="false"><use href="#i-wheat"/></svg>Classico</h2><p>24 ore di lievitazione e farine selezionate: leggero e fragrante.</p></div>
           <div class="impasto"><h2><svg aria-hidden="true" focusable="false"><use href="#i-leaf"/></svg>Integrale</h2><p>Più rustico e saporito. Tra i nostri clienti ha tanti fan.</p></div>
           <div class="impasto"><h2><svg aria-hidden="true" focusable="false"><use href="#i-gf"/></svg>Senza glutine</h2><p>Preparato nel laboratorio dedicato. <a href="../senza-glutine/">Come lavoriamo</a></p></div>
@@ -553,11 +805,12 @@
     <div class="menu-tools">
       <div class="wrap">
         <nav class="tabs" aria-label="Sezioni del menu">
-          <a href="#classiche">Classiche<span>17</span></a>
-          <a href="#speciali">Speciali<span>2</span></a>
-          <a href="#mono">Mono<span>3</span></a>
+          <span class="pill" aria-hidden="true"></span>
+          <a href="#classiche">Classiche<span>31</span></a>
+          <a href="#specialita">Specialità<span>8</span></a>
+          <a href="#baby">Baby<span>4</span></a>
           <a href="#fritti">Fritti<span>1</span></a>
-          <a href="#bevande">Bevande<span>10</span></a>
+          <a href="#bibite">Bibite<span>8</span></a>
           <a href="#birre">Birre<span>8</span></a>
         </nav>
       </div>
@@ -566,282 +819,295 @@
     <div class="wrap" id="menu-list">
       <div class="filters">
         <div class="chips" role="group" aria-label="Filtra le pizze">
-          <button class="chip" type="button" data-filter="all" aria-pressed="true">Tutte <span class="n"></span></button>
-          <button class="chip" type="button" data-filter="veg" aria-pressed="false"><svg aria-hidden="true" focusable="false"><use href="#i-leaf"/></svg>Vegetariane <span class="n"></span></button>
-          <button class="chip" type="button" data-filter="hot" aria-pressed="false"><svg aria-hidden="true" focusable="false"><use href="#i-chili"/></svg>Piccanti <span class="n"></span></button>
-          <button class="chip" type="button" data-filter="bianca" aria-pressed="false">Bianche <span class="n"></span></button>
+          <button class="chip" type="button" data-filter="all" aria-pressed="true">Tutto <span class="n">60</span></button>
+          <button class="chip" type="button" data-filter="top" aria-pressed="false"><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg>Consigliate <span class="n">7</span></button>
+          <button class="chip" type="button" data-filter="veg" aria-pressed="false"><svg aria-hidden="true" focusable="false"><use href="#i-leaf"/></svg>Vegetariane <span class="n">14</span></button>
+          <button class="chip" type="button" data-filter="hot" aria-pressed="false"><svg aria-hidden="true" focusable="false"><use href="#i-chili"/></svg>Piccanti <span class="n">9</span></button>
         </div>
-        <button class="chip surprise" type="button" id="pick"><svg aria-hidden="true" focusable="false"><use href="#i-dice"/></svg>Scegli per me</button>
+        <button class="chip" type="button" id="pick"><svg aria-hidden="true" focusable="false"><use href="#i-dice"/></svg>Scegli per me</button>
         <div class="search">
           <svg aria-hidden="true" focusable="false"><use href="#i-search"/></svg>
           <label class="sr-only" for="menu-search">Cerca una pizza o un ingrediente</label>
-          <input id="menu-search" type="search" placeholder="Cerca: bufala, funghi, speck…" autocomplete="off">
+          <input id="menu-search" type="search" placeholder="Cerca: bufala, porcini, speck…" autocomplete="off">
         </div>
       </div>
 
       <section class="menu-sec" id="classiche" aria-labelledby="h-classiche">
         <header><h2 class="display" id="h-classiche">Pizze classiche</h2><p>Prezzi per la pizza normale</p></header>
         <ul class="dishes">
-          <li class="dish" id="margherita">
-            <div class="pz-wrap" data-pz></div>
-            <h3>Margherita</h3>
-            <span class="price">8,00 €</span>
-            <p class="ing">Pomodoro e mozzarella</p>
+          <li class="dish" id="porchettina" data-kind="pizza" data-tags="">
+            <div class="ph"><div class="labels"><span class="label l-oro">A tempo limitato</span><span class="label l-rosso">Novità</span></div><img src="../assets/img/menu/porchettina.webp" srcset="../assets/img/menu/porchettina-300.webp 300w, ../assets/img/menu/porchettina.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Porchettina</h3><span class="price">11,50 €</span></div><p class="ing">Porchetta croccante, crema di cipolle di Tropea e Grana a scaglie, su un letto di mozzarella.</p><p class="tag-line">Un incontro tra croccantezza, dolcezza e sapidità. Una pizza decisa, ricca e sorprendente, pensata per chi ama i sapori veri.</p></div>
           </li>
-          <li class="dish" id="marinara">
-            <div class="pz-wrap" data-pz></div>
-            <h3>Marinara</h3>
-            <span class="price">6,50 €</span>
-            <p class="ing">Pomodoro, olio con aglio e origano</p>
+          <li class="dish" id="margherita-come-si-deve" data-kind="pizza" data-tags="top">
+            <div class="ph"><div class="labels"><span class="label l-oro">Eccellenza</span><span class="label ">Consigliata</span></div><img src="../assets/img/menu/margherita-come-si-deve.webp" srcset="../assets/img/menu/margherita-come-si-deve-300.webp 300w, ../assets/img/menu/margherita-come-si-deve.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>La Margherita Come Si Deve</h3><span class="price">9,00 €</span></div><p class="ing">Pomodoro San Marzano DOP dell’Agro Sarnese-Nocerino, fiordilatte artigianale di piccolo caseificio locale, basilico fresco e olio extravergine d’oliva a crudo.</p><p class="tag-line">Gli ingredienti migliori, senza compromessi. La nostra interpretazione della Margherita. Come si deve.</p></div>
           </li>
-          <li class="dish" id="romana">
-            <div class="pz-wrap" data-pz></div>
-            <h3>Romana</h3>
-            <span class="price">9,50 €</span>
-            <p class="ing">Pomodoro, mozzarella, acciughe, origano e capperi</p>
+          <li class="dish" id="margherita" data-kind="pizza" data-tags="veg">
+            <div class="ph"><div class="labels"><span class="label ">Tradizionale</span><span class="label l-verde">Veg</span></div><img src="../assets/img/menu/margherita.webp" srcset="../assets/img/menu/margherita-300.webp 300w, ../assets/img/menu/margherita.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Margherita</h3><span class="price">7,00 €</span></div><p class="ing">Pomodoro e mozzarella di qualità. La semplicità fatta bene.</p></div>
           </li>
-          <li class="dish" id="parmigiana">
-            <div class="pz-wrap" data-pz></div>
-            <h3>Parmigiana</h3>
-            <span class="price">9,50 €</span>
-            <p class="ing">Pomodoro, mozzarella, melanzane e grana</p>
+          <li class="dish" id="crea-bianca" data-kind="pizza" data-tags="top veg">
+            <div class="ph"><div class="labels"><span class="label l-rosso">Più venduto</span><span class="label l-verde">Veg</span></div><img src="../assets/img/menu/crea-bianca.webp" srcset="../assets/img/menu/crea-bianca-300.webp 300w, ../assets/img/menu/crea-bianca.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Crea la tua pizza bianca</h3><span class="price">6,50 €</span></div><p class="ing">Base mozzarella. Parti da qui e crea la tua pizza perfetta aggiungendo gli ingredienti che preferisci. Scegli tra salumi, formaggi e verdure e costruisci la combinazione che più ti piace.</p></div>
           </li>
-          <li class="dish" id="tonno-e-cipolla">
-            <div class="pz-wrap" data-pz></div>
-            <h3>Tonno e Cipolla</h3>
-            <span class="price">10,00 €</span>
-            <p class="ing">Pomodoro, mozzarella, tonno e cipolla</p>
+          <li class="dish" id="crea-rossa" data-kind="pizza" data-tags="top veg">
+            <div class="ph"><div class="labels"><span class="label l-rosso">Più venduto</span><span class="label l-verde">Veg</span></div><img src="../assets/img/menu/crea-rossa.webp" srcset="../assets/img/menu/crea-rossa-300.webp 300w, ../assets/img/menu/crea-rossa.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Crea la tua pizza rossa</h3><span class="price">6,00 €</span></div><p class="ing">Base pomodoro. Parti da qui e crea la tua pizza perfetta aggiungendo gli ingredienti che preferisci. Scegli tra salumi, formaggi e verdure e costruisci la combinazione che più ti piace.</p></div>
           </li>
-          <li class="dish" id="armonia">
-            <div class="pz-wrap" data-pz></div>
-            <h3>Armonia</h3>
-            <span class="price">10,00 €</span>
-            <p class="ing">Pomodoro, mozzarella, zucchine, brie e rucola</p>
+          <li class="dish" id="porkis" data-kind="pizza" data-tags="hot">
+            <div class="ph"><div class="labels"><span class="label l-rosso">Piccante</span></div><img src="../assets/img/menu/porkis.webp" srcset="../assets/img/menu/porkis-300.webp 300w, ../assets/img/menu/porkis.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Porkis</h3><span class="price">10,00 €</span></div><p class="ing">Super carnivora: prosciutto cotto, wurstel, salsiccia e salamino piccante su base di pomodoro e mozzarella.</p><p class="tag-line">Per chi ama la pizza senza limiti.</p></div>
           </li>
-          <li class="dish" id="prosciutto-e-funghi">
-            <div class="pz-wrap" data-pz></div>
-            <h3>Prosciutto e Funghi</h3>
-            <span class="price">10,50 €</span>
-            <p class="ing">Pomodoro, mozzarella, prosciutto e funghi</p>
+          <li class="dish" id="4-formaggi" data-kind="pizza" data-tags="veg">
+            <div class="ph"><div class="labels"><span class="label l-verde">Veg</span></div><img src="../assets/img/menu/4-formaggi.webp" srcset="../assets/img/menu/4-formaggi-300.webp 300w, ../assets/img/menu/4-formaggi.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>4 Formaggi</h3><span class="price">11,00 €</span></div><p class="ing">Mozzarella, gorgonzola, grana e ricotta.</p><p class="tag-line">Cremosa e avvolgente, per veri amanti dei formaggi.</p></div>
           </li>
-          <li class="dish" id="bonta">
-            <div class="pz-wrap" data-pz></div>
-            <h3>Bontà</h3>
-            <span class="price">10,50 €</span>
-            <p class="ing">Pomodoro, mozzarella, patatine fritte, prosciutto e grana</p>
+          <li class="dish" id="friarielli-e-salsiccia" data-kind="pizza" data-tags="top">
+            <div class="ph"><div class="labels"><span class="label ">Consigliata</span></div><img src="../assets/img/menu/friarielli-e-salsiccia.webp" srcset="../assets/img/menu/friarielli-e-salsiccia-300.webp 300w, ../assets/img/menu/friarielli-e-salsiccia.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Friarielli e Salsiccia</h3><span class="price">9,50 €</span></div><p class="ing">Friarielli saltati e salsiccia saporita su mozzarella filante.</p><p class="tag-line">Decisa e tradizionale.</p></div>
           </li>
-          <li class="dish" id="friarielli-e-salsiccia">
-            <div class="pz-wrap" data-pz></div>
-            <h3>Friarielli e Salsiccia</h3>
-            <span class="price">10,50 €</span>
-            <p class="ing">Friarielli e salsiccia</p>
+          <li class="dish" id="vittoria" data-kind="pizza" data-tags="top">
+            <div class="ph"><div class="labels"><span class="label l-oro">Eccellenza</span></div><img src="../assets/img/menu/vittoria.webp" srcset="../assets/img/menu/vittoria-300.webp 300w, ../assets/img/menu/vittoria.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Vittoria</h3><span class="price">11,00 €</span></div><p class="ing">Pomodoro, mozzarella, crudo di Parma, rucola fresca e grana a scaglie.</p><p class="tag-line">Fresca, profumata e sempre elegante.</p></div>
           </li>
-          <li class="dish" id="svolta">
-            <div class="pz-wrap" data-pz></div>
-            <h3>Svolta</h3>
-            <span class="price">11,00 €</span>
-            <p class="ing">Pomodoro, mozzarella, pancetta, funghi freschi, stracchino e Cirio</p>
+          <li class="dish" id="svolta" data-kind="pizza" data-tags="top">
+            <div class="ph"><div class="labels"><span class="label l-oro">Eccellenza</span></div><img src="../assets/img/menu/svolta.webp" srcset="../assets/img/menu/svolta-300.webp 300w, ../assets/img/menu/svolta.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Svolta</h3><span class="price">11,00 €</span></div><p class="ing">Pomodoro e mozzarella con pancetta croccante, funghi freschi, stracchino cremoso e pomodorini ciliegino.</p><p class="tag-line">Ricca ma equilibrata, la nostra pizza firma.</p></div>
           </li>
-          <li class="dish" id="saporita">
-            <div class="pz-wrap" data-pz></div>
-            <h3>Saporita</h3>
-            <span class="price">11,00 €</span>
-            <p class="ing">Pomodoro, mozzarella, misto bosco, scamorza e speck</p>
+          <li class="dish" id="prosciutto-e-funghi" data-kind="pizza" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/prosciutto-e-funghi.webp" srcset="../assets/img/menu/prosciutto-e-funghi-300.webp 300w, ../assets/img/menu/prosciutto-e-funghi.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Prosciutto e Funghi</h3><span class="price">9,50 €</span></div><p class="ing">Intramontabile: prosciutto cotto e funghi su base di pomodoro e mozzarella.</p><p class="tag-line">Un classico che piace a tutti.</p></div>
           </li>
-          <li class="dish" id="texas">
-            <div class="pz-wrap" data-pz></div>
-            <h3>Texas</h3>
-            <span class="price">11,00 €</span>
-            <p class="ing">Pomodoro, mozzarella, patatine fritte, würstel e scamorza</p>
+          <li class="dish" id="capricciosa" data-kind="pizza" data-tags="hot">
+            <div class="ph"><div class="labels"><span class="label ">Tradizionale</span><span class="label l-rosso">Piccante</span></div><img src="../assets/img/menu/capricciosa.webp" srcset="../assets/img/menu/capricciosa-300.webp 300w, ../assets/img/menu/capricciosa.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Capricciosa</h3><span class="price">11,00 €</span></div><p class="ing">La grande classica: pomodoro, mozzarella, funghi, carciofi, olive, prosciutto cotto e salamino piccante.</p><p class="tag-line">Ricca, equilibrata, intramontabile.</p></div>
           </li>
-          <li class="dish" id="4-stagioni">
-            <div class="pz-wrap" data-pz></div>
-            <h3>4 Stagioni</h3>
-            <span class="price">11,50 €</span>
-            <p class="ing">Pomodoro, mozzarella, funghi, carciofi, salamino piccante e prosciutto</p>
+          <li class="dish" id="texas" data-kind="pizza" data-tags="">
+            <div class="ph"><div class="labels"><span class="label ">Golosa</span></div><img src="../assets/img/menu/texas.webp" srcset="../assets/img/menu/texas-300.webp 300w, ../assets/img/menu/texas.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Texas</h3><span class="price">10,50 €</span></div><p class="ing">Pomodoro, mozzarella, patatine fritte, wurstel e provola affumicata. Ricca, golosa e molto sostanziosa.</p></div>
           </li>
-          <li class="dish" id="vegetariana">
-            <div class="pz-wrap" data-pz></div>
-            <h3>Vegetariana</h3>
-            <span class="price">11,50 €</span>
-            <p class="ing">Pomodoro, mozzarella, patate, radicchio, zucchine e peperoni</p>
+          <li class="dish" id="dolcissima" data-kind="pizza" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/dolcissima.webp" srcset="../assets/img/menu/dolcissima-300.webp 300w, ../assets/img/menu/dolcissima.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Dolcissima</h3><span class="price">11,00 €</span></div><p class="ing">Avvolgente e cremosa: patate al forno, mascarpone e speck su base di pomodoro e mozzarella.</p><p class="tag-line">Dolcezza e sapidità in perfetto equilibrio.</p></div>
           </li>
-          <li class="dish" id="estiva">
-            <div class="pz-wrap" data-pz></div>
-            <h3>Estiva</h3>
-            <span class="price">11,50 €</span>
-            <p class="ing">Pomodoro, mozzarella di bufala, Philadelphia, rucola e Cirio</p>
+          <li class="dish" id="contadina" data-kind="pizza" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/contadina.webp" srcset="../assets/img/menu/contadina-300.webp 300w, ../assets/img/menu/contadina.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Contadina</h3><span class="price">9,50 €</span></div><p class="ing">Rustica e sostanziosa: pancetta, wurstel e patate al forno su base di pomodoro e mozzarella.</p><p class="tag-line">Per chi ama i sapori di casa.</p></div>
           </li>
-          <li class="dish" id="capricciosa">
-            <div class="pz-wrap" data-pz></div>
-            <h3>Capricciosa</h3>
-            <span class="price">12,00 €</span>
-            <p class="ing">Pomodoro, mozzarella, funghi, carciofi, salamino piccante, olive e prosciutto</p>
+          <li class="dish" id="saporita" data-kind="pizza" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/saporita.webp" srcset="../assets/img/menu/saporita-300.webp 300w, ../assets/img/menu/saporita.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Saporita</h3><span class="price">10,50 €</span></div><p class="ing">Intensa e affumicata: misto bosco, provola affumicata e speck su base di pomodoro e mozzarella.</p><p class="tag-line">Per chi ama i gusti forti.</p></div>
           </li>
-          <li class="dish" id="4-formaggi">
-            <div class="pz-wrap" data-pz></div>
-            <h3>4 Formaggi</h3>
-            <span class="price">12,00 €</span>
-            <p class="ing">Mozzarella, gorgonzola, grana e ricotta</p>
+          <li class="dish" id="vegetariana" data-kind="pizza" data-tags="veg">
+            <div class="ph"><div class="labels"><span class="label l-verde">Veg</span></div><img src="../assets/img/menu/vegetariana.webp" srcset="../assets/img/menu/vegetariana-300.webp 300w, ../assets/img/menu/vegetariana.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Vegetariana</h3><span class="price">10,50 €</span></div><p class="ing">Pomodoro, mozzarella, verdure miste di stagione: patate al forno, radicchio rosso, zucchine e peperoni.</p><p class="tag-line">Colorata, leggera e ricca di gusto.</p></div>
+          </li>
+          <li class="dish" id="delizia" data-kind="pizza" data-tags="veg">
+            <div class="ph"><div class="labels"><span class="label l-verde">Veg</span></div><img src="../assets/img/menu/delizia.webp" srcset="../assets/img/menu/delizia-300.webp 300w, ../assets/img/menu/delizia.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Delizia</h3><span class="price">9,50 €</span></div><p class="ing">Vegetariana e profumata: radicchio rosso, misto bosco e mozzarella su base di pomodoro, completata da grana.</p><p class="tag-line">Gusto intenso ma equilibrato.</p></div>
+          </li>
+          <li class="dish" id="tonno-e-cipolla" data-kind="pizza" data-tags="top">
+            <div class="ph"><div class="labels"><span class="label l-rosso">Più venduto</span><span class="label ">Consigliata</span></div><img src="../assets/img/menu/tonno-e-cipolla.webp" srcset="../assets/img/menu/tonno-e-cipolla-300.webp 300w, ../assets/img/menu/tonno-e-cipolla.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Tonno e Cipolla</h3><span class="price">9,00 €</span></div><p class="ing">Pomodoro, mozzarella, tonno selezionato e cipolla dolce.</p><p class="tag-line">Semplice, saporita, senza compromessi.</p></div>
+          </li>
+          <li class="dish" id="4-stagioni" data-kind="pizza" data-tags="hot">
+            <div class="ph"><div class="labels"><span class="label l-rosso">Piccante</span></div><img src="../assets/img/menu/4-stagioni.webp" srcset="../assets/img/menu/4-stagioni-300.webp 300w, ../assets/img/menu/4-stagioni.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>4 Stagioni</h3><span class="price">10,50 €</span></div><p class="ing">Pomodoro e mozzarella con funghi freschi, carciofi, prosciutto cotto e salamino piccante, per un equilibrio perfetto di sapori.</p></div>
+          </li>
+          <li class="dish" id="estiva" data-kind="pizza" data-tags="veg">
+            <div class="ph"><div class="labels"><span class="label l-verde">Veg</span></div><img src="../assets/img/menu/estiva.webp" srcset="../assets/img/menu/estiva-300.webp 300w, ../assets/img/menu/estiva.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Estiva</h3><span class="price">11,00 €</span></div><p class="ing">Fresca e leggera: mozzarella di bufala, pomodorini ciliegino, rucola e philadelphia su base di pomodoro.</p><p class="tag-line">Perfetta per chi vuole qualcosa di fresco.</p></div>
+          </li>
+          <li class="dish" id="parmigiana" data-kind="pizza" data-tags="veg">
+            <div class="ph"><div class="labels"><span class="label ">Tradizionale</span><span class="label l-verde">Veg</span></div><img src="../assets/img/menu/parmigiana.webp" srcset="../assets/img/menu/parmigiana-300.webp 300w, ../assets/img/menu/parmigiana.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Parmigiana</h3><span class="price">9,00 €</span></div><p class="ing">Classica e avvolgente: melanzane, grana e mozzarella su base di pomodoro.</p><p class="tag-line">Un grande classico che non stanca mai.</p></div>
+          </li>
+          <li class="dish" id="armonia" data-kind="pizza" data-tags="veg">
+            <div class="ph"><div class="labels"><span class="label l-verde">Veg</span></div><img src="../assets/img/menu/armonia.webp" srcset="../assets/img/menu/armonia-300.webp 300w, ../assets/img/menu/armonia.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Armonia</h3><span class="price">9,50 €</span></div><p class="ing">Fresca e leggera: pomodoro, mozzarella, zucchine, brie e rucola.</p><p class="tag-line">Un equilibrio delicato tra dolcezza e freschezza.</p></div>
+          </li>
+          <li class="dish" id="verona" data-kind="pizza" data-tags="veg">
+            <div class="ph"><div class="labels"><span class="label l-verde">Veg</span></div><img src="../assets/img/menu/verona.webp" srcset="../assets/img/menu/verona-300.webp 300w, ../assets/img/menu/verona.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Verona</h3><span class="price">9,50 €</span></div><p class="ing">Pomodoro, mozzarella, radicchio rosso, briè morbido e grana.</p><p class="tag-line">Equilibrata, delicatamente amarognola e cremosa.</p></div>
+          </li>
+          <li class="dish" id="romana" data-kind="pizza" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/romana.webp" srcset="../assets/img/menu/romana-300.webp 300w, ../assets/img/menu/romana.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Romana</h3><span class="price">8,50 €</span></div><p class="ing">Decisa e saporita: acciughe, capperi e origano su base di pomodoro e mozzarella.</p><p class="tag-line">Per chi ama i sapori veri.</p></div>
+          </li>
+          <li class="dish" id="rurale" data-kind="pizza" data-tags="hot">
+            <div class="ph"><div class="labels"><span class="label l-rosso">Piccante</span></div><img src="../assets/img/menu/rurale.webp" srcset="../assets/img/menu/rurale-300.webp 300w, ../assets/img/menu/rurale.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Rurale</h3><span class="price">9,50 €</span></div><p class="ing">Mozzarella, pancetta, salamino piccante e patate al forno.</p><p class="tag-line">Un mix rustico e intenso, dove la sapidità della pancetta incontra il piccante del salamino e la morbidezza delle patate al forno.</p></div>
+          </li>
+          <li class="dish" id="etna" data-kind="pizza" data-tags="hot">
+            <div class="ph"><div class="labels"><span class="label l-rosso">Piccante</span></div><img src="../assets/img/menu/etna.webp" srcset="../assets/img/menu/etna-300.webp 300w, ../assets/img/menu/etna.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Etna</h3><span class="price">9,50 €</span></div><p class="ing">Piccante e decisa: salamino piccante, cipolla e olio piccante su base di pomodoro e mozzarella.</p><p class="tag-line">Per chi ama il fuoco.</p></div>
+          </li>
+          <li class="dish" id="angelo" data-kind="pizza" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/angelo.webp" srcset="../assets/img/menu/angelo-300.webp 300w, ../assets/img/menu/angelo.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Angelo</h3><span class="price">10,00 €</span></div><p class="ing">Pomodoro, mozzarella, prosciutto cotto, ricotta e grana a scaglie. Cremosa, delicata, semplicemente irresistibile.</p></div>
+          </li>
+          <li class="dish" id="bonta" data-kind="pizza" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/bonta.webp" srcset="../assets/img/menu/bonta-300.webp 300w, ../assets/img/menu/bonta.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Bontà</h3><span class="price">10,50 €</span></div><p class="ing">Golosa e comfort: patatine fritte croccanti, prosciutto cotto e mozzarella, con una spolverata di grana.</p><p class="tag-line">Scelta facile, amata da grandi e piccoli.</p></div>
+          </li>
+          <li class="dish" id="marinara" data-kind="pizza" data-tags="veg">
+            <div class="ph"><div class="labels"><span class="label l-verde">Vegana</span></div><img src="../assets/img/menu/marinara.webp" srcset="../assets/img/menu/marinara-300.webp 300w, ../assets/img/menu/marinara.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Marinara</h3><span class="price">6,00 €</span></div><p class="ing">Pomodoro, olio extravergine all’aglio e origano.</p><p class="tag-line">Leggera, profumata e 100% vegana.</p></div>
+          </li>
+          <li class="dish" id="napoleone" data-kind="pizza" data-tags="hot">
+            <div class="ph"><div class="labels"><span class="label l-rosso">Piccante</span></div><img src="../assets/img/menu/napoleone.webp" srcset="../assets/img/menu/napoleone-300.webp 300w, ../assets/img/menu/napoleone.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Napoleone</h3><span class="price">10,50 €</span></div><p class="ing">Intensa e decisa: pancetta, tonno, salamino piccante e provola affumicata su base di pomodoro e mozzarella.</p><p class="tag-line">Sapore forte, senza compromessi.</p></div>
           </li>
         </ul>
       </section>
-      <section class="menu-sec" id="speciali" aria-labelledby="h-speciali">
-        <header><h2 class="display" id="h-speciali">Pizze speciali</h2><p>Le nostre firme</p></header>
+      <section class="menu-sec" id="specialita" aria-labelledby="h-specialita">
+        <header><h2 class="display" id="h-specialita">Le nostre specialità</h2><p>Le pizze firmate Punto Pizza</p></header>
         <ul class="dishes">
-          <li class="dish" id="luna">
-            <div class="pz-wrap" data-pz></div>
-            <h3>Luna<span class="mini star">Con burrata</span></h3>
-            <span class="price">12,50 €</span>
-            <p class="ing">Pomodoro, mozzarella, burrata, Philadelphia e Cirio</p>
+          <li class="dish" id="fiocco" data-kind="pizza" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/fiocco.webp" srcset="../assets/img/menu/fiocco-300.webp 300w, ../assets/img/menu/fiocco.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Fiocco</h3><span class="price">12,50 €</span></div><p class="ing">Pomodoro, mozzarella, melanzane, prosciutto crudo e burrata.</p><p class="tag-line">Morbida, saporita e raffinata.</p></div>
           </li>
-          <li class="dish" id="ponny">
-            <div class="pz-wrap" data-pz></div>
-            <h3>Ponny<span class="mini star">Veronese</span></h3>
-            <span class="price">12,50 €</span>
-            <p class="ing">Pomodoro, mozzarella, radicchio, sfilacci di cavallo e grana a scaglie</p>
+          <li class="dish" id="golosa" data-kind="pizza" data-tags="hot">
+            <div class="ph"><div class="labels"><span class="label l-rosso">Piccante</span></div><img src="../assets/img/menu/golosa.webp" srcset="../assets/img/menu/golosa-300.webp 300w, ../assets/img/menu/golosa.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Golosa</h3><span class="price">12,50 €</span></div><p class="ing">Esagerata e saporita: salamino piccante, salsiccia, peperoni, olive e provola affumicata.</p><p class="tag-line">Per veri golosi.</p></div>
+          </li>
+          <li class="dish" id="giulietta" data-kind="pizza" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/giulietta.webp" srcset="../assets/img/menu/giulietta-300.webp 300w, ../assets/img/menu/giulietta.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Giulietta</h3><span class="price">12,00 €</span></div><p class="ing">Il gusto deciso di salsiccia e pancetta incontra la cremosità del gorgonzola e la delicatezza delle patate al forno.</p></div>
+          </li>
+          <li class="dish" id="luna" data-kind="pizza" data-tags="veg">
+            <div class="ph"><div class="labels"><span class="label l-verde">Veg</span></div><img src="../assets/img/menu/luna.webp" srcset="../assets/img/menu/luna-300.webp 300w, ../assets/img/menu/luna.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Luna</h3><span class="price">12,00 €</span></div><p class="ing">Pomodoro, mozzarella, Philadelphia, burrata e pomodorini ciliegino.</p><p class="tag-line">Semplice, cremosa, luminosa.</p></div>
+          </li>
+          <li class="dish" id="casa" data-kind="pizza" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/casa.webp" srcset="../assets/img/menu/casa-300.webp 300w, ../assets/img/menu/casa.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Casa</h3><span class="price">12,00 €</span></div><p class="ing">Pomodoro, mozzarella, porcini, salsiccia, gorgonzola e radicchio rosso si uniscono in una delle nostre pizze più ricche e saporite.</p></div>
+          </li>
+          <li class="dish" id="ponny" data-kind="pizza" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/ponny.webp" srcset="../assets/img/menu/ponny-300.webp 300w, ../assets/img/menu/ponny.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Ponny</h3><span class="price">11,50 €</span></div><p class="ing">Pomodoro, mozzarella, sfilacci di cavallo, radicchio rosso e grana a scaglie.</p><p class="tag-line">Decisa, intensa, per veri intenditori.</p></div>
+          </li>
+          <li class="dish" id="appetitosa" data-kind="pizza" data-tags="hot">
+            <div class="ph"><div class="labels"><span class="label l-rosso">Piccante</span></div><img src="../assets/img/menu/appetitosa.webp" srcset="../assets/img/menu/appetitosa-300.webp 300w, ../assets/img/menu/appetitosa.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Appetitosa</h3><span class="price">12,00 €</span></div><p class="ing">Pomodoro, mozzarella, speck, salame piccante, peperoni e gorgonzola per un gusto intenso e irresistibile.</p></div>
+          </li>
+          <li class="dish" id="boscaiola" data-kind="pizza" data-tags="hot">
+            <div class="ph"><div class="labels"><span class="label l-rosso">Piccante</span></div><img src="../assets/img/menu/boscaiola.webp" srcset="../assets/img/menu/boscaiola-300.webp 300w, ../assets/img/menu/boscaiola.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Boscaiola</h3><span class="price">12,00 €</span></div><p class="ing">Pomodoro, mozzarella, misto bosco, speck, salame piccante e gorgonzola per un gusto ricco e deciso.</p></div>
           </li>
         </ul>
       </section>
-      <section class="menu-sec" id="mono" aria-labelledby="h-mono">
-        <header><h2 class="display" id="h-mono">Pizze mono</h2><p>Un ingrediente, fatto bene</p></header>
+      <section class="menu-sec" id="baby" aria-labelledby="h-baby">
+        <header><h2 class="display" id="h-baby">Pizze baby</h2><p>Per i più piccoli</p></header>
         <ul class="dishes">
-          <li class="dish" id="diavola">
-            <div class="pz-wrap" data-pz></div>
-            <h3>Diavola</h3>
-            <span class="price">8,50 €</span>
-            <p class="ing">Pomodoro, mozzarella e salamino piccante</p>
+          <li class="dish" id="margherita-baby" data-kind="pizza" data-tags="veg">
+            <div class="ph"><div class="labels"><span class="label l-verde">Veg</span></div><img src="../assets/img/menu/margherita-baby.webp" srcset="../assets/img/menu/margherita-baby-300.webp 300w, ../assets/img/menu/margherita-baby.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Margherita Baby</h3><span class="price">6,00 €</span></div><p class="ing">Pomodoro e mozzarella, la semplicità che conquista sempre. Una piccola Margherita, delicata e golosa, pensata per i nostri piccoli amanti della pizza.</p></div>
           </li>
-          <li class="dish" id="wurstel">
-            <div class="pz-wrap" data-pz></div>
-            <h3>Würstel</h3>
-            <span class="price">8,50 €</span>
-            <p class="ing">Pomodoro, mozzarella e würstel</p>
+          <li class="dish" id="prosciutto-cotto-baby" data-kind="pizza" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/prosciutto-cotto-baby.webp" srcset="../assets/img/menu/prosciutto-cotto-baby-300.webp 300w, ../assets/img/menu/prosciutto-cotto-baby.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Prosciutto cotto Baby</h3><span class="price">7,00 €</span></div><p class="ing">Pomodoro, mozzarella e prosciutto, Semplice, golosa e irresistibile: la pizza perfetta per i più piccoli… e non solo!</p></div>
           </li>
-          <li class="dish" id="gran-biscotto">
-            <div class="pz-wrap" data-pz></div>
-            <h3>Gran Biscotto</h3>
-            <span class="price">8,50 €</span>
-            <p class="ing">Pomodoro, mozzarella e prosciutto cotto</p>
+          <li class="dish" id="wurstel-baby" data-kind="pizza" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/wurstel-baby.webp" srcset="../assets/img/menu/wurstel-baby-300.webp 300w, ../assets/img/menu/wurstel-baby.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Würstel Baby</h3><span class="price">7,00 €</span></div><p class="ing">Pomodoro, mozzarella e würstel. Semplice, golosa e irresistibile: la pizza perfetta per i più piccoli… e non solo!</p></div>
+          </li>
+          <li class="dish" id="marinara-baby" data-kind="pizza" data-tags="veg">
+            <div class="ph"><div class="labels"><span class="label l-verde">Vegana</span><span class="label l-verde">Veg</span></div><img src="../assets/img/menu/marinara-baby.webp" srcset="../assets/img/menu/marinara-baby-300.webp 300w, ../assets/img/menu/marinara-baby.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Marinara Baby</h3><span class="price">5,00 €</span></div><p class="ing">Pomodoro, olio con aglio e origano</p></div>
           </li>
         </ul>
       </section>
       <section class="menu-sec" id="fritti" aria-labelledby="h-fritti">
         <header><h2 class="display" id="h-fritti">Fritti</h2></header>
         <ul class="dishes">
-          <li class="dish no-pz">
-            <h3>Patatine fritte</h3>
-            <span class="price">5,00 €</span>
-            <p class="ing">Calde e croccanti, anche da mettere sulla pizza</p>
+          <li class="dish" id="porzione-di-patatine-fritte" data-kind="side" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/porzione-di-patatine-fritte.webp" srcset="../assets/img/menu/porzione-di-patatine-fritte-300.webp 300w, ../assets/img/menu/porzione-di-patatine-fritte.webp 600w" sizes="(max-width: 640px) 104px, 300px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Patatine fritte</h3><span class="price">4,00 €</span></div><p class="ing">Croccanti fuori, morbide dentro.</p></div>
           </li>
         </ul>
       </section>
-      <section class="menu-sec" id="bevande" aria-labelledby="h-bevande">
-        <header><h2 class="display" id="h-bevande">Bevande</h2></header>
-        <ul class="dishes">
-          <li class="dish no-pz">
-            <h3>Coca-Cola Original</h3>
-            <span class="price">5,00 €</span>
-            <p class="ing">Bottiglia 1,5 L</p>
+      <section class="menu-sec" id="bibite" aria-labelledby="h-bibite">
+        <header><h2 class="display" id="h-bibite">Bibite</h2></header>
+        <ul class="dishes drinks">
+          <li class="dish drink" id="acqua-frizzante-50cl" data-kind="drink" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/acqua-frizzante-50cl.webp" alt="" width="240" height="240" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Acqua frizzante 50 cl</h3><span class="price">1,50 €</span></div></div>
           </li>
-          <li class="dish no-pz">
-            <h3>Coca-Cola Zero Zuccheri</h3>
-            <span class="price">5,00 €</span>
-            <p class="ing">Bottiglia 1,5 L</p>
+          <li class="dish drink" id="acqua-naturale-50cl" data-kind="drink" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/acqua-naturale-50cl.webp" alt="" width="240" height="240" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Acqua naturale 50 cl</h3><span class="price">1,50 €</span></div></div>
           </li>
-          <li class="dish no-pz">
-            <h3>Fanta Orange</h3>
-            <span class="price">5,00 €</span>
-            <p class="ing">Bottiglia 1,5 L</p>
+          <li class="dish drink" id="coca-cola-1-5-lt" data-kind="drink" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/coca-cola-1-5-lt.webp" alt="" width="240" height="240" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Coca-Cola 1,5 L</h3><span class="price">4,00 €</span></div></div>
           </li>
-          <li class="dish no-pz">
-            <h3>Coca-Cola Original</h3>
-            <span class="price">3,00 €</span>
-            <p class="ing">Lattina 33 cl</p>
+          <li class="dish drink" id="coca-cola-33cl" data-kind="drink" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/coca-cola-33cl.webp" alt="" width="240" height="240" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Coca-Cola 33 cl</h3><span class="price">2,50 €</span></div></div>
           </li>
-          <li class="dish no-pz">
-            <h3>Coca-Cola Zero Zuccheri</h3>
-            <span class="price">3,00 €</span>
-            <p class="ing">Lattina 33 cl</p>
+          <li class="dish drink" id="coca-cola-zero-1-5-lt" data-kind="drink" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/coca-cola-zero-1-5-lt.webp" alt="" width="240" height="240" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Coca-Cola Zero 1,5 L</h3><span class="price">4,00 €</span></div></div>
           </li>
-          <li class="dish no-pz">
-            <h3>Fanta Original</h3>
-            <span class="price">3,00 €</span>
-            <p class="ing">Lattina 33 cl</p>
+          <li class="dish drink" id="coca-cola-zero-33cl" data-kind="drink" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/coca-cola-zero-33cl.webp" alt="" width="240" height="240" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Coca-Cola Zero 33 cl</h3><span class="price">2,50 €</span></div></div>
           </li>
-          <li class="dish no-pz">
-            <h3>Tè al limone</h3>
-            <span class="price">3,00 €</span>
-            <p class="ing">Bottiglia 50 cl</p>
+          <li class="dish drink" id="fanta-1-5-lt" data-kind="drink" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/fanta-1-5-lt.webp" alt="" width="240" height="240" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Fanta 1,5 L</h3><span class="price">4,00 €</span></div></div>
           </li>
-          <li class="dish no-pz">
-            <h3>Tè alla pesca</h3>
-            <span class="price">3,00 €</span>
-            <p class="ing">Bottiglia 50 cl</p>
-          </li>
-          <li class="dish no-pz">
-            <h3>Acqua naturale</h3>
-            <span class="price">1,50 €</span>
-            <p class="ing">Bottiglia 50 cl</p>
-          </li>
-          <li class="dish no-pz">
-            <h3>Acqua frizzante</h3>
-            <span class="price">1,50 €</span>
-            <p class="ing">Bottiglia 50 cl</p>
+          <li class="dish drink" id="fanta-33cl" data-kind="drink" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/fanta-33cl.webp" alt="" width="240" height="240" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Fanta 33 cl</h3><span class="price">2,50 €</span></div></div>
           </li>
         </ul>
       </section>
       <section class="menu-sec" id="birre" aria-labelledby="h-birre">
-        <header><h2 class="display" id="h-birre">Birre</h2></header>
-        <ul class="dishes">
-          <li class="dish no-pz">
-            <h3>Ichnusa Non Filtrata</h3>
-            <span class="price">4,00 €</span>
-            <p class="ing">Birra</p>
+        <header><h2 class="display" id="h-birre">Birre</h2><p>Anche senza glutine</p></header>
+        <ul class="dishes drinks">
+          <li class="dish drink" id="birra-analcolica-senza-glutine-ambar-triple-zero" data-kind="drink" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/birra-analcolica-senza-glutine-ambar-triple-zero.webp" alt="" width="240" height="240" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Ambar Triple Zero</h3><span class="price">3,50 €</span></div><p class="ing">Birra analcolica senza glutine, 0% alcol e 0 zuccheri.</p></div>
           </li>
-          <li class="dish no-pz">
-            <h3>Pedavena Senza Glutine<span class="mini veg">Senza glutine</span></h3>
-            <span class="price">4,00 €</span>
-            <p class="ing">Lattina 33 cl</p>
+          <li class="dish drink" id="birra-senza-glutine-33cl" data-kind="drink" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/birra-senza-glutine-33cl.webp" alt="" width="240" height="240" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Birra senza glutine 33 cl</h3><span class="price">3,50 €</span></div><p class="ing">Bottiglia 33 cl</p></div>
           </li>
-          <li class="dish no-pz">
-            <h3>Moretti</h3>
-            <span class="price">3,00 €</span>
-            <p class="ing">Lattina 33 cl</p>
+          <li class="dish drink" id="corona" data-kind="drink" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/corona.webp" alt="" width="240" height="240" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Corona</h3><span class="price">3,50 €</span></div></div>
           </li>
-          <li class="dish no-pz">
-            <h3>Beck's</h3>
-            <span class="price">3,00 €</span>
-            <p class="ing">Lattina 33 cl</p>
+          <li class="dish drink" id="heineken-33cl" data-kind="drink" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/heineken-33cl.webp" alt="" width="240" height="240" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Heineken 33 cl</h3><span class="price">2,50 €</span></div></div>
           </li>
-          <li class="dish no-pz">
-            <h3>Heineken</h3>
-            <span class="price">3,00 €</span>
-            <p class="ing">Lattina 33 cl</p>
+          <li class="dish drink" id="heineken-66cl" data-kind="drink" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/heineken-66cl.webp" alt="" width="240" height="240" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Heineken 66 cl</h3><span class="price">3,50 €</span></div></div>
           </li>
-          <li class="dish no-pz">
-            <h3>Moretti</h3>
-            <span class="price">4,00 €</span>
-            <p class="ing">Bottiglia 66 cl</p>
+          <li class="dish drink" id="ichnusa-non-filtrata-50cl" data-kind="drink" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/ichnusa-non-filtrata-50cl.webp" alt="" width="240" height="240" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Ichnusa Non Filtrata 50 cl</h3><span class="price">3,50 €</span></div></div>
           </li>
-          <li class="dish no-pz">
-            <h3>Beck's</h3>
-            <span class="price">4,00 €</span>
-            <p class="ing">Bottiglia 66 cl</p>
+          <li class="dish drink" id="moretti-33cl" data-kind="drink" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/moretti-33cl.webp" alt="" width="240" height="240" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Moretti 33 cl</h3><span class="price">2,50 €</span></div></div>
           </li>
-          <li class="dish no-pz">
-            <h3>Heineken</h3>
-            <span class="price">4,00 €</span>
-            <p class="ing">Bottiglia 66 cl</p>
+          <li class="dish drink" id="moretti-66cl" data-kind="drink" data-tags="">
+            <div class="ph"><img src="../assets/img/menu/moretti-66cl.webp" alt="" width="240" height="240" loading="lazy" decoding="async"></div>
+            <div class="bd"><div class="top"><h3>Moretti 66 cl</h3><span class="price">3,50 €</span></div></div>
           </li>
         </ul>
       </section>
 
-      <p class="empty" id="menu-empty" hidden>Nessuna pizza con questi filtri. Prova a cercare un altro ingrediente.</p>
+      <p class="empty" id="menu-empty" hidden>Niente con questi filtri. Prova a cercare un altro ingrediente.</p>
 
       <div class="menu-note">
-        <p><strong>Allergeni.</strong> Le informazioni sugli allergeni di ogni prodotto sono disponibili su richiesta: chiedici quando ordini o chiamaci allo <a href="tel:+390458622340">045 862 2340</a>. Se sei celiaco, scegli l’impasto senza glutine e scrivilo anche nelle note dell’ordine.</p>
-        <p>Prezzi in euro. Per ordinare: <a href="https://url.velocissimo.app/o/157" target="_blank" rel="noopener">app Punto Pizza</a> (5&nbsp;€ di sconto sul primo ordine), telefono o <a href="https://www.justeat.it/restaurants-punto-pizza-verona/menu" target="_blank" rel="noopener">Just Eat</a>.</p>
+        <p><strong>Allergeni.</strong> Le informazioni sugli allergeni di ogni prodotto sono nell’app e disponibili su richiesta: chiedici quando ordini o chiamaci allo <a href="tel:+390458622340">045 862 2340</a>. Se sei celiaco, scegli l’impasto senza glutine e scrivilo anche nelle note dell’ordine.</p>
+        <p>Prezzi in euro, come nell’app. Per ordinare: <a href="https://url.velocissimo.app/o/157" target="_blank" rel="noopener">app Punto Pizza</a> (5&nbsp;€ di sconto sul primo ordine), telefono o <a href="https://www.justeat.it/restaurants-punto-pizza-verona/menu" target="_blank" rel="noopener">Just Eat</a>.</p>
       </div>
     </div>
     <div class="sec" style="padding-top:48px"></div>
@@ -852,7 +1118,7 @@
     <div class="wrap">
       <div class="foot-grid">
         <div class="foot-brand">
-          <img src="../assets/img/logo-light.svg" width="200" height="60" alt="Punto Pizza Verona" loading="lazy">
+          <img src="../assets/img/logo.svg" width="210" height="55" alt="Punto Pizza" loading="lazy">
           <p>Pizzeria da asporto e consegna a domicilio a Verona. Impasto a 24 ore di lievitazione e un laboratorio dedicato al senza glutine.</p>
           <div class="social">
             <a href="https://www.instagram.com/puntopizzaverona/" target="_blank" rel="noopener" aria-label="Instagram"><svg aria-hidden="true" focusable="false"><use href="#i-instagram"/></svg></a>
@@ -894,7 +1160,7 @@
 
   <nav class="order-bar" aria-label="Ordina o chiama">
     <a class="btn btn-rosso" href="https://url.velocissimo.app/o/157" target="_blank" rel="noopener">Ordina ora <span class="promo-tag">−5&nbsp;€</span></a>
-    <a class="btn btn-ghost" href="tel:+390458622340" aria-label="Chiama 045 862 2340"><svg aria-hidden="true" focusable="false"><use href="#i-phone"/></svg>Chiama</a>
+    <a class="btn btn-line" href="tel:+390458622340" aria-label="Chiama 045 862 2340"><svg aria-hidden="true" focusable="false"><use href="#i-phone"/></svg>Chiama</a>
   </nav>
 </body>
 </html>

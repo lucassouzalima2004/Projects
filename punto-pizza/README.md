@@ -1,7 +1,8 @@
 # Punto Pizza Verona · site
 
 Site novo da **Punto Pizza**, pizzaria de entrega e retirada do **Carlos** em Verona (Itália), na Via Albere 117.
-O site é em italiano, porque o público é de Verona. É HTML, CSS e JavaScript puros: sem build e sem dependências.
+O site é em italiano, porque o público é de Verona. É HTML, CSS e JavaScript puros: sem build. A única biblioteca é a
+[Lenis](https://github.com/darkroomengineering/lenis) (rolagem suave), que fica dentro do projeto em `assets/js/vendor/`.
 
 ## O pedido
 
@@ -13,77 +14,84 @@ Pela conversa no WhatsApp e pelos áudios de 14/10:
 - Perguntou se o site é de uma página só ou de várias: combinamos **várias páginas**.
 - Combinado: a primeira prévia vai quase pronta, em até 2 dias. Ele paga os R$ 1.000 quando aprovar a prévia, antes dos ajustes finais.
 
+Depois da primeira prévia (15/10):
+
+- **"Você tá pegando o menu do Just Eat? Não consegue fazer pela minha app?"** Ele mandou o menu completo do app:
+  <https://wbpp.it/s/?vNtG>. O menu do site agora é o do app: os mesmos 60 itens, nomes, descrições, preços, selos e fotos.
+- **"O logo tem como deixar o meu original? Só um em toda parte?"** Agora há um logo só (`assets/img/logo.svg`, vermelho e grafite,
+  sem o "VERONA"), igual em todas as páginas, no rodapé e na prévia do WhatsApp. O cabeçalho e o rodapé ficaram brancos para ele aparecer como é.
+- **"E usa essa pizza na parte inicial"**: a margherita da foto que ele mandou abre o vídeo do topo e ganhou uma seção logo abaixo
+  (é a *La Margherita Come Si Deve* do app).
+
+E o Lucas pediu: topo novo com **vídeo**, informações **centralizadas**, **fotos reais** no lugar dos desenhos, mais **animações**,
+o mais **fluido** possível e mais **profissional**.
+
 ## O que tem no site
 
 **Home** (`index.html`):
 
-- **Topo** com a foto da pizza balançando de leve, o vapor subindo, o título "Pizza a domicilio a Verona, *fatta come si deve*." (a frase do site atual dele), o selo **−5 € no primeiro pedido pelo app**, nota do Google e os três diferenciais.
-- No cabeçalho, **"Aperto ora · fino alle 21:30" / "Chiuso · apre domani alle 17:00"**, calculado pelo horário de Verona.
-- Faixa vermelha correndo com os diferenciais dos cartazes dele (impasto 24 ore, farine selezionate...).
-- **Qualche idea per stasera**: 6 pizzas do cardápio, cada uma com um **desenho gerado a partir dos ingredientes** (veja abaixo).
-- **Fatta come si deve**: o método em 4 pontos, com a foto da pizza de mortadela dos anúncios dele.
-- **Senza glutine. Con tutto il resto.**: o laboratório dedicado e a avaliação da Ilaria (filha celíaca).
-- **Como pedir em 3 passos**, com os botões da App Store e do Google Play e um **QR code** para quem está no computador.
-- **6 avaliações reais do Google** (do banner de avaliações do site atual).
-- **Horários** (o dia de hoje marcado), **"Consegniamo da te?"** (a pessoa digita o CAP e o site responde) e endereço.
-- Chamada final vermelha "Hai fame?".
+1. **Topo com vídeo** em tela cheia (veja [O vídeo do topo](#o-vídeo-do-topo)), com o texto centralizado: "aperto ora / chiuso"
+   pelo horário de Verona, o título "Pizza a domicilio a Verona, *fatta come si deve*." entrando palavra por palavra,
+   os botões **Ordina ora −5 €** e **Sfoglia il menu**, a nota do Google e os diferenciais. Ao rolar, o vídeo aproxima e o texto sobe.
+   Botão de pausar o vídeo; quem ativou "reduzir movimento" ou "economia de dados" vê só a foto.
+2. Faixa vermelha correndo com os diferenciais (impasto 24 ore, San Marzano DOP, fiordilatte artigianale...).
+3. **La Margherita come si deve**: a foto do Carlos num círculo que gira de leve com a rolagem, os 4 ingredientes do app e o preço.
+4. **Le nostre pizze**: carrossel com 12 pizzas e as **fotos reais do app** (dá para arrastar com o mouse, usar as setas ou o dedo), com os selos do app (Novità, Eccellenza, Più venduto...).
+5. **Fatta come si deve**: o método em 4 passos; no computador a foto da esquerda fica parada e troca conforme o passo que está na tela.
+6. **Senza glutine. Con tutto il resto.**: a pizza Luna recortada, girando com a rolagem, e a avaliação da Ilaria por cima.
+7. **Como pedir em 3 passos**, os botões da App Store e do Google Play e o **QR code** do app para quem está no computador.
+8. **Avaliações em duas faixas que correm** em sentidos opostos (param com o mouse em cima) e a nota 4,6 contando.
+9. **Horários** (o dia de hoje marcado), **"Consegniamo da te?"** (verificação do CAP) e endereço.
+10. Chamada final vermelha "Hai fame?" com duas pizzas flutuando.
 
-**Menu** (`menu/`): o cardápio completo com **abas fixas** (Classiche, Speciali, Mono, Fritti, Bevande, Birre), os 3 impastos,
-**filtros** (vegetarianas, picantes, brancas), **busca por ingrediente** ("bufala", "speck"...) e o botão **"Scegli per me"**,
-que sorteia uma pizza, gira o desenho e diz "Stasera si va di Capricciosa!". Selos *Veg* e *Piccante* saem sozinhos dos ingredientes.
+**Menu** (`menu/`): o menu do app com **foto de cada item**: Pizze classiche (31), Le nostre specialità (8), Pizze baby (4),
+Fritti, Bibite e Birre. Abas fixas com a "pílula" que desliza até a seção da tela, filtros (**Consigliate**, Vegetariane, Piccanti),
+busca por ingrediente ("porcini", "bufala"...) e o botão **"Scegli per me"**, que sorteia uma pizza e gira a foto.
+No computador são cartões com foto grande; no celular, linhas com a foto ao lado, como num app de delivery.
 
-**Senza glutine** (`senza-glutine/`): como preparam (laboratório, ingredientes e utensílios separados, cozimento separado),
-aviso para celíacos, avaliações de clientes celíacos e perguntas frequentes.
+**Senza glutine** (`senza-glutine/`): como preparam, aviso para celíacos, avaliações de clientes celíacos, as duas cervejas sem glúten do app e perguntas.
 
 **Consegna e ritiro** (`consegna/`): as 3 formas de pedir (app, telefone, Just Eat), verificação do CAP, retirada, horários e perguntas.
 
 **Chi siamo e contatti** (`contatti/`): "Punto Pizza, da Carlos", contatos, horários e o **mapa do Google só quando a pessoa clica**
-(antes disso o Google não coloca cookies; bom para a lei de privacidade europeia).
+(antes disso o Google não coloca cookies).
 
-**Também:** página 404 ("Questa pagina è finita come l'ultima fetta."), barra fixa no celular (Ordina −5 € / Chiama),
-prévia bonita do link no WhatsApp (`assets/img/og-image.jpg`), dados estruturados para o Google (pizzaria, horários,
-cardápio com preços, perguntas frequentes, trilha de navegação), `sitemap.xml` e `robots.txt` gerados na publicação.
-As animações desligam sozinhas para quem ativou "reduzir movimento".
+**Em todo o site:**
 
-**Testes (15/10):** Lighthouse no computador 100 em desempenho, acessibilidade, boas práticas e SEO em todas as páginas;
-no celular, 96–99 em desempenho e 100 nos outros três. Zero problemas no teste de acessibilidade (axe), no celular e no computador.
-Sem rolagem lateral no celular. A página não "pula" quando as fontes carregam (CLS abaixo de 0,03 mesmo com internet lenta).
+- **Rolagem suave** (Lenis) e **transição suave entre as páginas** (navegadores que suportam, como Chrome, Edge e Safari recentes).
+- Seções que entram ao rolar, títulos palavra por palavra, pizzas recortadas flutuando e girando com a rolagem, botões que
+  "puxam" levemente o mouse, cards que sobem ao passar o mouse e fotos que giram de leve.
+- Tudo desliga sozinho para quem ativou "reduzir movimento" no celular ou no computador.
+- Barra fixa no celular (Ordina −5 € / Chiama), página 404, prévia bonita no WhatsApp (`assets/img/og-image.jpg`), dados para o Google
+  (pizzaria, horários, menu com preços e fotos, perguntas, trilha), `sitemap.xml` e `robots.txt` gerados na publicação.
+
+**Testes (16/10):** Lighthouse no computador 100 em desempenho, acessibilidade, boas práticas e SEO em todas as páginas;
+no celular 89–96 em desempenho (o menu tem 60 fotos) e 100 nos outros três. Zero problemas no teste de acessibilidade (axe),
+no celular e no computador. Sem rolagem lateral no celular. A página não "pula" enquanto carrega (CLS abaixo de 0,02 mesmo com internet lenta).
+Testados também: o vídeo (tocar, pausar, versão em pé no celular), carrossel (setas e arrastar), filtros, busca, "Scegli per me",
+abas, CAP, menu do celular, barra fixa e o mapa.
 
 ### Identidade
 
-- **Logo** vetorizado a partir do PNG do site dele (`logo.svg` e, para fundo escuro, `logo-light.svg`; as versões `compact` não têm o "VERONA").
-  O favicon é o "P" do logo com a bolinha vermelha.
-- O **"punto"** (a bolinha vermelha do i de "Pizza") virou a marca do site: fecha os títulos, marca o item do menu e os marcadores.
-- Cores: vermelho do logo **#D9000F**, escuro quente **#16110E** (forno), creme **#FAF5EC** (farinha) e o dourado dos cartazes dele **#EDB94A**.
-- Fontes: **Bricolage Grotesque** (títulos condensados, como nos cartazes, e textos) e **Instrument Serif** itálico nos destaques.
-  Ficam em `assets/fonts/`, sem Google Fonts (mais rápido e sem enviar dados ao Google).
-
-### As pizzas desenhadas
-
-Não há foto de cada pizza, então cada uma ganha um **desenho feito pelo próprio site a partir dos ingredientes escritos**:
-molho de tomate ou base branca, mozzarella, salame, cogumelos, alcachofra, azeitonas, rúcula, burrata, *sfilacci di cavallo*...
-Mudou os ingredientes no HTML, muda o desenho. O desenho de cada pizza é sempre o mesmo (depende do nome).
-Ingrediente novo sem desenho fica só no texto; para desenhar, acrescente em `TOPPINGS` no `assets/js/app.js`.
+- **Logo**: o original dele, vetorizado (vermelho **#DA0014** e grafite **#3A3A3A**), um só arquivo em todo o site. O favicon é o "P" do logo.
+- O **"punto"** (a bolinha vermelha do i de "Pizza") fecha os títulos e marca o item ativo do menu.
+- Cores: vermelho do logo, preto quente das fotos do menu (#0C0A09), creme (#FAF6EF) e o dourado dos cartazes dele (#EDB94A).
+- Fontes: **Bricolage Grotesque** (títulos condensados e textos) e **Instrument Serif** itálico nos destaques, dentro de `assets/fonts/`.
 
 ## Antes de mostrar ao Carlos: o que confirmar
 
-- [ ] **Preços**: vieram do cardápio do Just Eat (<https://punto-pizza-verona.it>). No Just Eat os preços costumam ser mais altos que no app e no balcão. Pedir os preços certos.
-- [ ] **Cardápio completo**: o Just Eat pode não ter tudo. A pizza de mortadela, burrata e pistache dos anúncios dele, por exemplo, não aparece lá (no site ela só está na foto, sem nome). Pedir o cardápio do app.
-- [ ] **Impastos**: integral e sem glúten servem para todas as pizzas? Tem acréscimo de preço? Há outros (ex.: sem lactose)?
-- [ ] **"Cirio"** (Estiva, Luna, Svolta): é tomatinho (pomodorini Cirio)? O desenho mostra tomatinho cortado.
-- [ ] **Friarielli e Salsiccia**: no Just Eat aparece só "friarielli e salsiccia", sem tomate nem mozzarella. Confirmar.
-- [ ] **Horário**: usamos o do site atual dele, terça a domingo 17:00–21:30 e segunda fechado. O Just Eat diz entrega 18:30–21:30 e o Restaurant Guru diz até 22:00 no fim de semana. Confirmar.
-- [ ] **Zona de entrega**: CAP 37137 e 37138 (do Just Eat). Pelo app ou telefone ele entrega mais longe? Tem taxa de entrega e pedido mínimo?
-- [ ] **Senza glutine** (é informação de segurança para celíacos, confirmar tudo): "ingredientes e utensílios separados" e "cozimento/forno separado" vêm de avaliações de clientes; "laboratório dedicado" vem do site dele. Também: dá para misturar pizzas normais e sem glúten no mesmo pedido?
+- [ ] **Marca d'água na margherita**: a foto que ele pediu para o topo (a mesma da *Margherita Come Si Deve* no app) tem uma **marca d'água fraca de banco de imagens** no meio. No vídeo e no círculo ela quase não aparece, mas a foto não é dele. Se for de banco de imagens, ele precisa da licença ou de uma foto própria. Vale perguntar.
+- [ ] **Massas**: o site diz "classico, integrale o senza glutine" (do site antigo e das avaliações). O menu do app não mostra as massas por item. Confirmar quais pizzas aceitam cada massa e se tem acréscimo.
+- [ ] **Senza glutine** (informação de segurança para celíacos, confirmar tudo): "ingredientes e utensílios separados" e "cozimento/forno separado" vêm de avaliações de clientes; "laboratório dedicado" vem do site antigo dele. E dá para misturar pizzas normais e sem glúten no mesmo pedido?
+- [ ] **Horário**: terça a domingo 17:00–21:30, segunda fechado (do site antigo). Confirmar.
+- [ ] **Zona de entrega**: CAP 37137 e 37138 (do Just Eat). Pelo app ele entrega mais longe? Tem taxa de entrega e pedido mínimo?
+- [ ] **Fotos do método** (massa, farinha, molho): são de clipes gratuitos do Mixkit, não da cozinha dele. A pizza de mortadela do passo 4 é dos anúncios dele, mas não está no menu do app. Se ele mandar vídeos ou fotos da cozinha, troca.
 - [ ] **Promoção de 5 €** no primeiro pedido pelo app: continua valendo?
-- [ ] **Nota do Google**: "4,6 · più di 340 recensioni" (do banner dele; o Restaurant Guru mostra 379). Atualizar quando ligar o domínio.
-- [ ] **Avaliações**: as 6 são reais, do banner de avaliações do site atual. Os sobrenomes estão abreviados (Manuela M., Marco S.). Ver se ele prefere outras.
-- [ ] **Fotos**: as duas fotos são dos anúncios dele (capricciosa e mortadela). A foto da margherita do site atual tem **marca d'água de banco de imagens** e não foi usada. Pedir fotos reais: pizzas saindo do forno, a loja, o Carlos e a equipe.
-- [ ] **"Chi siamo"**: texto curto feito só com o que sabemos (pizzaria do Carlos, só retirada e entrega, clientes de anos, muitos celíacos). Pedir a história dele (desde quando, de onde vem a receita) para deixar mais pessoal.
-- [ ] **Facebook**: usamos `facebook.com/puntopizzadaCarlo` (de um guia para celíacos). Instagram: `@puntopizzaverona`, o que ele mandou.
-- [ ] **Formas de pagamento**: não estão no site. Perguntar (cartão no app, dinheiro na entrega?).
-- [ ] **WhatsApp**: se ele quiser receber dúvidas pelo WhatsApp, dá para pôr o botão.
-- [ ] **Alérgenos**: o site diz que a informação está disponível a pedido. Se ele tiver a tabela de alérgenos, dá para publicar.
+- [ ] **Nota do Google**: "4,6 · più di 340 recensioni" (do banner dele). Atualizar quando ligar o domínio.
+- [ ] **Avaliações**: as 6 são reais, do banner de avaliações do site antigo; sobrenomes abreviados.
+- [ ] **"Chi siamo"**: texto curto feito só com o que sabemos. Pedir a história dele e, se quiser, uma foto dele.
+- [ ] **Facebook** `facebook.com/puntopizzadaCarlo` (de um guia para celíacos) e **Instagram** `@puntopizzaverona`: confirmar.
+- [ ] **Formas de pagamento** e **WhatsApp**: não estão no site. Perguntar se quer.
 
 ## Como editar
 
@@ -91,18 +99,44 @@ O conteúdo fica direto no HTML (é o que o Google lê).
 
 | O quê | Onde |
 | --- | --- |
-| Pizzas, ingredientes e preços | `menu/index.html`: cada `<li class="dish">` é um item. Na mesma página, o bloco `"@type": "Menu"` no `<head>` tem os preços para o Google: atualize junto |
-| As 6 pizzas da home | `index.html`, seção 2 (comentário `<!-- 2. ... -->`) |
-| Desenho de um ingrediente novo | `TOPPINGS` no `assets/js/app.js` |
-| Horário | `CONFIG.hours` no topo do `assets/js/app.js` (é ele que calcula o "Aperto ora"), as tabelas `class="orari"` de cada página, o rodapé e o `openingHoursSpecification` no `<head>` da home e do contatti. Buscar `17:00` na pasta toda |
-| Telefone | Buscar e substituir na pasta toda: `045 862 2340` e `390458622340` |
-| CAP de entrega | `data-caps="37137 37138"` nos formulários (`index.html` e `consegna/index.html`), a lista `class="caps"` e as perguntas da página de consegna, e o `areaServed` no `<head>` da home |
+| Itens do menu (nome, descrição, preço, selos) | `menu/index.html`: cada `<li class="dish">` é um item; `data-tags` diz em quais filtros ele aparece (`top`, `veg`, `hot`). No `<head>`, o bloco `"@type": "Menu"` tem os preços para o Google: atualize junto |
+| Fotos do menu | `assets/img/menu/<nome>.webp` (600 × 600) e `<nome>-300.webp` (300 × 300), vindas do app |
+| Pizzas do carrossel da home | `index.html`, seção 3: cada `<li class="card">` |
+| A Margherita em destaque | `index.html`, seção 2 |
+| Horário | `CONFIG.hours` no topo do `assets/js/app.js` (calcula o "Aperto ora"), as tabelas `class="orari"`, o rodapé e o `openingHoursSpecification` no `<head>` da home e do contatti. Buscar `17:00` na pasta toda |
+| Telefone | Buscar e substituir: `045 862 2340` e `390458622340` |
+| CAP de entrega | `data-caps="37137 37138"` nos formulários (`index.html` e `consegna/index.html`), a lista `class="caps"`, as perguntas de consegna e o `areaServed` no `<head>` da home |
 | Link do app (pedido com −5 €) | Buscar `url.velocissimo.app/o/157`. Lojas: `apps.apple.com/it/app/punto-pizza` e `it.webapp.puntopizza` |
-| Avaliações | `index.html`, seção 6, e `senza-glutine/index.html`: cada `<li class="review">` |
-| Perguntas frequentes | `senza-glutine/` e `consegna/`: cada `<details>` e o bloco `FAQPage` no `<head>` (o Google lê esse) |
-| Cores e fontes | Topo do `assets/css/styles.css` |
+| Avaliações | `index.html`, seção 7 (cada faixa repete a lista para correr sem fim: mude nas duas `<ul>`), e `senza-glutine/index.html` |
+| Perguntas frequentes | `senza-glutine/` e `consegna/`: cada `<details>` e o bloco `FAQPage` no `<head>` |
+| Pizzas recortadas que flutuam | `assets/img/cut/` (fundo transparente, recortadas das fotos do app) |
+| Cores, fontes e animações | `assets/css/styles.css` (cores e fontes no topo) e `assets/js/app.js` |
 
-As fotos estão em WebP em `assets/img/`. Para trocar a do topo, mantenha o nome (`pizza-capricciosa.webp` e a versão `-600`) ou troque no `index.html`.
+Quando o Carlos mudar o menu no app, dá para pedir ao Claude para "sincronizar o menu do site com o app" (o link é o de cima):
+ele lê o menu do app, baixa as fotos novas e refaz `menu/index.html`.
+
+## O vídeo do topo
+
+Os arquivos em `assets/video/` saem do script `tools/make-hero-video.sh` (precisa de `ffmpeg`), em quase 20 s que dão a volta sem pulo:
+
+1. a **margherita do Carlos** (`tools/src/margherita-carlos.jpg`, a foto que ele mandou) com zoom lento;
+2. quatro clipes do Mixkit: farinha caindo na massa, sovando, abrindo o disco, molho;
+3. duas pizzas do app dele (Porchettina e Prosciutto e Funghi) com zoom lento;
+4. volta para a margherita, igual ao primeiro quadro.
+
+Saem três versões: `hero-1080` (telas grandes), `hero-720` (médias) e `hero-tall` (celular em pé), cada uma em **WebM** (menor,
+para Chrome, Edge, Firefox e Android) e **MP4** (Safari e iPhone), além do primeiro quadro em WebP (`hero-poster*.webp`),
+que aparece na hora enquanto o vídeo carrega. O site escolhe o arquivo sozinho e só começa a baixar o vídeo depois que a página carregou.
+
+Clipes de hoje, todos na licença *Mixkit Stock Video Free License* (uso comercial liberado, sem crédito obrigatório):
+[farinha na massa](https://mixkit.co/free-stock-video/a-chef-covering-dough-with-flour-1669/),
+[sovando](https://mixkit.co/free-stock-video/hands-of-a-baker-kneading-a-dough-42467/),
+[abrindo a pizza](https://mixkit.co/free-stock-video/chef-shaping-a-pizza-42469/) e
+[molho](https://mixkit.co/free-stock-video/smearing-sauce-on-the-pizza-42474/).
+As fotos do método (`assets/img/scene/`) são quadros desses mesmos clipes.
+
+**Para usar vídeos do Carlos:** grave clipes deitados (1080p ou 4K, câmera parada ou andando devagar), coloque em `tools/clips/`,
+troque a lista `SEGMENTS` no começo do script e rode `bash tools/make-hero-video.sh` dentro de `punto-pizza/`.
 
 ## Publicar
 
@@ -113,7 +147,7 @@ No ar em <https://puntopizza.lucassouzalima10.workers.dev> (o endereço também 
 
 - Usa o mesmo secret dos outros sites: `CLOUDFLARE_API_TOKEN` (e `CLOUDFLARE_ACCOUNT_ID`, opcional).
 - Na publicação, o workflow coloca o endereço completo no `og:image` (o WhatsApp exige), o `canonical` e o `og:url` em cada página, e gera o `sitemap.xml` e o `robots.txt`.
-- O README não vai para o ar.
+- O README e a pasta `tools/` não vão para o ar.
 - No endereço `.workers.dev`, o site vai com `noindex` (arquivo `_headers`): a prévia não concorre no Google com o site atual dele.
 
 ### Ligar o domínio do Carlos (`puntopizzaverona.it`)
@@ -139,17 +173,24 @@ python3 -m http.server 8000
 ```
 punto-pizza/
 ├── index.html                    home
-├── menu/index.html               cardápio completo
+├── menu/index.html               menu completo (do app)
 ├── senza-glutine/index.html      sem glúten
 ├── consegna/index.html           entrega e retirada
 ├── contatti/index.html           quem somos e contatos
 ├── 404.html                      página "não encontrada"
 ├── _headers                      cabeçalhos do Cloudflare (noindex na prévia, cache)
 ├── assets/css/styles.css         visual (cores e fontes no topo)
-├── assets/js/app.js              horário, menu do celular, desenho das pizzas, filtros, CAP, mapa
+├── assets/js/app.js              horário, vídeo, rolagem, animações, carrossel, filtros, CAP, mapa
+├── assets/js/vendor/lenis.min.js rolagem suave (MIT)
 ├── assets/fonts/                 Bricolage Grotesque e Instrument Serif (só os caracteres usados)
-└── assets/img/                   logo (SVG), favicon, QR do app, og-image e fotos (WebP)
+├── assets/video/                 vídeo do topo (WebM e MP4) e o primeiro quadro
+├── assets/img/                   logo, favicon, QR do app, og-image, a Margherita em destaque
+│   ├── menu/                     fotos de cada item do menu (do app)
+│   ├── cut/                      pizzas recortadas (fundo transparente)
+│   └── scene/                    quadros dos clipes, usados no "metodo"
+└── tools/make-hero-video.sh      monta o vídeo do topo (fotos de origem em tools/src/)
 ```
 
-Créditos: fontes Bricolage Grotesque e Instrument Serif (SIL Open Font License); logo e fotos das pizzas do próprio Carlos
-(site e anúncios dele); avaliações públicas do Google da pizzaria.
+Créditos: fontes Bricolage Grotesque e Instrument Serif (SIL Open Font License); Lenis (MIT); clipes do vídeo do
+[Mixkit](https://mixkit.co/license/) (Mixkit Stock Video Free License); logo, fotos do menu e dos anúncios do próprio Carlos;
+avaliações públicas do Google da pizzaria.

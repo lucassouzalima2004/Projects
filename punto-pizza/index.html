@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Punto Pizza Verona · Pizza a domicilio, anche senza glutine</title>
-  <meta name="description" content="Pizza a domicilio e da asporto a Verona: impasto a 24 ore, laboratorio dedicato al senza glutine e consegna calda in circa 30 minuti. Ordina dall’app: 5 € di sconto sul primo ordine.">
-  <meta name="theme-color" content="#16110e">
+  <meta name="description" content="Pizza a domicilio e da asporto a Verona: impasto a 24 ore, la Margherita Come Si Deve con San Marzano DOP, laboratorio dedicato al senza glutine. Ordina dall’app: 5 € di sconto sul primo ordine.">
+  <meta name="theme-color" content="#ffffff">
 
   <!-- Prévia do link (WhatsApp, Facebook). O deploy troca o og:image pelo endereço completo e coloca o canonical. -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Punto Pizza Verona">
   <meta property="og:title" content="Punto Pizza Verona · Pizza a domicilio, anche senza glutine">
-  <meta property="og:description" content="Pizza a domicilio e da asporto a Verona: impasto a 24 ore, laboratorio dedicato al senza glutine e consegna calda in circa 30 minuti. Ordina dall’app: 5 € di sconto sul primo ordine.">
+  <meta property="og:description" content="Pizza a domicilio e da asporto a Verona: impasto a 24 ore, la Margherita Come Si Deve con San Marzano DOP, laboratorio dedicato al senza glutine. Ordina dall’app: 5 € di sconto sul primo ordine.">
   <meta property="og:image" content="assets/img/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -22,10 +22,13 @@
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
   <link rel="preload" href="assets/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+
   <link rel="preload" href="assets/fonts/instrument-serif-italic.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" as="image" href="assets/img/pizza-capricciosa.webp" imagesrcset="assets/img/pizza-capricciosa-600.webp 600w, assets/img/pizza-capricciosa.webp 900w" imagesizes="(max-width: 860px) 86vw, 46vw" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/video/hero-poster.webp" media="(min-aspect-ratio: 4/5)" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/video/hero-poster-tall.webp" media="(max-aspect-ratio: 4/5)" fetchpriority="high">
   <link rel="stylesheet" href="assets/css/styles.css">
   <script>document.documentElement.classList.add('js')</script>
+  <script src="assets/js/vendor/lenis.min.js" defer></script>
   <script src="assets/js/app.js" defer></script>
   <script type="application/ld+json">
 {
@@ -100,11 +103,11 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Vai al contenuto</a>
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol><symbol id="i-arrow-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol><symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.6 3.5h2.6l1.4 4-2 1.4a12 12 0 0 0 6.5 6.5l1.4-2 4 1.4v2.6a2 2 0 0 1-2.2 2A17 17 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></symbol><symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol><symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol><symbol id="i-scooter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="17.5" r="2.5"/><circle cx="18" cy="17.5" r="2.5"/><path d="M3 9h6v5H3zM3.5 14.5h7l2 3h3M18 17.5l-3-9.5h-3.5M15 8h3"/></symbol><symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" stroke="none" d="M12 2.8l2.8 5.8 6.3.8-4.6 4.4 1.2 6.3L12 17l-5.7 3.1 1.2-6.3-4.6-4.4 6.3-.8z"/></symbol><symbol id="i-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-13.5 14-14 0 9-5 14-13 14zM5 19l8-8"/></symbol><symbol id="i-chili" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6.5c-.6-1.8.2-3 1.8-3.2M14.5 6.5c3 0 4.5 2.8 3.5 6-1.4 4.6-6.2 8-12.5 8.4 3.2-2.2 6-5.6 6-10 0-2.6 1.4-4.4 3-4.4z"/></symbol><symbol id="i-wheat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V6"/><ellipse cx="12" cy="4.4" rx="1.3" ry="2.3"/><ellipse cx="9.6" cy="8" rx="1.5" ry="2.5" transform="rotate(-35 9.6 8)"/><ellipse cx="14.4" cy="8" rx="1.5" ry="2.5" transform="rotate(35 14.4 8)"/><ellipse cx="9.6" cy="12" rx="1.5" ry="2.5" transform="rotate(-35 9.6 12)"/><ellipse cx="14.4" cy="12" rx="1.5" ry="2.5" transform="rotate(35 14.4 12)"/><ellipse cx="9.6" cy="16" rx="1.5" ry="2.5" transform="rotate(-35 9.6 16)"/><ellipse cx="14.4" cy="16" rx="1.5" ry="2.5" transform="rotate(35 14.4 16)"/></symbol><symbol id="i-gf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M5 5l14 14"/><g transform="translate(12 12) scale(.66) translate(-12 -12.5)"><path d="M12 21V6"/><ellipse cx="12" cy="4.4" rx="1.3" ry="2.3"/><ellipse cx="9.6" cy="8" rx="1.5" ry="2.5" transform="rotate(-35 9.6 8)"/><ellipse cx="14.4" cy="8" rx="1.5" ry="2.5" transform="rotate(35 14.4 8)"/><ellipse cx="9.6" cy="12" rx="1.5" ry="2.5" transform="rotate(-35 9.6 12)"/><ellipse cx="14.4" cy="12" rx="1.5" ry="2.5" transform="rotate(35 14.4 12)"/><ellipse cx="9.6" cy="16" rx="1.5" ry="2.5" transform="rotate(-35 9.6 16)"/><ellipse cx="14.4" cy="16" rx="1.5" ry="2.5" transform="rotate(35 14.4 16)"/></g></symbol><symbol id="i-flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4 0-6.5-2.6-6.5-6 0-4 3.5-6 4-10 3 1.5 5 4 5 7 1-1 1.5-2 1.5-3.5 1.8 1.6 2.5 4 2.5 6.5 0 3.4-2.5 6-6.5 6z"/></symbol><symbol id="i-bag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1 12H6zM9 8V6.5a3 3 0 0 1 6 0V8"/></symbol><symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol><symbol id="i-apple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" stroke="none" d="M16.4 12.7c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.2-2.8.8-3.5.8-.7 0-1.9-.8-3.1-.8-1.6 0-3.1.9-3.9 2.4-1.7 2.9-.4 7.2 1.2 9.6.8 1.2 1.7 2.5 3 2.4 1.2 0 1.6-.8 3.1-.8 1.4 0 1.8.8 3.1.8 1.3 0 2.1-1.2 2.9-2.4.9-1.3 1.3-2.6 1.3-2.7-.1 0-2.6-1-2.7-4zM14.1 5.6c.7-.8 1.1-1.9 1-3-1 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></symbol><symbol id="i-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" stroke="none" d="M4.6 2.9c-.3.3-.4.7-.4 1.3v15.6c0 .6.2 1 .4 1.3l.1.1 8.7-8.7v-.2L4.7 2.8zM16.3 15.4l-2.9-2.9v-.2l2.9-2.9.1.1 3.4 2c1 .6 1 1.5 0 2.1l-3.4 1.8zM16.4 15.3 13.4 12.3 4.6 21.1c.3.3.9.4 1.5 0l10.3-5.8M16.4 9.4 6.1 3.6c-.6-.4-1.2-.3-1.5 0l8.8 8.7z"/></symbol><symbol id="i-instagram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6" fill="currentColor"/></symbol><symbol id="i-facebook" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 21v-7.5h2.6l.4-3H14V8.7c0-.9.3-1.5 1.6-1.5H17V4.5c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.2H8.4v3H11V21"/></symbol><symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol><symbol id="i-dice" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/><circle cx="15" cy="15" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></symbol><symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></symbol><symbol id="i-chef" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14v6h10v-6M7 14a4 4 0 0 1-.6-7.9A5.5 5.5 0 0 1 12 3a5.5 5.5 0 0 1 5.6 3.1A4 4 0 0 1 17 14zM7 17h10"/></symbol><symbol id="i-oven" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><rect x="6.5" y="12" width="11" height="5" rx="1"/><path d="M7 6.5h.01M10 6.5h.01"/></symbol><symbol id="i-tools" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v8M5 3v4a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 1.5-2.5 4-2.5 7H17v11"/></symbol><symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7.5 3v5.5c0 4.5-3.2 8.2-7.5 9.5-4.3-1.3-7.5-5-7.5-9.5V6z"/><path d="M8.5 12l2.5 2.5 4.5-4.5"/></symbol><symbol id="i-gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8.5" width="18" height="4.5" rx="1"/><path d="M5 13v8h14v-8M12 8.5V21M12 8.5c-2-4-6-4-6-1.5S9.5 8.5 12 8.5zm0 0c2-4 6-4 6-1.5s-3.5 1.5-6 1.5z"/></symbol><symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/></symbol><symbol id="i-store" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5 5.5 4h13L20 9.5M4 9.5v10.5h16V9.5M4 9.5c0 1.5 1.3 2.5 2.7 2.5S9.3 11 9.3 9.5c0 1.5 1.3 2.5 2.7 2.5s2.7-1 2.7-2.5c0 1.5 1.3 2.5 2.6 2.5S20 11 20 9.5M10 20v-5h4v5"/></symbol><symbol id="i-beer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h10v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2zM16 10h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2M6 7a3 3 0 0 1 3-3 3 3 0 0 1 4 0 3 3 0 0 1 3 3"/></symbol></svg>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol><symbol id="i-arrow-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol><symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.6 3.5h2.6l1.4 4-2 1.4a12 12 0 0 0 6.5 6.5l1.4-2 4 1.4v2.6a2 2 0 0 1-2.2 2A17 17 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></symbol><symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol><symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol><symbol id="i-scooter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="17.5" r="2.5"/><circle cx="18" cy="17.5" r="2.5"/><path d="M3 9h6v5H3zM3.5 14.5h7l2 3h3M18 17.5l-3-9.5h-3.5M15 8h3"/></symbol><symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" stroke="none" d="M12 2.8l2.8 5.8 6.3.8-4.6 4.4 1.2 6.3L12 17l-5.7 3.1 1.2-6.3-4.6-4.4 6.3-.8z"/></symbol><symbol id="i-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-13.5 14-14 0 9-5 14-13 14zM5 19l8-8"/></symbol><symbol id="i-chili" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6.5c-.6-1.8.2-3 1.8-3.2M14.5 6.5c3 0 4.5 2.8 3.5 6-1.4 4.6-6.2 8-12.5 8.4 3.2-2.2 6-5.6 6-10 0-2.6 1.4-4.4 3-4.4z"/></symbol><symbol id="i-wheat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V6"/><ellipse cx="12" cy="4.4" rx="1.3" ry="2.3"/><ellipse cx="9.6" cy="8" rx="1.5" ry="2.5" transform="rotate(-35 9.6 8)"/><ellipse cx="14.4" cy="8" rx="1.5" ry="2.5" transform="rotate(35 14.4 8)"/><ellipse cx="9.6" cy="12" rx="1.5" ry="2.5" transform="rotate(-35 9.6 12)"/><ellipse cx="14.4" cy="12" rx="1.5" ry="2.5" transform="rotate(35 14.4 12)"/><ellipse cx="9.6" cy="16" rx="1.5" ry="2.5" transform="rotate(-35 9.6 16)"/><ellipse cx="14.4" cy="16" rx="1.5" ry="2.5" transform="rotate(35 14.4 16)"/></symbol><symbol id="i-gf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M5 5l14 14"/><g transform="translate(12 12) scale(.66) translate(-12 -12.5)"><path d="M12 21V6"/><ellipse cx="12" cy="4.4" rx="1.3" ry="2.3"/><ellipse cx="9.6" cy="8" rx="1.5" ry="2.5" transform="rotate(-35 9.6 8)"/><ellipse cx="14.4" cy="8" rx="1.5" ry="2.5" transform="rotate(35 14.4 8)"/><ellipse cx="9.6" cy="12" rx="1.5" ry="2.5" transform="rotate(-35 9.6 12)"/><ellipse cx="14.4" cy="12" rx="1.5" ry="2.5" transform="rotate(35 14.4 12)"/><ellipse cx="9.6" cy="16" rx="1.5" ry="2.5" transform="rotate(-35 9.6 16)"/><ellipse cx="14.4" cy="16" rx="1.5" ry="2.5" transform="rotate(35 14.4 16)"/></g></symbol><symbol id="i-flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4 0-6.5-2.6-6.5-6 0-4 3.5-6 4-10 3 1.5 5 4 5 7 1-1 1.5-2 1.5-3.5 1.8 1.6 2.5 4 2.5 6.5 0 3.4-2.5 6-6.5 6z"/></symbol><symbol id="i-bag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1 12H6zM9 8V6.5a3 3 0 0 1 6 0V8"/></symbol><symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol><symbol id="i-apple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" stroke="none" d="M16.4 12.7c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.2-2.8.8-3.5.8-.7 0-1.9-.8-3.1-.8-1.6 0-3.1.9-3.9 2.4-1.7 2.9-.4 7.2 1.2 9.6.8 1.2 1.7 2.5 3 2.4 1.2 0 1.6-.8 3.1-.8 1.4 0 1.8.8 3.1.8 1.3 0 2.1-1.2 2.9-2.4.9-1.3 1.3-2.6 1.3-2.7-.1 0-2.6-1-2.7-4zM14.1 5.6c.7-.8 1.1-1.9 1-3-1 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></symbol><symbol id="i-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" stroke="none" d="M4.6 2.9c-.3.3-.4.7-.4 1.3v15.6c0 .6.2 1 .4 1.3l.1.1 8.7-8.7v-.2L4.7 2.8zM16.3 15.4l-2.9-2.9v-.2l2.9-2.9.1.1 3.4 2c1 .6 1 1.5 0 2.1l-3.4 1.8zM16.4 15.3 13.4 12.3 4.6 21.1c.3.3.9.4 1.5 0l10.3-5.8M16.4 9.4 6.1 3.6c-.6-.4-1.2-.3-1.5 0l8.8 8.7z"/></symbol><symbol id="i-instagram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6" fill="currentColor"/></symbol><symbol id="i-facebook" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 21v-7.5h2.6l.4-3H14V8.7c0-.9.3-1.5 1.6-1.5H17V4.5c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.2H8.4v3H11V21"/></symbol><symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol><symbol id="i-dice" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/><circle cx="15" cy="15" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></symbol><symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></symbol><symbol id="i-chef" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14v6h10v-6M7 14a4 4 0 0 1-.6-7.9A5.5 5.5 0 0 1 12 3a5.5 5.5 0 0 1 5.6 3.1A4 4 0 0 1 17 14zM7 17h10"/></symbol><symbol id="i-oven" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><rect x="6.5" y="12" width="11" height="5" rx="1"/><path d="M7 6.5h.01M10 6.5h.01"/></symbol><symbol id="i-tools" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v8M5 3v4a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 1.5-2.5 4-2.5 7H17v11"/></symbol><symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7.5 3v5.5c0 4.5-3.2 8.2-7.5 9.5-4.3-1.3-7.5-5-7.5-9.5V6z"/><path d="M8.5 12l2.5 2.5 4.5-4.5"/></symbol><symbol id="i-gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8.5" width="18" height="4.5" rx="1"/><path d="M5 13v8h14v-8M12 8.5V21M12 8.5c-2-4-6-4-6-1.5S9.5 8.5 12 8.5zm0 0c2-4 6-4 6-1.5s-3.5 1.5-6 1.5z"/></symbol><symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/></symbol><symbol id="i-store" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5 5.5 4h13L20 9.5M4 9.5v10.5h16V9.5M4 9.5c0 1.5 1.3 2.5 2.7 2.5S9.3 11 9.3 9.5c0 1.5 1.3 2.5 2.7 2.5s2.7-1 2.7-2.5c0 1.5 1.3 2.5 2.6 2.5S20 11 20 9.5M10 20v-5h4v5"/></symbol><symbol id="i-beer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h10v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2zM16 10h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2M6 7a3 3 0 0 1 3-3 3 3 0 0 1 4 0 3 3 0 0 1 3 3"/></symbol><symbol id="i-tomato" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 6V3.5M9 6.5c1-1.5 5-1.5 6 0M8.5 5.5 12 6l3.5-.5"/></symbol><symbol id="i-cheese" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M8.5 9.5a4 4 0 0 1 4-2"/></symbol><symbol id="i-drop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5s6 6.4 6 10.5a6 6 0 0 1-12 0C6 9.9 12 3.5 12 3.5z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/></symbol><symbol id="i-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6v12M15 6v12"/></symbol><symbol id="i-play2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" stroke="none" d="M8 5.5v13l10.5-6.5z"/></symbol></svg>
 
   <header class="site-header">
     <div class="wrap header-in">
-      <a class="brand" href="./"><img src="assets/img/logo-compact-light.svg" width="138" height="36" alt="Punto Pizza, torna alla home"></a>
+      <a class="brand" href="./"><img src="assets/img/logo.svg" width="158" height="41" alt="Punto Pizza, torna alla home"></a>
       <nav class="nav" id="nav" aria-label="Principale">
         <a href="" aria-current="page">Home</a>
         <a href="menu/">Menu</a>
@@ -121,143 +124,235 @@
     </div>
   </header>
 
-  <main id="main">
-    <!-- 1. Topo -->
-    <section class="hero">
-      <div class="wrap hero-grid">
-        <div class="hero-copy">
-          <p class="eyebrow">Via Albere 117 · Verona</p>
-          <h1 class="display h-xl">Pizza a domicilio<br> a Verona, <span class="serif">fatta come si deve<span class="punto" aria-hidden="true"></span></span></h1>
-          <p class="lead">Impasto che lievita 24 ore, ingredienti scelti uno per uno e un laboratorio dedicato al senza glutine. La sforniamo e te la portiamo calda, a casa tua.</p>
-          <div class="hero-actions">
-            <a class="btn btn-rosso" href="https://url.velocissimo.app/o/157" target="_blank" rel="noopener">Ordina ora <span class="promo-tag">−5&nbsp;€</span></a>
-            <a class="btn btn-ghost" href="tel:+390458622340"><svg aria-hidden="true" focusable="false"><use href="#i-phone"/></svg>045 862 2340</a>
-          </div>
-          <ul class="trust">
-            <li><span class="stars" aria-hidden="true"><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg></span><span><strong>4,6 su Google</strong>più di 340 recensioni</span></li>
-            <li><svg aria-hidden="true" focusable="false"><use href="#i-scooter"/></svg><span><strong>Consegna in 30’</strong>circa, nelle zone servite</span></li>
-            <li><svg aria-hidden="true" focusable="false"><use href="#i-gf"/></svg><span><strong>Senza glutine</strong>laboratorio dedicato</span></li>
-          </ul>
-        </div>
-        <div class="hero-visual">
-          <svg class="steam" viewBox="0 0 200 120" aria-hidden="true" focusable="false"><path d="M60 118c-14-20 14-34 0-56s10-40 4-60"/><path d="M100 118c-14-20 14-34 0-56s10-40 4-60"/><path d="M140 118c-14-20 14-34 0-56s10-40 4-60"/></svg>
-          <div class="hero-photo">
-            <img src="assets/img/pizza-capricciosa.webp" srcset="assets/img/pizza-capricciosa-600.webp 600w, assets/img/pizza-capricciosa.webp 900w" sizes="(max-width: 860px) 86vw, 46vw" width="900" height="486" alt="Pizza capricciosa appena sfornata, con funghi, carciofi, olive, salamino e prosciutto" fetchpriority="high">
-          </div>
-          <p class="hero-badge"><span><b>−5&nbsp;€</b>sul primo ordine dall’app</span></p>
-        </div>
+  <main id="main" tabindex="-1">
+    <!-- 1. Topo com vídeo (o primeiro quadro é a margherita do Carlos) -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-media">
+        <picture>
+          <source media="(max-aspect-ratio: 4/5)" srcset="assets/video/hero-poster-tall.webp" width="720" height="1280">
+          <img src="assets/video/hero-poster.webp" alt="" width="1920" height="1080" fetchpriority="high">
+        </picture>
+        <video muted loop playsinline preload="none" data-base="assets/video/" aria-hidden="true" tabindex="-1"></video>
       </div>
+      <div class="hero-inner">
+        <p class="hero-pill"><span class="status"></span><span class="sep" aria-hidden="true"></span><span class="addr">Via Albere 117 · Verona</span></p>
+        <h1 class="display h-xl" id="hero-title">Pizza a domicilio<br> a Verona, <span class="serif">fatta come si deve<span class="punto" aria-hidden="true"></span></span></h1>
+        <p class="lead">Impasto che lievita 24 ore, ingredienti scelti uno per uno e un laboratorio dedicato al senza glutine. La sforniamo e te la portiamo calda, a casa tua.</p>
+        <div class="hero-actions">
+          <a class="btn btn-rosso" href="https://url.velocissimo.app/o/157" target="_blank" rel="noopener">Ordina ora <span class="promo-tag">−5&nbsp;€</span></a>
+          <a class="btn btn-glass" href="menu/">Sfoglia il menu <svg class="arrow" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a>
+        </div>
+        <ul class="trust">
+          <li><span class="stars" aria-hidden="true"><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg></span><span><strong>4,6 su Google</strong>più di 340 recensioni</span></li>
+          <li><svg aria-hidden="true" focusable="false"><use href="#i-scooter"/></svg><span><strong>Consegna in 30’</strong>circa, a Verona</span></li>
+          <li><svg aria-hidden="true" focusable="false"><use href="#i-gf"/></svg><span><strong>Senza glutine</strong>laboratorio dedicato</span></li>
+        </ul>
+      </div>
+      <a class="scroll-cue" href="#margherita">Scorri<i aria-hidden="true"></i></a>
+      <button class="video-toggle" type="button" aria-pressed="false" aria-label="Metti in pausa il video"><svg class="i-pause" aria-hidden="true" focusable="false"><use href="#i-pause"/></svg><svg class="i-play" aria-hidden="true" focusable="false"><use href="#i-play2"/></svg></button>
     </section>
 
     <div class="ticker" aria-hidden="true">
-      <div class="ticker-track"><ul><li>Impasto 24 ore</li><li>Farine selezionate</li><li>Ingredienti freschi</li><li>Senza glutine</li><li>Consegna a Verona</li><li>Calda, sempre</li></ul><ul><li>Impasto 24 ore</li><li>Farine selezionate</li><li>Ingredienti freschi</li><li>Senza glutine</li><li>Consegna a Verona</li><li>Calda, sempre</li></ul></div>
+      <div class="ticker-track"><ul><li>Impasto 24 ore</li><li>San Marzano DOP</li><li>Fiordilatte artigianale</li><li>Senza glutine</li><li>Consegna a Verona</li><li>Calda, sempre</li></ul><ul><li>Impasto 24 ore</li><li>San Marzano DOP</li><li>Fiordilatte artigianale</li><li>Senza glutine</li><li>Consegna a Verona</li><li>Calda, sempre</li></ul></div>
     </div>
 
-    <!-- 2. Algumas pizzas do menu -->
-    <section class="sec">
-      <div class="wrap">
-        <div class="sec-head split">
-          <div>
-            <p class="eyebrow">Dal nostro menu</p>
-            <h2 class="display h-lg">Qualche idea per stasera<span class="punto" aria-hidden="true"></span></h2>
-          </div>
-          <a class="link-arrow" href="menu/">Tutto il menu<svg aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a>
+    <!-- 2. A Margherita Come Si Deve (a pizza que o Carlos pediu no início) -->
+    <section class="sec sec-bianco" id="margherita">
+      <div class="wrap spot">
+        <div class="spot-media rv-pop">
+          <div class="spot-photo" data-spin=".025"><img src="assets/img/margherita-come-si-deve.webp" srcset="assets/img/margherita-come-si-deve-640.webp 640w, assets/img/margherita-come-si-deve.webp 1000w" sizes="(max-width: 900px) 86vw, 46vw" width="1000" height="1000" alt="La Margherita Come Si Deve: pomodoro, fiordilatte e foglie di basilico fresco" loading="lazy" decoding="async"></div>
+          <p class="spot-badge"><span><b>9 €</b>la nostra firma</span></p>
         </div>
-        <ul class="favs">
-          <li class="fav rv" style="--d:0s">
-            <span class="tag ">La classica</span>
-            <div class="pz-wrap" data-pz></div>
-            <h3>Margherita</h3>
-            <p class="ing">Pomodoro e mozzarella</p>
-            <div class="fav-foot"><span class="price">8,00 €</span><a class="link-arrow" href="https://url.velocissimo.app/o/157" target="_blank" rel="noopener">Ordina<svg aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg><span class="sr-only"> Margherita</span></a></div>
-          </li>
-          <li class="fav rv" style="--d:0.06s">
-            
-            <div class="pz-wrap" data-pz></div>
-            <h3>Capricciosa</h3>
-            <p class="ing">Pomodoro, mozzarella, funghi, carciofi, salamino piccante, olive e prosciutto</p>
-            <div class="fav-foot"><span class="price">12,00 €</span><a class="link-arrow" href="https://url.velocissimo.app/o/157" target="_blank" rel="noopener">Ordina<svg aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg><span class="sr-only"> Capricciosa</span></a></div>
-          </li>
-          <li class="fav rv" style="--d:0.12s">
-            <span class="tag oro">Speciale</span>
-            <div class="pz-wrap" data-pz></div>
-            <h3>Luna</h3>
-            <p class="ing">Pomodoro, mozzarella, burrata, Philadelphia e Cirio</p>
-            <div class="fav-foot"><span class="price">12,50 €</span><a class="link-arrow" href="https://url.velocissimo.app/o/157" target="_blank" rel="noopener">Ordina<svg aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg><span class="sr-only"> Luna</span></a></div>
-          </li>
-          <li class="fav rv" style="--d:0s">
-            <span class="tag rosso">Veronese</span>
-            <div class="pz-wrap" data-pz></div>
-            <h3>Ponny</h3>
-            <p class="ing">Pomodoro, mozzarella, radicchio, sfilacci di cavallo e grana a scaglie</p>
-            <div class="fav-foot"><span class="price">12,50 €</span><a class="link-arrow" href="https://url.velocissimo.app/o/157" target="_blank" rel="noopener">Ordina<svg aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg><span class="sr-only"> Ponny</span></a></div>
-          </li>
-          <li class="fav rv" style="--d:0.06s">
-            
-            <div class="pz-wrap" data-pz></div>
-            <h3>Svolta</h3>
-            <p class="ing">Pomodoro, mozzarella, pancetta, funghi freschi, stracchino e Cirio</p>
-            <div class="fav-foot"><span class="price">11,00 €</span><a class="link-arrow" href="https://url.velocissimo.app/o/157" target="_blank" rel="noopener">Ordina<svg aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg><span class="sr-only"> Svolta</span></a></div>
-          </li>
-          <li class="fav rv" style="--d:0.12s">
-            <span class="tag ">Bianca</span>
-            <div class="pz-wrap" data-pz></div>
-            <h3>4 Formaggi</h3>
-            <p class="ing">Mozzarella, gorgonzola, grana e ricotta</p>
-            <div class="fav-foot"><span class="price">12,00 €</span><a class="link-arrow" href="https://url.velocissimo.app/o/157" target="_blank" rel="noopener">Ordina<svg aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg><span class="sr-only"> 4 Formaggi</span></a></div>
-          </li>
-        </ul>
+        <div class="spot-copy">
+          <p class="eyebrow rv">La nostra firma</p>
+          <h2 class="display h-lg" data-split>La Margherita <span class="serif">come si deve<span class="punto" aria-hidden="true"></span></span></h2>
+          <p class="lead rv">La nostra interpretazione della Margherita: gli ingredienti migliori, senza compromessi.</p>
+          <ul class="spot-list">
+            <li class="rv"><svg aria-hidden="true" focusable="false"><use href="#i-tomato"/></svg><span><b>San Marzano DOP</b><span>dell’Agro Sarnese-Nocerino</span></span></li>
+            <li class="rv" style="--d:.06s"><svg aria-hidden="true" focusable="false"><use href="#i-cheese"/></svg><span><b>Fiordilatte artigianale</b><span>di un piccolo caseificio locale</span></span></li>
+            <li class="rv" style="--d:.12s"><svg aria-hidden="true" focusable="false"><use href="#i-leaf"/></svg><span><b>Basilico fresco</b><span>profumato, in foglie</span></span></li>
+            <li class="rv" style="--d:.18s"><svg aria-hidden="true" focusable="false"><use href="#i-drop"/></svg><span><b>Olio extravergine</b><span>d’oliva, a crudo</span></span></li>
+          </ul>
+          <div class="spot-foot rv">
+            <p class="spot-price"><small>Prezzo</small>9,00 €</p>
+            <a class="btn btn-rosso" href="https://url.velocissimo.app/o/157" target="_blank" rel="noopener">Ordinala ora</a>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- 3. O método -->
-    <section class="sec sec-dark">
-      <div class="wrap method">
-        <figure class="method-photo rv" style="margin:0">
-          <img src="assets/img/pizza-mortadella.webp" srcset="assets/img/pizza-mortadella-640.webp 640w, assets/img/pizza-mortadella.webp 1024w" sizes="(max-width: 860px) 92vw, 44vw" width="1024" height="628" alt="Pizza con cornicione alto e dorato, mortadella, burrata e granella di pistacchio" loading="lazy">
-          <figcaption>La qualità che arriva a casa tua.</figcaption>
-        </figure>
-        <div class="rv" style="--d:.1s">
+    <!-- 3. Pizzas do menu, com as fotos do app -->
+    <section class="sec sec-nero on-dark" data-rail aria-labelledby="h-pizze">
+      <div class="wrap sec-head center">
+        <p class="eyebrow">Dal nostro menu</p>
+        <h2 class="display h-lg" id="h-pizze" data-split>Le nostre pizze<span class="punto" aria-hidden="true"></span></h2>
+        <p class="lead rv">Più di 35 ricette, dalle classiche alle nostre specialità. Trascina per scoprirle.</p>
+      </div>
+      <div class="rail-wrap">
+        <ul class="rail" aria-label="Alcune pizze del menu">
+          <li class="card">
+            <div class="card-photo"><div class="labels"><span class="label l-oro">A tempo limitato</span><span class="label l-rosso">Novità</span></div><img src="assets/img/menu/porchettina.webp" srcset="assets/img/menu/porchettina-300.webp 300w, assets/img/menu/porchettina.webp 600w" sizes="(max-width: 640px) 250px, 320px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h3>Porchettina</h3>
+              <p>Porchetta croccante, crema di cipolle di Tropea e Grana a scaglie, su un letto di mozzarella.</p>
+              <div class="card-foot"><span class="price">11,50 €</span><a class="link-arrow" href="menu/#porchettina">Dettagli<svg class="arrow" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg><span class="sr-only"> su Porchettina</span></a></div>
+            </div>
+          </li>
+          <li class="card">
+            <div class="card-photo"><div class="labels"><span class="label l-oro">Eccellenza</span></div><img src="assets/img/menu/svolta.webp" srcset="assets/img/menu/svolta-300.webp 300w, assets/img/menu/svolta.webp 600w" sizes="(max-width: 640px) 250px, 320px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h3>Svolta</h3>
+              <p>Pomodoro e mozzarella con pancetta croccante, funghi freschi, stracchino cremoso e pomodorini ciliegino.</p>
+              <div class="card-foot"><span class="price">11,00 €</span><a class="link-arrow" href="menu/#svolta">Dettagli<svg class="arrow" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg><span class="sr-only"> su Svolta</span></a></div>
+            </div>
+          </li>
+          <li class="card">
+            <div class="card-photo"><div class="labels"><span class="label l-oro">Eccellenza</span></div><img src="assets/img/menu/vittoria.webp" srcset="assets/img/menu/vittoria-300.webp 300w, assets/img/menu/vittoria.webp 600w" sizes="(max-width: 640px) 250px, 320px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h3>Vittoria</h3>
+              <p>Pomodoro, mozzarella, crudo di Parma, rucola fresca e grana a scaglie.</p>
+              <div class="card-foot"><span class="price">11,00 €</span><a class="link-arrow" href="menu/#vittoria">Dettagli<svg class="arrow" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg><span class="sr-only"> su Vittoria</span></a></div>
+            </div>
+          </li>
+          <li class="card">
+            <div class="card-photo"><img src="assets/img/menu/fiocco.webp" srcset="assets/img/menu/fiocco-300.webp 300w, assets/img/menu/fiocco.webp 600w" sizes="(max-width: 640px) 250px, 320px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h3>Fiocco</h3>
+              <p>Pomodoro, mozzarella, melanzane, prosciutto crudo e burrata.</p>
+              <div class="card-foot"><span class="price">12,50 €</span><a class="link-arrow" href="menu/#fiocco">Dettagli<svg class="arrow" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg><span class="sr-only"> su Fiocco</span></a></div>
+            </div>
+          </li>
+          <li class="card">
+            <div class="card-photo"><img src="assets/img/menu/luna.webp" srcset="assets/img/menu/luna-300.webp 300w, assets/img/menu/luna.webp 600w" sizes="(max-width: 640px) 250px, 320px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h3>Luna</h3>
+              <p>Pomodoro, mozzarella, Philadelphia, burrata e pomodorini ciliegino.</p>
+              <div class="card-foot"><span class="price">12,00 €</span><a class="link-arrow" href="menu/#luna">Dettagli<svg class="arrow" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg><span class="sr-only"> su Luna</span></a></div>
+            </div>
+          </li>
+          <li class="card">
+            <div class="card-photo"><div class="labels"><span class="label ">Tradizionale</span></div><img src="assets/img/menu/capricciosa.webp" srcset="assets/img/menu/capricciosa-300.webp 300w, assets/img/menu/capricciosa.webp 600w" sizes="(max-width: 640px) 250px, 320px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h3>Capricciosa</h3>
+              <p>La grande classica: pomodoro, mozzarella, funghi, carciofi, olive, prosciutto cotto e salamino piccante.</p>
+              <div class="card-foot"><span class="price">11,00 €</span><a class="link-arrow" href="menu/#capricciosa">Dettagli<svg class="arrow" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg><span class="sr-only"> su Capricciosa</span></a></div>
+            </div>
+          </li>
+          <li class="card">
+            <div class="card-photo"><div class="labels"><span class="label l-rosso">Più venduto</span><span class="label ">Consigliata</span></div><img src="assets/img/menu/tonno-e-cipolla.webp" srcset="assets/img/menu/tonno-e-cipolla-300.webp 300w, assets/img/menu/tonno-e-cipolla.webp 600w" sizes="(max-width: 640px) 250px, 320px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h3>Tonno e Cipolla</h3>
+              <p>Pomodoro, mozzarella, tonno selezionato e cipolla dolce.</p>
+              <div class="card-foot"><span class="price">9,00 €</span><a class="link-arrow" href="menu/#tonno-e-cipolla">Dettagli<svg class="arrow" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg><span class="sr-only"> su Tonno e Cipolla</span></a></div>
+            </div>
+          </li>
+          <li class="card">
+            <div class="card-photo"><div class="labels"><span class="label ">Consigliata</span></div><img src="assets/img/menu/friarielli-e-salsiccia.webp" srcset="assets/img/menu/friarielli-e-salsiccia-300.webp 300w, assets/img/menu/friarielli-e-salsiccia.webp 600w" sizes="(max-width: 640px) 250px, 320px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h3>Friarielli e Salsiccia</h3>
+              <p>Friarielli saltati e salsiccia saporita su mozzarella filante.</p>
+              <div class="card-foot"><span class="price">9,50 €</span><a class="link-arrow" href="menu/#friarielli-e-salsiccia">Dettagli<svg class="arrow" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg><span class="sr-only"> su Friarielli e Salsiccia</span></a></div>
+            </div>
+          </li>
+          <li class="card">
+            <div class="card-photo"><img src="assets/img/menu/ponny.webp" srcset="assets/img/menu/ponny-300.webp 300w, assets/img/menu/ponny.webp 600w" sizes="(max-width: 640px) 250px, 320px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h3>Ponny</h3>
+              <p>Pomodoro, mozzarella, sfilacci di cavallo, radicchio rosso e grana a scaglie.</p>
+              <div class="card-foot"><span class="price">11,50 €</span><a class="link-arrow" href="menu/#ponny">Dettagli<svg class="arrow" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg><span class="sr-only"> su Ponny</span></a></div>
+            </div>
+          </li>
+          <li class="card">
+            <div class="card-photo"><img src="assets/img/menu/giulietta.webp" srcset="assets/img/menu/giulietta-300.webp 300w, assets/img/menu/giulietta.webp 600w" sizes="(max-width: 640px) 250px, 320px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h3>Giulietta</h3>
+              <p>Il gusto deciso di salsiccia e pancetta incontra la cremosità del gorgonzola e la delicatezza delle patate al forno.</p>
+              <div class="card-foot"><span class="price">12,00 €</span><a class="link-arrow" href="menu/#giulietta">Dettagli<svg class="arrow" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg><span class="sr-only"> su Giulietta</span></a></div>
+            </div>
+          </li>
+          <li class="card">
+            <div class="card-photo"><img src="assets/img/menu/estiva.webp" srcset="assets/img/menu/estiva-300.webp 300w, assets/img/menu/estiva.webp 600w" sizes="(max-width: 640px) 250px, 320px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h3>Estiva</h3>
+              <p>Fresca e leggera: mozzarella di bufala, pomodorini ciliegino, rucola e philadelphia su base di pomodoro.</p>
+              <div class="card-foot"><span class="price">11,00 €</span><a class="link-arrow" href="menu/#estiva">Dettagli<svg class="arrow" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg><span class="sr-only"> su Estiva</span></a></div>
+            </div>
+          </li>
+          <li class="card">
+            <div class="card-photo"><div class="labels"><span class="label l-rosso">Piccante</span></div><img src="assets/img/menu/etna.webp" srcset="assets/img/menu/etna-300.webp 300w, assets/img/menu/etna.webp 600w" sizes="(max-width: 640px) 250px, 320px" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h3>Etna</h3>
+              <p>Piccante e decisa: salamino piccante, cipolla e olio piccante su base di pomodoro e mozzarella.</p>
+              <div class="card-foot"><span class="price">9,50 €</span><a class="link-arrow" href="menu/#etna">Dettagli<svg class="arrow" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg><span class="sr-only"> su Etna</span></a></div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="wrap rail-ui">
+        <div class="rail-progress" aria-hidden="true"><i></i></div>
+        <div class="rail-btns">
+          <button class="round-btn" type="button" data-dir="-1" aria-label="Pizze precedenti"><svg aria-hidden="true" focusable="false"><use href="#i-arrow-l"/></svg></button>
+          <button class="round-btn" type="button" data-dir="1" aria-label="Pizze successive"><svg aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></button>
+        </div>
+        <a class="btn btn-glass btn-sm" href="menu/">Tutto il menu <svg class="arrow" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a>
+      </div>
+    </section>
+
+    <!-- 4. O método, com as fotos trocando ao rolar -->
+    <section class="sec sec-carta" aria-labelledby="h-metodo">
+      <div class="wrap">
+        <div class="sec-head center">
           <p class="eyebrow">Il nostro metodo</p>
-          <h2 class="display h-lg">Fatta come si deve<span class="punto" aria-hidden="true"></span></h2>
-          <p class="lead">Non è solo uno slogan: è il modo in cui lavoriamo, ogni sera.</p>
-          <ol class="points">
-            <li><h3>Impasto a 24 ore</h3><p>Lasciamo lievitare l’impasto per 24 ore: la pizza viene leggera, fragrante e con un cornicione che profuma di forno.</p></li>
-            <li><h3>Farine selezionate, ingredienti freschi</h3><p>Scegliamo farine e ingredienti con cura. E se vuoi qualcosa di più rustico, c’è anche l’impasto integrale.</p></li>
-            <li><h3>Un laboratorio solo per il senza glutine</h3><p>Le pizze senza glutine nascono in uno spazio dedicato, separato dal resto della cucina.</p></li>
-            <li><h3>Calda, sempre</h3><p>Ogni pizza è preparata al momento dell’ordine e arriva a casa tua in circa 30 minuti.</p></li>
+          <h2 class="display h-lg" id="h-metodo" data-split>Fatta come si deve<span class="punto" aria-hidden="true"></span></h2>
+        </div>
+        <div class="story-grid">
+          <div class="story-media" aria-hidden="true">
+            <img class="on" src="assets/img/scene/impasto.webp" alt="" width="880" height="1100" loading="lazy" decoding="async">
+            <img src="assets/img/scene/lavorare.webp" alt="" width="880" height="1100" loading="lazy" decoding="async">
+            <img src="assets/img/scene/condire.webp" alt="" width="880" height="1100" loading="lazy" decoding="async">
+            <img src="assets/img/pizza-mortadella.webp" alt="" width="1024" height="628" loading="lazy" decoding="async">
+            <span class="step-no">01</span>
+          </div>
+          <ol class="story-steps">
+            <li class="on"><img class="step-img" src="assets/img/scene/impasto.webp" alt="Panetto di impasto spolverato di farina" width="880" height="1100" loading="lazy" decoding="async"><p class="num">01 · L’IMPASTO</p><h3>Lievita 24 ore</h3><p>Lasciamo riposare l’impasto per 24 ore: la pizza viene leggera, fragrante e con un cornicione che profuma di forno.</p></li>
+            <li><img class="step-img" src="assets/img/scene/lavorare.webp" alt="Mani che lavorano l’impasto sul banco infarinato" width="880" height="1100" loading="lazy" decoding="async"><p class="num">02 · LE FARINE</p><h3>Farine selezionate</h3><p>Scegliamo le farine con cura e lavoriamo l’impasto a mano. Se vuoi qualcosa di più rustico, c’è anche l’impasto integrale.</p></li>
+            <li><img class="step-img" src="assets/img/scene/condire.webp" alt="Salsa di pomodoro stesa sul disco di pasta" width="880" height="1100" loading="lazy" decoding="async"><p class="num">03 · GLI INGREDIENTI</p><h3>Ingredienti veri</h3><p>Dal San Marzano DOP della nostra Margherita al crudo di Parma della Vittoria: ogni ingrediente è scelto per stare bene sulla pizza.</p></li>
+            <li><img class="step-img" src="assets/img/pizza-mortadella-640.webp" alt="Pizza appena sfornata con cornicione dorato" width="640" height="392" loading="lazy" decoding="async"><p class="num">04 · LA CONSEGNA</p><h3>Calda, sempre</h3><p>Prepariamo ogni pizza al momento dell’ordine e te la portiamo a casa in circa 30 minuti. Oppure passi tu in Via Albere 117.</p></li>
           </ol>
         </div>
       </div>
     </section>
 
-    <!-- 4. Senza glutine -->
-    <section class="sec sec-carta">
+    <!-- 5. Senza glutine -->
+    <section class="sec sec-bianco" aria-labelledby="h-gf">
       <div class="wrap gf-band">
-        <div class="rv">
-          <svg class="gf-mark" aria-hidden="true" focusable="false"><use href="#i-gf"/></svg>
-          <p class="eyebrow">Senza glutine</p>
-          <h2 class="display h-lg">Senza glutine. <span class="serif rosso">Con tutto il resto</span><span class="punto" aria-hidden="true"></span></h2>
+        <div>
+          <svg class="gf-mark rv-pop" aria-hidden="true" focusable="false"><use href="#i-gf"/></svg>
+          <p class="eyebrow rv">Senza glutine</p>
+          <h2 class="display h-lg" id="h-gf" data-split>Senza glutine. <span class="serif rosso">Con tutto il resto<span class="punto" aria-hidden="true"></span></span></h2>
           <ul class="gf-facts">
-            <li><svg aria-hidden="true" focusable="false"><use href="#i-check"/></svg><span>Un <strong>laboratorio dedicato</strong>, separato dal resto della cucina</span></li>
-            <li><svg aria-hidden="true" focusable="false"><use href="#i-check"/></svg><span>Scegli l’impasto senza glutine direttamente <strong>nell’app</strong></span></li>
-            <li><svg aria-hidden="true" focusable="false"><use href="#i-check"/></svg><span>E per brindare c’è la <strong>birra Pedavena senza glutine</strong></span></li>
+            <li class="rv"><svg aria-hidden="true" focusable="false"><use href="#i-check"/></svg><span>Un <strong>laboratorio dedicato</strong>, separato dal resto della cucina</span></li>
+            <li class="rv" style="--d:.06s"><svg aria-hidden="true" focusable="false"><use href="#i-check"/></svg><span>Scegli l’impasto senza glutine direttamente <strong>nell’app</strong></span></li>
+            <li class="rv" style="--d:.12s"><svg aria-hidden="true" focusable="false"><use href="#i-check"/></svg><span>E da bere, <strong>birra senza glutine</strong>, anche analcolica</span></li>
           </ul>
-          <a class="btn btn-ink" href="senza-glutine/">Come lo prepariamo <svg aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a>
+          <a class="btn btn-ink rv" href="senza-glutine/">Come lo prepariamo <svg class="arrow" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a>
         </div>
-        <blockquote class="quote rv" style="--d:.12s">
-          <p>Mia figlia è celiaca e qui ha finalmente trovato una pizza senza glutine che ama davvero: morbida, gustosa e mai stopposa.</p>
-          <footer><span class="stars" aria-hidden="true"><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg></span><span>Ilaria, recensione su Google</span></footer>
-        </blockquote>
+        <div class="gf-visual">
+          <div class="float" data-spin=".05" aria-hidden="true"><img class="rv-pop" src="assets/img/cut/luna.webp" alt="" width="551" height="551" loading="lazy" decoding="async"></div>
+          <blockquote class="quote rv">
+            <p>Mia figlia è celiaca e qui ha finalmente trovato una pizza senza glutine che ama davvero: morbida, gustosa e mai stopposa.</p>
+            <footer><span class="stars" aria-hidden="true"><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg></span><span>Ilaria, recensione su Google</span></footer>
+          </blockquote>
+        </div>
       </div>
     </section>
 
-    <!-- 5. Como pedir -->
-    <section class="sec">
-      <div class="wrap">
-        <div class="sec-head">
+    <!-- 6. Como pedir -->
+    <section class="sec" aria-labelledby="h-ordina">
+      <div class="wrap center">
+        <div class="sec-head center">
           <p class="eyebrow">Ordinare è facile</p>
-          <h2 class="display h-lg">Tre passi e arriva<span class="punto" aria-hidden="true"></span></h2>
+          <h2 class="display h-lg" id="h-ordina" data-split>Tre passi e arriva<span class="punto" aria-hidden="true"></span></h2>
         </div>
         <ol class="steps">
           <li class="step rv"><h3>Scarica l’app Punto Pizza</h3><p>Gratis su iPhone e Android. Al primo ordine hai 5&nbsp;€ di sconto, applicato in automatico.</p></li>
@@ -265,12 +360,12 @@
           <li class="step rv" style="--d:.16s"><h3>Consegna o ritiro</h3><p>Te la portiamo calda in circa 30 minuti, oppure passi tu in Via Albere 117.</p></li>
         </ol>
         <div class="app-box rv">
-          <img class="qr" src="assets/img/qr-app.svg" width="132" height="132" alt="QR code: inquadralo con il telefono per scaricare l’app Punto Pizza" loading="lazy">
+          <img class="qr" src="assets/img/qr-app.svg" width="136" height="136" alt="QR code: inquadralo con il telefono per scaricare l’app Punto Pizza" loading="lazy">
           <div>
             <h3>Scarica l’app e risparmi 5&nbsp;€</h3>
             <p>Dal computer? Inquadra il codice con il telefono. Dal telefono, scegli il tuo store.</p>
           </div>
-          <div class="stores ">
+          <div class="stores">
             <a class="store" href="https://apps.apple.com/it/app/punto-pizza/id6751406524" target="_blank" rel="noopener"><svg aria-hidden="true" focusable="false"><use href="#i-apple"/></svg><span><small>Scarica su</small><b>App Store</b></span></a>
             <a class="store" href="https://play.google.com/store/apps/details?id=it.webapp.puntopizza" target="_blank" rel="noopener"><svg aria-hidden="true" focusable="false"><use href="#i-play"/></svg><span><small>Disponibile su</small><b>Google Play</b></span></a>
           </div>
@@ -279,70 +374,82 @@
       </div>
     </section>
 
-    <!-- 6. Avaliações -->
-    <section class="sec sec-dark" data-reviews>
-      <div class="wrap">
-        <div class="sec-head split">
-          <div>
-            <p class="eyebrow">Recensioni</p>
-            <h2 class="display h-lg">Lo dicono i nostri clienti<span class="punto" aria-hidden="true"></span></h2>
-          </div>
-          <div class="rating-sum">
-            <b>4,6</b>
-            <div><span class="stars" aria-hidden="true"><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg></span><small>più di 340 recensioni su Google</small></div>
-          </div>
+    <!-- 7. Avaliações correndo -->
+    <section class="sec sec-dark on-dark" aria-labelledby="h-rec">
+      <div class="wrap sec-head center">
+        <p class="eyebrow">Recensioni</p>
+        <h2 class="display h-lg" id="h-rec" data-split>Lo dicono i nostri clienti<span class="punto" aria-hidden="true"></span></h2>
+        <div class="rating-sum rv">
+          <b data-count="4.6">4,6</b>
+          <div><span class="stars" aria-hidden="true"><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg></span><small>più di <span data-count="340">340</span> recensioni su Google</small></div>
         </div>
-        <ul class="reviews" tabindex="0" aria-label="Recensioni dei clienti">
-          <li class="review">
+      </div>
+      <div class="marquee" aria-label="Recensioni dei clienti" role="region" tabindex="0">
+        <div class="marquee-row"><ul><li class="review">
             <span class="stars" aria-hidden="true"><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg></span><span class="sr-only">5 stelle su 5</span>
             <p>Ho aspettato quasi un anno prima di lasciare questa recensione, perché volevo essere certa. Mia figlia è celiaca e qui ha finalmente trovato una pizza senza glutine che ama davvero: morbida, gustosa e mai stopposa. Per noi è diventata la pizzeria di fiducia!</p>
             <footer><span class="avatar" aria-hidden="true">I</span><span><b>Ilaria</b>Recensione su Google</span></footer>
-          </li>
-          <li class="review">
+          </li><li class="review">
             <span class="stars" aria-hidden="true"><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg></span><span class="sr-only">5 stelle su 5</span>
             <p>La mia pizzeria da asporto di fiducia: ordiniamo da Punto Pizza da diversi anni e troviamo sempre un ottimo servizio. Puntuali, affidabili e sorridenti. Pizze sempre ottime e abbondanti, menzione d’onore per l’impasto integrale!</p>
             <footer><span class="avatar" aria-hidden="true">M</span><span><b>Marco S.</b>Recensione su Google</span></footer>
-          </li>
-          <li class="review">
+          </li><li class="review">
             <span class="stars" aria-hidden="true"><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg></span><span class="sr-only">5 stelle su 5</span>
             <p>Sono a Verona un paio di giorni e Punto Pizza è stata la nostra salvezza a cena. Siamo veramente soddisfatti della pizza, servizio veloce e preciso. Rispetto dei tempi di consegna. Consigliatissima!</p>
             <footer><span class="avatar" aria-hidden="true">M</span><span><b>Melania F.</b>Recensione su Google</span></footer>
-          </li>
-          <li class="review">
+          </li></ul><ul aria-hidden="true"><li class="review">
+            <span class="stars" aria-hidden="true"><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg></span><span class="sr-only">5 stelle su 5</span>
+            <p>Ho aspettato quasi un anno prima di lasciare questa recensione, perché volevo essere certa. Mia figlia è celiaca e qui ha finalmente trovato una pizza senza glutine che ama davvero: morbida, gustosa e mai stopposa. Per noi è diventata la pizzeria di fiducia!</p>
+            <footer><span class="avatar" aria-hidden="true">I</span><span><b>Ilaria</b>Recensione su Google</span></footer>
+          </li><li class="review">
+            <span class="stars" aria-hidden="true"><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg></span><span class="sr-only">5 stelle su 5</span>
+            <p>La mia pizzeria da asporto di fiducia: ordiniamo da Punto Pizza da diversi anni e troviamo sempre un ottimo servizio. Puntuali, affidabili e sorridenti. Pizze sempre ottime e abbondanti, menzione d’onore per l’impasto integrale!</p>
+            <footer><span class="avatar" aria-hidden="true">M</span><span><b>Marco S.</b>Recensione su Google</span></footer>
+          </li><li class="review">
+            <span class="stars" aria-hidden="true"><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg></span><span class="sr-only">5 stelle su 5</span>
+            <p>Sono a Verona un paio di giorni e Punto Pizza è stata la nostra salvezza a cena. Siamo veramente soddisfatti della pizza, servizio veloce e preciso. Rispetto dei tempi di consegna. Consigliatissima!</p>
+            <footer><span class="avatar" aria-hidden="true">M</span><span><b>Melania F.</b>Recensione su Google</span></footer>
+          </li></ul></div>
+        <div class="marquee-row rev"><ul><li class="review">
             <span class="stars" aria-hidden="true"><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg></span><span class="sr-only">5 stelle su 5</span>
             <p>La pizza senza glutine è la più buona di tutta Verona, morbida e molto gustosa. Anche le pizze con impasto regolare sono davvero ottime. Consegna puntuale e ragazzi gentilissimi! Super top!</p>
             <footer><span class="avatar" aria-hidden="true">M</span><span><b>Mattea S.</b>Recensione su Google</span></footer>
-          </li>
-          <li class="review">
+          </li><li class="review">
             <span class="stars" aria-hidden="true"><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg></span><span class="sr-only">5 stelle su 5</span>
             <p>Fantastici, pizza senza glutine ottima e anche le pizze con impasto normale sono buonissime! Super gentili e organizzati: ho chiamato per aggiungere una bibita alla consegna e il titolare me l’ha offerta direttamente!</p>
             <footer><span class="avatar" aria-hidden="true">F</span><span><b>Filippo R.</b>Recensione su Google</span></footer>
-          </li>
-          <li class="review">
+          </li><li class="review">
             <span class="stars" aria-hidden="true"><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg></span><span class="sr-only">5 stelle su 5</span>
             <p>Pizza molto buona, di grandi dimensioni e ad un ottimo prezzo. Servizio rapido, puntuale e cordiale. Una delle poche pizzerie da asporto che fa anche delle ottime patatine fritte, che arrivano ancora calde e croccanti… e soprattutto senza glutine!</p>
             <footer><span class="avatar" aria-hidden="true">M</span><span><b>Manuela M.</b>Recensione su Google</span></footer>
-          </li>
-        </ul>
-        <div class="sec-head split" style="margin:22px 0 0">
-          <a class="link-arrow" href="https://www.google.com/maps/search/?api=1&amp;query=Punto%20Pizza%2C%20Via%20Albere%20117%2C%20Verona&amp;query_place_id=ChIJIcJz-M_hgUcRvQn7RCmpd60" target="_blank" rel="noopener">Leggi tutte le recensioni su Google<svg aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a>
-          <div class="reviews-nav">
-            <button type="button" data-dir="-1" aria-label="Recensione precedente"><svg aria-hidden="true" focusable="false"><use href="#i-arrow-l"/></svg></button>
-            <button type="button" data-dir="1" aria-label="Recensione successiva"><svg aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></button>
-          </div>
-        </div>
+          </li></ul><ul aria-hidden="true"><li class="review">
+            <span class="stars" aria-hidden="true"><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg></span><span class="sr-only">5 stelle su 5</span>
+            <p>La pizza senza glutine è la più buona di tutta Verona, morbida e molto gustosa. Anche le pizze con impasto regolare sono davvero ottime. Consegna puntuale e ragazzi gentilissimi! Super top!</p>
+            <footer><span class="avatar" aria-hidden="true">M</span><span><b>Mattea S.</b>Recensione su Google</span></footer>
+          </li><li class="review">
+            <span class="stars" aria-hidden="true"><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg></span><span class="sr-only">5 stelle su 5</span>
+            <p>Fantastici, pizza senza glutine ottima e anche le pizze con impasto normale sono buonissime! Super gentili e organizzati: ho chiamato per aggiungere una bibita alla consegna e il titolare me l’ha offerta direttamente!</p>
+            <footer><span class="avatar" aria-hidden="true">F</span><span><b>Filippo R.</b>Recensione su Google</span></footer>
+          </li><li class="review">
+            <span class="stars" aria-hidden="true"><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg><svg aria-hidden="true" focusable="false"><use href="#i-star"/></svg></span><span class="sr-only">5 stelle su 5</span>
+            <p>Pizza molto buona, di grandi dimensioni e ad un ottimo prezzo. Servizio rapido, puntuale e cordiale. Una delle poche pizzerie da asporto che fa anche delle ottime patatine fritte, che arrivano ancora calde e croccanti… e soprattutto senza glutine!</p>
+            <footer><span class="avatar" aria-hidden="true">M</span><span><b>Manuela M.</b>Recensione su Google</span></footer>
+          </li></ul></div>
+      </div>
+      <div class="wrap center" style="margin-top:34px">
+        <a class="link-arrow" href="https://www.google.com/maps/search/?api=1&amp;query=Punto%20Pizza%2C%20Via%20Albere%20117%2C%20Verona&amp;query_place_id=ChIJIcJz-M_hgUcRvQn7RCmpd60" target="_blank" rel="noopener">Leggi tutte le recensioni su Google<svg class="arrow" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a>
       </div>
     </section>
 
-    <!-- 7. Horário, zona e endereço -->
-    <section class="sec">
+    <!-- 8. Horário, zona e endereço -->
+    <section class="sec" aria-labelledby="h-dove">
       <div class="wrap">
-        <div class="sec-head">
+        <div class="sec-head center">
           <p class="eyebrow">Quando e dove</p>
-          <h2 class="display h-lg">Ti aspettiamo<span class="punto" aria-hidden="true"></span></h2>
+          <h2 class="display h-lg" id="h-dove" data-split>Ti aspettiamo<span class="punto" aria-hidden="true"></span></h2>
         </div>
         <div class="info-grid">
-          <div class="card rv">
+          <div class="card-l rv">
             <h3><svg aria-hidden="true" focusable="false"><use href="#i-clock"/></svg>Orari</h3>
             <table class="orari">
             <caption class="sr-only">Orari di apertura</caption>
@@ -355,7 +462,7 @@
             <tr class="closed" data-day="1"><th scope="row">Lunedì</th><td>Chiuso</td></tr>
           </table>
           </div>
-          <div class="card rv" style="--d:.08s">
+          <div class="card-l rv" style="--d:.08s">
             <h3><svg aria-hidden="true" focusable="false"><use href="#i-scooter"/></svg>Consegniamo da te?</h3>
             <p>Scrivi il tuo CAP e te lo diciamo subito.</p>
             <form class="cap-form" data-caps="37137 37138">
@@ -365,28 +472,27 @@
             </form>
             <p class="cap-out" role="status"></p>
             <p>Consegniamo nei CAP <strong>37137 e 37138</strong>, in circa 30 minuti.</p>
-            <a class="link-arrow" href="consegna/">Consegna e ritiro<svg aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a>
+            <a class="link-arrow" href="consegna/">Consegna e ritiro<svg class="arrow" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a>
           </div>
-          <div class="card rv" style="--d:.16s">
+          <div class="card-l rv" style="--d:.16s">
             <h3><svg aria-hidden="true" focusable="false"><use href="#i-pin"/></svg>Dove siamo</h3>
             <p><strong>Via Albere 117</strong><br>37137 Verona (VR)</p>
             <p>Solo asporto e consegna: passa a ritirare la tua pizza all’orario che hai scelto.</p>
-            <a class="link-arrow" href="https://www.google.com/maps/search/?api=1&amp;query=Punto%20Pizza%2C%20Via%20Albere%20117%2C%20Verona&amp;query_place_id=ChIJIcJz-M_hgUcRvQn7RCmpd60" target="_blank" rel="noopener">Indicazioni stradali<svg aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a>
+            <a class="link-arrow" href="https://www.google.com/maps/search/?api=1&amp;query=Punto%20Pizza%2C%20Via%20Albere%20117%2C%20Verona&amp;query_place_id=ChIJIcJz-M_hgUcRvQn7RCmpd60" target="_blank" rel="noopener">Indicazioni stradali<svg class="arrow" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 8. Chamada final -->
     <section class="cta-final">
-      <div class="pz-wrap pz-deco a" data-pz="pomodoro, mozzarella, basilico" data-seed="fame-a" aria-hidden="true"></div>
-      <div class="pz-wrap pz-deco b" data-pz="pomodoro, mozzarella, salamino piccante, olive" data-seed="fame-b" aria-hidden="true"></div>
+      <div class="float a" data-speed="-.12" data-spin=".08" aria-hidden="true"><img class="rv-pop" src="assets/img/cut/porchettina.webp" srcset="assets/img/cut/porchettina-300.webp 300w, assets/img/cut/porchettina.webp 600w" sizes="(max-width: 900px) 170px, 28vw" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
+      <div class="float b" data-speed=".1" data-spin="-.07" aria-hidden="true"><img class="rv-pop" src="assets/img/cut/estiva.webp" srcset="assets/img/cut/estiva-300.webp 300w, assets/img/cut/estiva.webp 600w" sizes="(max-width: 900px) 170px, 28vw" alt="" width="600" height="600" loading="lazy" decoding="async"></div>
       <div class="wrap">
-        <h2 class="display">Hai fame?</h2>
-        <p>Stasera ci pensiamo noi. Ordina dall’app e risparmi 5&nbsp;€ sul primo ordine.</p>
-        <div class="actions">
-          <a class="btn btn-ink" href="https://url.velocissimo.app/o/157" target="_blank" rel="noopener">Ordina ora <svg aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a>
-          <a class="btn btn-ghost" href="tel:+390458622340"><svg aria-hidden="true" focusable="false"><use href="#i-phone"/></svg>Chiama 045 862 2340</a>
+        <h2 class="display" data-split>Hai fame?</h2>
+        <p class="rv">Stasera ci pensiamo noi. Ordina dall’app e risparmi 5&nbsp;€ sul primo ordine.</p>
+        <div class="actions rv" style="--d:.1s">
+          <a class="btn btn-ink" href="https://url.velocissimo.app/o/157" target="_blank" rel="noopener">Ordina ora <svg class="arrow" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a>
+          <a class="btn btn-glass" href="tel:+390458622340"><svg aria-hidden="true" focusable="false"><use href="#i-phone"/></svg>Chiama 045 862 2340</a>
         </div>
       </div>
     </section>
@@ -396,7 +502,7 @@
     <div class="wrap">
       <div class="foot-grid">
         <div class="foot-brand">
-          <img src="assets/img/logo-light.svg" width="200" height="60" alt="Punto Pizza Verona" loading="lazy">
+          <img src="assets/img/logo.svg" width="210" height="55" alt="Punto Pizza" loading="lazy">
           <p>Pizzeria da asporto e consegna a domicilio a Verona. Impasto a 24 ore di lievitazione e un laboratorio dedicato al senza glutine.</p>
           <div class="social">
             <a href="https://www.instagram.com/puntopizzaverona/" target="_blank" rel="noopener" aria-label="Instagram"><svg aria-hidden="true" focusable="false"><use href="#i-instagram"/></svg></a>
@@ -438,7 +544,7 @@
 
   <nav class="order-bar" aria-label="Ordina o chiama">
     <a class="btn btn-rosso" href="https://url.velocissimo.app/o/157" target="_blank" rel="noopener">Ordina ora <span class="promo-tag">−5&nbsp;€</span></a>
-    <a class="btn btn-ghost" href="tel:+390458622340" aria-label="Chiama 045 862 2340"><svg aria-hidden="true" focusable="false"><use href="#i-phone"/></svg>Chiama</a>
+    <a class="btn btn-line" href="tel:+390458622340" aria-label="Chiama 045 862 2340"><svg aria-hidden="true" focusable="false"><use href="#i-phone"/></svg>Chiama</a>
   </nav>
 </body>
 </html>

@@ -20,3 +20,7 @@ https://:project.pages.dev/*
 # Fotos e ícones: uma semana (se trocar um arquivo, use um nome novo para atualizar na hora)
 /assets/img/*
   Cache-Control: public, max-age=604800
+
+# Vídeo do topo: uma semana
+/assets/video/*
+  Cache-Control: public, max-age=604800
