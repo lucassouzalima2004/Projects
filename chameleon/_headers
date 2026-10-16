@@ -1,0 +1,27 @@
+# Cabeçalhos do Cloudflare (este arquivo não aparece no site).
+
+# Enquanto o site estiver só no endereço .workers.dev (prévia), o Google não indexa.
+# Quando o domínio do Jean for ligado ao site, ele fica indexável normalmente.
+https://:worker.:subdomain.workers.dev/*
+  X-Robots-Tag: noindex
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+# As fontes nunca mudam de conteúdo: o navegador pode guardar por um ano
+/assets/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Fotos, vídeos, CSS e JS: uma semana (se trocar um arquivo mantendo o nome, aumente o ?v= no endereço dele no index.html)
+/assets/img/*
+  Cache-Control: public, max-age=604800
+
+/assets/video/*
+  Cache-Control: public, max-age=604800
+
+/assets/css/*
+  Cache-Control: public, max-age=604800
+
+/assets/js/*
+  Cache-Control: public, max-age=604800
