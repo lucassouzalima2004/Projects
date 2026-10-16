@@ -44,6 +44,7 @@ export function matchRoute(pathname) {
 }
 
 const telHref = (n) => `tel:${String(n).replace(/[^\d+]/g, '')}`;
+const regionCodes = (c) => [...new Set([...(c.emails || []).map((e) => e.country), ...c.phones.map((p) => p.country)])];
 const waHref = (n, text) => `https://wa.me/${String(n).replace(/\D/g, '')}${text ? `?text=${encodeURIComponent(text)}` : ''}`;
 const countryName = (code, locale) => {
   try {
@@ -186,7 +187,14 @@ function footer(ctx) {
       <h2 class="ftr__h">${esc(s.footer.contacts)}</h2>
       <ul class="ftr__list">
         ${c.email ? `<li><a href="mailto:${esc(c.email)}">${esc(c.email)}</a></li>` : ''}
-        ${c.phones.map((p) => `<li><a href="${telHref(p.number)}">${esc(p.number)}</a> <span class="ftr__muted">${esc(countryName(p.country, s.locale))}</span></li>`).join('')}
+        ${regionCodes(c)
+          .map(
+            (code) => `<li class="ftr__region"><span class="ftr__muted">${esc(countryName(code, s.locale))}</span>${[
+              ...(c.emails || []).filter((e) => e.country === code).map((e) => `<a href="mailto:${esc(e.email)}">${esc(e.email)}</a>`),
+              ...c.phones.filter((p) => p.country === code).map((p) => `<a href="${telHref(p.number)}">${esc(p.number)}</a>`),
+            ].join('')}</li>`,
+          )
+          .join('')}
         <li><a href="${esc(c.maps || '#')}" target="_blank" rel="noopener">${esc(c.address)}<br>${esc(c.postal)}, ${esc(c.country)}</a></li>
       </ul>
     </div>
@@ -266,6 +274,13 @@ function structuredData(ctx) {
       { '@type': 'Country', name: 'Portugal' },
       { '@type': 'Country', name: 'Spain' },
     ],
+    contactPoint: regionCodes(c).map((code) => ({
+      '@type': 'ContactPoint',
+      contactType: 'sales',
+      areaServed: code,
+      email: (c.emails || []).find((e) => e.country === code)?.email,
+      telephone: c.phones.find((p) => p.country === code)?.number.replace(/\s+/g, ''),
+    })),
     sameAs: [c.instagram, c.facebook, c.linkedin].filter(Boolean),
   };
 }
@@ -481,31 +496,80 @@ function workMeta(ctx, w) {
   return [s.works.categories[w.category] || '', w.place, monthYear(w.date, s.locale)].filter(Boolean);
 }
 
-function works(ctx, list) {
+// Fotos com o mesmo nome de obra (o "grupo" do painel) formam um só quadro na galeria; a primeira é a capa.
+// O resultado diz também a ordem da galeria em ecrã inteiro: as fotos de cada obra seguidas.
+export function groupWorks(list) {
+  const tiles = [];
+  const byKey = new Map();
+  for (const w of list) {
+    const key = String(w.group || '').trim().toLowerCase();
+    if (key && byKey.has(key)) {
+      byKey.get(key).push(w);
+      continue;
+    }
+    const items = [w];
+    tiles.push(items);
+    if (key) byKey.set(key, items);
+  }
+  return tiles;
+}
+
+// Botões das redes por baixo da galeria (cada um só aparece com o endereço preenchido no painel)
+function socialPills(ctx) {
   const { s, content } = ctx;
-  if (!list.length) return '';
-  const data = list.map((w) => ({
-    kind: w.kind,
-    src: w.kind === 'video' ? w.video.u : largest(w),
-    poster: w.kind === 'video' ? w.video.poster : undefined,
-    srcset: w.kind === 'image' ? w.img.map((x) => `${x.u} ${x.w}w`).join(', ') : undefined,
-    w: w.w,
-    h: w.h,
-    title: titleOf(ctx, w),
-    meta: workMeta(ctx, w).join(' · '),
-    status: w.status ? s.works.status[w.status] : '',
-  }));
-  const cats = [...new Set(list.map((w) => w.category))];
+  const c = content.contacts;
+  const handle = (url) => url.replace(/\/+$/, '').split('/').pop().replace(/^@/, '');
+  return [
+    ['instagram', c.instagram, s.works.instagram, `@${handle(c.instagram || '')}`],
+    ['facebook', c.facebook, s.works.facebook, 'Jesten Construções'],
+    ['linkedin', c.linkedin, s.works.linkedin, 'Jesten Construções'],
+  ]
+    .filter(([, href]) => href)
+    .map(
+      ([kind, href, label, name]) =>
+        `<a class="social-pill social-pill--${kind}" href="${esc(href)}" target="_blank" rel="noopener"><span class="social-pill__icon">${icon(kind)}</span><span class="social-pill__text"><small>${esc(
+          label,
+        )}</small><b>${esc(name)}</b></span>${icon('out', 'social-pill__go')}</a>`,
+    )
+    .join('');
+}
+
+function works(ctx, groups) {
+  const { s, content } = ctx;
+  if (!groups.length) return '';
+  const flat = groups.flat();
+  const covers = groups.map((g) => g[0]);
+  const data = [];
+  groups.forEach((g, gi) => {
+    const album = titleOf(ctx, g[0]);
+    g.forEach((w, i) =>
+      data.push({
+        kind: w.kind,
+        src: w.kind === 'video' ? w.video.u : largest(w),
+        poster: w.kind === 'video' ? w.video.poster : undefined,
+        srcset: w.kind === 'image' ? w.img.map((x) => `${x.u} ${x.w}w`).join(', ') : undefined,
+        w: w.w,
+        h: w.h,
+        title: titleOf(ctx, w),
+        // Nas fotos de dentro de uma obra, o nome da obra vai junto
+        meta: [i ? album : '', ...workMeta(ctx, w)].filter(Boolean).join(' · '),
+        status: w.status ? s.works.status[w.status] : '',
+        n: i + 1,
+        of: g.length,
+      }),
+    );
+  });
+  // Os filtros contam fotos e vídeos; cada obra entra no tipo da sua capa
+  const cats = [...new Set(covers.map((w) => w.category))];
+  const countIn = (c) => groups.filter((g) => g[0].category === c).reduce((sum, g) => sum + g.length, 0);
   const filters =
     cats.length > 1
       ? `<div class="filters" role="group" aria-label="${esc(s.works.kicker)}" data-filters>
-        <button class="filter" type="button" data-filter="all" aria-pressed="true">${esc(s.works.all)}<small>${list.length}</small></button>
+        <button class="filter" type="button" data-filter="all" aria-pressed="true">${esc(s.works.all)}<small>${flat.length}</small></button>
         ${cats
           .map(
             (c) =>
-              `<button class="filter" type="button" data-filter="${esc(c)}" aria-pressed="false">${esc(s.works.categories[c] || c)}<small>${
-                list.filter((w) => w.category === c).length
-              }</small></button>`,
+              `<button class="filter" type="button" data-filter="${esc(c)}" aria-pressed="false">${esc(s.works.categories[c] || c)}<small>${countIn(c)}</small></button>`,
           )
           .join('')}
       </div>`
@@ -513,10 +577,15 @@ function works(ctx, list) {
   const updated = content.updated
     ? `<p class="works__updated"><span class="live"><i></i>${fill(s.works.updated, { date: esc(longDate(content.updated, s.locale)) })}</span></p>`
     : '';
-  const tiles = list
-    .map((w, i) => {
+  let first = 0;
+  const tiles = groups
+    .map((g, i) => {
+      const w = g[0];
+      const index = first;
+      first += g.length;
       const title = titleOf(ctx, w);
       const meta = workMeta(ctx, w);
+      const count = g.length > 1 ? fill(s.works.photos, { n: g.length }) : '';
       const featured = i === 0;
       const sizes = featured ? '(min-width: 1000px) 62vw, 100vw' : '(min-width: 1000px) 31vw, (min-width: 640px) 48vw, 100vw';
       const media =
@@ -526,20 +595,27 @@ function works(ctx, list) {
             } aria-hidden="true"></video>`
           : picture(w, { sizes, alt: title, cls: 'tile__media' });
       return `
-      <li class="tile${featured ? ' tile--wide' : ''}${i >= 9 ? ' tile--extra' : ''}" data-cat="${esc(w.category)}" data-reveal="curtain">
-        <a class="tile__link" href="${esc(w.kind === 'video' ? w.video.u : largest(w))}" data-work="${i}" aria-label="${esc(`${s.works.open}: ${title}`)}"${
-          w.color ? ` style="background-color:${w.color}"` : ''
-        }>
+      <li class="tile${featured ? ' tile--wide' : ''}${g.length > 1 ? ' tile--album' : ''}${i >= 9 ? ' tile--extra' : ''}" data-cat="${esc(w.category)}" data-reveal="curtain">
+        <a class="tile__link" href="${esc(w.kind === 'video' ? w.video.u : largest(w))}" data-work="${index}" data-items="${g.length}" aria-label="${esc(
+          `${s.works.open}: ${title}${count ? `, ${count}` : ''}`,
+        )}"${w.color ? ` style="background-color:${w.color}"` : ''}>
           ${media}
           <span class="tile__shade" aria-hidden="true"></span>
-          ${w.kind === 'video' ? `<span class="tile__badge">${icon('play')}${esc(s.works.video)}</span>` : ''}
+          ${
+            count
+              ? `<span class="tile__badge">${icon('stack')}${esc(count)}</span>`
+              : w.kind === 'video'
+                ? `<span class="tile__badge">${icon('play')}${esc(s.works.video)}</span>`
+                : ''
+          }
           ${w.status ? `<span class="tile__status${w.status === 'ongoing' ? ' tile__status--live' : ''}">${esc(s.works.status[w.status])}</span>` : ''}
           <span class="tile__cap"><span class="tile__title">${esc(title)}</span>${meta.length ? `<span class="tile__meta">${esc(meta.join(' · '))}</span>` : ''}</span>
-          <span class="tile__go" aria-hidden="true">${icon('out')}</span>
+          <span class="tile__go" aria-hidden="true">${icon(count ? 'plus' : 'out')}</span>
         </a>
       </li>`;
     })
     .join('');
+  const social = socialPills(ctx);
   return `
 <section class="section" id="${s.anchors.works}">
   <div class="wrap">
@@ -552,19 +628,13 @@ function works(ctx, list) {
     </ul>
     <div class="gallery__foot">
       ${
-        list.length > 6
-          ? `<div class="gallery__more${list.length > 9 ? '' : ' gallery__more--m'}"><button class="btn btn--outline btn--lg" type="button" data-works-more aria-expanded="false" data-more="${esc(
+        groups.length > 6
+          ? `<div class="gallery__more${groups.length > 9 ? '' : ' gallery__more--m'}"><button class="btn btn--outline btn--lg" type="button" data-works-more aria-expanded="false" data-more="${esc(
               s.works.more,
             )}" data-less="${esc(s.works.less)}"><span>${esc(s.works.more)}</span>${icon('plus')}</button></div>`
           : ''
       }
-      ${
-        content.contacts.instagram
-          ? `<a class="ig-link" href="${esc(content.contacts.instagram)}" target="_blank" rel="noopener"><span class="ig-link__icon">${icon('instagram')}</span><span class="ig-link__text"><small>${esc(
-              s.works.instagram,
-            )}</small><b>@${esc(content.contacts.instagram.replace(/\/+$/, '').split('/').pop())}</b></span>${icon('out', 'ig-link__go')}</a>`
-          : ''
-      }
+      ${social ? `<div class="gallery__social">${social}</div>` : ''}
     </div>
   </div>
   <script type="application/json" id="works-data">${json(data)}</script>
@@ -622,14 +692,33 @@ function hiring(ctx) {
 }
 
 // Lista de contactos diretos; nas carreiras só e-mail, WhatsApp e telefones
+// Contactos de cada país (e-mail de orçamentos e telefones); nas carreiras vão só os telefones
+function regions(ctx, { emails = true } = {}) {
+  const { s, content } = ctx;
+  const c = content.contacts;
+  const blocks = regionCodes(c)
+    .map((code) => {
+      const rows = [
+        ...(emails ? (c.emails || []).filter((e) => e.country === code).map((e) => ['mail', `mailto:${e.email}`, e.email]) : []),
+        ...c.phones.filter((p) => p.country === code).map((p) => ['phone', telHref(p.number), p.number]),
+      ];
+      if (!rows.length) return '';
+      return `<section class="region">
+        <h3 class="region__name"><span class="region__code">${esc(code)}</span>${esc(countryName(code, s.locale))}</h3>
+        <ul class="region__list">${rows.map(([ic, href, value]) => `<li><a href="${esc(href)}">${icon(ic)}<span>${esc(value)}</span></a></li>`).join('')}</ul>
+      </section>`;
+    })
+    .join('');
+  return blocks ? `<div class="regions">${blocks}</div>` : '';
+}
+
 function contacts(ctx, { only, whatsappText = ctx.s.quote.whatsappText } = {}) {
   const { s, content } = ctx;
   const c = content.contacts;
   const ch = s.quote.channels;
   const rows = [];
-  if (c.email) rows.push(['mail', `mailto:${c.email}`, esc(ch.email), c.email, false]);
+  if (c.email) rows.push(['mail', `mailto:${c.email}`, esc(c.emails?.length ? ch.general : ch.email), c.email, false]);
   if (c.whatsapp) rows.push(['whatsapp', waHref(c.whatsapp, whatsappText), esc(ch.whatsapp), `+${c.whatsapp.replace(/^(\d{3})(\d{3})(\d{3})(\d+)$/, '$1 $2 $3 $4')}`, true]);
-  for (const p of c.phones) rows.push(['phone', telHref(p.number), fill(ch.phone, { country: esc(countryName(p.country, s.locale)) }), p.number, false]);
   if (c.instagram) rows.push(['instagram', c.instagram, esc(ch.instagram), `@${c.instagram.replace(/\/+$/, '').split('/').pop() || ''}`, true]);
   if (c.facebook) rows.push(['facebook', c.facebook, esc(ch.facebook), c.facebook.replace(/^https?:\/\/(www\.)?/, '').replace(/\/+$/, ''), true]);
   if (c.linkedin) rows.push(['linkedin', c.linkedin, esc(ch.linkedin), c.linkedin.replace(/^https?:\/\/(www\.)?/, '').replace(/\/+$/, ''), true]);
@@ -714,6 +803,7 @@ function quote(ctx) {
       <h2 class="h2">${words(s.quote.title)}</h2>
       <p class="sec-intro">${esc(s.quote.lead)}</p>
       <p class="quote__sub">${esc(s.quote.direct)}</p>
+      ${regions(ctx)}
       ${contacts(ctx)}
     </div>
     <div class="quote__card" data-reveal>
@@ -744,12 +834,12 @@ function quote(ctx) {
 }
 
 export function homePage(ctx) {
-  const list = ctx.content.works.filter((w) => w.visible !== false);
+  const groups = groupWorks(ctx.content.works.filter((w) => w.visible !== false));
   return layout(ctx, {
     meta: ctx.s.meta.home,
     pageClass: 'page-home',
     overlay: true,
-    body: [hero(ctx, list), stats(ctx), marquee(ctx), services(ctx), about(ctx), works(ctx, list), method(ctx), hiring(ctx), quote(ctx)].join('\n'),
+    body: [hero(ctx, groups.flat()), stats(ctx), marquee(ctx), services(ctx), about(ctx), works(ctx, groups), method(ctx), hiring(ctx), quote(ctx)].join('\n'),
   });
 }
 
@@ -793,7 +883,8 @@ export function careersPage(ctx) {
       <h2 class="h2">${words(c.applyTitle)}</h2>
       <p class="sec-intro">${esc(c.lead)}</p>
       <p class="quote__sub">${esc(c.direct)}</p>
-      ${contacts(ctx, { only: ['mail', 'whatsapp', 'phone'], whatsappText: c.whatsappText })}
+      ${regions(ctx, { emails: false })}
+      ${contacts(ctx, { only: ['mail', 'whatsapp'], whatsappText: c.whatsappText })}
     </div>
     <div class="quote__card" data-reveal>
       <form class="form" data-form="job" action="/api/job" method="post" enctype="multipart/form-data" novalidate data-max-mb="5"${sent ? ' hidden' : ''}>

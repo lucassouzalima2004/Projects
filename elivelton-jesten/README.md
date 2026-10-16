@@ -14,10 +14,15 @@ e LinkedIn no orçamento, e um **painel** onde ele vê de que cidade vêm as vis
   ao acabamento." (a partir do lema do site antigo), os botões de orçamento e de obras e um botão "Ver a equipa em
   obra" que abre o vídeo da betonagem. Logo abaixo, num cartão, os números da empresa (54+ clientes,
   91+ profissionais, 8 obras em curso, desde 2023), que contam até ao valor quando aparecem.
-- **Serviços** (4), **Empresa** (fotos da equipa e os valores: segurança, rigor, compromisso), **Obras** (fotos e
-  vídeos reais das equipas, com filtro por tipo e galeria em ecrã inteiro), **Como trabalhamos** em 4 passos, faixa de
-  **recrutamento** e **Orçamento**: formulário (com anexo de projeto até 10 MB) e todos os contactos diretos (e-mail,
-  WhatsApp, telefones de Portugal e Espanha, Instagram, Facebook e LinkedIn quando preenchidos, morada com mapa).
+- **Serviços** (4), **Empresa** (fotos da equipa e os valores: segurança, rigor, compromisso), **Obras**, **Como
+  trabalhamos** em 4 passos, faixa de **recrutamento** e **Orçamento**.
+- **Obras**: 66 fotos e vídeos reais das equipas, organizados por obra (15 obras, como o depósito circular, a fundação
+  industrial, o posto de abastecimento, o edifício em Sant Cugat). Cada quadro da galeria é uma obra com o número de
+  fotos; ao abrir, a galeria em ecrã inteiro passa pelas fotos dessa obra e segue para a próxima. Filtro por tipo
+  (estrutura, obra nova, indústria e infraestruturas, remodelação) e botões do Instagram e do Facebook por baixo.
+- **Orçamento**: formulário (com anexo de projeto até 10 MB) e os contactos diretos, com um quadro por país:
+  Portugal (comercial@jesten.pt e dois telefones) e Espanha (ofitec@jesten.pt e dois telefones), mais o e-mail geral
+  (geral@jesten.pt), WhatsApp, Instagram, Facebook e LinkedIn quando preenchidos e a morada com mapa.
 - Visual de construtora premium: Montserrat nos títulos (a mesma família do "CONSTRUÇÕES" do logótipo) e Inter no
   texto, cantos arredondados, botões em pílula e sombras suaves. No telemóvel aparece uma barra fixa com WhatsApp e
   "Pedir orçamento" (nas carreiras, "Enviar candidatura"); no computador, um botão redondo de WhatsApp.
@@ -25,8 +30,8 @@ e LinkedIn no orçamento, e um **painel** onde ele vê de que cidade vêm as vis
   fotos da empresa e do recrutamento, faixa com os serviços a passar, números que contam, "Como trabalhamos" com a
   linha a acender cada passo, cabeçalho que se esconde ao descer e volta ao subir, barra de leitura no alto, galeria
   e menu com transições e troca suave entre páginas. Quem tem "reduzir movimento" ligado no aparelho vê tudo parado.
-- **Carreiras** (`/carreiras`): funções, o que a empresa oferece, contactos diretos e formulário de candidatura com
-  currículo em PDF.
+- **Carreiras** (`/carreiras`): 8 funções (pedreiro, cofrador, armador de ferro, gruista, encarregado, chefe de produção,
+  ajudante e administrativo), o que a empresa oferece, contactos diretos e formulário de candidatura com currículo em PDF.
 - **Política de Privacidade** e **Termos** reescritos para o site novo (RGPD, Livro de Reclamações, resolução de litígios).
 - Quem abre o site com o telemóvel em espanhol, inglês ou francês cai direto na versão dessa língua (só na primeira
   visita; o botão PT/ES/EN/FR fica guardado).
@@ -43,11 +48,13 @@ vetor a partir do PNG do cliente.
   visitas. Sem cookies e sem guardar IP (não precisa de aviso de cookies). As visitas do próprio cliente com sessão
   aberta e os robôs não contam.
 - **Fotos e vídeos**: envia várias de uma vez direto da galeria do celular (as fotos são reduzidas no próprio aparelho),
-  título, local, mês, tipo, "em curso/concluída", ponto de foco da foto, girar, ocultar, reordenar, apagar, e
-  "usar no topo do site". A primeira da lista fica em destaque. Tudo publica na hora.
+  título, **obra** (fotos com o mesmo nome de obra ficam juntas num só quadro no site; ao enviar várias de uma vez, o
+  painel pergunta se são da mesma obra), local, mês, tipo, "em curso/concluída", ponto de foco da foto, girar, ocultar,
+  reordenar, apagar, e "usar no topo do site". A primeira da lista fica em destaque. Tudo publica na hora.
 - **Página inicial**: foto do topo (qualquer foto ou vídeo da galeria pode ir para o topo) e a sua legenda, os 4
   números e a faixa de recrutamento.
-- **Contatos e redes**: e-mail, telefones, WhatsApp, Instagram, **Facebook**, **LinkedIn**, morada, NIF, alvará.
+- **Contatos e redes**: e-mail geral, e-mail de orçamentos e telefones de cada país, WhatsApp, Instagram, **Facebook**,
+  **LinkedIn**, morada, NIF, alvará.
 - **Mensagens**: pedidos de orçamento e candidaturas, com anexo para baixar e botões de responder por e-mail,
   WhatsApp e ligar.
 - **Conta**: trocar a senha, espaço usado, sair.
@@ -72,6 +79,7 @@ elivelton-jesten/
 │   └── assets/             css, js (site.js, panel.js, mapa), fontes, logótipo, fotos e vídeos otimizados
 └── tools/
     ├── make-media.sh       gera as fotos e vídeos otimizados a partir dos originais do cliente
+    ├── make-gallery.sh     idem, para as fotos e vídeos que o cliente mandou pelo WhatsApp (15/10/2026)
     ├── make-images.mjs     gera as imagens de prévia do link e os ícones
     └── make-map.mjs        gera o mapa em pontos do painel
 ```
@@ -139,8 +147,11 @@ otimizados (baixa os originais do jesten.pt se a pasta `tools/originals/` estive
 
 ## O que ainda falta confirmar
 
-- [ ] **Links do Facebook e do LinkedIn** da Jesten (o cliente reclamou que faltavam; não encontrei as páginas).
-      Quando chegarem, é só colar em **Contatos e redes** no painel: os botões aparecem no site na hora.
+- [ ] **Links do Facebook e do LinkedIn** da Jesten (o cliente pediu o botão do Facebook; não encontrei a página).
+      Quando chegarem, é só colar em **Contatos e redes** no painel: os botões aparecem no site na hora (por baixo
+      da galeria, nos contactos do orçamento e no rodapé).
+- [ ] Confirmar o segundo telefone de Espanha: o cliente escreveu +34 642 299 985, mas o número dele no WhatsApp é
+      +34 642 29 96 85 (é o que está no site).
 - [ ] Número do **alvará** de construção (IMPIC), se a empresa tiver: aparece no rodapé.
 - [ ] Revisar com o cliente os textos dos serviços, de "Como trabalhamos" e da página de carreiras (o que a empresa
       oferece), e os locais das obras nas legendas (só pus local onde a foto ou o vídeo mostravam: Sant Cugat,

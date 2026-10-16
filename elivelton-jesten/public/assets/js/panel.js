@@ -85,6 +85,7 @@ const ICONS = {
   focus: '<circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>',
   replace: '<path d="M4 7h13l-3-3M20 17H7l3 3"/>',
   menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+  stack: '<rect x="3" y="7.5" width="13.5" height="13.5" rx="2.5"/><path d="M7.5 3.5h10.5a2.5 2.5 0 0 1 2.5 2.5v10.5"/>',
 };
 const icon = (name, cls = '') =>
   `<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICONS[name] || ''}</svg>`;
@@ -143,7 +144,7 @@ const errorText = (e) =>
     : e?.status === 413
       ? 'Ficheiro grande demais.'
       : e?.status === 415
-        ? 'Formato de ficheiro não aceite.'
+        ? 'Formato de arquivo não aceito.'
         : 'Não foi possível concluir. Tente de novo.';
 
 // ---------- Entrada ----------
@@ -494,7 +495,7 @@ async function renderVisits(body) {
     const rangeLabel = RANGES.find(([k]) => k === state.range)[1].toLowerCase();
     const quotes = (s.inbox.quote || 0) + (s.inbox.job || 0);
     if (!s.views && !s.recent.length) {
-      body.innerHTML = `<div class="empty empty--big">${icon('visitas')}<h2>Ainda não há visitas registadas</h2><p>Assim que alguém abrir o site, a visita aparece aqui com a cidade, o país, a página e de onde a pessoa veio (Google, Instagram, WhatsApp…). As suas visitas não contam enquanto estiver com sessão iniciada neste painel.</p></div>`;
+      body.innerHTML = `<div class="empty empty--big">${icon('visitas')}<h2>Ainda não há visitas registradas</h2><p>Assim que alguém abrir o site, a visita aparece aqui com a cidade, o país, a página e de onde a pessoa veio (Google, Instagram, WhatsApp…). As suas visitas não contam enquanto estiver com sessão iniciada neste painel.</p></div>`;
       return;
     }
     body.innerHTML = `
@@ -520,7 +521,7 @@ async function renderVisits(body) {
       <section class="card"><header class="card__head"><h2>Países</h2></header>${bars(s.countries.slice(0, 12), { label: (r) => `<b class="cc">${esc(r.key === 'XX' ? '?' : r.key)}</b>${esc(regionName(r.key))}` })}</section>
       <section class="card"><header class="card__head"><h2>Como chegaram ao site</h2></header>${bars(s.refs, {
         label: (r) => esc(r.key === 'Direto' ? 'Direto (link digitado, favoritos ou apps)' : r.key),
-        empty: 'Ainda sem origens registadas.',
+        empty: 'Ainda sem origens registradas.',
       })}</section>
       <section class="card"><header class="card__head"><h2>Páginas mais vistas</h2></header>${bars(s.pages, { label: (r) => esc(PAGE_LABELS[r.key] || r.key), value: (r) => r.views })}</section>
       <section class="card"><header class="card__head"><h2>Aparelho</h2></header>${bars(s.devices, { label: (r) => esc(DEVICE[r.key] || r.key) })}</section>
@@ -559,7 +560,10 @@ async function renderVisits(body) {
 
 // ---------- Fotos e vídeos ----------
 
-const CATEGORY = { estrutura: 'Estrutura', 'obra-nova': 'Obra nova', reabilitacao: 'Reabilitação', remodelacao: 'Remodelação', outro: 'Outro' };
+const CATEGORY = { estrutura: 'Estrutura', 'obra-nova': 'Obra nova', infraestrutura: 'Indústria e infraestruturas', reabilitacao: 'Reabilitação', remodelacao: 'Remodelação', outro: 'Outro' };
+// Nomes de obra já usados (para juntar fotos da mesma obra num só quadro no site)
+const groupNames = () => [...new Set(state.content.works.map((w) => (w.group || '').trim()).filter(Boolean))];
+const groupList = (id) => `<datalist id="${id}">${groupNames().map((g) => `<option value="${esc(g)}"></option>`).join('')}</datalist>`;
 const STATUS = { '': 'Sem estado', ongoing: 'Em curso', done: 'Concluída' };
 const thumbOf = (w) => (w.kind === 'video' ? w.video.poster : [...(w.img || [])].sort((a, b) => a.w - b.w)[0]?.u) || '';
 const bigOf = (w) => [...(w.img || [])].sort((a, b) => b.w - a.w)[0]?.u || '';
@@ -575,6 +579,7 @@ async function renderWorks(body) {
   <div class="uploads" data-uploads></div>
   <div class="drop" data-drop>${icon('upload')}<span>Solte as fotos e os vídeos aqui</span></div>
   <p class="hint-line">${icon('star')}A primeira fica em destaque no site. Arraste ou use as setas para mudar a ordem.</p>
+  <p class="hint-line">${icon('stack')}Fotos com o mesmo nome de obra aparecem juntas no site, num só quadro; a primeira delas é a capa.</p>
   <ol class="wlist" data-list>${works.length ? '' : '<li class="empty">Ainda não há obras. Adicione as primeiras fotos.</li>'}</ol>`;
   drawList();
 
@@ -626,7 +631,9 @@ async function renderWorks(body) {
           <div class="witem__info">
             <strong>${title ? esc(title) : '<em class="warn">Sem título</em>'}</strong>
             <span>${esc(meta)}</span>
-            <span class="chips">${w.visible === false ? '<b class="chip chip--muted">Oculta</b>' : ''}${w.status ? `<b class="chip">${esc(STATUS[w.status])}</b>` : ''}${
+            <span class="chips">${w.group ? `<b class="chip chip--group">${esc(w.group)}</b>` : ''}${w.visible === false ? '<b class="chip chip--muted">Oculta</b>' : ''}${
+              w.status ? `<b class="chip">${esc(STATUS[w.status])}</b>` : ''
+            }${
               w.kind === 'video' ? '<b class="chip chip--muted">Vídeo</b>' : ''
             }</span>
           </div>
@@ -710,7 +717,7 @@ async function renderWorks(body) {
     for (const file of files) {
       const row = document.createElement('div');
       row.className = 'up';
-      row.innerHTML = `<span class="up__name">${esc(file.name)}</span><span class="up__bar"><i></i></span><span class="up__state">A preparar…</span>`;
+      row.innerHTML = `<span class="up__name">${esc(file.name)}</span><span class="up__bar"><i></i></span><span class="up__state">Preparando…</span>`;
       box.append(row);
       const bar = $('i', row);
       const stateEl = $('.up__state', row);
@@ -733,10 +740,55 @@ async function renderWorks(body) {
         stateEl.textContent = e.userMessage || errorText(e);
       }
     }
-    if (added) {
-      toast(added === 1 ? 'Publicado no site. Dê um título à obra.' : `${added} ficheiros publicados no site.`);
+    if (added === 1) {
+      toast('Publicado no site. Dê um título à obra.');
       editWork(0, drawList);
+    } else if (added > 1) {
+      toast(`${added} arquivos publicados no site.`);
+      groupNew(added);
     }
+  }
+
+  // Junta as fotos acabadas de enviar numa obra (ficam num só quadro no site)
+  function groupNew(n) {
+    const items = state.content.works.slice(0, n);
+    const d = dialog(`<form method="dialog" class="dlg__form" novalidate>
+      <header class="dlg__head"><h2>São todas da mesma obra?</h2><button class="ib" type="button" data-x aria-label="Fechar">${icon('close')}</button></header>
+      <div class="dlg__body fields">
+        <p class="muted">Dê um nome à obra e os ${n} arquivos que acabou de enviar aparecem juntos no site, num só quadro, com o primeiro de capa. Pode ser uma obra nova ou uma que já existe.</p>
+        <label class="field"><span class="field__label">Nome da obra</span><input name="group" list="group-names-new" maxlength="60" placeholder="Ex.: Edifício em Coimbra" required></label>
+        ${groupList('group-names-new')}
+      </div>
+      <footer class="dlg__foot">
+        <button class="btn btn--ghost" type="button" data-skip>Não, ficam separadas</button>
+        <span class="spacer"></span>
+        <button class="btn btn--amber" type="submit">Juntar</button>
+      </footer>
+    </form>`, { small: true });
+    const form = $('form', d);
+    const next = () => editWork(0, drawList);
+    $('[data-x]', d).addEventListener('click', () => {
+      d.close();
+      next();
+    });
+    $('[data-skip]', d).addEventListener('click', () => {
+      d.close();
+      next();
+    });
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = form.elements.group.value.trim();
+      if (!name) return form.elements.group.focus();
+      items.forEach((w) => (w.group = name));
+      try {
+        await saveContent(`Juntas na obra "${name}".`);
+        d.close();
+        drawList();
+        next();
+      } catch (err) {
+        toast(errorText(err), 'error');
+      }
+    });
   }
 }
 
@@ -850,12 +902,12 @@ async function uploadWork(file, progress, say) {
   };
   const isVideo = file.type.startsWith('video/') || /\.(mp4|mov|m4v|webm)$/i.test(file.name);
   if (!isVideo) {
-    say('A reduzir a foto…');
+    say('Reduzindo a foto…');
     const src = await decodeImage(file);
     const large = await encodeImage(src, 2000);
     const small = await encodeImage(src, 900);
     const color = averageColor(small.canvas);
-    say('A enviar…');
+    say('Enviando…');
     const bigUrl = await uploadBlob(large.blob, 'image', file.name, (p) => progress(p * 0.82));
     const smallUrl = await uploadBlob(small.blob, 'image', file.name, (p) => progress(0.82 + p * 0.18));
     return { ...base, kind: 'image', img: [{ u: smallUrl, w: small.w }, { u: bigUrl, w: large.w }], w: large.w, h: large.h, color };
@@ -865,23 +917,23 @@ async function uploadWork(file, progress, say) {
     err.userMessage = 'Vídeo com mais de 200 MB. Encurte o vídeo ou envie uma versão mais leve.';
     throw err;
   }
-  say('A ler o vídeo…');
+  say('Lendo o vídeo…');
   const info = await videoInfo(file);
   // MOV com H.264 toca como MP4; marcar assim faz o Chrome aceitar
   const mime = file.type === 'video/webm' ? 'video/webm' : 'video/mp4';
   const blob = file.type === mime ? file : new Blob([file], { type: mime });
   let posterUrl = '';
   if (info?.poster) posterUrl = await uploadBlob(info.poster.blob, 'image', `${file.name}.webp`, (p) => progress(p * 0.04));
-  say('A enviar…');
+  say('Enviando…');
   const videoUrl = await uploadBlob(blob, 'video', file.name, (p) => progress(0.04 + p * 0.96));
   if (!info) toast('Vídeo enviado, mas este navegador não o conseguiu ler. Se não tocar no site, envie em MP4.', 'error');
   return { ...base, kind: 'video', video: { u: videoUrl, poster: posterUrl }, w: info?.w || 1080, h: info?.h || 1920, color: info?.color || '#8a877e' };
 }
 
 // Janela de edição de uma obra
-function dialog(html, { wide = false } = {}) {
+function dialog(html, { wide = false, small = false } = {}) {
   const d = document.createElement('dialog');
-  d.className = `dlg${wide ? ' dlg--wide' : ''}`;
+  d.className = `dlg${wide ? ' dlg--wide' : ''}${small ? ' dlg--small' : ''}`;
   d.innerHTML = html;
   document.body.append(d);
   d.addEventListener('close', () => d.remove());
@@ -917,6 +969,10 @@ function editWork(index, redraw) {
             <label class="field"><span class="field__label">Inglês</span><input name="en" value="${esc(t.en)}" maxlength="140"></label>
             <label class="field"><span class="field__label">Francês</span><input name="fr" value="${esc(t.fr)}" maxlength="140"></label>
           </details>
+          <label class="field"><span class="field__label">Obra <span class="muted">(fotos com o mesmo nome aparecem juntas no site)</span></span><input name="group" value="${esc(
+            w.group || '',
+          )}" list="group-names" maxlength="60" placeholder="Ex.: Depósito circular"></label>
+          ${groupList('group-names')}
           <label class="field"><span class="field__label">Local</span><input name="place" value="${esc(w.place)}" maxlength="80" placeholder="Ex.: Coimbra, Portugal"></label>
           <div class="row2">
             <label class="field"><span class="field__label">Mês e ano</span><input name="date" type="month" value="${esc(w.date)}"></label>
@@ -960,6 +1016,7 @@ function editWork(index, redraw) {
     Object.assign(w, {
       title: { pt: f.pt.value.trim(), es: f.es.value.trim(), en: f.en.value.trim(), fr: f.fr.value.trim() },
       place: f.place.value.trim(),
+      group: f.group.value.trim(),
       date: f.date.value,
       category: f.category.value,
       status: f.status.value,
@@ -999,7 +1056,7 @@ function editWork(index, redraw) {
   $('[data-rotate]', d)?.addEventListener('click', async (e) => {
     const btn = e.currentTarget;
     btn.disabled = true;
-    btn.lastChild.textContent = 'A girar…';
+    btn.lastChild.textContent = 'Girando…';
     try {
       const res = await fetch(bigOf(w));
       const bmp = await createImageBitmap(await res.blob());
@@ -1121,6 +1178,12 @@ const COUNTRIES = ['PT', 'ES', 'FR', 'BR', 'GB', 'CH', 'LU', 'DE', 'BE', 'NL', '
 async function renderContacts(body) {
   const c = state.content.contacts;
   const co = state.content.company;
+  c.emails = c.emails || [];
+  const emailRow = (e, i) => `<div class="phone-row" data-email="${i}">
+      <label class="field"><span class="field__label">País</span><select name="ec${i}">${COUNTRIES.map((k) => `<option value="${k}"${k === e.country ? ' selected' : ''}>${esc(regionName(k))}</option>`).join('')}</select></label>
+      <label class="field"><span class="field__label">E-mail para orçamentos</span><input name="ee${i}" type="email" value="${esc(e.email)}" maxlength="200" placeholder="comercial@jesten.pt"></label>
+      <button class="ib" type="button" data-remove-email="${i}" aria-label="Remover e-mail">${icon('trash')}</button>
+    </div>`;
   const phoneRow = (p, i) => `<div class="phone-row" data-phone="${i}">
       <label class="field"><span class="field__label">País</span><select name="pc${i}">${COUNTRIES.map((k) => `<option value="${k}"${k === p.country ? ' selected' : ''}>${esc(regionName(k))}</option>`).join('')}</select></label>
       <label class="field"><span class="field__label">Telefone</span><input name="pn${i}" type="tel" value="${esc(p.number)}" maxlength="30" placeholder="+351 900 000 000"></label>
@@ -1131,10 +1194,12 @@ async function renderContacts(body) {
     <form class="stack" data-form novalidate>
       <section class="card">
         <header class="card__head"><h2>Contatos</h2></header>
-        <p class="muted">Aparecem no topo do site, na secção de orçamento e no rodapé.</p>
-        <label class="field"><span class="field__label">E-mail</span><input name="email" type="email" value="${esc(c.email)}" maxlength="200"></label>
+        <p class="muted">Aparecem na secção de orçamento e no rodapé. Cada país (Portugal, Espanha…) fica num quadro com o seu e-mail e os seus telefones.</p>
+        <label class="field"><span class="field__label">E-mail geral</span><input name="email" type="email" value="${esc(c.email)}" maxlength="200"></label>
+        <div data-emails>${c.emails.map(emailRow).join('')}</div>
+        <button class="btn btn--ghost" type="button" data-add-email ${c.emails.length >= 6 ? 'disabled' : ''}>+ Adicionar e-mail de um país</button>
         <div data-phones>${c.phones.map(phoneRow).join('')}</div>
-        <button class="btn btn--ghost" type="button" data-add-phone ${c.phones.length >= 4 ? 'disabled' : ''}>+ Adicionar telefone</button>
+        <button class="btn btn--ghost" type="button" data-add-phone ${c.phones.length >= 8 ? 'disabled' : ''}>+ Adicionar telefone</button>
         <label class="field"><span class="field__label">WhatsApp (número com o código do país, só números)</span><input name="whatsapp" inputmode="numeric" value="${esc(c.whatsapp)}" maxlength="20" placeholder="351963430099"></label>
       </section>
       <section class="card">
@@ -1145,7 +1210,7 @@ async function renderContacts(body) {
         <label class="field"><span class="field__label">LinkedIn</span><input name="linkedin" type="url" value="${esc(c.linkedin)}" placeholder="https://www.linkedin.com/company/..."></label>
       </section>
       <section class="card">
-        <header class="card__head"><h2>Morada e empresa</h2></header>
+        <header class="card__head"><h2>Endereço e empresa</h2></header>
         <label class="field"><span class="field__label">Rua e número</span><input name="address" value="${esc(c.address)}" maxlength="120"></label>
         <div class="row2">
           <label class="field"><span class="field__label">Código postal e cidade</span><input name="postal" value="${esc(c.postal)}" maxlength="60"></label>
@@ -1167,6 +1232,10 @@ async function renderContacts(body) {
         const i = row.dataset.phone;
         return { country: f[`pc${i}`].value, number: f[`pn${i}`].value.trim() };
       });
+      c.emails = $$('[data-email]', form).map((row) => {
+        const i = row.dataset.email;
+        return { country: f[`ec${i}`].value, email: f[`ee${i}`].value.trim() };
+      });
       Object.assign(c, {
         email: f.email.value.trim(),
         whatsapp: f.whatsapp.value.replace(/\D/g, ''),
@@ -1186,11 +1255,19 @@ async function renderContacts(body) {
       draw();
       $(`[name="pn${c.phones.length - 1}"]`, body)?.focus();
     });
+    $('[data-add-email]', form).addEventListener('click', () => {
+      collect();
+      c.emails.push({ country: c.emails.some((e) => e.country === 'PT') ? 'ES' : 'PT', email: '' });
+      draw();
+      $(`[name="ee${c.emails.length - 1}"]`, body)?.focus();
+    });
     form.addEventListener('click', (e) => {
       const rm = e.target.closest('[data-remove-phone]');
-      if (!rm) return;
+      const rmEmail = e.target.closest('[data-remove-email]');
+      if (!rm && !rmEmail) return;
       collect();
-      c.phones.splice(Number(rm.dataset.removePhone), 1);
+      if (rm) c.phones.splice(Number(rm.dataset.removePhone), 1);
+      else c.emails.splice(Number(rmEmail.dataset.removeEmail), 1);
       draw();
     });
     form.addEventListener('submit', async (e) => {
@@ -1222,7 +1299,17 @@ const QUOTE_TYPES = {
   outro: 'Outro',
 };
 const STARTS = { asap: 'Assim que possível', soon: 'Nos próximos 3 meses', later: 'Daqui a mais de 3 meses', unknown: 'Ainda não sabe' };
-const ROLES = { pedreiro: 'Pedreiro', cofrador: 'Cofrador / encofrador', armador: 'Armador de ferro', ajudante: 'Ajudante', administrativo: 'Administrativo', outro: 'Outra função' };
+const ROLES = {
+  pedreiro: 'Pedreiro',
+  cofrador: 'Cofrador / encofrador',
+  armador: 'Armador de ferro',
+  gruista: 'Gruista',
+  encarregado: 'Encarregado',
+  'chefe-producao': 'Chefe de produção',
+  ajudante: 'Ajudante',
+  administrativo: 'Administrativo',
+  outro: 'Outra função',
+};
 const EXPERIENCE = { none: 'Sem experiência', lt2: 'Menos de 2 anos', '2to5': '2 a 5 anos', gt5: 'Mais de 5 anos' };
 
 function messageFields(m) {
@@ -1381,7 +1468,7 @@ async function renderAccount(body) {
     </section>
     <section class="card">
       <header class="card__head"><h2>Armazenamento</h2></header>
-      <p class="usage"><b>${bytes(u.bytes)}</b> em ${nf.format(u.files)} ficheiro${u.files === 1 ? '' : 's'} enviados pelo painel (fotos, vídeos e anexos).</p>
+      <p class="usage"><b>${bytes(u.bytes)}</b> em ${nf.format(u.files)} arquivo${u.files === 1 ? '' : 's'} enviados pelo painel (fotos, vídeos e anexos).</p>
       <div class="usage__bar"><i style="width:${Math.min(100, (u.bytes / 5e9) * 100).toFixed(2)}%"></i></div>
       <p class="muted">O plano gratuito do Cloudflare guarda até 5 GB. Fotos ocupam pouco (são reduzidas no envio); vídeos ocupam mais.</p>
     </section>

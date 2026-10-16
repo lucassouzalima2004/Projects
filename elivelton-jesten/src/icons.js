@@ -28,7 +28,8 @@ const LINE = {
   "square": "<path d=\"M4 20V4l16 16z\"/><path d=\"M8 16v-5.2l5.2 5.2z\"/><path d=\"M4 8h2.6M4 12h2.6\"/>",
   "clock": "<circle cx=\"12\" cy=\"12\" r=\"8.8\"/><path d=\"M12 7.2V12l3.2 2\"/>",
   "globe": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M3 12h18M12 3c2.6 2.6 3.8 5.6 3.8 9s-1.2 6.4-3.8 9c-2.6-2.6-3.8-5.6-3.8-9S9.4 5.6 12 3z\"/>",
-  "chevron": "<path d=\"m6 9.5 6 6 6-6\"/>"
+  "chevron": "<path d=\"m6 9.5 6 6 6-6\"/>",
+  "stack": "<rect x=\"3\" y=\"7.5\" width=\"13.5\" height=\"13.5\" rx=\"2.5\"/><path d=\"M7.5 3.5h10.5a2.5 2.5 0 0 1 2.5 2.5v10.5\"/>"
 };
 const FILL = {
   "play": "<path d=\"M8 5.5v13l10.5-6.5z\"/>",

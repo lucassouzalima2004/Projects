@@ -394,7 +394,8 @@
       stage.replaceChildren(media(w));
       title.textContent = w.title;
       meta.textContent = [w.status, w.meta].filter(Boolean).join(' · ');
-      count.textContent = fmt(T.works?.of || '{n} / {total}', { n: pos + 1, total: order.length });
+      // O contador é o da obra (as fotos de cada obra seguem-se umas às outras)
+      count.textContent = w.of > 1 ? fmt(T.works?.of || '{n} / {total}', { n: w.n, total: w.of }) : '';
       // Pré-carrega a foto seguinte
       const next = works[order[(pos + 1) % order.length]];
       if (next.kind === 'image') {
@@ -407,9 +408,14 @@
       }
     };
 
-    // Navega pelas obras que estão à vista com o filtro escolhido
+    // Navega pelas fotos das obras que estão à vista com o filtro escolhido, obra a obra
     const open = (i, from) => {
-      order = tiles.filter((t) => !t.hidden).map((t) => Number($('[data-work]', t)?.dataset.work));
+      order = [];
+      for (const t of tiles) {
+        const a = $('[data-work]', t);
+        if (t.hidden || !a) continue;
+        for (let k = 0; k < Number(a.dataset.items || 1); k++) order.push(Number(a.dataset.work) + k);
+      }
       if (!order.includes(i)) order = works.map((_, k) => k);
       opener = from;
       show(order.indexOf(i));

@@ -1340,6 +1340,14 @@ details.tr[open] {
   color: var(--mute);
 }
 
+/* Nome da obra (fotos com o mesmo nome ficam juntas no site) */
+.chip--group {
+  background: var(--ink);
+  color: #fff;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
 .witem__actions {
   display: flex;
   align-items: center;
@@ -1384,6 +1392,16 @@ details.tr[open] {
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
   gap: 24px;
+  padding: 20px 24px;
+  overflow: auto;
+}
+
+/* Janela simples (sem a coluna da foto) */
+.dlg--small {
+  width: min(540px, calc(100vw - 24px));
+}
+
+.dlg__body {
   padding: 20px 24px;
   overflow: auto;
 }
