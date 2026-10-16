@@ -12,7 +12,7 @@ Depois, conforme a cliente rola, o site "esfria" para tons de menta e creme.
 | `freshfemme-thermal-theme.zip` | O tema pronto para subir na Shopify. |
 | `theme/` | Código-fonte do tema (Liquid, CSS, JS). |
 | `preview/` | Servidor local que mostra o tema com os produtos reais da loja, sem precisar da Shopify. |
-| `docs/` | Capturas de tela e o vídeo da capa (`capa.mp4`) para mostrar ao cliente. |
+| `docs/` | Capturas de tela e vídeos da capa animada para mostrar ao cliente: `capa.mp4` (computador) e `capa-celular.mp4` (vertical, bom para WhatsApp). |
 
 ## Como instalar na loja
 
