@@ -417,8 +417,10 @@ def page(svc):
 
 
 # ---------- Página "Other services": a aba de reformas que o Gabriel pediu (16/10) ----------
-# A introdução e a lista de serviços são do próprio Gabriel (WhatsApp, 16/10 15:21: "essa aí seria a introdução dessa
-# página"). As frases curtas de cada cartão foram escritas por nós: pedir para ele conferir.
+# A introdução é do próprio Gabriel (WhatsApp, 16/10 15:21: "essa aí seria a introdução dessa página").
+# As fotos dos 6 serviços e dos trabalhos com a cidade também são dele (16/10, 15:31 a 15:35), e ele pediu que
+# ficassem "como lá na outra parte, de LVP, laminada" (a lista de serviços da home) e "tipo nossos trabalhos, com a
+# cidade" (a faixa de projetos da home). As frases de cada serviço foram escritas por nós: pedir para ele conferir.
 OTHER_INTRO = dict(
     p1='At Black Rock Remodeling LLC, we specialize in residential remodeling and new construction finishing. We are committed '
        'to providing reliable service, exceptional attention to detail, and clear communication with every client.',
@@ -426,25 +428,63 @@ OTHER_INTRO = dict(
        'finish carpentry, door and window installation, baseboards, trim, flooring, and more.',
     tagline='Quality craftsmanship, reliable service, and excellent communication from start to finish.',
 )
-OTHER = [
-    ('Interior & exterior painting', 'Inside and out, with the prep that makes the paint last.'),
-    ('Kitchen remodeling', 'Updates and full remodels, planned as one project, floor included.'),
-    ('Bathroom remodeling', 'Updates and full remodels, with the tile, the finishes and the floor.'),
+# Serviços com foto, na mesma lista da home. img = assets/img/other/services/<img>.webp (819 px) e <img>-640.webp.
+# pick = opção do formulário que o link já deixa escolhida; ld = nome nos dados para o Google, quando diferente do título.
+OTHER_SERVICES = [
+    dict(name='Exterior painting', img='exterior-painting', pick='Painting (interior or exterior)', link='Get a painting estimate',
+         desc='Siding, trim and doors, washed, scraped, caulked and primed before the first coat, so the finish stands up to Northwest rain.',
+         tags=['Siding', 'Trim', 'Doors', 'Prep and priming'],
+         alt='Two-story house with white siding, a dark board-and-batten gable, black windows and a wood-trimmed entry'),
+    dict(name='Interior painting', img='interior-painting', pick='Painting (interior or exterior)', link='Get a painting estimate',
+         desc='Walls, ceilings, trim and doors. Holes and dents patched, floors and furniture covered, cut lines kept sharp.',
+         tags=['Walls', 'Ceilings', 'Trim and doors', 'Drywall patching'],
+         alt='Freshly painted empty living room with white trim, large windows and a wood-look floor'),
+    dict(name='Kitchen remodeling', img='kitchen', pick='Kitchen remodeling', link='Get a kitchen estimate',
+         desc='From a cabinet and backsplash refresh to a full remodel, planned as one project, with the floor included.',
+         tags=['Cabinets', 'Backsplash', 'Trim', 'Flooring'],
+         alt='Kitchen with white cabinets, a dark wood island with stools, black pendant lights and a wood-look floor'),
+    dict(name='Bathroom remodeling', img='bathroom', pick='Bathroom remodeling', link='Get a bathroom estimate',
+         desc='Updates and full remodels: tile, vanity and finishes, with a floor that’s made for water.',
+         tags=['Tile', 'Vanities', 'Paint', 'Flooring'],
+         alt='Bathroom with a glass shower, a freestanding tub, a double vanity and a large tile floor'),
+    dict(name='Decks & fences', img='decks-fences', pick='Decks and fences', link='Get a deck or fence estimate',
+         desc='New decks, railings and fences, built square, fastened right and sealed against the weather.',
+         tags=['Decks', 'Railings', 'Fences', 'Stain and seal'],
+         alt='Covered deck with wood-look boards and a black railing, looking out on a fenced lawn'),
+    dict(name='New construction', ld='New construction finishing', img='new-construction', pick='New construction finishing', link='Get a finishing estimate',
+         desc='The finish work on new homes and additions: drywall, doors, trim, baseboards, paint and floors, from bare framing to move-in ready.',
+         tags=['Drywall', 'Doors and windows', 'Trim and baseboards', 'Finish carpentry'],
+         alt='New house framed in wood, with a staircase and tall windows, ready for the finish work'),
+]
+# Os outros serviços da lista do Gabriel, em cartões sem foto
+OTHER_MORE = [
     ('Drywall installation & repair', 'New walls hung and finished, and repairs that disappear under paint.'),
     ('Finish carpentry', 'The detail work that makes a room look finished.'),
     ('Door & window installation', 'New doors and windows, installed, trimmed out and sealed.'),
     ('Baseboards & trim', 'Cut tight at every corner and finished clean against the floor.'),
 ]
+# Trabalhos reais, com a cidade (assets/img/other/work/<img>.webp, 720x900)
+OTHER_WORK = [
+    ('kirkland-kitchen', 'Kirkland', 'Kitchen with white cabinets, a marble-look island and dark wood-look floors in a Kirkland home'),
+    ('seattle-stairs', 'Seattle', 'Staircase with dark treads and white risers in a Seattle home'),
+    ('lynnwood-home', 'Lynnwood', 'New home with white siding and black trim in Lynnwood, with the Black Rock van out front'),
+    ('bothell-bathroom', 'Bothell', 'Bathroom with green walls, green wall tile, a freestanding tub and a gray tile floor in a Bothell home'),
+    ('seattle-framing', 'Seattle', 'Room framed and insulated, ready for drywall, on a job in Seattle'),
+    ('bellevue-landing', 'Bellevue', 'Upstairs landing with carpet and a black metal railing in a Bellevue home'),
+]
 
 def other_page():
-    desc = ('More than flooring: Black Rock Remodeling LLC offers interior and exterior painting, kitchen and bathroom remodeling, '
-            'drywall, finish carpentry, doors, windows, baseboards and trim across King & Snohomish County, WA.')
+    desc = ('Painting inside and out, kitchen and bathroom remodeling, decks and fences, and new construction finishing '
+            'from Black Rock Remodeling LLC, across King & Snohomish County, WA.')
     provider = {"@type": "HomeAndConstructionBusiness", "name": "Black Rock Floors", "telephone": "+1-425-543-4667", "url": "/"}
+    plain = lambda name: name.replace('&', 'and')
     ld = {
         "@context": "https://schema.org",
         "@graph": [
-            *[{"@type": "Service", "name": name.replace('&', 'and'), "serviceType": name.replace('&', 'and'), "description": text,
-               "areaServed": COUNTIES, "provider": provider} for name, text in OTHER],
+            *[{"@type": "Service", "name": plain(s.get('ld', s['name'])), "serviceType": plain(s.get('ld', s['name'])), "description": s['desc'],
+               "areaServed": COUNTIES, "provider": provider} for s in OTHER_SERVICES],
+            *[{"@type": "Service", "name": plain(name), "serviceType": plain(name), "description": text,
+               "areaServed": COUNTIES, "provider": provider} for name, text in OTHER_MORE],
             {
                 "@type": "BreadcrumbList",
                 "itemListElement": [
@@ -454,17 +494,41 @@ def other_page():
             },
         ],
     }
+    arrow = '<svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg>'
+    svcs = '\n'.join(
+        f"""            <li class="svc{' is-active' if i == 1 else ''}" data-svc>
+              <figure class="svc-media">
+                <img src="../assets/img/other/services/{s['img']}-640.webp" srcset="../assets/img/other/services/{s['img']}-640.webp 640w, ../assets/img/other/services/{s['img']}.webp 819w" sizes="(min-width: 700px) 40vw, 92vw" width="640" height="800" alt="{html.escape(s['alt'])}" loading="lazy">
+              </figure>
+              <div class="svc-body">
+                <span class="svc-num">{i:02d}</span>
+                <h3 class="svc-name">{esc(s['name'])}</h3>
+                <div class="svc-more">
+                  <div class="svc-more-inner">
+                    <p class="svc-desc">{esc(s['desc'])}</p>
+                    <ul class="tags" role="list">{''.join(f'<li>{esc(t)}</li>' for t in s['tags'])}</ul>
+                    <a class="link-arrow" href="#contact" data-pick="{html.escape(s['pick'])}">{esc(s['link'])}{arrow}</a>
+                  </div>
+                </div>
+              </div>
+            </li>"""
+        for i, s in enumerate(OTHER_SERVICES, 1))
+    first = len(OTHER_SERVICES)
     cards = '\n'.join(
         f"""          <article class="other-card" data-reveal>
             <span class="other-num">{i:02d}</span>
             <h3 class="other-name">{esc(name)}</h3>
             <p>{esc(text)}</p>
           </article>"""
-        for i, (name, text) in enumerate(OTHER, 1))
+        for i, (name, text) in enumerate(OTHER_MORE, first + 1))
+    projects = '\n'.join(
+        f'          <button class="project" type="button" data-project><img src="../assets/img/other/work/{img}.webp" width="720" height="900" alt="{html.escape(alt)}" loading="lazy"><span class="project-meta"><span class="project-city">{esc(city)}</span></span></button>'
+        for img, city, alt in OTHER_WORK)
     more = '\n'.join(
-        f'        <a class="more-card" href="../{o["slug"]}/"><img src="../assets/img/services/{o["img"]}-640.webp?v=4" width="640" height="800" alt="" loading="lazy"><span>{esc(o["short"])}<svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></span></a>'
+        f'        <a class="more-card" href="../{o["slug"]}/"><img src="../assets/img/services/{o["img"]}-640.webp?v=4" width="640" height="800" alt="" loading="lazy"><span>{esc(o["short"])}{arrow}</span></a>'
         for o in SERVICES)
-    title = 'Home Remodeling, Painting & Carpentry in King & Snohomish County, WA · Black Rock Floors'
+    n_flooring = first + len(OTHER_MORE) + 1
+    title = 'Home Remodeling & Painting in King & Snohomish County, WA · Black Rock Floors'
     return f"""<!doctype html>
 <html lang="en-US">
 <head>
@@ -525,7 +589,7 @@ def other_page():
           <h1 class="hero-title" id="hero-title"><span class="line"><span>More than</span></span> <span class="line"><span><em>flooring.</em></span></span></h1>
           <p class="hero-sub">Complete home remodeling services from Black Rock Remodeling LLC, across King &amp; Snohomish County.</p>
           <div class="hero-actions">
-            <a class="btn btn--square" href="#contact">Get a free estimate<svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+            <a class="btn btn--square" href="#contact">Get a free estimate{arrow}</a>
             <a class="hero-link" href="tel:+14255434667"><svg class="i" aria-hidden="true"><use href="#i-phone"/></svg>(425) 543-4667</a>
           </div>
         </div>
@@ -536,39 +600,79 @@ def other_page():
     <!-- Introdução: o texto que o Gabriel mandou, sem mudar nada -->
     <section class="other-intro section" aria-labelledby="intro-title">
       <div class="wrap other-intro-grid">
-        <div class="other-intro-copy">
+        <div class="section-head">
           <p class="eyebrow">Black Rock Remodeling LLC</p>
           <h2 class="h2" id="intro-title" data-reveal>Complete home remodeling <em>services.</em></h2>
+        </div>
+        <div class="other-intro-copy">
           <p class="lead" data-reveal>{esc(OTHER_INTRO['p1'])}</p>
           <p class="lead" data-reveal>{esc(OTHER_INTRO['p2'])}</p>
           <p class="other-tagline" data-reveal>{esc(OTHER_INTRO['tagline'])}</p>
         </div>
-        <figure class="other-photo" data-reveal>
-          <img src="../assets/img/other/kitchen.webp" srcset="../assets/img/other/kitchen-640.webp 640w, ../assets/img/other/kitchen.webp 1200w" sizes="(min-width: 1024px) 50vw, 92vw" width="1200" height="800" alt="Open kitchen with a large island and a porcelain tile floor" loading="lazy">
-        </figure>
+      </div>
+    </section>
+
+    <!-- Serviços com as fotos do Gabriel, no mesmo formato da lista de pisos da home -->
+    <section class="services section" id="remodeling" aria-labelledby="services-title">
+      <div class="wrap">
+        <div class="services-head">
+          <div class="section-head">
+            <p class="eyebrow eyebrow--light">Remodeling services</p>
+            <h2 class="h2" id="services-title" data-reveal>Inside and out, <em>start to finish.</em></h2>
+          </div>
+          <p class="lead" data-reveal>Painting, kitchens, bathrooms, decks and new construction. Every project starts with a free visit and a written proposal, and ends with a walkthrough.</p>
+        </div>
+
+        <div class="svc-layout" data-services>
+          <ol class="svc-list" role="list">
+{svcs}
+          </ol>
+
+          <!-- No computador, a foto do serviço ativo fica fixa ao lado da lista -->
+          <div class="svc-stage" aria-hidden="true">
+            <div class="svc-stage-photo" data-stage-photo></div>
+            <p class="svc-stage-cap"><span data-stage-num>01</span><span data-stage-name>{esc(OTHER_SERVICES[0]['name'])}</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trabalhos reais, com a cidade, como na home -->
+    <section class="work section" id="work" aria-labelledby="work-title">
+      <div class="wrap work-head">
+        <div class="section-head">
+          <p class="eyebrow">Our work</p>
+          <h2 class="h2" id="work-title" data-reveal>Recent projects, <em>city by city.</em></h2>
+        </div>
+        <p class="lead" data-reveal>Real jobs from across King and Snohomish County. Tap a photo to see it bigger.</p>
+      </div>
+      <div class="marquee marquee--work" data-marquee data-speed="36">
+        <div class="marquee-track">
+{projects}
+        </div>
       </div>
     </section>
 
     <section class="other-list section" aria-labelledby="other-title">
       <div class="wrap">
         <div class="section-head">
-          <p class="eyebrow">Our services</p>
-          <h2 class="h2" id="other-title" data-reveal>Inside and out, <em>start to finish.</em></h2>
+          <p class="eyebrow">More we do</p>
+          <h2 class="h2" id="other-title" data-reveal>The details that <em>finish a home.</em></h2>
         </div>
         <div class="other-grid">
 {cards}
           <article class="other-card" data-reveal>
-            <span class="other-num">{len(OTHER) + 1:02d}</span>
+            <span class="other-num">{n_flooring:02d}</span>
             <h3 class="other-name">Flooring</h3>
             <p>Hardwood, LVP, laminate, tile, refinishing and stairs: what we do every day.</p>
-            <a class="link-arrow" href="#flooring">Flooring services<svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+            <a class="link-arrow" href="#flooring">Flooring services{arrow}</a>
           </article>
           <article class="other-card other-card--cta" data-reveal>
-            <span class="other-num">{len(OTHER) + 2:02d}</span>
+            <span class="other-num">{n_flooring + 1:02d}</span>
             <h3 class="other-name">And more.</h3>
             <p>Have a project that isn’t on this list? Call or text and tell us about it. If it’s not something we do, we’ll tell you that too.</p>
             <div class="next-card-actions">
-              <a class="btn btn--red" href="#contact">Get a free estimate<svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+              <a class="btn btn--red" href="#contact">Get a free estimate{arrow}</a>
               <a class="next-card-phone" href="tel:+14255434667"><svg class="i" aria-hidden="true"><use href="#i-phone"/></svg>(425) 543-4667</a>
             </div>
           </article>
@@ -603,6 +707,8 @@ def other_page():
   {footer}
 
   {actionbar}
+
+  {lightbox}
 
   <script src="../assets/js/app.js" defer></script>
 </body>

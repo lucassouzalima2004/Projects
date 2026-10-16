@@ -485,7 +485,7 @@
       rows.forEach((r, k) => r.classList.toggle('is-active', k === i));
       shots.forEach((s, k) => s.classList.toggle('is-active', k === i));
       num.textContent = String(i + 1).padStart(2, '0');
-      name.textContent = $('.svc-name a', rows[i]).textContent;
+      name.textContent = $('.svc-name', rows[i]).textContent.trim();
     };
     const touch = window.matchMedia('(hover: none)');
     rows.forEach((row, i) => {
@@ -640,6 +640,12 @@
         statusLine.textContent = 'Your messages app should open with the request ready to send.';
       });
     }
+    // Os links "Get a ... estimate" da página Other services já deixam o serviço escolhido no formulário
+    const service = form.elements.service;
+    document.addEventListener('click', (e) => {
+      const pick = e.target.closest('[data-pick]');
+      if (pick && service) service.value = pick.dataset.pick;
+    });
   }
 
   /* ---------- Barra fixa do celular ---------- */

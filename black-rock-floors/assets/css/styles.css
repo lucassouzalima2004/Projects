@@ -923,8 +923,9 @@ a.contact-v:hover { text-decoration: underline; }
 .svc-other .link-arrow { grid-column: 2; grid-row: 2 / span 2; align-self: end; }
 .svc-other:hover .link-arrow .i { transform: translateX(3px); }
 
+/* Introdução: título à esquerda, o texto do Gabriel à direita (as fotos ficam na lista de serviços logo abaixo) */
 .other-intro { background: var(--paper); color: var(--ink); }
-.other-intro-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(40px, 6vw, 100px); align-items: center; }
+.other-intro-grid { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 28px clamp(40px, 6vw, 100px); align-items: start; }
 .other-intro-copy { display: grid; gap: 20px; justify-items: start; }
 .other-intro .h2 { max-width: 14ch; }
 /* A frase final do texto do Gabriel, em destaque */
@@ -933,8 +934,6 @@ a.contact-v:hover { text-decoration: underline; }
   font-family: var(--serif); font-size: clamp(1.35rem, 1.1rem + 0.7vw, 1.7rem); font-style: italic; font-weight: 450; line-height: 1.25;
   text-wrap: balance;
 }
-.other-photo { margin: 0; overflow: hidden; border-radius: var(--r-card); aspect-ratio: 3 / 2; background: var(--bone); }
-.other-photo img { width: 100%; height: 100%; object-fit: cover; }
 
 .other-list { background: var(--bone); color: var(--ink); }
 .other-list .h2 { max-width: 18ch; }

@@ -118,7 +118,25 @@ Ele também propôs pagar $300 pelo site com essa aba (antes, "2 sites por $300"
    A foto de referência que ele cita ("a foto que eu te mandei ali em cima") deve ser uma das fotos dele de piso; ela
    não veio separada na conversa.
 
-Ele vai mandar fotos de outros trabalhos (reformas) para colocar na página.
+### Sétima rodada (16/10, 15:31): as fotos para outros serviços
+
+O Gabriel mandou 6 fotos de serviços (*Exterior paint, Interior paint, Kitchen, Bathroom, Deck and fence, New
+construction*) e 9 fotos de trabalhos com a cidade, e pediu (áudio de 15:36): "você coloca como se fosse lá na outra
+parte, de LVP, laminada" e "bota lá, tipo, nossos trabalhos… com a cidade".
+
+1. **Serviços com foto, no mesmo formato da home.** A página Other services ganhou a mesma lista da seção de serviços
+   da home: no computador, a foto grande ao lado muda ao passar o mouse; no celular, cada serviço aparece com a foto.
+   São seis: Exterior painting, Interior painting, Kitchen remodeling, Bathroom remodeling, Decks & fences (serviço
+   novo, veio com a foto) e New construction (o "new construction finishing" do texto dele). O link de cada um leva ao
+   formulário com o serviço já marcado; o formulário ganhou *Decks and fences* e *New construction finishing*.
+2. **Our work: os trabalhos reais com a cidade**, na mesma faixa passando da home, com a foto ampliada ao clicar:
+   Kirkland, Seattle, Lynnwood, Bothell, Seattle e Bellevue. Três fotos vieram repetidas em dois tamanhos (Seattle,
+   Kirkland e Lynwood): entrou uma de cada, a maior. "Lynwood" ficou Lynnwood, como se escreve o nome da cidade.
+3. O resto da lista dele (drywall, finish carpentry, portas e janelas, rodapés e guarnições) continua em cartões,
+   numerados de 07 a 10 depois dos seis com foto, com Flooring (11) e "And more." (12).
+4. A apresentação ficou só com o texto dele (título à esquerda, parágrafos à direita), sem a foto da cozinha, porque
+   as fotos agora estão na lista logo abaixo. O link no fim dos serviços da home e os dados para o Google seguem a
+   lista nova.
 
 ## O que tem no site
 
@@ -143,16 +161,18 @@ Ele vai mandar fotos de outros trabalhos (reformas) para colocar na página.
 com o serviço já marcado.
 
 **Other services** (`other-services/`): a "aba" de reformas da Black Rock Remodeling que o Gabriel pediu. Topo *More than
-flooring.* com a foto do banheiro de Snohomish, a apresentação com o texto dele (e a foto da cozinha), os 9 cartões (os
-7 serviços da lista dele, Flooring e "And more."), o passo a passo próprio, os 6 serviços de piso e o formulário.
+flooring.* com a foto do banheiro de Snohomish, a apresentação com o texto dele, os 6 serviços com as fotos dele (como
+a lista de pisos da home; o link de cada um já marca o serviço no formulário), **Our work** com os trabalhos reais e a
+cidade (clicar abre a foto grande), o resto da lista dele em cartões, o passo a passo, os 6 serviços de piso e o
+formulário.
 
 **Também:** página 404, prévia bonita do link no WhatsApp (`assets/img/og-image.jpg`), dados estruturados para o Google
 (empresa, horários, área atendida, serviços, FAQ e trilha de navegação), `sitemap.xml` e `robots.txt` gerados na publicação.
 Para quem ativou "reduzir movimento", as animações de entrada desligam; o vídeo e as faixas continuam (pedido do cliente),
 com os botões de pausa.
 
-**Testes (16/10, depois da sexta rodada):** Lighthouse no computador 100 em desempenho, acessibilidade, boas práticas
-e SEO; no celular, 95 em desempenho na home e 93 na página Other services, 100 nos outros três. Zero problemas no teste de
+**Testes (16/10, depois da sétima rodada):** Lighthouse no computador 100 em desempenho, acessibilidade, boas práticas
+e SEO; no celular, 95 em desempenho na home e 92 na página Other services, 100 nos outros três. Zero problemas no teste de
 acessibilidade (axe) em todas as páginas.
 
 Identidade: logo vetorizado a partir do PNG que o Gabriel mandou. Preto **#0E0E0D**, osso **#EBE7E0** e o vermelho do "R"
@@ -170,7 +190,8 @@ maiúsculas espaçadas, ecoa o "F L O O R S" do logo).
 - [ ] **Formulário direto no e-mail**: ele quer receber os pedidos no e-mail. Falta escolher o serviço de envio (veja [O formulário](#o-formulário)).
 - [ ] **Vídeo do topo**: montado com 3 clipes gratuitos de piso, do Coverr e do Mixkit (veja [O vídeo do topo](#o-vídeo-do-topo)). Dá para trocar por filmagens dos pisos que ele instalou ou por um vídeo gerado por IA (prompts prontos em `tools/PROMPTS.md`).
 - [ ] **Nome da empresa**: o logo e a camisa dizem *Black Rock Floors*; o site antigo e o e-mail dizem *Black Rock Remodeling LLC*. Ele contou (16/10) que a empresa é a Black Rock Remodeling e que a de pisos veio depois; a página Other services diz que a Black Rock Floors é a parte de pisos da Black Rock Remodeling LLC. Confirmar se quer o nome da LLC também no rodapé.
-- [ ] **Página Other services**: a introdução e a lista de serviços são dele (16/10); as frases curtas de cada cartão e o passo a passo foram escritos por nós: pedir para ele ler. Ele vai mandar **fotos de outros trabalhos** (reformas): hoje a página usa a foto do banheiro de Snohomish e a da cozinha que ele mandou como Tile, e os cartões não têm foto.
+- [ ] **Página Other services**: a introdução, a lista de serviços e as fotos são dele (16/10); as frases de cada serviço, as etiquetas (Siding, Trim…) e o passo a passo foram escritos por nós: pedir para ele ler, principalmente se faz tudo o que está nas etiquetas.
+- [ ] **Fotos dos 6 serviços de reforma**: parecem imagens geradas por IA (todas em 1536 × 1024, o tamanho padrão do ChatGPT; as fotos Refinish e Tile dos pisos também). Servem de ilustração do serviço, e por isso os trabalhos reais ficam separados, em *Our work*, com a cidade. Se ele tiver fotos reais desses serviços, é só trocar (mesmo nome de arquivo em `assets/img/other/services/` e um `?v=` no endereço).
 - [ ] **Número de registro na L&I**: em Washington, a lei (RCW 18.27.100) pede o número de registro de empreiteiro na propaganda que mostra o nome da empresa, e o site conta como propaganda (vale confirmar com a L&I). Pedir o número e colocar no rodapé; também passa confiança.
 - [ ] **E-mail** `br.remodelingwa@gmail.com`: confirmar que continua sendo o dele.
 - [ ] **Respostas do FAQ** e **textos das páginas de serviço** (o que está incluído, prazos, mover móveis, tipos de acabamento): escritos por nós com base nas práticas comuns do mercado. Pedir para ele ler.
@@ -189,7 +210,7 @@ O conteúdo fica direto no HTML (é o que o Google lê). Cada seção do `index.
 | Fundador e números | `index.html`, seção 2 |
 | Projetos (foto e cidade) | `index.html`, seção 5: cada `<button class="project">`. Fotos em `assets/img/projects/` (720 × 900, WebP). Para mostrar também o tipo de serviço, ponha `<span class="project-service">Hardwood</span>` antes do nome da cidade |
 | Textos dos serviços | `index.html`, seção 4, e o `tools/service-pages.py` (lista `SERVICES`), que gera a página de cada serviço |
-| Página Other services | `tools/service-pages.py` (lista `OTHER` e a função `other_page`). Fotos em `assets/img/other/` |
+| Página Other services | `tools/service-pages.py`: `OTHER_INTRO` (texto dele), `OTHER_SERVICES` (os 6 com foto), `OTHER_MORE` (os cartões), `OTHER_WORK` (trabalhos e cidades) e a função `other_page`. Fotos em `assets/img/other/` (`services/`: 4:5, em 640 e 819 px; `work/`: 720 × 900) |
 | Menu, formulário, rodapé | No `index.html`; depois rode `python3 tools/service-pages.py` para as 7 outras páginas acompanharem (a `404.html` é à parte) |
 | FAQ | `index.html`, seção 8, e também o bloco `FAQPage` no `<head>` (o Google lê esse) |
 | Telefone, e-mail | Estão em todas as páginas: use "buscar e substituir" na pasta inteira (`4255434667`, `543-4667`, `br.remodelingwa@gmail.com`) e em `assets/js/app.js` (`PHONE`, `EMAIL`) |
@@ -311,7 +332,7 @@ cd /tmp/brf && npx wrangler@4 dev --ip 0.0.0.0 --port 8787
 black-rock-floors/
 ├── index.html                       página inicial
 ├── <serviço>/index.html             6 páginas de serviço
-├── other-services/index.html        cozinha, banheiro e pintura (a "aba" de outros serviços)
+├── other-services/index.html        reformas: pintura, cozinha, banheiro, deck e cerca, construção nova (a "aba" de outros serviços)
 ├── 404.html                         página "não encontrada"
 ├── _headers                         cabeçalhos do Cloudflare (noindex na prévia, cache)
 ├── worker.js                        Worker que entrega os vídeos por pedaço (para o iPhone tocar)
