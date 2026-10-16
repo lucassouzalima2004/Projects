@@ -10,7 +10,7 @@
         "t4": { "type": "item", "settings": { "icon": "card", "text": "Até 12x no cartão" } }
       },
       "block_order": ["t1", "t2", "t3", "t4"],
-      "settings": { "layout": "marquee", "style": "mint", "speed": 40 }
+      "settings": { "layout": "grid", "style": "mint", "speed": 40 }
     }
   },
   "order": ["main", "trust"]

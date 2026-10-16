@@ -65,7 +65,8 @@ site não aparece no Google. Para gerar localmente: `npm run build` e `npm run s
   mouse, roda a 30 quadros por segundo, para quando sai da tela, baixa a resolução sozinha em aparelho fraco e
   troca por uma imagem estática se mesmo assim ficar lento ou se o navegador não tiver 3D. Quem usa "reduzir
   movimento" vê o quadro final parado.
-- **Faixa de selos** em letreiro (Anvisa, premiado 2x, vegano…).
+- **Faixa de frete grátis** com o caminhão animado, e **selos** (Anvisa, vegano, não testado em animais…) em
+  grade fixa.
 - **Vitrine com abas** (Elas amam / Spray / VivaAge / Kits presentes) com adicionar rápido.
 - **História do spray** — termômetro que esfria conforme a rolagem, passos que acendem, números animados e
   botão de compra.
