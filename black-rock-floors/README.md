@@ -289,10 +289,14 @@ No ar em <https://blackrockfloors.lucassouzalima10.workers.dev> (o endereço tam
 - Usa o mesmo secret dos outros sites: `CLOUDFLARE_API_TOKEN` (e `CLOUDFLARE_ACCOUNT_ID`, opcional).
 - Na publicação, o workflow coloca o endereço completo no `og:image` (o WhatsApp exige), o `canonical` e o `og:url` em cada página, e gera o `sitemap.xml` e o `robots.txt`.
 - O README, a pasta `tools/` e o `worker.js` não vão para o ar como arquivos.
-- O `worker.js` é o script do Worker e só roda para os vídeos (`run_worker_first` no `wrangler.jsonc` que o workflow monta):
-  ele entrega o pedaço do vídeo que o navegador pede (`Range`), sem o qual o iPhone não toca o vídeo. O resto do site sai
-  direto dos arquivos, sem passar pelo script e sem contar no limite de pedidos do plano grátis. No fim, o workflow confere
-  se o vídeo responde a esse pedido.
+- O `worker.js` é o script do Worker e só roda em dois casos (`run_worker_first` e `not_found_handling: "none"` no
+  `wrangler.jsonc` que o workflow monta): nos vídeos, para entregar o pedaço que o navegador pede (`Range`), sem o qual
+  o iPhone não toca o vídeo; e em endereços que não existem, para responder a página 404 **sem cache**. Isso importa
+  logo depois de publicar: uma foto nova leva menos de um minuto para chegar a todos os servidores do Cloudflare, e
+  antes disso responde "não encontrada"; com o cache de uma semana das fotos, quem abrisse o site nesse minuto ficaria
+  com a foto quebrada por uma semana (aconteceu num teste em 16/10, só no navegador de teste). O resto do site sai
+  direto dos arquivos, sem passar pelo script e sem contar no limite de pedidos do plano grátis. No fim, o workflow
+  confere o vídeo (206) e a 404 (sem cache).
 - No endereço `.workers.dev`, o site vai com `noindex` (arquivo `_headers`): o Google não indexa a prévia.
 
 ### Ligar o domínio do Gabriel (que está no Wix)
@@ -319,7 +323,7 @@ mkdir -p /tmp/brf && cp -R black-rock-floors/. /tmp/brf/_site && cp black-rock-f
 rm -rf /tmp/brf/_site/README.md /tmp/brf/_site/tools /tmp/brf/_site/worker.js
 cat > /tmp/brf/wrangler.jsonc <<'EOF'
 { "name": "blackrockfloors", "main": "./worker.js", "compatibility_date": "2025-10-01",
-  "assets": { "directory": "./_site", "binding": "ASSETS", "not_found_handling": "404-page",
+  "assets": { "directory": "./_site", "binding": "ASSETS", "not_found_handling": "none",
               "html_handling": "auto-trailing-slash", "run_worker_first": ["/assets/video/*"] } }
 EOF
 cd /tmp/brf && npx wrangler@4 dev --ip 0.0.0.0 --port 8787
@@ -335,7 +339,7 @@ black-rock-floors/
 ├── other-services/index.html        reformas: pintura, cozinha, banheiro, deck e cerca, construção nova (a "aba" de outros serviços)
 ├── 404.html                         página "não encontrada"
 ├── _headers                         cabeçalhos do Cloudflare (noindex na prévia, cache)
-├── worker.js                        Worker que entrega os vídeos por pedaço (para o iPhone tocar)
+├── worker.js                        Worker: vídeos por pedaço (para o iPhone tocar) e a 404 sem cache
 ├── assets/css/styles.css            visual (cores e fonte no topo)
 ├── assets/js/app.js                 comportamento (vídeo, faixas, menu, mapa, formulário)
 ├── assets/fonts/                    fontes (Archivo e Cormorant Garamond)

@@ -4,8 +4,9 @@
 #
 # O site vai como Worker com arquivos estáticos (Workers Static Assets), como a The Berry Coffee,
 # e não como projeto do Cloudflare Pages: a conta já tem 100 projetos no Pages, o limite do Cloudflare.
-# O script do Worker (black-rock-floors/worker.js) só roda para os vídeos: entrega o pedaço do arquivo que o
-# navegador pede (cabeçalho Range), sem o qual o iPhone e o Safari não tocam o vídeo do topo.
+# O script do Worker (black-rock-floors/worker.js) só roda em dois casos: nos vídeos, para entregar o pedaço do
+# arquivo que o navegador pede (cabeçalho Range), sem o qual o iPhone e o Safari não tocam o vídeo do topo; e em
+# endereços que não existem, para responder a página 404 sem cache.
 #
 # Usa os mesmos secrets dos outros sites do repositório (Settings → Secrets and variables → Actions):
 #   CLOUDFLARE_API_TOKEN   token do Cloudflare que pode publicar Workers (obrigatório)
@@ -147,7 +148,7 @@ jobs:
             "assets": {
               "directory": "./_site",
               "binding": "ASSETS",
-              "not_found_handling": "404-page",
+              "not_found_handling": "none",
               "html_handling": "auto-trailing-slash",
               "run_worker_first": ["/assets/video/*"]
             }
@@ -172,6 +173,14 @@ jobs:
                 echo "Vídeo responde por pedaço (206): toca no iPhone."
               else
                 echo "::warning title=Vídeo sem Range::O vídeo respondeu $code em vez de 206 a um pedido por pedaço. O iPhone pode não tocar o vídeo do topo: confira o worker.js e o run_worker_first."
+              fi
+              # Endereço que não existe: página 404 sem cache (o worker.js responde), para uma foto nova que ainda
+              # não chegou a todos os servidores não ficar "não encontrada" por uma semana no navegador de alguém
+              nf=$(curl -sS -o /dev/null -D - --max-time 20 "$WORKERS_URL/assets/img/nao-existe-$(date +%s).webp" | tr -d '\r' || true)
+              if echo "$nf" | grep -q '^HTTP/[0-9.]* 404' && echo "$nf" | grep -qi '^cache-control: no-store'; then
+                echo "Endereço que não existe: 404 sem cache."
+              else
+                echo "::warning title=404 com cache::Um endereço que não existe não respondeu 404 com Cache-Control no-store. Confira o worker.js e o not_found_handling."
               fi
               exit 0
             fi
