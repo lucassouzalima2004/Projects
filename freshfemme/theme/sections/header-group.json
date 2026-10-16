@@ -1,0 +1,26 @@
+{
+  "type": "header",
+  "name": "Topo",
+  "sections": {
+    "announcement": {
+      "type": "announcement-bar",
+      "blocks": {
+        "m1": { "type": "message", "settings": { "text": "<strong>Frete grátis</strong> para todo o Brasil acima de R$ 150", "link": "" } },
+        "m2": { "type": "message", "settings": { "text": "Spray premiado <strong>2x</strong> a nível nacional", "link": "" } },
+        "m3": { "type": "message", "settings": { "text": "Visto no <strong>Shark Tank Brasil</strong>", "link": "" } },
+        "m4": { "type": "message", "settings": { "text": "Aprovado pela <strong>Anvisa</strong> · Vegano · Não testado em animais", "link": "" } }
+      },
+      "block_order": ["m1", "m2", "m3", "m4"],
+      "settings": { "speed": 44 }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "menu": "main-menu",
+        "transparent_home": true,
+        "sticky": "hide"
+      }
+    }
+  },
+  "order": ["announcement", "header"]
+}

@@ -1,0 +1,106 @@
+{%- liquid
+  assign product = section.settings.product
+  assign image = section.settings.image
+  if image == blank and product != blank
+    assign image = product.featured_image
+  endif
+-%}
+<section class="section section--tight promo">
+  <div class="container">
+    <div class="promo__card promo__card--{{ section.settings.tone }}" data-reveal="scale">
+      <div class="promo__media" data-tilt="5">
+        <span class="promo__blob" aria-hidden="true"></span>
+        {%- if image != blank -%}
+          {%- assign image_alt = product.title | default: section.settings.heading | strip_html -%}
+          {{ image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '400, 700, 1000, 1200', sizes: '(min-width: 990px) 45vw, 90vw', alt: image_alt }}
+        {%- else -%}
+          {{ 'product-2' | placeholder_svg_tag: 'placeholder-svg' }}
+        {%- endif -%}
+        {%- if product != blank and product.compare_at_price > product.price -%}
+          {%- assign saving = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round -%}
+          <span class="promo__sticker"><small>{{ 'sections.promo.save' | t }}</small>{{ saving }}%</span>
+        {%- endif -%}
+      </div>
+
+      <div class="promo__copy">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        <h2 class="h2">{{ section.settings.heading }}</h2>
+        {%- if section.settings.text != blank -%}
+          <div class="rte promo__text">{{ section.settings.text }}</div>
+        {%- endif -%}
+
+        {%- if section.settings.countdown != 'none' -%}
+          {%- liquid
+            assign cd = section.settings.countdown
+            if cd == 'date'
+              assign cd = section.settings.end_date
+            endif
+          -%}
+          <div class="countdown" data-countdown="{{ cd }}" aria-label="{{ 'sections.promo.ends_in' | t }}">
+            <span class="countdown__label">{{ 'sections.promo.ends_in' | t }}</span>
+            <span class="countdown__cell"><b data-cd="d">00</b><small>{{ 'sections.promo.days' | t }}</small></span>
+            <span class="countdown__cell"><b data-cd="h">00</b><small>{{ 'sections.promo.hours' | t }}</small></span>
+            <span class="countdown__cell"><b data-cd="m">00</b><small>{{ 'sections.promo.minutes' | t }}</small></span>
+            <span class="countdown__cell"><b data-cd="s">00</b><small>{{ 'sections.promo.seconds' | t }}</small></span>
+          </div>
+        {%- endif -%}
+
+        {%- if product != blank -%}
+          <div class="promo__buy">
+            <p class="promo__product">{{ product.title | split: ' | ' | first }}</p>
+            {% render 'price', product: product, price_size: 'lg', show_badge: false %}
+            <form method="post" action="{{ routes.cart_add_url }}" data-product-form class="promo__form">
+              <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+              <button type="submit" class="btn btn--lg" {% unless product.available %}disabled{% endunless %} data-add-button>
+                {{ section.settings.button_label }} {% render 'icon', name: 'arrow' %}
+              </button>
+              <a href="{{ product.url }}" class="link-arrow">{{ 'products.product.view_details' | t }}</a>
+            </form>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Promoção com contagem",
+  "class": "section-promo",
+  "settings": [
+    { "type": "product", "id": "product", "label": "Produto" },
+    { "type": "image_picker", "id": "image", "label": "Imagem", "info": "Se vazio, usa a foto do produto." },
+    { "type": "text", "id": "eyebrow", "label": "Chamada", "default": "Promo da semana" },
+    { "type": "inline_richtext", "id": "heading", "label": "Título", "default": "Longevidade <em>e</em> leveza, juntas." },
+    { "type": "richtext", "id": "text", "label": "Texto" },
+    {
+      "type": "select",
+      "id": "countdown",
+      "label": "Contagem regressiva",
+      "options": [
+        { "value": "week", "label": "Até domingo, 23h59" },
+        { "value": "day", "label": "Até hoje, 23h59" },
+        { "value": "date", "label": "Até uma data" },
+        { "value": "none", "label": "Sem contagem" }
+      ],
+      "default": "week"
+    },
+    { "type": "text", "id": "end_date", "label": "Data final", "info": "Formato 2026-12-31T23:59:00-03:00", "default": "2026-12-31T23:59:00-03:00" },
+    { "type": "text", "id": "button_label", "label": "Texto do botão", "default": "Aproveitar agora" },
+    {
+      "type": "select",
+      "id": "tone",
+      "label": "Cor",
+      "options": [
+        { "value": "lilac", "label": "Lilás e sálvia (VivaAge)" },
+        { "value": "mint", "label": "Menta" },
+        { "value": "rose", "label": "Rosé" }
+      ],
+      "default": "lilac"
+    }
+  ],
+  "presets": [{ "name": "Promoção com contagem" }]
+}
+{% endschema %}

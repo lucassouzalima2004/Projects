@@ -1,0 +1,34 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "benefits": { "type": "benefits", "settings": { "items": "Fórmula exclusiva FreshFemme\nProduto vegano e não testado em animais\nFrete grátis acima de R$ 150" } },
+        "variants": { "type": "variant_picker", "settings": {} },
+        "buy": { "type": "buy_buttons", "settings": { "show_quantity": true, "show_dynamic_checkout": true } },
+        "shipping": { "type": "shipping", "settings": {} },
+        "trust": { "type": "trust", "settings": { "item_1": "Compra 100% segura", "item_2": "Aprovado pela Anvisa", "item_3": "Vegano e cruelty-free" } },
+        "description": { "type": "description", "settings": { "title": "Descrição", "open": true } },
+        "delivery": { "type": "collapsible", "settings": { "title": "Entrega e trocas", "content": "<p>Enviamos para todo o Brasil, com frete grátis acima de R$ 150. Você pode trocar ou devolver em até 7 dias após o recebimento.</p>" } }
+      },
+      "block_order": ["benefits", "variants", "buy", "shipping", "trust", "description", "delivery"],
+      "settings": {}
+    },
+    "related": {
+      "type": "related-products",
+      "settings": { "eyebrow": "Combina com você", "heading": "Você também vai <em>amar</em>", "limit": 4, "background": "paper" }
+    },
+    "trust": {
+      "type": "trust-bar",
+      "blocks": {
+        "t1": { "type": "item", "settings": { "icon": "shield", "text": "Aprovado pela Anvisa", "subtext": "Segurança comprovada" } },
+        "t2": { "type": "item", "settings": { "icon": "leaf", "text": "Natural e vegano", "subtext": "Sem testes em animais" } },
+        "t3": { "type": "item", "settings": { "icon": "truck", "text": "Frete grátis", "subtext": "Acima de R$ 150 para todo o Brasil" } },
+        "t4": { "type": "item", "settings": { "icon": "card", "text": "Até 12x no cartão", "subtext": "Ou pague no Pix" } }
+      },
+      "block_order": ["t1", "t2", "t3", "t4"],
+      "settings": { "layout": "grid", "style": "mint", "speed": 40 }
+    }
+  },
+  "order": ["main", "related", "trust"]
+}

@@ -1,0 +1,17 @@
+{
+  "sections": {
+    "main": { "type": "main-collection", "settings": { "per_page": 24, "show_image": false, "show_description": true, "show_filters": true } },
+    "trust": {
+      "type": "trust-bar",
+      "blocks": {
+        "t1": { "type": "item", "settings": { "icon": "shield", "text": "Aprovado pela Anvisa" } },
+        "t2": { "type": "item", "settings": { "icon": "leaf", "text": "Natural e vegano" } },
+        "t3": { "type": "item", "settings": { "icon": "truck", "text": "Frete grátis acima de R$ 150" } },
+        "t4": { "type": "item", "settings": { "icon": "card", "text": "Até 12x no cartão" } }
+      },
+      "block_order": ["t1", "t2", "t3", "t4"],
+      "settings": { "layout": "marquee", "style": "mint", "speed": 40 }
+    }
+  },
+  "order": ["main", "trust"]
+}

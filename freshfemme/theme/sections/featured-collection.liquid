@@ -1,0 +1,122 @@
+{%- liquid
+  assign tabs = section.blocks
+  assign columns = section.settings.columns
+-%}
+<section class="section featured{% if section.settings.background == 'mint' %} section--mint{% elsif section.settings.background == 'paper2' %} section--paper2{% endif %}">
+  <div class="container">
+    {% render 'section-heading', eyebrow: section.settings.eyebrow, title: section.settings.heading, text: section.settings.text %}
+
+    <div class="featured__tabs" data-tabs>
+      {%- if tabs.size > 1 -%}
+        <div class="tabbar" role="tablist" data-reveal>
+          <span class="tabbar__indicator" data-tab-indicator aria-hidden="true"></span>
+          {%- for block in tabs -%}
+            <button
+              type="button"
+              class="tabbar__tab"
+              role="tab"
+              id="Tab-{{ block.id }}"
+              aria-controls="Panel-{{ block.id }}"
+              aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+              data-tab="{{ block.id }}"
+              {{ block.shopify_attributes }}
+            >
+              {{- block.settings.title | default: block.settings.collection.title -}}
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- for block in tabs -%}
+        {%- liquid
+          assign collection = block.settings.collection
+          assign count = collection.products_count
+          if count > block.settings.limit
+            assign count = block.settings.limit
+          endif
+          assign grid_class = ''
+          if columns == 4
+            assign grid_class = 'product-grid--4'
+            if count == 3 or count == 6 or count == 9
+              assign grid_class = ''
+            endif
+          endif
+        -%}
+        <div
+          class="featured__panel"
+          role="tabpanel"
+          id="Panel-{{ block.id }}"
+          aria-labelledby="Tab-{{ block.id }}"
+          data-tab-panel="{{ block.id }}"
+          {% unless forloop.first %}hidden{% endunless %}
+        >
+          <div class="product-grid {{ grid_class }}">
+            {%- if collection != blank and collection.products_count > 0 -%}
+              {%- for product in collection.products limit: block.settings.limit -%}
+                {% render 'product-card', product: product, index: forloop.index0 %}
+              {%- endfor -%}
+            {%- else -%}
+              {%- for i in (1..4) -%}
+                <div class="card">
+                  <div class="card__media">{{ 'product-1' | placeholder_svg_tag: 'card__img card__placeholder' }}</div>
+                  <div class="card__info"><span class="card__title">{{ 'sections.featured.placeholder' | t }}</span></div>
+                </div>
+              {%- endfor -%}
+            {%- endif -%}
+          </div>
+          {%- if collection != blank and section.settings.show_link -%}
+            <div class="featured__more" data-reveal>
+              <a href="{{ collection.url }}" class="btn btn--outline">
+                {{ 'sections.featured.view_all' | t: title: collection.title }}
+                {% render 'icon', name: 'arrow' %}
+              </a>
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Vitrine de produtos",
+  "class": "section-featured",
+  "max_blocks": 4,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Chamada", "default": "Mais vendidos" },
+    { "type": "inline_richtext", "id": "heading", "label": "Título", "default": "As <em>queridinhas</em> delas" },
+    { "type": "richtext", "id": "text", "label": "Texto" },
+    { "type": "range", "id": "columns", "label": "Colunas no computador", "min": 3, "max": 4, "step": 1, "default": 4 },
+    { "type": "checkbox", "id": "show_link", "label": "Botão \"ver todos\"", "default": true },
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Fundo",
+      "options": [
+        { "value": "paper", "label": "Claro" },
+        { "value": "paper2", "label": "Creme" },
+        { "value": "mint", "label": "Menta" }
+      ],
+      "default": "paper"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Aba",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Nome da aba" },
+        { "type": "collection", "id": "collection", "label": "Coleção" },
+        { "type": "range", "id": "limit", "label": "Quantidade de produtos", "min": 2, "max": 12, "step": 1, "default": 8 }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Vitrine de produtos",
+      "blocks": [{ "type": "tab" }]
+    }
+  ]
+}
+{% endschema %}

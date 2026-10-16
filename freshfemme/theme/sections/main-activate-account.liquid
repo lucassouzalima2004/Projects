@@ -1,0 +1,17 @@
+{{ 'template-pages.css' | asset_url | stylesheet_tag }}
+<section class="section account-auth">
+  <div class="container">
+    <div class="auth-card">
+      <h1 class="h2">{{ 'customer.activate.title' | t }}</h1>
+      {%- form 'activate_customer_password', class: 'auth-card__form' -%}
+        {%- if form.errors -%}<div class="form-message form-message--error">{{ form.errors | default_errors }}</div>{%- endif -%}
+        <label class="field"><span>{{ 'customer.password' | t }}</span><input class="input" type="password" name="customer[password]" autocomplete="new-password" required></label>
+        <label class="field"><span>{{ 'customer.password_confirm' | t }}</span><input class="input" type="password" name="customer[password_confirmation]" autocomplete="new-password" required></label>
+        <button type="submit" class="btn btn--brand btn--block">{{ 'customer.activate.submit' | t }}</button>
+      {%- endform -%}
+    </div>
+  </div>
+</section>
+{% schema %}
+{ "name": "Ativar conta", "class": "section-main-activate", "settings": [] }
+{% endschema %}

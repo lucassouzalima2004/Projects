@@ -1,0 +1,45 @@
+{%- layout none -%}
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>{{ 'gift_card.title' | t: shop: shop.name }}</title>
+    {% render 'css-variables' %}
+    {{ 'base.css' | asset_url | stylesheet_tag }}
+    {{ 'template-pages.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'vendor/qrcode.js' | shopify_asset_url }}" defer></script>
+    {{ content_for_header }}
+  </head>
+  <body class="gift-card-page">
+    <main class="gift-card">
+      <p class="eyebrow">{{ shop.name }}</p>
+      <h1 class="h2">{{ 'gift_card.heading' | t }}</h1>
+      <div class="gift-card__card">
+        <p class="gift-card__amount">{{ gift_card.balance | money }}</p>
+        {%- if gift_card.balance != gift_card.initial_value -%}
+          {%- assign initial_value = gift_card.initial_value | money -%}
+          <p class="muted">{{ 'gift_card.initial' | t: value: initial_value }}</p>
+        {%- endif -%}
+        <p class="gift-card__code">{{ gift_card.code | format_code }}</p>
+        {%- if gift_card.expired or gift_card.enabled == false -%}
+          <p class="badge badge--muted">{{ 'gift_card.expired' | t }}</p>
+        {%- endif -%}
+        <div id="QrCode" data-identifier="{{ gift_card.qr_identifier }}"></div>
+      </div>
+      <div class="gift-card__actions">
+        <a href="{{ shop.url }}" class="btn btn--brand">{{ 'gift_card.shop' | t }}</a>
+        <button type="button" class="btn btn--outline" onclick="window.print()">{{ 'gift_card.print' | t }}</button>
+      </div>
+      {%- if gift_card.pass_url -%}
+        <a href="{{ gift_card.pass_url }}" class="link-arrow">{{ 'gift_card.wallet' | t }}</a>
+      {%- endif -%}
+    </main>
+    <script>
+      window.addEventListener('load', function () {
+        var el = document.getElementById('QrCode');
+        if (window.QRCode && el) new QRCode(el, { text: el.dataset.identifier, width: 120, height: 120 });
+      });
+    </script>
+  </body>
+</html>

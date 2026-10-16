@@ -1,0 +1,13 @@
+<div class="nav-item">
+  <a href="{{ link.url }}" class="nav-link" {% if link.current %}aria-current="page"{% endif %}>
+    {{- link.title -}}
+    {%- if link.links.size > 0 %}{% render 'icon', name: 'chevron' %}{% endif -%}
+  </a>
+  {%- if link.links.size > 0 -%}
+    <div class="nav-dropdown">
+      {%- for child in link.links -%}
+        <a href="{{ child.url }}">{{ child.title }}</a>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</div>

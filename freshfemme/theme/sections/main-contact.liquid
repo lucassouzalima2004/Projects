@@ -1,0 +1,60 @@
+{{ 'template-pages.css' | asset_url | stylesheet_tag }}
+<section class="page-hero">
+  <div class="container page-hero__inner">
+    <p class="eyebrow" data-reveal>{{ section.settings.eyebrow }}</p>
+    <h1 class="h1" data-reveal="words">{{ page.title }}</h1>
+    {%- if page.content != blank -%}<div class="rte page-hero__text" data-reveal>{{ page.content }}</div>{%- endif -%}
+  </div>
+</section>
+<section class="section section--flush-top">
+  <div class="container contact__grid">
+    <div class="contact__aside" data-reveal>
+      {%- for block in section.blocks -%}
+        <div class="contact__card" {{ block.shopify_attributes }}>
+          <span class="contact__icon">{% render 'icon', name: block.settings.icon %}</span>
+          <div>
+            <p class="contact__title">{{ block.settings.title }}</p>
+            <div class="rte contact__text">{{ block.settings.text }}</div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+    {%- form 'contact', class: 'contact__form' -%}
+      {%- if form.posted_successfully? -%}
+        <p class="form-message form-message--success">{% render 'icon', name: 'check' %} {{ 'contact.success' | t }}</p>
+      {%- endif -%}
+      {%- if form.errors -%}
+        <div class="form-message form-message--error">{{ form.errors | default_errors }}</div>
+      {%- endif -%}
+      <div class="contact__row">
+        <label class="field"><span>{{ 'contact.name' | t }}</span><input class="input" type="text" name="contact[name]" value="{{ form.name }}" autocomplete="name"></label>
+        <label class="field"><span>{{ 'contact.email' | t }} *</span><input class="input" type="email" name="contact[email]" value="{{ form.email }}" autocomplete="email" required></label>
+      </div>
+      <label class="field"><span>{{ 'contact.phone' | t }}</span><input class="input" type="tel" name="contact[phone]" value="{{ form.phone }}" autocomplete="tel"></label>
+      <label class="field"><span>{{ 'contact.message' | t }}</span><textarea class="textarea" name="contact[body]">{{ form.body }}</textarea></label>
+      <button type="submit" class="btn btn--brand btn--lg">{{ 'contact.send' | t }} {% render 'icon', name: 'arrow' %}</button>
+    {%- endform -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Contato",
+  "class": "section-main-contact",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Chamada", "default": "Fale com a gente" }
+  ],
+  "blocks": [
+    {
+      "type": "info",
+      "name": "Informação",
+      "settings": [
+        { "type": "select", "id": "icon", "label": "Ícone", "options": [{ "value": "whatsapp", "label": "WhatsApp" }, { "value": "heart", "label": "Coração" }, { "value": "truck", "label": "Entrega" }, { "value": "shield", "label": "Escudo" }], "default": "whatsapp" },
+        { "type": "text", "id": "title", "label": "Título", "default": "Atendimento" },
+        { "type": "richtext", "id": "text", "label": "Texto", "default": "<p>Segunda a sexta, das 9h às 18h.</p>" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Contato" }]
+}
+{% endschema %}

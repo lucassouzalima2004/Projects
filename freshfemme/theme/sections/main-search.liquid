@@ -1,0 +1,58 @@
+{{ 'template-collection.css' | asset_url | stylesheet_tag }}
+<section class="page-hero">
+  <div class="container page-hero__inner">
+    <h1 class="h1" data-reveal="words">{{ 'search.title' | t }}</h1>
+    <form action="{{ routes.search_url }}" method="get" role="search" class="search-page__form" data-reveal>
+      <label for="SearchPageInput" class="visually-hidden">{{ 'search.label' | t }}</label>
+      <input id="SearchPageInput" type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'search.placeholder' | t }}">
+      <input type="hidden" name="options[prefix]" value="last">
+      <button type="submit" class="btn btn--brand btn--sm">{% render 'icon', name: 'search' %}</button>
+    </form>
+    {%- if search.performed -%}
+      <p class="page-hero__text">{{ 'search.results_for' | t: count: search.results_count, terms: search.terms }}</p>
+    {%- endif -%}
+  </div>
+</section>
+
+{%- if search.performed -%}
+  {%- paginate search.results by 24 -%}
+    <section class="section section--flush-top">
+      <div class="container">
+        {%- assign products = search.results | where: 'object_type', 'product' -%}
+        {%- assign others = search.results | where: 'object_type', 'page' -%}
+        {%- assign articles = search.results | where: 'object_type', 'article' -%}
+        {%- if products.size > 0 -%}
+          <div class="product-grid product-grid--4">
+            {%- for product in products -%}
+              {% render 'product-card', product: product, index: forloop.index0 %}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+        {%- if others.size > 0 or articles.size > 0 -%}
+          <div class="search-page__group">
+            <p class="search-page__group-title">{{ 'search.pages' | t }}</p>
+            <ul class="result-list" role="list">
+              {%- for item in others -%}<li><a href="{{ item.url }}">{{ item.title }} {% render 'icon', name: 'arrow' %}</a></li>{%- endfor -%}
+              {%- for item in articles -%}<li><a href="{{ item.url }}">{{ item.title }} {% render 'icon', name: 'arrow' %}</a></li>{%- endfor -%}
+            </ul>
+          </div>
+        {%- endif -%}
+        {%- if search.results_count == 0 -%}
+          <div class="empty-state">
+            <p class="h3">{{ 'search.no_results' | t: terms: search.terms }}</p>
+            <a class="btn" href="{{ routes.all_products_collection_url }}">{{ 'cart.continue' | t }}</a>
+          </div>
+        {%- endif -%}
+        {% render 'pagination', paginate: paginate %}
+      </div>
+    </section>
+  {%- endpaginate -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Busca",
+  "class": "section-main-search",
+  "settings": []
+}
+{% endschema %}

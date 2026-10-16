@@ -1,0 +1,42 @@
+{{ 'template-pages.css' | asset_url | stylesheet_tag }}
+<section class="page-hero">
+  <div class="container page-hero__inner">
+    <p class="eyebrow">{{ 'customer.account.title' | t }}</p>
+    <h1 class="h1" data-reveal="words">{{ 'customer.account.hello' | t: name: customer.first_name }}</h1>
+    <a href="{{ routes.account_logout_url }}" class="link-arrow">{{ 'customer.account.logout' | t }}</a>
+  </div>
+</section>
+<section class="section section--flush-top">
+  <div class="container account__grid">
+    <div>
+      <h2 class="h3">{{ 'customer.account.orders' | t }}</h2>
+      {%- paginate customer.orders by 20 -%}
+        {%- if customer.orders.size > 0 -%}
+          <div class="orders">
+            {%- for order in customer.orders -%}
+              <a href="{{ order.customer_url }}" class="order-row">
+                <span class="order-row__name">{{ order.name }}</span>
+                <span>{{ order.created_at | date: format: 'date' }}</span>
+                <span class="order-row__status">{{ order.fulfillment_status_label }}</span>
+                <strong>{{ order.total_price | money }}</strong>
+              </a>
+            {%- endfor -%}
+          </div>
+          {% render 'pagination', paginate: paginate %}
+        {%- else -%}
+          <p class="muted">{{ 'customer.account.no_orders' | t }}</p>
+        {%- endif -%}
+      {%- endpaginate -%}
+    </div>
+    <aside class="account__aside">
+      <h2 class="h3">{{ 'customer.account.address' | t }}</h2>
+      {%- if customer.default_address -%}
+        <p>{{ customer.default_address | format_address }}</p>
+      {%- endif -%}
+      <a href="{{ routes.account_addresses_url }}" class="btn btn--outline">{{ 'customer.account.manage_addresses' | t: count: customer.addresses_count }}</a>
+    </aside>
+  </div>
+</section>
+{% schema %}
+{ "name": "Minha conta", "class": "section-main-account", "settings": [] }
+{% endschema %}

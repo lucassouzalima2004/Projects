@@ -1,0 +1,51 @@
+{%- liquid
+  assign limit = section.settings.limit
+-%}
+<section
+  class="section related{% if section.settings.background == 'mint' %} section--mint{% endif %}"
+  data-recommendations="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ limit }}&intent=related"
+>
+  <div class="container">
+    {% render 'section-heading', eyebrow: section.settings.eyebrow, title: section.settings.heading %}
+    <div class="product-grid product-grid--4" data-recommendations-grid>
+      {%- if recommendations.performed? and recommendations.products_count > 0 -%}
+        {%- for rec in recommendations.products -%}
+          {% render 'product-card', product: rec, index: forloop.index0 %}
+        {%- endfor -%}
+      {%- else -%}
+        {%- assign source = section.settings.fallback | default: product.collections.first -%}
+        {%- assign shown = 0 -%}
+        {%- for rec in source.products -%}
+          {%- if rec.id != product.id and shown < limit -%}
+            {%- assign shown = shown | plus: 1 -%}
+            {% render 'product-card', product: rec, index: shown %}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Produtos relacionados",
+  "class": "section-related",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Chamada", "default": "Combina com você" },
+    { "type": "inline_richtext", "id": "heading", "label": "Título", "default": "Você também vai <em>amar</em>" },
+    { "type": "range", "id": "limit", "label": "Quantidade", "min": 2, "max": 8, "step": 1, "default": 4 },
+    { "type": "collection", "id": "fallback", "label": "Coleção reserva", "info": "Usada enquanto a Shopify ainda não tem recomendações para o produto." },
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Fundo",
+      "options": [
+        { "value": "paper", "label": "Claro" },
+        { "value": "mint", "label": "Menta" }
+      ],
+      "default": "paper"
+    }
+  ],
+  "presets": [{ "name": "Produtos relacionados" }]
+}
+{% endschema %}

@@ -1,0 +1,51 @@
+<section class="section section--tight newsletter">
+  <div class="container">
+    <div class="newsletter__card" data-reveal="scale">
+      <span class="newsletter__orb newsletter__orb--a" aria-hidden="true"></span>
+      <span class="newsletter__orb newsletter__orb--b" aria-hidden="true"></span>
+      <div class="newsletter__copy">
+        {%- if section.settings.eyebrow != blank -%}<p class="eyebrow">{{ section.settings.eyebrow }}</p>{%- endif -%}
+        <h2 class="h2">{{ section.settings.heading }}</h2>
+        {%- if section.settings.text != blank -%}<div class="rte newsletter__text">{{ section.settings.text }}</div>{%- endif -%}
+      </div>
+      {%- assign form_id = 'Newsletter-' | append: section.id -%}
+      {%- form 'customer', class: 'newsletter__form', id: form_id -%}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        {%- if form.posted_successfully? -%}
+          <p class="form-message form-message--success">{% render 'icon', name: 'check' %} {{ 'sections.newsletter.success' | t }}</p>
+        {%- else -%}
+          <div class="newsletter__field">
+            <label for="NewsletterEmail-{{ section.id }}" class="visually-hidden">{{ 'sections.newsletter.email' | t }}</label>
+            <input
+              id="NewsletterEmail-{{ section.id }}"
+              type="email"
+              name="contact[email]"
+              class="newsletter__input"
+              placeholder="{{ 'sections.newsletter.email' | t }}"
+              autocomplete="email"
+              required
+            >
+            <button type="submit" class="btn btn--brand">{{ 'sections.newsletter.submit' | t }} {% render 'icon', name: 'arrow' %}</button>
+          </div>
+          {%- if form.errors -%}
+            <p class="form-message form-message--error">{{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}</p>
+          {%- endif -%}
+          <p class="newsletter__legal">{{ 'sections.newsletter.legal' | t }}</p>
+        {%- endif -%}
+      {%- endform -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "class": "section-newsletter",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Chamada", "default": "Clube FreshFemme" },
+    { "type": "inline_richtext", "id": "heading", "label": "Título", "default": "Receba novidades e <em>promoções</em>" },
+    { "type": "richtext", "id": "text", "label": "Texto", "default": "<p>Seja a primeira a saber de lançamentos, kits e ofertas especiais.</p>" }
+  ],
+  "presets": [{ "name": "Newsletter" }]
+}
+{% endschema %}

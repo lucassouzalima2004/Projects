@@ -1,0 +1,184 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero-thermal",
+      "blocks": {
+        "b1": { "type": "badge", "settings": { "icon": "shield", "text": "Aprovado pela Anvisa" } },
+        "b2": { "type": "badge", "settings": { "icon": "star", "text": "97% de aprovação nos testes" } },
+        "b3": { "type": "badge", "settings": { "icon": "leaf", "text": "Natural e vegano" } }
+      },
+      "block_order": ["b1", "b2", "b3"],
+      "settings": {
+        "eyebrow": "Premiado 2x · Visto no Shark Tank Brasil",
+        "heading": "Alívio imediato do <em>fogacho</em>, em segundos.",
+        "text": "O Spray Refrescante FreshFemme leva frescor na hora em que o calor sobe. Natural, vegano e aprovado pela Anvisa.",
+        "primary_label": "Quero o spray",
+        "product": "spray-refrescante-para-calores-menopausa-freshfemme",
+        "primary_link": "",
+        "secondary_label": "Ver a prova real",
+        "secondary_link": "#prova-real",
+        "word_hot": "calor",
+        "word_cold": "frescor",
+        "hud_label": "FRESHFEMME THERMAL",
+        "temp_hot": "38.4",
+        "temp_cold": "31.2",
+        "disclaimer": "*Representação artística do efeito refrescante."
+      }
+    },
+    "trust": {
+      "type": "trust-bar",
+      "blocks": {
+        "t1": { "type": "item", "settings": { "icon": "shield", "text": "Aprovado pela Anvisa" } },
+        "t2": { "type": "item", "settings": { "icon": "award", "text": "Premiado 2x a nível nacional" } },
+        "t3": { "type": "item", "settings": { "icon": "star", "text": "97% de aprovação nos testes" } },
+        "t4": { "type": "item", "settings": { "icon": "leaf", "text": "Natural e vegano" } },
+        "t5": { "type": "item", "settings": { "icon": "paw", "text": "Não testado em animais" } },
+        "t6": { "type": "item", "settings": { "icon": "truck", "text": "Frete grátis acima de R$ 150" } }
+      },
+      "block_order": ["t1", "t2", "t3", "t4", "t5", "t6"],
+      "settings": { "layout": "marquee", "style": "mint", "speed": 46 }
+    },
+    "featured": {
+      "type": "featured-collection",
+      "blocks": {
+        "tab1": { "type": "tab", "settings": { "title": "Elas amam", "collection": "escolhidoshome", "limit": 8 } },
+        "tab2": { "type": "tab", "settings": { "title": "Spray menopausa", "collection": "spray-menopausa-freshfemme", "limit": 8 } },
+        "tab3": { "type": "tab", "settings": { "title": "Lançamentos VivaAge", "collection": "suplementos-vivaage-freshfemme", "limit": 8 } },
+        "tab4": { "type": "tab", "settings": { "title": "Kits presentes", "collection": "kits-presentes", "limit": 8 } }
+      },
+      "block_order": ["tab1", "tab2", "tab3", "tab4"],
+      "settings": {
+        "eyebrow": "Mais vendidos",
+        "heading": "As <em>queridinhas</em> delas",
+        "text": "",
+        "columns": 4,
+        "show_link": true,
+        "background": "paper"
+      }
+    },
+    "story": {
+      "type": "spray-story",
+      "blocks": {
+        "s1": { "type": "step", "settings": { "title": "Sentiu o calor subir?", "text": "<p>O fogacho chega sem aviso: no trabalho, à noite, no meio de uma conversa. O rosto e o pescoço esquentam e o suor vem junto.</p>" } },
+        "s2": { "type": "step", "settings": { "title": "Borrife como um colar", "text": "<p>Um jato contínuo por todo o pescoço, principalmente na nuca. Pode ser usado no corpo todo, exceto mucosas e rosto.</p>" } },
+        "s3": { "type": "step", "settings": { "title": "Frescor na hora", "text": "<p>Agentes de refrescância e óleos essenciais trazem alívio imediato às ondas de calor e aos suores noturnos. E você segue o seu dia.</p>" } },
+        "n1": { "type": "stat", "settings": { "number": "110", "suffix": "", "label": "aplicações por frasco de 100 ml" } },
+        "n2": { "type": "stat", "settings": { "number": "97", "suffix": "%", "label": "de aprovação nos testes clínicos" } },
+        "n3": { "type": "stat", "settings": { "number": "2", "suffix": "x", "label": "premiado a nível nacional" } }
+      },
+      "block_order": ["s1", "s2", "s3", "n1", "n2", "n3"],
+      "settings": {
+        "product": "spray-refrescante-para-calores-menopausa-freshfemme",
+        "eyebrow": "Como funciona",
+        "heading": "Do calor ao <em>frescor</em> em um borrifo.",
+        "text": "",
+        "ring_text": "Frescor imediato · Alívio dos fogachos",
+        "tag_hot": "Fogacho",
+        "tag_cold": "Alívio na hora"
+      }
+    },
+    "categories": {
+      "type": "collection-list",
+      "blocks": {
+        "c1": { "type": "collection", "settings": { "collection": "spray-menopausa-freshfemme", "title": "Spray Menopausa", "kicker": "O original", "tone": "ice" } },
+        "c2": { "type": "collection", "settings": { "collection": "suplementos-vivaage-freshfemme", "title": "Suplementos VivaAge", "kicker": "Lançamento", "tone": "lilac" } },
+        "c3": { "type": "collection", "settings": { "collection": "dermocosmeticos", "title": "Dermocosméticos", "kicker": "Sérum", "tone": "brand" } },
+        "c4": { "type": "collection", "settings": { "collection": "sabonetes-naturais-veganos", "title": "Sabonetes naturais", "kicker": "Veganos", "tone": "sand" } },
+        "c5": { "type": "collection", "settings": { "collection": "kits-presentes", "title": "Kits presentes", "kicker": "Para presentear", "image": "shopify://shop_images/kitpresente40.png", "tone": "rose" } }
+      },
+      "block_order": ["c1", "c2", "c3", "c4", "c5"],
+      "settings": { "eyebrow": "Categorias", "heading": "Cuidado para <em>cada fase</em>", "text": "" }
+    },
+    "video": {
+      "type": "video-feature",
+      "blocks": {
+        "v1": { "type": "stat", "settings": { "number": "2", "suffix": "x", "label": "premiado a nível nacional" } },
+        "v2": { "type": "stat", "settings": { "number": "97", "suffix": "%", "label": "de aprovação nos testes" } }
+      },
+      "block_order": ["v1", "v2"],
+      "settings": {
+        "eyebrow": "A prova real",
+        "heading": "O spray da menopausa que <em>encantou os Sharks</em>",
+        "text": "<p>Na câmera térmica dá para ver a temperatura da pele caindo na hora. Não é promessa: é ciência a serviço do conforto feminino. Premiado no Brasil e apresentado no Shark Tank Brasil.</p>",
+        "youtube_id": "57_30YCA27Y",
+        "poster": "shopify://shop_images/capaVideo.png",
+        "video_label": "Shark Tank Brasil · Temporada 10",
+        "badge_mark": "TV",
+        "badge": "Exibido no Sony Channel"
+      }
+    },
+    "results": {
+      "type": "results",
+      "blocks": {
+        "r1": { "type": "image", "settings": { "image": "shopify://shop_images/WhatsApp_Image_2026-01-09_at_4.19.48_PM.jpg", "days": "30 dias", "caption": "de uso do Sérum FreshFemme" } },
+        "r2": { "type": "image", "settings": { "image": "shopify://shop_images/WhatsApp_Image_2026-01-09_at_4.19.47_PM.jpg", "days": "60 dias", "caption": "de uso do Sérum FreshFemme" } }
+      },
+      "block_order": ["r1", "r2"],
+      "settings": {
+        "eyebrow": "Resultados reais",
+        "heading": "A pele <em>responde</em>",
+        "text": "<p>Fotos de clientes do Sérum Concentrado Preenchedor de Rugas & Linhas de Expressão.</p>",
+        "button_label": "Conhecer o Sérum",
+        "button_link": "/products/serum-concentrado-preenchedor-de-rugas-e-linhas-de-expressao-freshfemme",
+        "note": "Resultados podem variar de pessoa para pessoa.",
+        "background": "paper"
+      }
+    },
+    "founder": {
+      "type": "founder",
+      "settings": {
+        "monogram": "MM",
+        "eyebrow": "Quem criou",
+        "quote": "Antes de ser farmacêutica e empreendedora, eu sou <em>mulher.</em>",
+        "text": "<p>Eu também sei o que é sentir no corpo e na pele as transformações que chegam com o tempo. Foi vivendo isso, e ouvindo tantas outras mulheres, que decidi usar meu conhecimento para transformar essa fase em algo mais leve.</p>",
+        "name": "Mariá Martelli Milan",
+        "role": "Farmacêutica Bioquímica · CRF 14 459 · Fundadora",
+        "seal_text": "Feito por mulher para mulheres 40+",
+        "button_label": "Conheça nossa história",
+        "button_link": "/pages/quem-somos"
+      }
+    },
+    "promo": {
+      "type": "promo-banner",
+      "settings": {
+        "product": "kit-vivaage-rejuveneces-vivaage-slim-freshfemme-120-capsulas",
+        "eyebrow": "Promo da semana",
+        "heading": "Longevidade <em>e</em> leveza, juntas.",
+        "text": "<p>VivaAge Rejuveneces para cabelo, pele e unhas + VivaAge Slim para o metabolismo. Dois suplementos pensados para a mulher 40+.</p>",
+        "countdown": "week",
+        "end_date": "2026-12-31T23:59:00-03:00",
+        "button_label": "Aproveitar agora",
+        "tone": "lilac"
+      }
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q1": { "type": "question", "settings": { "question": "Como usar o Spray Refrescante?", "answer": "<p>Aplique um jato contínuo por todo o pescoço, como um colar, principalmente na nuca, no momento do fogacho. Pode ser aplicado no corpo todo, exceto mucosas e rosto.</p>" } },
+        "q2": { "type": "question", "settings": { "question": "Quanto tempo dura um frasco?", "answer": "<p>O frasco de 100 ml rende em média 110 aplicações ao redor de todo o pescoço, cerca de 2 meses de uso.</p>" } },
+        "q3": { "type": "question", "settings": { "question": "Tem contraindicação? Precisa de receita?", "answer": "<p>Não tem contraindicações nem efeitos colaterais conhecidos e não precisa de receita. É dermatologicamente testado.</p>" } },
+        "q4": { "type": "question", "settings": { "question": "O spray é aprovado pela Anvisa?", "answer": "<p>Sim. O Spray Refrescante FreshFemme é aprovado pela Anvisa, natural, vegano e não testado em animais.</p>" } },
+        "q5": { "type": "question", "settings": { "question": "Quem pode usar?", "answer": "<p>Mulheres no climatério e na menopausa que sofrem com ondas de calor e suores noturnos, e também mulheres com fogachos causados por medicamentos.</p>" } },
+        "q6": { "type": "question", "settings": { "question": "Tem frete grátis?", "answer": "<p>Sim, para todo o Brasil em compras acima de R$ 150.</p>" } }
+      },
+      "block_order": ["q1", "q2", "q3", "q4", "q5", "q6"],
+      "settings": {
+        "eyebrow": "Dúvidas",
+        "heading": "Perguntas <em>frequentes</em>",
+        "text": "<p>Não encontrou o que procurava? Fale com a nossa equipe.</p>",
+        "button_label": "Falar com a equipe",
+        "button_link": "/pages/contact",
+        "schema": true
+      }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "eyebrow": "Clube FreshFemme",
+        "heading": "Receba novidades e <em>promoções</em>",
+        "text": "<p>Seja a primeira a saber de lançamentos, kits e ofertas especiais.</p>"
+      }
+    }
+  },
+  "order": ["hero", "trust", "featured", "story", "categories", "video", "results", "founder", "promo", "faq", "newsletter"]
+}

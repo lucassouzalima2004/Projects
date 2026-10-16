@@ -1,0 +1,45 @@
+{
+  "type": "footer",
+  "name": "Rodapé",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "categorias": {
+          "type": "menu",
+          "settings": {
+            "title": "Categorias",
+            "menu": "main-menu"
+          }
+        },
+        "institucional": {
+          "type": "links",
+          "settings": {
+            "title": "Institucional",
+            "links": "Quem Somos | /pages/quem-somos\nRevenda FreshFemme | /pages/revenda-o-freshfemme\nNa Mídia | /pages/na-midia\nDepoimentos em vídeo | /pages/depoimentos-em-video\nInformações Técnicas Profissionais | /pages/informacoes-tecnicas-profissionais"
+          }
+        },
+        "atendimento": {
+          "type": "links",
+          "settings": {
+            "title": "Atendimento",
+            "links": "Fale Conosco | /pages/contact\nDúvidas Frequentes | /pages/duvidas-frequentes\nMeus Pedidos | /account\nModo de usar o Spray | /pages/modo-de-usar-spray-freshfemme\nModo de usar o Sérum | /pages/modo-de-usar-serum-freshfemme\nTrocas e devoluções | /pages/politica-de-cancelamento-devolucao-troca-e-reembolso\nPolítica de Privacidade | /pages/politica-de-privacidade"
+          }
+        }
+      },
+      "block_order": [
+        "categorias",
+        "institucional",
+        "atendimento"
+      ],
+      "settings": {
+        "statement": "Menopausa não é pausa. <em>É potência.</em>",
+        "text": "Cosmética de resultado para mulheres 40+. Criada por uma farmacêutica que sentiu na pele o que é essa fase.",
+        "show_payments": true
+      }
+    }
+  },
+  "order": [
+    "footer"
+  ]
+}

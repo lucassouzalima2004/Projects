@@ -1,0 +1,248 @@
+{
+  "general": {
+    "page": "Página {{ page }}",
+    "home": "Início",
+    "close": "Fechar",
+    "cancel": "Cancelar",
+    "enter": "Entrar",
+    "next": "Próximo",
+    "previous": "Anterior",
+    "pagination": "Paginação",
+    "breadcrumbs": "Você está em",
+    "whatsapp": "Fale com a gente no WhatsApp",
+    "whatsapp_short": "Dúvidas?",
+    "not_found_title": "Ops, essa página esfriou.",
+    "not_found_text": "Não encontramos o que você procurava. Que tal voltar para o início ou ver nossos produtos?",
+    "password_enter": "Sou da equipe, quero entrar",
+    "share": "Compartilhar"
+  },
+  "accessibility": {
+    "skip_to_content": "Pular para o conteúdo"
+  },
+  "sections": {
+    "announcement": {
+      "label": "Avisos"
+    },
+    "header": {
+      "menu": "Menu"
+    },
+    "footer": {
+      "rights": "Todos os direitos reservados.",
+      "payments": "Formas de pagamento"
+    },
+    "hero": {
+      "from": "a partir de",
+      "skin_temp": "Temperatura da pele",
+      "hot": "calor",
+      "cold": "frescor",
+      "mode_hot": "▲ FOGACHO DETECTADO",
+      "mode_spray": "● APLICANDO SPRAY",
+      "mode_cold": "▼ FRESCOR IMEDIATO"
+    },
+    "featured": {
+      "placeholder": "Escolha uma coleção",
+      "view_all": "Ver tudo em {{ title }}"
+    },
+    "categories": {
+      "count": {
+        "one": "1 produto",
+        "other": "{{ count }} produtos"
+      }
+    },
+    "video": {
+      "play": "Assistir ao vídeo"
+    },
+    "results": {
+      "before": "Antes",
+      "after": "Depois",
+      "slider": "Arraste para comparar antes e depois"
+    },
+    "promo": {
+      "ends_in": "A oferta termina em",
+      "days": "dias",
+      "hours": "horas",
+      "minutes": "min",
+      "seconds": "seg",
+      "save": "Economize"
+    },
+    "newsletter": {
+      "email": "Seu melhor e-mail",
+      "submit": "Quero receber",
+      "success": "Pronto! Você vai receber nossas novidades.",
+      "legal": "Sem spam. Você pode sair quando quiser."
+    }
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Adicionar ao carrinho",
+      "added": "Adicionado!",
+      "sold_out": "Esgotado",
+      "unavailable": "Indisponível",
+      "view_details": "Ver detalhes",
+      "media": "Imagem {{ n }}",
+      "free_shipping_missing_html": "Faltam <strong>{{ amount }}</strong> para você ganhar <strong>frete grátis</strong>.",
+      "free_shipping_ok_html": "Este produto já tem <strong>frete grátis</strong> para todo o Brasil."
+    },
+    "price": {
+      "regular": "Preço normal",
+      "sale": "Preço promocional",
+      "from": "A partir de",
+      "installments_html": "ou <strong>{{ n }}x de {{ amount }}</strong>",
+      "interest_free": "sem juros",
+      "pix_html": "<strong>{{ amount }}</strong> no Pix ({{ discount }}% off)"
+    },
+    "card": {
+      "quick_add": "Adicionar",
+      "choose": "Escolher",
+      "badge_3for2": "Leve 3, pague 2",
+      "category_default": "FreshFemme",
+      "category_spray": "Spray menopausa",
+      "category_serum": "Dermocosmético",
+      "category_supplement": "Suplemento",
+      "category_soap": "Sabonete natural",
+      "category_gift": "Kit presente"
+    },
+    "kits": {
+      "single": "1 unidade",
+      "units": "Kit com {{ n }}",
+      "each": "{{ amount }} cada"
+    }
+  },
+  "cart": {
+    "title": "Carrinho",
+    "summary": "Resumo",
+    "empty": "Seu carrinho está vazio",
+    "empty_text": "Que tal começar pelo spray que todo mundo ama?",
+    "continue": "Ver produtos",
+    "remove": "Remover",
+    "quantity": "Quantidade",
+    "increase": "Aumentar quantidade",
+    "decrease": "Diminuir quantidade",
+    "each": "cada",
+    "subtotal": "Subtotal",
+    "taxes_note": "Frete e descontos calculados no checkout.",
+    "note": "Observação para o pedido",
+    "checkout": "Finalizar compra",
+    "secure": "Compra segura",
+    "installments_short": "Até {{ n }}x no cartão",
+    "upsell": "Leve também",
+    "error": "Não foi possível atualizar o carrinho. Tente de novo.",
+    "free_shipping_remaining_html": "Faltam <strong>{{ amount }}</strong> para o <strong>frete grátis</strong>",
+    "free_shipping_done_html": "Oba! Você ganhou <strong>frete grátis</strong>"
+  },
+  "collections": {
+    "count": {
+      "one": "1 produto",
+      "other": "{{ count }} produtos"
+    },
+    "filter": "Filtrar",
+    "sort": "Ordenar por",
+    "clear": "Limpar filtros",
+    "apply": "Ver resultados",
+    "from": "De (R$)",
+    "to": "Até (R$)",
+    "empty": "Nenhum produto encontrado com esses filtros."
+  },
+  "search": {
+    "title": "Buscar",
+    "label": "Buscar produtos",
+    "placeholder": "O que você procura?",
+    "popular": "Mais buscados",
+    "popular_terms": "Spray, Sérum, VivaAge, Sabonete, Kit presente",
+    "view_all": "Ver todos os resultados",
+    "no_results_short": "Nada encontrado. Tente outra palavra.",
+    "no_results": "Nada encontrado para \"{{ terms }}\".",
+    "results_for": {
+      "one": "1 resultado para \"{{ terms }}\"",
+      "other": "{{ count }} resultados para \"{{ terms }}\""
+    },
+    "pages": "Páginas e artigos"
+  },
+  "contact": {
+    "name": "Nome",
+    "email": "E-mail",
+    "phone": "Telefone",
+    "message": "Mensagem",
+    "send": "Enviar mensagem",
+    "success": "Recebemos sua mensagem! Respondemos em breve."
+  },
+  "blogs": {
+    "eyebrow": "Blog",
+    "read": "Ler artigo",
+    "back": "Voltar ao blog"
+  },
+  "customer": {
+    "email": "E-mail",
+    "password": "Senha",
+    "password_confirm": "Confirme a senha",
+    "first_name": "Nome",
+    "last_name": "Sobrenome",
+    "account": {
+      "title": "Minha conta",
+      "hello": "Olá, {{ name }}",
+      "logout": "Sair",
+      "orders": "Meus pedidos",
+      "no_orders": "Você ainda não fez nenhum pedido.",
+      "address": "Endereço principal",
+      "manage_addresses": {
+        "one": "Gerenciar endereço",
+        "other": "Gerenciar endereços ({{ count }})"
+      }
+    },
+    "login": {
+      "title": "Entrar",
+      "submit": "Entrar",
+      "forgot": "Esqueceu a senha?",
+      "register": "Criar conta",
+      "guest": "Continuar como visitante"
+    },
+    "recover": {
+      "title": "Recuperar senha",
+      "text": "Enviaremos um e-mail para você criar uma nova senha.",
+      "submit": "Enviar",
+      "success": "Enviamos um e-mail com o link para criar uma nova senha."
+    },
+    "register": {
+      "title": "Criar conta",
+      "submit": "Criar conta",
+      "login": "Já tenho conta"
+    },
+    "activate": {
+      "title": "Ativar conta",
+      "submit": "Ativar conta"
+    },
+    "reset": {
+      "title": "Nova senha",
+      "submit": "Salvar senha"
+    },
+    "order": {
+      "title": "Pedido {{ name }}",
+      "cancelled": "Cancelado",
+      "total": "Total",
+      "shipping": "Entrega"
+    },
+    "addresses": {
+      "title": "Endereços",
+      "default": "Principal",
+      "delete": "Excluir",
+      "add": "Novo endereço",
+      "address1": "Endereço",
+      "address2": "Complemento",
+      "city": "Cidade",
+      "zip": "CEP",
+      "province": "Estado",
+      "phone": "Telefone",
+      "set_default": "Usar como endereço principal",
+      "save": "Salvar endereço"
+    }
+  },
+  "gift_card": {
+    "title": "Vale-presente {{ shop }}",
+    "heading": "Seu vale-presente",
+    "initial": "Valor inicial: {{ value }}",
+    "expired": "Expirado ou desativado",
+    "shop": "Usar na loja",
+    "print": "Imprimir",
+    "wallet": "Adicionar à Apple Wallet"
+  }
+}

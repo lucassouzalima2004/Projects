@@ -1,0 +1,156 @@
+{%- liquid
+  assign menu = section.settings.menu
+  assign half = menu.links.size | plus: 1 | divided_by: 2 | floor
+  assign overlay = false
+  if section.settings.transparent_home and template.name == 'index'
+    assign overlay = true
+  endif
+-%}
+<div
+  class="header-wrap{% if overlay %} header-wrap--overlay{% endif %}"
+  data-header-wrap
+  data-sticky="{{ section.settings.sticky }}"
+>
+  <header class="header" data-header>
+    <div class="container container--wide header__inner">
+      <div class="header__left">
+        <button
+          type="button"
+          class="icon-button header__menu-toggle"
+          data-drawer-open="MenuDrawer"
+          aria-controls="MenuDrawer"
+          aria-label="{{ 'sections.header.menu' | t }}"
+        >
+          {% render 'icon', name: 'menu' %}
+        </button>
+        {%- if menu != blank -%}
+          <nav class="header__nav header__nav--left" aria-label="{{ 'sections.header.menu' | t }}">
+            {%- for link in menu.links limit: half -%}
+              {% render 'nav-item', link: link %}
+            {%- endfor -%}
+          </nav>
+        {%- endif -%}
+      </div>
+
+      <a href="{{ routes.root_url }}" class="header__logo" aria-label="{{ shop.name }}">
+        {%- if settings.logo != blank -%}
+          {%- assign logo_alt = settings.logo.alt | default: shop.name -%}
+          {{ settings.logo | image_url: width: 520 | image_tag:
+            class: 'header__logo-default',
+            widths: '200, 340, 520',
+            sizes: '(min-width: 750px) 200px, 140px',
+            loading: 'eager',
+            fetchpriority: 'high',
+            alt: logo_alt
+          }}
+          {%- if settings.logo_inverse != blank -%}
+            {{ settings.logo_inverse | image_url: width: 520 | image_tag:
+              class: 'header__logo-inverse',
+              widths: '200, 340, 520',
+              sizes: '(min-width: 750px) 200px, 140px',
+              loading: 'eager',
+              alt: ''
+            }}
+          {%- endif -%}
+        {%- else -%}
+          <span class="header__logo-text">{{ shop.name }}</span>
+        {%- endif -%}
+      </a>
+
+      <div class="header__right">
+        {%- if menu != blank and menu.links.size > half -%}
+          <nav class="header__nav header__nav--right" aria-label="{{ 'sections.header.menu' | t }}">
+            {%- for link in menu.links offset: half -%}
+              {% render 'nav-item', link: link %}
+            {%- endfor -%}
+          </nav>
+        {%- endif -%}
+        <a href="{{ routes.search_url }}" class="icon-button" data-search-open aria-label="{{ 'search.title' | t }}">
+          {% render 'icon', name: 'search' %}
+        </a>
+        {%- if shop.customer_accounts_enabled -%}
+          <a href="{{ routes.account_url }}" class="icon-button header__account" aria-label="{{ 'customer.account.title' | t }}">
+            {% render 'icon', name: 'account' %}
+          </a>
+        {%- endif -%}
+        <a href="{{ routes.cart_url }}" class="icon-button header__cart" data-cart-toggle aria-label="{{ 'cart.title' | t }}">
+          {% render 'icon', name: 'cart' %}
+          <span class="cart-count" data-cart-count data-count="{{ cart.item_count }}">{% if cart.item_count > 0 %}{{ cart.item_count }}{% endif %}</span>
+        </a>
+      </div>
+    </div>
+  </header>
+</div>
+
+<div class="drawer drawer--left" id="MenuDrawer" aria-hidden="true">
+  <div class="drawer__overlay" data-drawer-close></div>
+  <div class="drawer__panel" role="dialog" aria-modal="true" aria-label="{{ 'sections.header.menu' | t }}">
+    <div class="drawer__head">
+      <span class="drawer__title">{{ 'sections.header.menu' | t }}</span>
+      <button type="button" class="icon-button" data-drawer-close aria-label="{{ 'general.close' | t }}">
+        {% render 'icon', name: 'close' %}
+      </button>
+    </div>
+    <div class="drawer__body">
+      {%- if menu != blank -%}
+        <nav class="mobile-nav">
+          {%- for link in menu.links -%}
+            <a href="{{ link.url }}" class="mobile-nav__link" style="--i: {{ forloop.index0 }}">
+              {{- link.title -}}
+              {% render 'icon', name: 'arrow-up-right' %}
+            </a>
+            {%- if link.links.size > 0 -%}
+              <div class="mobile-nav__sub">
+                {%- for child in link.links -%}
+                  <a href="{{ child.url }}">{{ child.title }}</a>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </nav>
+      {%- endif -%}
+    </div>
+    <div class="mobile-nav__footer">
+      {%- if shop.customer_accounts_enabled -%}
+        <a href="{{ routes.account_url }}" class="btn btn--outline btn--block">
+          {% render 'icon', name: 'account' %}
+          {{ 'customer.account.title' | t }}
+        </a>
+      {%- endif -%}
+      <div class="footer__social" style="justify-content: center">
+        {%- render 'social-links' -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Cabeçalho",
+  "class": "section-header",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "transparent_home",
+      "label": "Transparente sobre a capa da página inicial",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "sticky",
+      "label": "Ao rolar a página",
+      "options": [
+        { "value": "always", "label": "Sempre visível" },
+        { "value": "hide", "label": "Esconder ao descer, mostrar ao subir" }
+      ],
+      "default": "hide"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,110 @@
+{%- liquid
+  assign style = section.settings.style
+-%}
+<section class="trust trust--{{ style }} trust--{{ section.settings.layout }}">
+  {%- if section.settings.layout == 'marquee' -%}
+    <div class="marquee" style="--marquee-speed: {{ section.settings.speed }}s">
+      <div class="marquee__track">
+        {%- for copy in (1..2) -%}
+          <ul class="marquee__group trust__group" role="list"{% if copy == 2 %} aria-hidden="true"{% endif %}>
+            {%- for repeat in (1..2) -%}
+              {%- for block in section.blocks -%}
+                <li class="trust__item" {% if copy == 1 and repeat == 1 %}{{ block.shopify_attributes }}{% endif %}>
+                  <span class="trust__icon">{% render 'icon', name: block.settings.icon %}</span>
+                  <span>{{ block.settings.text }}</span>
+                </li>
+              {%- endfor -%}
+            {%- endfor -%}
+          </ul>
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- else -%}
+    <div class="container">
+      <ul class="trust__grid" role="list">
+        {%- for block in section.blocks -%}
+          <li class="trust__cell" data-reveal style="--i: {{ forloop.index0 }}" {{ block.shopify_attributes }}>
+            <span class="trust__icon trust__icon--lg">{% render 'icon', name: block.settings.icon %}</span>
+            <span class="trust__cell-title">{{ block.settings.text }}</span>
+            {%- if block.settings.subtext != blank -%}
+              <span class="trust__cell-text">{{ block.settings.subtext }}</span>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Faixa de selos",
+  "class": "section-trust",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Formato",
+      "options": [
+        { "value": "marquee", "label": "Letreiro em movimento" },
+        { "value": "grid", "label": "Grade fixa" }
+      ],
+      "default": "marquee"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Cor",
+      "options": [
+        { "value": "mint", "label": "Menta" },
+        { "value": "ink", "label": "Escuro" },
+        { "value": "paper", "label": "Claro" }
+      ],
+      "default": "mint"
+    },
+    { "type": "range", "id": "speed", "label": "Velocidade (segundos por volta)", "min": 20, "max": 90, "step": 2, "default": 40 }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Selo",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Ícone",
+          "options": [
+            { "value": "shield", "label": "Escudo" },
+            { "value": "award", "label": "Prêmio" },
+            { "value": "leaf", "label": "Folha" },
+            { "value": "paw", "label": "Patinha" },
+            { "value": "heart", "label": "Coração" },
+            { "value": "snow", "label": "Floco de neve" },
+            { "value": "flask", "label": "Frasco" },
+            { "value": "truck", "label": "Caminhão" },
+            { "value": "star", "label": "Estrela" },
+            { "value": "drop", "label": "Gota" },
+            { "value": "gift", "label": "Presente" },
+            { "value": "card", "label": "Cartão" }
+          ],
+          "default": "shield"
+        },
+        { "type": "text", "id": "text", "label": "Texto", "default": "Aprovado pela Anvisa" },
+        { "type": "text", "id": "subtext", "label": "Texto de apoio (só na grade)" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Faixa de selos",
+      "blocks": [
+        { "type": "item", "settings": { "icon": "shield", "text": "Aprovado pela Anvisa" } },
+        { "type": "item", "settings": { "icon": "award", "text": "Premiado 2x a nível nacional" } },
+        { "type": "item", "settings": { "icon": "leaf", "text": "Natural e vegano" } },
+        { "type": "item", "settings": { "icon": "paw", "text": "Não testado em animais" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

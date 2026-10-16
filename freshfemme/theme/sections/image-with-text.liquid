@@ -1,0 +1,47 @@
+<section class="section media-text{% if section.settings.reverse %} media-text--reverse{% endif %}{% if section.settings.background == 'mint' %} section--mint{% elsif section.settings.background == 'paper2' %} section--paper2{% endif %}">
+  <div class="container media-text__grid">
+    <div class="media-text__media" data-reveal="clip">
+      {%- if section.settings.image != blank -%}
+        {{ section.settings.image | image_url: width: 1400 | image_tag: loading: 'lazy', widths: '500, 800, 1100, 1400', sizes: '(min-width: 990px) 50vw, 100vw', alt: section.settings.image.alt }}
+      {%- else -%}
+        {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
+      {%- endif -%}
+    </div>
+    <div class="media-text__copy">
+      {%- if section.settings.eyebrow != blank -%}<p class="eyebrow" data-reveal>{{ section.settings.eyebrow }}</p>{%- endif -%}
+      {%- if section.settings.heading != blank -%}<h2 class="h2" data-reveal="words">{{ section.settings.heading }}</h2>{%- endif -%}
+      {%- if section.settings.text != blank -%}<div class="rte" data-reveal>{{ section.settings.text }}</div>{%- endif -%}
+      {%- if section.settings.button_label != blank -%}
+        <a href="{{ section.settings.button_link | default: '#' }}" class="btn" data-reveal>{{ section.settings.button_label }} {% render 'icon', name: 'arrow' %}</a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Imagem com texto",
+  "class": "section-media-text",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Imagem" },
+    { "type": "checkbox", "id": "reverse", "label": "Imagem à direita", "default": false },
+    { "type": "text", "id": "eyebrow", "label": "Chamada" },
+    { "type": "inline_richtext", "id": "heading", "label": "Título", "default": "Imagem com <em>texto</em>" },
+    { "type": "richtext", "id": "text", "label": "Texto", "default": "<p>Combine uma foto com um texto para contar uma história.</p>" },
+    { "type": "text", "id": "button_label", "label": "Texto do botão" },
+    { "type": "url", "id": "button_link", "label": "Link do botão" },
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Fundo",
+      "options": [
+        { "value": "paper", "label": "Claro" },
+        { "value": "paper2", "label": "Creme" },
+        { "value": "mint", "label": "Menta" }
+      ],
+      "default": "paper"
+    }
+  ],
+  "presets": [{ "name": "Imagem com texto" }]
+}
+{% endschema %}

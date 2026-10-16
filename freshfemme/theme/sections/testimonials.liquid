@@ -1,0 +1,83 @@
+{%- comment -%}
+  Depoimentos em duas fileiras que correm em sentidos opostos.
+  Use apenas depoimentos reais de clientes.
+{%- endcomment -%}
+<section class="section quotes{% if section.settings.background == 'mint' %} section--mint{% endif %}">
+  <div class="container">
+    {% render 'section-heading', eyebrow: section.settings.eyebrow, title: section.settings.heading, text: section.settings.text %}
+  </div>
+  {%- if section.blocks.size > 0 -%}
+    {%- for row in (1..2) -%}
+      <div class="marquee quotes__row{% if row == 2 %} marquee--reverse{% endif %}" style="--marquee-speed: {{ section.settings.speed }}s">
+        <div class="marquee__track">
+          {%- for copy in (1..2) -%}
+            <div class="marquee__group"{% if copy == 2 %} aria-hidden="true"{% endif %}>
+              {%- for block in section.blocks -%}
+                {%- liquid
+                  assign odd = forloop.index | modulo: 2
+                  assign show = false
+                  if section.blocks.size < 4
+                    assign show = true
+                  elsif row == 1 and odd == 1
+                    assign show = true
+                  elsif row == 2 and odd == 0
+                    assign show = true
+                  endif
+                -%}
+                {%- if show -%}
+                  <figure class="quote-card" {% if copy == 1 %}{{ block.shopify_attributes }}{% endif %}>
+                    <span class="quote-card__stars" aria-label="{{ block.settings.rating }}/5">
+                      {%- for i in (1..block.settings.rating) -%}{% render 'icon', name: 'star' %}{%- endfor -%}
+                    </span>
+                    <blockquote class="quote-card__text">{{ block.settings.quote }}</blockquote>
+                    <figcaption>
+                      <span class="quote-card__name">{{ block.settings.name }}</span>
+                      {%- if block.settings.detail != blank -%}<span class="quote-card__meta"> · {{ block.settings.detail }}</span>{%- endif -%}
+                    </figcaption>
+                  </figure>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endfor -%}
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Depoimentos",
+  "class": "section-quotes",
+  "max_blocks": 16,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Chamada", "default": "Quem usa, conta" },
+    { "type": "inline_richtext", "id": "heading", "label": "Título", "default": "Elas <em>sentiram</em> a diferença" },
+    { "type": "richtext", "id": "text", "label": "Texto" },
+    { "type": "range", "id": "speed", "label": "Velocidade (segundos por volta)", "min": 30, "max": 120, "step": 5, "default": 60 },
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Fundo",
+      "options": [
+        { "value": "paper", "label": "Claro" },
+        { "value": "mint", "label": "Menta" }
+      ],
+      "default": "paper"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "quote",
+      "name": "Depoimento",
+      "settings": [
+        { "type": "textarea", "id": "quote", "label": "Depoimento" },
+        { "type": "text", "id": "name", "label": "Nome" },
+        { "type": "text", "id": "detail", "label": "Detalhe", "info": "Ex.: cidade ou produto comprado" },
+        { "type": "range", "id": "rating", "label": "Estrelas", "min": 1, "max": 5, "step": 1, "default": 5 }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Depoimentos" }]
+}
+{% endschema %}

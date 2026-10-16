@@ -1,0 +1,37 @@
+{%- liquid
+  assign display_italic = settings.font_display | font_modify: 'style', 'italic'
+  assign body_medium = settings.font_body | font_modify: 'weight', '500'
+  assign body_semibold = settings.font_body | font_modify: 'weight', '600'
+  assign body_bold = settings.font_body | font_modify: 'weight', '700'
+  assign scale = settings.heading_scale | divided_by: 100.0
+-%}
+<style>
+  {{ settings.font_display | font_face: font_display: 'swap' }}
+  {%- if display_italic %}{{ display_italic | font_face: font_display: 'swap' }}{% endif -%}
+  {{ settings.font_body | font_face: font_display: 'swap' }}
+  {%- if body_medium %}{{ body_medium | font_face: font_display: 'swap' }}{% endif -%}
+  {%- if body_semibold %}{{ body_semibold | font_face: font_display: 'swap' }}{% endif -%}
+  {%- if body_bold %}{{ body_bold | font_face: font_display: 'swap' }}{% endif -%}
+
+  :root {
+    --font-display: {{ settings.font_display.family }}, {{ settings.font_display.fallback_families }};
+    --font-display-weight: {{ settings.font_display.weight }};
+    --font-body: {{ settings.font_body.family }}, {{ settings.font_body.fallback_families }};
+    --font-body-weight: {{ settings.font_body.weight }};
+    --heading-scale: {{ scale }};
+
+    --c-brand: {{ settings.color_brand }};
+    --c-brand-rgb: {{ settings.color_brand | color_extract: 'red' }} {{ settings.color_brand | color_extract: 'green' }} {{ settings.color_brand | color_extract: 'blue' }};
+    --c-brand-deep: {{ settings.color_brand_deep }};
+    --c-ink: {{ settings.color_ink }};
+    --c-ink-rgb: {{ settings.color_ink | color_extract: 'red' }} {{ settings.color_ink | color_extract: 'green' }} {{ settings.color_ink | color_extract: 'blue' }};
+    --c-paper: {{ settings.color_paper }};
+    --c-mint: {{ settings.color_mint }};
+    --c-night: {{ settings.color_night }};
+    --c-heat: {{ settings.color_heat }};
+    --c-ice: {{ settings.color_ice }};
+    --c-sale: {{ settings.color_sale }};
+    --logo-width: {{ settings.logo_width }}px;
+    --card-ratio: {{ settings.card_image_ratio }};
+  }
+</style>

@@ -1,0 +1,72 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "benefits": { "type": "benefits", "settings": { "items": "Alívio imediato das ondas de calor e suores noturnos\nNatural, vegano e aprovado pela Anvisa\nSem contraindicações e sem receita\nRende cerca de 110 aplicações (2 meses)" } },
+        "kits": {
+          "type": "kit_picker",
+          "settings": {
+            "heading": "Escolha seu kit e economize",
+            "kits": ["kit2-spray-refrescante-para-calores-menopausa-freshfemme", "kit-3-spray-refrescante-para-calores-menopausa-freshfemme", "kit-5-spray-refrescante-para-calores-menopausa-freshfemme"],
+            "include_current": true,
+            "highlight": 3,
+            "highlight_label": "Leve 3, pague 2"
+          }
+        },
+        "buy": { "type": "buy_buttons", "settings": { "show_quantity": true, "show_dynamic_checkout": true } },
+        "shipping": { "type": "shipping", "settings": {} },
+        "trust": { "type": "trust", "settings": { "item_1": "Compra 100% segura", "item_2": "Aprovado pela Anvisa", "item_3": "Vegano e cruelty-free" } },
+        "description": { "type": "description", "settings": { "title": "Descrição completa", "open": false } },
+        "howto": { "type": "collapsible", "settings": { "title": "Modo de usar", "content": "<p>Aplique um jato contínuo por todo o pescoço, como um colar, principalmente na nuca, no momento do fogacho. Pode ser aplicado no corpo todo, exceto mucosas e rosto.</p>" } },
+        "specs": { "type": "collapsible", "settings": { "title": "Especificações", "content": "<ul><li>Volume: 100 ml</li><li>Forma: aerossol jato seco</li><li>Rendimento médio: 110 borrifadas ao redor do pescoço ou 2 meses de uso</li><li>Dermatologicamente testado</li></ul>" } }
+      },
+      "block_order": ["benefits", "kits", "buy", "shipping", "trust", "description", "howto", "specs"],
+      "settings": {}
+    },
+    "story": {
+      "type": "spray-story",
+      "blocks": {
+        "s1": { "type": "step", "settings": { "title": "Sentiu o calor subir?", "text": "<p>O fogacho chega sem aviso: no trabalho, à noite, no meio de uma conversa.</p>" } },
+        "s2": { "type": "step", "settings": { "title": "Borrife como um colar", "text": "<p>Um jato contínuo por todo o pescoço, principalmente na nuca.</p>" } },
+        "s3": { "type": "step", "settings": { "title": "Frescor na hora", "text": "<p>Agentes de refrescância e óleos essenciais trazem alívio imediato.</p>" } },
+        "n1": { "type": "stat", "settings": { "number": "110", "suffix": "", "label": "aplicações por frasco" } },
+        "n2": { "type": "stat", "settings": { "number": "97", "suffix": "%", "label": "de aprovação nos testes" } }
+      },
+      "block_order": ["s1", "s2", "s3", "n1", "n2"],
+      "settings": { "eyebrow": "Como funciona", "heading": "Do calor ao <em>frescor</em> em um borrifo.", "ring_text": "Frescor imediato · Alívio dos fogachos", "tag_hot": "Fogacho", "tag_cold": "Alívio na hora" }
+    },
+    "video": {
+      "type": "video-feature",
+      "blocks": {
+        "v1": { "type": "stat", "settings": { "number": "2", "suffix": "x", "label": "premiado a nível nacional" } }
+      },
+      "block_order": ["v1"],
+      "settings": {
+        "eyebrow": "A prova real",
+        "heading": "O spray que <em>encantou os Sharks</em>",
+        "text": "<p>Premiado duas vezes a nível nacional e apresentado no Shark Tank Brasil.</p>",
+        "youtube_id": "57_30YCA27Y",
+        "poster": "shopify://shop_images/capaVideo.png",
+        "video_label": "Shark Tank Brasil · Temporada 10",
+        "badge_mark": "TV",
+        "badge": "Exibido no Sony Channel"
+      }
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q1": { "type": "question", "settings": { "question": "Quanto tempo dura um frasco?", "answer": "<p>Cerca de 110 aplicações ao redor do pescoço, em média 2 meses de uso.</p>" } },
+        "q2": { "type": "question", "settings": { "question": "Tem contraindicação?", "answer": "<p>Não tem contraindicações nem efeitos colaterais conhecidos e não precisa de receita.</p>" } },
+        "q3": { "type": "question", "settings": { "question": "Posso usar no corpo todo?", "answer": "<p>Sim, exceto em mucosas e no rosto.</p>" } }
+      },
+      "block_order": ["q1", "q2", "q3"],
+      "settings": { "eyebrow": "Dúvidas", "heading": "Perguntas <em>frequentes</em>", "text": "", "button_label": "Falar com a equipe", "button_link": "/pages/contact", "schema": true }
+    },
+    "related": {
+      "type": "related-products",
+      "settings": { "eyebrow": "Combina com você", "heading": "Você também vai <em>amar</em>", "limit": 4, "background": "paper" }
+    }
+  },
+  "order": ["main", "story", "video", "faq", "related"]
+}

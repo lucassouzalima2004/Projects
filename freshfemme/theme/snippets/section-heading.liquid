@@ -1,0 +1,17 @@
+{%- comment -%}
+  Cabeçalho padrão das seções: chamada, título (aceita itálico) e texto.
+  Uso: {% render 'section-heading', eyebrow: section.settings.eyebrow, title: section.settings.title, text: section.settings.text, align: 'center' %}
+{%- endcomment -%}
+{%- if eyebrow != blank or title != blank or text != blank -%}
+  <div class="heading heading--{{ align | default: 'center' }}{% if tone %} heading--{{ tone }}{% endif %}">
+    {%- if eyebrow != blank -%}
+      <p class="eyebrow" data-reveal>{{ eyebrow }}</p>
+    {%- endif -%}
+    {%- if title != blank -%}
+      <h2 class="h2 heading__title" data-reveal="words">{{ title }}</h2>
+    {%- endif -%}
+    {%- if text != blank -%}
+      <div class="heading__text rte" data-reveal style="--i: 2">{{ text }}</div>
+    {%- endif -%}
+  </div>
+{%- endif -%}

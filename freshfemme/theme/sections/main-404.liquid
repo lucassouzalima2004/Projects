@@ -1,0 +1,20 @@
+{{ 'template-pages.css' | asset_url | stylesheet_tag }}
+<section class="section not-found">
+  <div class="container not-found__inner">
+    <p class="not-found__code" aria-hidden="true">404</p>
+    <h1 class="h2" data-reveal="words">{{ 'general.not_found_title' | t }}</h1>
+    <p class="lead" data-reveal>{{ 'general.not_found_text' | t }}</p>
+    <div class="not-found__actions" data-reveal>
+      <a href="{{ routes.root_url }}" class="btn">{{ 'general.home' | t }} {% render 'icon', name: 'arrow' %}</a>
+      <a href="{{ routes.all_products_collection_url }}" class="btn btn--outline">{{ 'cart.continue' | t }}</a>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Página não encontrada",
+  "class": "section-main-404",
+  "settings": []
+}
+{% endschema %}

@@ -1,0 +1,139 @@
+{%- liquid
+  assign product = section.settings.product | default: product
+  assign image = section.settings.image
+  if image == blank and product != blank
+    assign image = product.featured_image
+  endif
+  assign steps = section.blocks | where: 'type', 'step'
+  assign stats = section.blocks | where: 'type', 'stat'
+-%}
+<section class="story section" data-story data-progress>
+  <div class="container story__grid">
+    <div class="story__visual">
+      <div class="story__sticky">
+        <div class="story__thermo" aria-hidden="true">
+          <span class="story__thermo-label story__thermo-label--hot">{% render 'icon', name: 'flame' %}</span>
+          <span class="story__thermo-tube"><i></i></span>
+          <span class="story__thermo-label story__thermo-label--cold">{% render 'icon', name: 'snow' %}</span>
+        </div>
+
+        <div class="story__stage" data-tilt="7">
+          <span class="story__halo" aria-hidden="true"></span>
+          <svg class="story__ring" viewBox="0 0 200 200" aria-hidden="true">
+            <defs><path id="StoryRing-{{ section.id }}" d="M100,100 m-88,0 a88,88 0 1,1 176,0 a88,88 0 1,1 -176,0"/></defs>
+            <text><textPath href="#StoryRing-{{ section.id }}">{{ section.settings.ring_text | upcase }} ✦ {{ section.settings.ring_text | upcase }} ✦</textPath></text>
+          </svg>
+          <div class="story__photo">
+            {%- if image != blank -%}
+              {%- assign image_alt = image.alt | default: product.title -%}
+              {{ image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '400, 600, 800, 1000, 1200', sizes: '(min-width: 990px) 42vw, 86vw', alt: image_alt }}
+            {%- else -%}
+              {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+            {%- endif -%}
+          </div>
+          <span class="story__mist" aria-hidden="true">
+            {%- for i in (1..14) -%}<i style="--k: {{ i }}"></i>{%- endfor -%}
+          </span>
+          <span class="story__tag story__tag--hot" aria-hidden="true">{% render 'icon', name: 'flame' %} {{ section.settings.tag_hot }}</span>
+          <span class="story__tag story__tag--cold" aria-hidden="true">{% render 'icon', name: 'snow' %} {{ section.settings.tag_cold }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="story__content">
+      {% render 'section-heading', eyebrow: section.settings.eyebrow, title: section.settings.heading, text: section.settings.text, align: 'left' %}
+
+      <ol class="story__steps" role="list">
+        {%- for block in steps -%}
+          <li class="story__step{% if forloop.first %} is-active{% endif %}" data-story-step="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+            <span class="story__step-num">{{ forloop.index | prepend: '0' }}</span>
+            <div class="story__step-body">
+              <h3 class="h3 story__step-title">{{ block.settings.title }}</h3>
+              <div class="story__step-text rte">{{ block.settings.text }}</div>
+            </div>
+          </li>
+        {%- endfor -%}
+      </ol>
+
+      {%- if stats.size > 0 -%}
+        <dl class="story__stats">
+          {%- for block in stats -%}
+            <div class="story__stat" data-reveal style="--i: {{ forloop.index0 }}" {{ block.shopify_attributes }}>
+              <dt class="story__stat-num"><span data-count-to="{{ block.settings.number }}">{{ block.settings.number | replace: '.', ',' }}</span>{{ block.settings.suffix }}</dt>
+              <dd class="story__stat-label">{{ block.settings.label }}</dd>
+            </div>
+          {%- endfor -%}
+        </dl>
+      {%- endif -%}
+
+      {%- if product != blank -%}
+        <div class="story__buy" data-reveal>
+          <div class="story__buy-info">
+            <p class="story__buy-title">{{ product.title | split: ' | ' | first }}</p>
+            {% render 'price', product: product, show_badge: true %}
+          </div>
+          <form method="post" action="{{ routes.cart_add_url }}" class="story__buy-form" data-product-form>
+            <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+            <button type="submit" class="btn btn--brand btn--lg" {% unless product.available %}disabled{% endunless %} data-add-button>
+              {%- if product.available -%}
+                {{ 'products.product.add_to_cart' | t }} {% render 'icon', name: 'plus' %}
+              {%- else -%}
+                {{ 'products.product.sold_out' | t }}
+              {%- endif -%}
+            </button>
+            <a href="{{ product.url }}" class="link-arrow">{{ 'products.product.view_details' | t }} {% render 'icon', name: 'arrow' %}</a>
+          </form>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "História do spray",
+  "class": "section-story",
+  "max_blocks": 8,
+  "settings": [
+    { "type": "product", "id": "product", "label": "Produto" },
+    { "type": "image_picker", "id": "image", "label": "Imagem", "info": "Se vazio, usa a foto principal do produto." },
+    { "type": "text", "id": "eyebrow", "label": "Chamada", "default": "Como funciona" },
+    { "type": "inline_richtext", "id": "heading", "label": "Título", "default": "Do calor ao <em>frescor</em> em um borrifo." },
+    { "type": "richtext", "id": "text", "label": "Texto" },
+    { "type": "text", "id": "ring_text", "label": "Texto que gira em volta", "default": "Frescor imediato · Alívio dos fogachos" },
+    { "type": "text", "id": "tag_hot", "label": "Etiqueta quente", "default": "Fogacho" },
+    { "type": "text", "id": "tag_cold", "label": "Etiqueta fria", "default": "Alívio na hora" }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Passo",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Título", "default": "Sentiu o calor subir?" },
+        { "type": "richtext", "id": "text", "label": "Texto", "default": "<p>O fogacho chega sem aviso: no trabalho, à noite, no meio de uma conversa.</p>" }
+      ]
+    },
+    {
+      "type": "stat",
+      "name": "Número",
+      "settings": [
+        { "type": "text", "id": "number", "label": "Número", "default": "110" },
+        { "type": "text", "id": "suffix", "label": "Sufixo", "default": "" },
+        { "type": "text", "id": "label", "label": "Legenda", "default": "aplicações por frasco" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "História do spray",
+      "blocks": [
+        { "type": "step" },
+        { "type": "step", "settings": { "title": "Borrife como um colar", "text": "<p>Jato contínuo por todo o pescoço, principalmente na nuca.</p>" } },
+        { "type": "step", "settings": { "title": "Frescor na hora", "text": "<p>Agentes de refrescância e óleos essenciais trazem alívio imediato.</p>" } },
+        { "type": "stat", "settings": { "number": "110", "label": "aplicações por frasco" } },
+        { "type": "stat", "settings": { "number": "97", "suffix": "%", "label": "de aprovação nos testes" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

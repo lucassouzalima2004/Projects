@@ -1,0 +1,80 @@
+<section class="section section--night video-feature" id="prova-real">
+  <div class="video-feature__glow" aria-hidden="true"></div>
+  <div class="container video-feature__grid">
+    <div class="video-feature__copy">
+      {% render 'section-heading', eyebrow: section.settings.eyebrow, title: section.settings.heading, text: section.settings.text, align: 'left' %}
+
+      {%- assign stats = section.blocks | where: 'type', 'stat' -%}
+      {%- if stats.size > 0 -%}
+        <dl class="video-feature__stats">
+          {%- for block in stats -%}
+            <div class="video-feature__stat" data-reveal style="--i: {{ forloop.index0 }}" {{ block.shopify_attributes }}>
+              <dt><span data-count-to="{{ block.settings.number }}">{{ block.settings.number }}</span>{{ block.settings.suffix }}</dt>
+              <dd>{{ block.settings.label }}</dd>
+            </div>
+          {%- endfor -%}
+        </dl>
+      {%- endif -%}
+
+      {%- if section.settings.badge != blank -%}
+        <p class="video-feature__badge" data-reveal>
+          <span class="video-feature__badge-mark">{{ section.settings.badge_mark }}</span>
+          <span>{{ section.settings.badge }}</span>
+        </p>
+      {%- endif -%}
+    </div>
+
+    <div class="video-feature__media" data-reveal="clip">
+      <div class="video-frame" data-video="{{ section.settings.youtube_id }}">
+        {%- if section.settings.poster != blank -%}
+          {%- assign poster_alt = section.settings.heading | strip_html -%}
+          {{ section.settings.poster | image_url: width: 1600 | image_tag: class: 'video-frame__poster', loading: 'lazy', widths: '600, 900, 1200, 1600', sizes: '(min-width: 990px) 55vw, 100vw', alt: poster_alt }}
+        {%- else -%}
+          {{ 'lifestyle-1' | placeholder_svg_tag: 'video-frame__poster placeholder-svg' }}
+        {%- endif -%}
+        {%- if section.settings.youtube_id != blank -%}
+          <button type="button" class="video-frame__play" data-video-play aria-label="{{ 'sections.video.play' | t }}">
+            <span class="video-frame__play-ring"></span>
+            {% render 'icon', name: 'play' %}
+          </button>
+        {%- endif -%}
+        <span class="video-frame__label">{{ section.settings.video_label }}</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Vídeo em destaque",
+  "class": "section-video",
+  "max_blocks": 4,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Chamada", "default": "Na TV" },
+    { "type": "inline_richtext", "id": "heading", "label": "Título", "default": "O spray da menopausa que <em>encantou os Sharks</em>" },
+    { "type": "richtext", "id": "text", "label": "Texto", "default": "<p>Premiado duas vezes a nível nacional e apresentado no Shark Tank Brasil. Veja o FreshFemme em ação.</p>" },
+    { "type": "text", "id": "youtube_id", "label": "ID do vídeo no YouTube", "info": "O código depois de watch?v= ou youtu.be/", "default": "57_30YCA27Y" },
+    { "type": "image_picker", "id": "poster", "label": "Capa do vídeo" },
+    { "type": "text", "id": "video_label", "label": "Legenda sobre o vídeo", "default": "Shark Tank Brasil · Temporada 10" },
+    { "type": "text", "id": "badge_mark", "label": "Selo (marca curta)", "default": "TV" },
+    { "type": "text", "id": "badge", "label": "Selo (texto)", "default": "Exibido no Sony Channel" }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Número",
+      "settings": [
+        { "type": "text", "id": "number", "label": "Número", "default": "2" },
+        { "type": "text", "id": "suffix", "label": "Sufixo", "default": "x" },
+        { "type": "text", "id": "label", "label": "Legenda", "default": "premiado a nível nacional" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Vídeo em destaque",
+      "blocks": [{ "type": "stat" }]
+    }
+  ]
+}
+{% endschema %}

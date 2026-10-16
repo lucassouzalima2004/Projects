@@ -1,0 +1,39 @@
+{%- comment -%}
+  Preço com valor riscado, selo de desconto e parcelamento.
+  Uso: {% render 'price', product: product, variant: variant, price_size: 'lg', show_badge: true %}
+{%- endcomment -%}
+{%- liquid
+  assign target = variant | default: product.selected_or_first_available_variant
+  assign price = target.price | default: product.price
+  assign compare = target.compare_at_price
+  assign on_sale = false
+  if compare > price
+    assign on_sale = true
+    assign saving = compare | minus: price | times: 100.0 | divided_by: compare | round
+  endif
+  assign from = false
+  if variant == blank and product.price_varies
+    assign from = true
+  endif
+-%}
+<div class="price price--{{ price_size | default: 'md' }}{% if on_sale %} price--sale{% endif %}" data-price>
+  <div class="price__row">
+    {%- if on_sale -%}
+      <s class="price__compare" data-price-compare>
+        <span class="visually-hidden">{{ 'products.price.regular' | t }}</span>
+        {{- compare | money -}}
+      </s>
+    {%- endif -%}
+    <span class="price__current" data-price-current>
+      {%- if on_sale %}<span class="visually-hidden">{{ 'products.price.sale' | t }}</span>{% endif -%}
+      {%- if from %}{{ 'products.price.from' | t }} {% endif -%}
+      {{- price | money -}}
+    </span>
+    {%- if on_sale and show_badge -%}
+      <span class="price__badge" data-price-badge>-{{ saving }}%</span>
+    {%- endif -%}
+  </div>
+  {%- unless hide_installments -%}
+    <div class="price__extra">{% render 'installments', price: price %}</div>
+  {%- endunless -%}
+</div>

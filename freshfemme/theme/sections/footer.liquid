@@ -1,0 +1,127 @@
+<footer class="footer">
+  <div class="footer__glow" aria-hidden="true"></div>
+
+  {%- if section.settings.statement != blank -%}
+    <div class="footer__statement container">
+      <p class="display" data-reveal="words">{{ section.settings.statement }}</p>
+    </div>
+  {%- endif -%}
+
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        {%- if settings.logo_inverse != blank -%}
+          {{ settings.logo_inverse | image_url: width: 480 | image_tag: loading: 'lazy', widths: '240, 480', sizes: '200px', alt: shop.name }}
+        {%- else -%}
+          <span class="header__logo-text">{{ shop.name }}</span>
+        {%- endif -%}
+        {%- if section.settings.text != blank -%}
+          <p>{{ section.settings.text }}</p>
+        {%- endif -%}
+        <div class="footer__social">{% render 'social-links' %}</div>
+      </div>
+
+      {%- for block in section.blocks -%}
+        <div class="footer__col" {{ block.shopify_attributes }}>
+          {%- if block.settings.title != blank -%}
+            <p class="footer__title">{{ block.settings.title }}</p>
+          {%- endif -%}
+          {%- case block.type -%}
+            {%- when 'menu' -%}
+              {%- if block.settings.menu != blank -%}
+                <ul class="footer__links" role="list">
+                  {%- for link in block.settings.menu.links -%}
+                    <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+            {%- when 'links' -%}
+              {%- assign lines = block.settings.links | newline_to_br | split: '<br />' -%}
+              <ul class="footer__links" role="list">
+                {%- for line in lines -%}
+                  {%- assign parts = line | split: '|' -%}
+                  {%- assign label = parts[0] | strip -%}
+                  {%- assign url = parts[1] | strip -%}
+                  {%- if label != blank -%}
+                    <li><a href="{{ url | default: '#' }}">{{ label }}</a></li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+            {%- when 'text' -%}
+              <div class="footer__links rte">{{ block.settings.text }}</div>
+          {%- endcase -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    <div class="footer__bottom">
+      <div class="footer__legal">
+        <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. {{ 'sections.footer.rights' | t }}</p>
+        {%- if settings.legal_text != blank -%}
+          <p>{{ settings.legal_text }}</p>
+        {%- endif -%}
+      </div>
+      {%- if section.settings.show_payments and shop.enabled_payment_types.size > 0 -%}
+        <ul class="footer__payments" role="list" aria-label="{{ 'sections.footer.payments' | t }}">
+          {%- for type in shop.enabled_payment_types -%}
+            <li>{{ type | payment_type_svg_tag }}</li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Rodapé",
+  "class": "section-footer",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "statement",
+      "label": "Frase de impacto",
+      "default": "Menopausa não é pausa. <em>É potência.</em>"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Texto da marca",
+      "default": "Cosmética de resultado para mulheres 40+. Criada por uma farmacêutica que sentiu na pele o que é essa fase."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payments",
+      "label": "Mostrar formas de pagamento",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "Menu",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Título", "default": "Categorias" },
+        { "type": "link_list", "id": "menu", "label": "Menu", "default": "footer" }
+      ]
+    },
+    {
+      "type": "links",
+      "name": "Lista de links",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Título", "default": "Institucional" },
+        { "type": "textarea", "id": "links", "label": "Links (um por linha: Texto | /endereço)", "default": "Quem Somos | /pages/quem-somos\nFale Conosco | /pages/contact" }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Texto",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Título", "default": "Atendimento" },
+        { "type": "richtext", "id": "text", "label": "Texto", "default": "<p>Segunda a sexta, das 9h às 18h.</p>" }
+      ]
+    }
+  ]
+}
+{% endschema %}

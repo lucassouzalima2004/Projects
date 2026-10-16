@@ -1,0 +1,35 @@
+{{ 'template-pages.css' | asset_url | stylesheet_tag }}
+<section class="page-hero">
+  <div class="container page-hero__inner">
+    <a href="{{ routes.account_url }}" class="eyebrow">{{ 'customer.account.title' | t }}</a>
+    <h1 class="h1">{{ 'customer.order.title' | t: name: order.name }}</h1>
+    <p class="page-hero__text">{{ order.created_at | date: format: 'date' }}{% if order.cancelled %} · {{ 'customer.order.cancelled' | t }}{% endif %}</p>
+  </div>
+</section>
+<section class="section section--flush-top">
+  <div class="container account__grid">
+    <div class="orders">
+      {%- for line_item in order.line_items -%}
+        <div class="order-row">
+          <span class="order-row__name">{{ line_item.title }}</span>
+          <span>{{ line_item.quantity }} × {{ line_item.final_price | money }}</span>
+          <span class="order-row__status">{{ line_item.fulfillment.tracking_company }}</span>
+          <strong>{{ line_item.final_line_price | money }}</strong>
+        </div>
+      {%- endfor -%}
+      <div class="order-totals">
+        <p><span>{{ 'cart.subtotal' | t }}</span><span>{{ order.line_items_subtotal_price | money }}</span></p>
+        {%- for shipping_method in order.shipping_methods -%}<p><span>{{ shipping_method.title }}</span><span>{{ shipping_method.price | money }}</span></p>{%- endfor -%}
+        <p class="order-totals__total"><span>{{ 'customer.order.total' | t }}</span><span>{{ order.total_price | money }}</span></p>
+      </div>
+    </div>
+    <aside class="account__aside">
+      <h2 class="h3">{{ 'customer.order.shipping' | t }}</h2>
+      {%- if order.shipping_address -%}<p>{{ order.shipping_address | format_address }}</p>{%- endif -%}
+      <p class="muted">{{ order.fulfillment_status_label }}</p>
+    </aside>
+  </div>
+</section>
+{% schema %}
+{ "name": "Pedido", "class": "section-main-order", "settings": [] }
+{% endschema %}

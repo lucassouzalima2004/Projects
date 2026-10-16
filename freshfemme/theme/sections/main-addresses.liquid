@@ -1,0 +1,46 @@
+{{ 'template-pages.css' | asset_url | stylesheet_tag }}
+<section class="page-hero">
+  <div class="container page-hero__inner">
+    <a href="{{ routes.account_url }}" class="eyebrow">{{ 'customer.account.title' | t }}</a>
+    <h1 class="h1">{{ 'customer.addresses.title' | t }}</h1>
+  </div>
+</section>
+<section class="section section--flush-top">
+  <div class="container account__grid">
+    <div class="orders">
+      {%- for address in customer.addresses -%}
+        <div class="address-card">
+          {%- if address == customer.default_address -%}<span class="badge badge--brand">{{ 'customer.addresses.default' | t }}</span>{%- endif -%}
+          <p>{{ address | format_address }}</p>
+          {%- form 'customer_address', address -%}
+            <input type="hidden" name="_method" value="delete">
+            <button type="submit" class="cart-item__remove">{{ 'customer.addresses.delete' | t }}</button>
+          {%- endform -%}
+        </div>
+      {%- endfor -%}
+    </div>
+    <aside class="account__aside">
+      <h2 class="h3">{{ 'customer.addresses.add' | t }}</h2>
+      {%- form 'customer_address', customer.new_address, class: 'auth-card__form' -%}
+        <div class="contact__row">
+          <label class="field"><span>{{ 'customer.first_name' | t }}</span><input class="input" name="address[first_name]" autocomplete="given-name"></label>
+          <label class="field"><span>{{ 'customer.last_name' | t }}</span><input class="input" name="address[last_name]" autocomplete="family-name"></label>
+        </div>
+        <label class="field"><span>{{ 'customer.addresses.address1' | t }}</span><input class="input" name="address[address1]" autocomplete="address-line1"></label>
+        <label class="field"><span>{{ 'customer.addresses.address2' | t }}</span><input class="input" name="address[address2]" autocomplete="address-line2"></label>
+        <div class="contact__row">
+          <label class="field"><span>{{ 'customer.addresses.city' | t }}</span><input class="input" name="address[city]" autocomplete="address-level2"></label>
+          <label class="field"><span>{{ 'customer.addresses.zip' | t }}</span><input class="input" name="address[zip]" autocomplete="postal-code"></label>
+        </div>
+        <label class="field"><span>{{ 'customer.addresses.province' | t }}</span><input class="input" name="address[province]" autocomplete="address-level1"></label>
+        <input type="hidden" name="address[country]" value="Brazil">
+        <label class="field"><span>{{ 'customer.addresses.phone' | t }}</span><input class="input" name="address[phone]" autocomplete="tel"></label>
+        <label class="check"><input type="checkbox" name="address[default]" value="1"><span class="check__box">{% render 'icon', name: 'check' %}</span><span class="check__label">{{ 'customer.addresses.set_default' | t }}</span></label>
+        <button type="submit" class="btn btn--brand btn--block">{{ 'customer.addresses.save' | t }}</button>
+      {%- endform -%}
+    </aside>
+  </div>
+</section>
+{% schema %}
+{ "name": "Endereços", "class": "section-main-addresses", "settings": [] }
+{% endschema %}

@@ -1,0 +1,302 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "FreshFemme Thermal",
+    "theme_version": "1.0.0",
+    "theme_author": "Lucas Souza",
+    "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
+    "theme_support_url": "https://help.shopify.com/manual/online-store/themes"
+  },
+  {
+    "name": "Marca",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo (fundo claro)"
+      },
+      {
+        "type": "image_picker",
+        "id": "logo_inverse",
+        "label": "Logo branco (fundo escuro)",
+        "info": "Usado no topo transparente da capa e no rodapé."
+      },
+      {
+        "type": "range",
+        "id": "logo_width",
+        "label": "Largura do logo",
+        "min": 100,
+        "max": 260,
+        "step": 4,
+        "unit": "px",
+        "default": 168
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon",
+        "info": "32 × 32 px"
+      }
+    ]
+  },
+  {
+    "name": "Cores",
+    "settings": [
+      {
+        "type": "color",
+        "id": "color_brand",
+        "label": "Verde-água da marca",
+        "default": "#3FB8B3"
+      },
+      {
+        "type": "color",
+        "id": "color_brand_deep",
+        "label": "Verde-água escuro (textos e botões)",
+        "default": "#0E6F6B"
+      },
+      {
+        "type": "color",
+        "id": "color_ink",
+        "label": "Texto principal",
+        "default": "#0C1D20"
+      },
+      {
+        "type": "color",
+        "id": "color_paper",
+        "label": "Fundo",
+        "default": "#FBF8F3"
+      },
+      {
+        "type": "color",
+        "id": "color_mint",
+        "label": "Menta (fundos suaves)",
+        "default": "#E4F5F1"
+      },
+      {
+        "type": "color",
+        "id": "color_night",
+        "label": "Fundo escuro (capa e vídeo)",
+        "default": "#05070C"
+      },
+      {
+        "type": "color",
+        "id": "color_heat",
+        "label": "Calor (destaques quentes)",
+        "default": "#FF5A2C"
+      },
+      {
+        "type": "color",
+        "id": "color_ice",
+        "label": "Gelo (destaques frios)",
+        "default": "#5FE1F0"
+      },
+      {
+        "type": "color",
+        "id": "color_sale",
+        "label": "Selo de desconto",
+        "default": "#FF5A2C"
+      }
+    ]
+  },
+  {
+    "name": "Tipografia",
+    "settings": [
+      {
+        "type": "font_picker",
+        "id": "font_display",
+        "label": "Títulos",
+        "default": "instrument_serif_n4"
+      },
+      {
+        "type": "font_picker",
+        "id": "font_body",
+        "label": "Textos",
+        "default": "bricolage_grotesque_n4"
+      },
+      {
+        "type": "range",
+        "id": "heading_scale",
+        "label": "Tamanho dos títulos",
+        "min": 80,
+        "max": 130,
+        "step": 5,
+        "unit": "%",
+        "default": 100
+      }
+    ]
+  },
+  {
+    "name": "Vendas",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Frete grátis"
+      },
+      {
+        "type": "number",
+        "id": "free_shipping_threshold",
+        "label": "Frete grátis a partir de (R$)",
+        "info": "Mostra a barra de progresso no carrinho. Deixe 0 para esconder.",
+        "default": 150
+      },
+      {
+        "type": "header",
+        "content": "Parcelamento"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_installments",
+        "label": "Mostrar parcelamento",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "installments",
+        "label": "Número de parcelas",
+        "min": 2,
+        "max": 12,
+        "step": 1,
+        "default": 12
+      },
+      {
+        "type": "text",
+        "id": "installment_interest",
+        "label": "Juros ao mês (%)",
+        "info": "Use 0 para parcelas sem juros. Ex.: 4.27",
+        "default": "4.27"
+      },
+      {
+        "type": "range",
+        "id": "installment_min",
+        "label": "Parcela mínima (R$)",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "default": 5
+      },
+      {
+        "type": "header",
+        "content": "Pix"
+      },
+      {
+        "type": "range",
+        "id": "pix_discount",
+        "label": "Desconto no Pix (%)",
+        "info": "Use 0 para não mostrar. O desconto em si é configurado no checkout/meio de pagamento.",
+        "min": 0,
+        "max": 20,
+        "step": 1,
+        "default": 0
+      }
+    ]
+  },
+  {
+    "name": "Carrinho",
+    "settings": [
+      {
+        "type": "select",
+        "id": "cart_type",
+        "label": "Ao adicionar um produto",
+        "options": [
+          { "value": "drawer", "label": "Abrir carrinho lateral" },
+          { "value": "page", "label": "Ir para a página do carrinho" }
+        ],
+        "default": "drawer"
+      },
+      {
+        "type": "collection",
+        "id": "cart_upsell_collection",
+        "label": "Sugestões no carrinho",
+        "info": "Produtos dessa coleção aparecem como \"Leve também\" no carrinho lateral."
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_show_note",
+        "label": "Permitir observação no pedido",
+        "default": false
+      }
+    ]
+  },
+  {
+    "name": "Cards de produto",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "card_second_image",
+        "label": "Mostrar segunda imagem ao passar o mouse",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "card_quick_add",
+        "label": "Botão de adicionar rápido",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "card_image_ratio",
+        "label": "Proporção da imagem",
+        "options": [
+          { "value": "1", "label": "Quadrada" },
+          { "value": "0.8", "label": "Retrato" }
+        ],
+        "default": "1"
+      }
+    ]
+  },
+  {
+    "name": "Animações",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "animations",
+        "label": "Animar elementos ao rolar a página",
+        "info": "Quem usa \"reduzir movimento\" no celular/computador sempre vê a versão sem animação.",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "page_transitions",
+        "label": "Transição suave entre páginas",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "WhatsApp",
+    "settings": [
+      {
+        "type": "text",
+        "id": "whatsapp_number",
+        "label": "Número com DDI e DDD",
+        "info": "Só números. Ex.: 5511999999999. Vazio esconde o botão."
+      },
+      {
+        "type": "text",
+        "id": "whatsapp_message",
+        "label": "Mensagem inicial",
+        "default": "Olá! Vim pelo site da FreshFemme e queria tirar uma dúvida."
+      }
+    ]
+  },
+  {
+    "name": "Redes sociais",
+    "settings": [
+      { "type": "text", "id": "social_instagram", "label": "Instagram", "default": "https://www.instagram.com/freshfemmeoficial/" },
+      { "type": "text", "id": "social_tiktok", "label": "TikTok", "default": "https://www.tiktok.com/@freshfemme" },
+      { "type": "text", "id": "social_youtube", "label": "YouTube", "default": "https://www.youtube.com/@freshfemme4012" },
+      { "type": "text", "id": "social_facebook", "label": "Facebook", "default": "https://www.facebook.com/freshfemmeoficial/" }
+    ]
+  },
+  {
+    "name": "Empresa",
+    "settings": [
+      {
+        "type": "textarea",
+        "id": "legal_text",
+        "label": "Dados legais no rodapé",
+        "default": "RHAMABOX COMERCIO VAREJISTA DE COSMETICOS LTDA · Resp. Técnico: Mariá Martelli Milan · Farmacêutica Bioquímica · CRF/SP 14 459 · CNPJ: 38.008.601/0001-13"
+      }
+    ]
+  }
+]

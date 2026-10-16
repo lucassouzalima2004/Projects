@@ -1,0 +1,13 @@
+{
+  "name": "freshfemme-preview",
+  "private": true,
+  "type": "module",
+  "description": "Preview local do tema FreshFemme Thermal com os produtos reais da loja",
+  "scripts": {
+    "dev": "node server.mjs",
+    "zip": "node zip.mjs"
+  },
+  "dependencies": {
+    "liquidjs": "^10.21.0"
+  }
+}

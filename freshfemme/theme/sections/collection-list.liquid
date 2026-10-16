@@ -1,0 +1,85 @@
+<section class="section categories">
+  <div class="container">
+    {% render 'section-heading', eyebrow: section.settings.eyebrow, title: section.settings.heading, text: section.settings.text %}
+
+    <ul class="bento" role="list">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign collection = block.settings.collection
+          assign image = block.settings.image
+          if image == blank and collection != blank
+            assign image = collection.image | default: collection.featured_image
+          endif
+          assign title = block.settings.title | default: collection.title
+          assign url = collection.url | default: '#'
+        -%}
+        <li class="bento__item bento__item--{{ forloop.index }} tone--{{ block.settings.tone }}" data-reveal="scale" style="--i: {{ forloop.index0 }}" {{ block.shopify_attributes }}>
+          <a href="{{ url }}" class="bento__link" data-tilt="4">
+            <span class="bento__media">
+              {%- if image != blank -%}
+                {{ image | image_url: width: 1400 | image_tag: loading: 'lazy', widths: '400, 700, 1000, 1400', sizes: '(min-width: 990px) 50vw, 100vw', alt: title }}
+              {%- else -%}
+                {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+              {%- endif -%}
+            </span>
+            <span class="bento__shade" aria-hidden="true"></span>
+            <span class="bento__body">
+              {%- if block.settings.kicker != blank -%}
+                <span class="bento__kicker">{{ block.settings.kicker }}</span>
+              {%- endif -%}
+              <span class="bento__title">{{ title }}</span>
+              {%- if collection != blank -%}
+                <span class="bento__count">{{ 'sections.categories.count' | t: count: collection.products_count }}</span>
+              {%- endif -%}
+            </span>
+            <span class="bento__arrow" aria-hidden="true">{% render 'icon', name: 'arrow-up-right' %}</span>
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Categorias",
+  "class": "section-categories",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Chamada", "default": "Categorias" },
+    { "type": "inline_richtext", "id": "heading", "label": "Título", "default": "Cuidado para <em>cada fase</em>" },
+    { "type": "richtext", "id": "text", "label": "Texto" }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Coleção",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Coleção" },
+        { "type": "text", "id": "title", "label": "Título (opcional)" },
+        { "type": "text", "id": "kicker", "label": "Chamada curta" },
+        { "type": "image_picker", "id": "image", "label": "Imagem (opcional)" },
+        {
+          "type": "select",
+          "id": "tone",
+          "label": "Tom",
+          "options": [
+            { "value": "ice", "label": "Gelo" },
+            { "value": "brand", "label": "Verde-água" },
+            { "value": "lilac", "label": "Lilás" },
+            { "value": "sand", "label": "Areia" },
+            { "value": "rose", "label": "Rosé" }
+          ],
+          "default": "brand"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Categorias",
+      "blocks": [{ "type": "collection" }, { "type": "collection" }, { "type": "collection" }, { "type": "collection" }]
+    }
+  ]
+}
+{% endschema %}

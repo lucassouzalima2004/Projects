@@ -1,0 +1,186 @@
+{{ 'section-hero-thermal.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'thermal.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign product = section.settings.product
+  assign primary_url = section.settings.primary_link
+  if primary_url == blank and product != blank
+    assign primary_url = product.url
+  endif
+-%}
+
+<section
+  class="hero-thermal"
+  data-thermal
+  data-header-overlay
+  data-temp-hot="{{ section.settings.temp_hot }}"
+  data-temp-cold="{{ section.settings.temp_cold }}"
+  aria-label="{{ section.settings.heading | strip_html | escape }}"
+>
+  <div class="hero-thermal__bg" aria-hidden="true"></div>
+
+  <div class="hero-thermal__word" aria-hidden="true">
+    <span class="hero-thermal__word-hot">{{ section.settings.word_hot }}</span>
+    <span class="hero-thermal__word-cold">{{ section.settings.word_cold }}</span>
+  </div>
+
+  <div class="hero-thermal__stage">
+    <canvas class="hero-thermal__canvas" data-thermal-canvas aria-hidden="true"></canvas>
+    {%- if section.settings.fallback_image != blank -%}
+      {{ section.settings.fallback_image | image_url: width: 1400 | image_tag: class: 'hero-thermal__fallback', loading: 'eager', alt: '', widths: '700, 1000, 1400' }}
+    {%- else -%}
+      <img class="hero-thermal__fallback" src="{{ 'thermal-fallback.webp' | asset_url }}" alt="" width="1100" height="1100" loading="eager">
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Visor da câmera térmica {%- endcomment -%}
+  <div class="hero-hud" aria-hidden="true">
+    <span class="hero-hud__corner hero-hud__corner--tl"></span>
+    <span class="hero-hud__corner hero-hud__corner--tr"></span>
+    <span class="hero-hud__corner hero-hud__corner--bl"></span>
+    <span class="hero-hud__corner hero-hud__corner--br"></span>
+    <span class="hero-hud__rec"><i></i> REC<span class="hero-hud__rec-label"> · {{ section.settings.hud_label }}</span></span>
+    <span class="hero-hud__mode" data-hud-mode>
+      <span class="hero-hud__mode-hot">{{ 'sections.hero.mode_hot' | t }}</span>
+      <span class="hero-hud__mode-spray">{{ 'sections.hero.mode_spray' | t }}</span>
+      <span class="hero-hud__mode-cold">{{ 'sections.hero.mode_cold' | t }}</span>
+    </span>
+  </div>
+
+  <div class="hero-thermal__content container container--wide">
+    <div class="hero-thermal__copy">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="hero-thermal__eyebrow hero-in" style="--d: 0.2s">
+          {% render 'icon', name: 'award' %}
+          {{ section.settings.eyebrow }}
+        </p>
+      {%- endif -%}
+      <h1 class="hero-thermal__title hero-in" style="--d: 0.35s">{{ section.settings.heading }}</h1>
+      {%- if section.settings.text != blank -%}
+        <p class="hero-thermal__text hero-in" style="--d: 0.55s">{{ section.settings.text }}</p>
+      {%- endif -%}
+      <div class="hero-thermal__actions hero-in" style="--d: 0.7s">
+        {%- if section.settings.primary_label != blank -%}
+          <a href="{{ primary_url | default: routes.all_products_collection_url }}" class="btn btn--thermal btn--lg">
+            {{ section.settings.primary_label }}
+            {% render 'icon', name: 'arrow' %}
+          </a>
+        {%- endif -%}
+        {%- if section.settings.secondary_label != blank -%}
+          <a href="{{ section.settings.secondary_link | default: '#' }}" class="btn btn--ghost-light btn--lg">
+            {% render 'icon', name: 'play' %}
+            {{ section.settings.secondary_label }}
+          </a>
+        {%- endif -%}
+      </div>
+      {%- if product != blank -%}
+        <p class="hero-thermal__price hero-in" style="--d: 0.85s">
+          <span>{{ 'sections.hero.from' | t }}</span>
+          {%- if product.compare_at_price > product.price -%}<s>{{ product.compare_at_price | money }}</s>{%- endif -%}
+          <strong>{{ product.price | money }}</strong>
+        </p>
+      {%- endif -%}
+    </div>
+
+    <div class="hero-thermal__gauge hero-in" style="--d: 0.9s" aria-hidden="true">
+      <span class="hero-thermal__gauge-label">{{ 'sections.hero.skin_temp' | t }}</span>
+      <span class="hero-thermal__temp"><span data-thermal-temp>{{ section.settings.temp_hot | replace: '.', ',' }}</span><sup>°C</sup></span>
+      <span class="hero-thermal__scale" data-thermal-bar>
+        <i></i>
+      </span>
+      <span class="hero-thermal__scale-labels"><span>{{ 'sections.hero.cold' | t }}</span><span>{{ 'sections.hero.hot' | t }}</span></span>
+    </div>
+  </div>
+
+  {%- if section.blocks.size > 0 -%}
+    <div class="hero-thermal__badges container container--wide">
+      {%- for block in section.blocks -%}
+        <span class="hero-thermal__badge hero-in" style="--d: {{ forloop.index0 | times: 0.1 | plus: 1 }}s" {{ block.shopify_attributes }}>
+          {% render 'icon', name: block.settings.icon %}
+          <span>{{ block.settings.text }}</span>
+        </span>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  {%- if section.settings.disclaimer != blank -%}
+    <p class="hero-thermal__disclaimer">{{ section.settings.disclaimer }}</p>
+  {%- endif -%}
+
+</section>
+
+{% schema %}
+{
+  "name": "Capa térmica",
+  "class": "section-hero-thermal",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Animação em 3D: a mulher aparece como numa câmera térmica, borrifa o spray no pescoço e o frio desce pelo corpo."
+    },
+    { "type": "text", "id": "eyebrow", "label": "Chamada", "default": "Premiado 2x · Visto no Shark Tank Brasil" },
+    { "type": "inline_richtext", "id": "heading", "label": "Título", "default": "Alívio imediato do <em>fogacho</em>, em segundos." },
+    { "type": "textarea", "id": "text", "label": "Texto", "default": "O Spray Refrescante FreshFemme leva frescor na hora em que o calor sobe. Natural, vegano e aprovado pela Anvisa." },
+    { "type": "text", "id": "primary_label", "label": "Botão principal", "default": "Quero o spray" },
+    { "type": "product", "id": "product", "label": "Produto do botão principal" },
+    { "type": "url", "id": "primary_link", "label": "Link do botão principal", "info": "Se vazio, usa o produto acima." },
+    { "type": "text", "id": "secondary_label", "label": "Botão secundário", "default": "Ver a prova real" },
+    { "type": "url", "id": "secondary_link", "label": "Link do botão secundário" },
+    {
+      "type": "header",
+      "content": "Palavra gigante no fundo"
+    },
+    { "type": "text", "id": "word_hot", "label": "No calor", "default": "calor" },
+    { "type": "text", "id": "word_cold", "label": "No frescor", "default": "frescor" },
+    {
+      "type": "header",
+      "content": "Visor da câmera"
+    },
+    { "type": "text", "id": "hud_label", "label": "Nome no visor", "default": "FRESHFEMME THERMAL" },
+    { "type": "text", "id": "temp_hot", "label": "Temperatura no calor (°C)", "default": "38.4" },
+    { "type": "text", "id": "temp_cold", "label": "Temperatura depois do spray (°C)", "default": "31.2" },
+    { "type": "text", "id": "disclaimer", "label": "Aviso", "default": "*Representação artística do efeito refrescante." },
+    {
+      "type": "image_picker",
+      "id": "fallback_image",
+      "label": "Imagem para aparelhos sem 3D",
+      "info": "Opcional. Se vazio, o tema usa uma imagem própria da cena."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "badge",
+      "name": "Selo",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Ícone",
+          "options": [
+            { "value": "award", "label": "Prêmio" },
+            { "value": "shield", "label": "Escudo" },
+            { "value": "leaf", "label": "Folha" },
+            { "value": "paw", "label": "Patinha" },
+            { "value": "snow", "label": "Floco de neve" },
+            { "value": "flask", "label": "Frasco" },
+            { "value": "star", "label": "Estrela" }
+          ],
+          "default": "award"
+        },
+        { "type": "text", "id": "text", "label": "Texto", "default": "Premiado 2x no Brasil" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Capa térmica",
+      "blocks": [
+        { "type": "badge", "settings": { "icon": "shield", "text": "Aprovado pela Anvisa" } },
+        { "type": "badge", "settings": { "icon": "star", "text": "97% de aprovação nos testes" } },
+        { "type": "badge", "settings": { "icon": "leaf", "text": "Natural e vegano" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

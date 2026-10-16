@@ -1,0 +1,31 @@
+<dialog class="search-modal" data-search-modal aria-label="{{ 'search.title' | t }}">
+  <div class="search-modal__inner">
+    <form action="{{ routes.search_url }}" method="get" role="search" class="search-modal__form">
+      <label class="visually-hidden" for="SearchModalInput">{{ 'search.label' | t }}</label>
+      {% render 'icon', name: 'search' %}
+      <input
+        id="SearchModalInput"
+        class="search-modal__input"
+        type="search"
+        name="q"
+        placeholder="{{ 'search.placeholder' | t }}"
+        autocomplete="off"
+        data-search-input
+      >
+      <input type="hidden" name="options[prefix]" value="last">
+      <button type="button" class="icon-button" data-search-close aria-label="{{ 'general.close' | t }}">
+        {% render 'icon', name: 'close' %}
+      </button>
+    </form>
+    <div class="search-modal__suggest">
+      <p class="search-modal__label">{{ 'search.popular' | t }}</p>
+      <div class="search-modal__chips">
+        {%- assign chips = 'search.popular_terms' | t | split: ',' -%}
+        {%- for chip in chips -%}
+          <a class="chip" href="{{ routes.search_url }}?q={{ chip | strip | url_encode }}">{{ chip | strip }}</a>
+        {%- endfor -%}
+      </div>
+    </div>
+    <div class="search-modal__results" data-search-results aria-live="polite"></div>
+  </div>
+</dialog>

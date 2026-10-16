@@ -1,0 +1,40 @@
+{%- comment -%}
+  Parcelamento e Pix calculados a partir do preço (em centavos).
+  Uso: {% render 'installments', price: variant.price %}
+{%- endcomment -%}
+{%- liquid
+  assign n = settings.installments
+  assign min_cents = settings.installment_min | times: 100
+  if min_cents > 0
+    assign max_n = price | divided_by: min_cents | floor
+    if max_n < n
+      assign n = max_n
+    endif
+  endif
+  assign rate = settings.installment_interest | plus: 0 | divided_by: 100.0
+  if rate > 0
+    assign base = rate | plus: 1
+    assign factor = 1.0
+    for i in (1..n)
+      assign factor = factor | times: base
+    endfor
+    assign denom = factor | minus: 1
+    assign parcel = price | times: rate | times: factor | divided_by: denom | round
+  else
+    assign parcel = price | divided_by: n | floor
+  endif
+  assign parcel_money = parcel | money
+-%}
+{%- if settings.show_installments and n > 1 -%}
+  <span class="price__installments" data-installments>
+    {{- 'products.price.installments_html' | t: n: n, amount: parcel_money -}}
+    {%- if rate == 0 %} {{ 'products.price.interest_free' | t }}{% endif -%}
+  </span>
+{%- endif -%}
+{%- if settings.pix_discount > 0 -%}
+  {%- assign pix_price = 100 | minus: settings.pix_discount | times: price | divided_by: 100 | money -%}
+  <span class="price__pix" data-pix>
+    {% render 'icon', name: 'pix' %}
+    {{- 'products.price.pix_html' | t: amount: pix_price, discount: settings.pix_discount -}}
+  </span>
+{%- endif -%}

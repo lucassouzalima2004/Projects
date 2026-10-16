@@ -1,0 +1,60 @@
+<section class="section founder section--paper2">
+  <div class="container founder__grid">
+    <div class="founder__visual" data-reveal="clip">
+      <div class="founder__arch">
+        {%- if section.settings.image != blank -%}
+          {{ section.settings.image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '400, 700, 1000, 1200', sizes: '(min-width: 990px) 40vw, 90vw', alt: section.settings.name }}
+        {%- else -%}
+          <span class="founder__monogram" aria-hidden="true">{{ section.settings.monogram }}</span>
+        {%- endif -%}
+      </div>
+      <span class="founder__seal" aria-hidden="true">
+        <svg viewBox="0 0 120 120">
+          <defs><path id="FounderSeal-{{ section.id }}" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"/></defs>
+          <text><textPath href="#FounderSeal-{{ section.id }}">{{ section.settings.seal_text | upcase }} ✦ </textPath></text>
+        </svg>
+        {% render 'icon', name: 'heart' %}
+      </span>
+    </div>
+
+    <div class="founder__copy">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="eyebrow" data-reveal>{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      <blockquote class="founder__quote">
+        {% render 'icon', name: 'quote' %}
+        <p class="h2" data-reveal="words">{{ section.settings.quote }}</p>
+      </blockquote>
+      {%- if section.settings.text != blank -%}
+        <div class="founder__text rte" data-reveal>{{ section.settings.text }}</div>
+      {%- endif -%}
+      <div class="founder__sign" data-reveal>
+        <span class="founder__name">{{ section.settings.name }}</span>
+        <span class="founder__role">{{ section.settings.role }}</span>
+      </div>
+      {%- if section.settings.button_label != blank -%}
+        <a href="{{ section.settings.button_link | default: '#' }}" class="link-arrow" data-reveal>{{ section.settings.button_label }} {% render 'icon', name: 'arrow' %}</a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Fundadora",
+  "class": "section-founder",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Foto" },
+    { "type": "text", "id": "monogram", "label": "Iniciais (quando não há foto)", "default": "MM" },
+    { "type": "text", "id": "eyebrow", "label": "Chamada", "default": "Quem criou" },
+    { "type": "inline_richtext", "id": "quote", "label": "Frase", "default": "Antes de ser farmacêutica e empreendedora, eu sou <em>mulher.</em>" },
+    { "type": "richtext", "id": "text", "label": "Texto", "default": "<p>Eu também sei o que é sentir no corpo as transformações que chegam com o tempo. Foi vivendo isso, e ouvindo tantas outras mulheres, que decidi usar meu conhecimento para deixar essa fase mais leve.</p>" },
+    { "type": "text", "id": "name", "label": "Nome", "default": "Mariá Martelli Milan" },
+    { "type": "text", "id": "role", "label": "Cargo", "default": "Farmacêutica Bioquímica · CRF 14 459 · Fundadora" },
+    { "type": "text", "id": "seal_text", "label": "Texto do selo", "default": "Feito por mulher para mulheres 40+" },
+    { "type": "text", "id": "button_label", "label": "Texto do link", "default": "Conheça nossa história" },
+    { "type": "url", "id": "button_link", "label": "Link" }
+  ],
+  "presets": [{ "name": "Fundadora" }]
+}
+{% endschema %}

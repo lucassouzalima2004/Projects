@@ -1,0 +1,62 @@
+<section class="section rich-text{% if section.settings.background == 'mint' %} section--mint{% elsif section.settings.background == 'paper2' %} section--paper2{% endif %}">
+  <div class="container">
+    <div class="rich-text__inner">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'eyebrow' -%}
+            <p class="eyebrow" data-reveal {{ block.shopify_attributes }}>{{ block.settings.text }}</p>
+          {%- when 'heading' -%}
+            <h2 class="{{ block.settings.size }}" data-reveal="words" {{ block.shopify_attributes }}>{{ block.settings.heading }}</h2>
+          {%- when 'text' -%}
+            <div class="rte rich-text__text" data-reveal {{ block.shopify_attributes }}>{{ block.settings.text }}</div>
+          {%- when 'button' -%}
+            <a href="{{ block.settings.link | default: '#' }}" class="btn{% if block.settings.style == 'outline' %} btn--outline{% endif %}" data-reveal {{ block.shopify_attributes }}>
+              {{ block.settings.label }} {% render 'icon', name: 'arrow' %}
+            </a>
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Texto",
+  "class": "section-rich-text",
+  "settings": [
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Fundo",
+      "options": [
+        { "value": "paper", "label": "Claro" },
+        { "value": "paper2", "label": "Creme" },
+        { "value": "mint", "label": "Menta" }
+      ],
+      "default": "paper"
+    }
+  ],
+  "blocks": [
+    { "type": "eyebrow", "name": "Chamada", "limit": 1, "settings": [{ "type": "text", "id": "text", "label": "Texto", "default": "FreshFemme" }] },
+    {
+      "type": "heading",
+      "name": "Título",
+      "settings": [
+        { "type": "inline_richtext", "id": "heading", "label": "Título", "default": "Cuidado feito por quem <em>entende</em>" },
+        { "type": "select", "id": "size", "label": "Tamanho", "options": [{ "value": "h2", "label": "Grande" }, { "value": "h1", "label": "Enorme" }, { "value": "h3", "label": "Médio" }], "default": "h2" }
+      ]
+    },
+    { "type": "text", "name": "Texto", "settings": [{ "type": "richtext", "id": "text", "label": "Texto", "default": "<p>Conte aqui a história da marca, um lançamento ou uma campanha.</p>" }] },
+    {
+      "type": "button",
+      "name": "Botão",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Texto", "default": "Saiba mais" },
+        { "type": "url", "id": "link", "label": "Link" },
+        { "type": "select", "id": "style", "label": "Estilo", "options": [{ "value": "solid", "label": "Cheio" }, { "value": "outline", "label": "Contorno" }], "default": "solid" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Texto", "blocks": [{ "type": "heading" }, { "type": "text" }, { "type": "button" }] }]
+}
+{% endschema %}

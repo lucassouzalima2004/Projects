@@ -1,0 +1,119 @@
+<section class="section results{% if section.settings.background == 'mint' %} section--mint{% endif %}">
+  <div class="container">
+    {% render 'section-heading', eyebrow: section.settings.eyebrow, title: section.settings.heading, text: section.settings.text %}
+
+    <div class="results__grid">
+      {%- for block in section.blocks -%}
+        <figure class="results__card" data-reveal style="--i: {{ forloop.index0 }}" {{ block.shopify_attributes }}>
+          {%- case block.type -%}
+            {%- when 'compare' -%}
+              <div class="compare" data-compare style="--pos: 50%">
+                <div class="compare__img compare__img--after">
+                  {%- if block.settings.after != blank -%}
+                    {{ block.settings.after | image_url: width: 1000 | image_tag: loading: 'lazy', widths: '400, 700, 1000', sizes: '(min-width: 990px) 40vw, 90vw', alt: block.settings.caption }}
+                  {%- else -%}
+                    {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                  {%- endif -%}
+                </div>
+                <div class="compare__img compare__img--before">
+                  {%- if block.settings.before != blank -%}
+                    {{ block.settings.before | image_url: width: 1000 | image_tag: loading: 'lazy', widths: '400, 700, 1000', sizes: '(min-width: 990px) 40vw, 90vw', alt: '' }}
+                  {%- else -%}
+                    {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                  {%- endif -%}
+                </div>
+                <span class="compare__tag compare__tag--before">{{ 'sections.results.before' | t }}</span>
+                <span class="compare__tag compare__tag--after">{{ 'sections.results.after' | t }}</span>
+                <span class="compare__handle" aria-hidden="true"><i></i></span>
+                <input class="compare__range" type="range" min="0" max="100" value="50" aria-label="{{ 'sections.results.slider' | t }}" data-compare-range>
+              </div>
+            {%- else -%}
+              <div class="results__media">
+                {%- if block.settings.image != blank -%}
+                  {{ block.settings.image | image_url: width: 1000 | image_tag: loading: 'lazy', widths: '400, 700, 1000', sizes: '(min-width: 990px) 33vw, 90vw', alt: block.settings.caption }}
+                {%- else -%}
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                {%- endif -%}
+              </div>
+          {%- endcase -%}
+          {%- if block.settings.caption != blank or block.settings.days != blank -%}
+            <figcaption class="results__caption">
+              {%- if block.settings.days != blank -%}<span class="results__days">{{ block.settings.days }}</span>{%- endif -%}
+              <span>{{ block.settings.caption }}</span>
+            </figcaption>
+          {%- endif -%}
+        </figure>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.button_label != blank -%}
+      <div class="center mt-l" data-reveal>
+        <a href="{{ section.settings.button_link | default: '#' }}" class="btn">{{ section.settings.button_label }} {% render 'icon', name: 'arrow' %}</a>
+      </div>
+    {%- endif -%}
+    {%- if section.settings.note != blank -%}
+      <p class="results__note">{{ section.settings.note }}</p>
+    {%- endif -%}
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll('#shopify-section-{{ section.id }} [data-compare]').forEach(function (el) {
+    var range = el.querySelector('[data-compare-range]');
+    if (!range) return;
+    range.addEventListener('input', function () { el.style.setProperty('--pos', range.value + '%'); });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Resultados reais",
+  "class": "section-results",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Chamada", "default": "Resultados reais" },
+    { "type": "inline_richtext", "id": "heading", "label": "Título", "default": "A pele <em>responde</em>" },
+    { "type": "richtext", "id": "text", "label": "Texto", "default": "<p>Fotos enviadas por clientes do Sérum Preenchedor de Rugas & Linhas de Expressão.</p>" },
+    { "type": "text", "id": "button_label", "label": "Texto do botão", "default": "Conhecer o Sérum" },
+    { "type": "url", "id": "button_link", "label": "Link do botão" },
+    { "type": "text", "id": "note", "label": "Observação", "default": "Resultados podem variar de pessoa para pessoa." },
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Fundo",
+      "options": [
+        { "value": "paper", "label": "Claro" },
+        { "value": "mint", "label": "Menta" }
+      ],
+      "default": "paper"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Foto (antes e depois juntos)",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Imagem" },
+        { "type": "text", "id": "days", "label": "Tempo de uso", "default": "30 dias" },
+        { "type": "text", "id": "caption", "label": "Legenda", "default": "de uso do Sérum FreshFemme" }
+      ]
+    },
+    {
+      "type": "compare",
+      "name": "Antes × depois (arrastar)",
+      "settings": [
+        { "type": "image_picker", "id": "before", "label": "Antes" },
+        { "type": "image_picker", "id": "after", "label": "Depois" },
+        { "type": "text", "id": "days", "label": "Tempo de uso", "default": "60 dias" },
+        { "type": "text", "id": "caption", "label": "Legenda", "default": "de uso do Sérum FreshFemme" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Resultados reais",
+      "blocks": [{ "type": "image" }, { "type": "image" }]
+    }
+  ]
+}
+{% endschema %}

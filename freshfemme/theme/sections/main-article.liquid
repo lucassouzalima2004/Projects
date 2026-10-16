@@ -1,0 +1,32 @@
+{{ 'template-pages.css' | asset_url | stylesheet_tag }}
+<article class="article">
+  <header class="page-hero">
+    <div class="container page-hero__inner">
+      <a href="{{ blog.url }}" class="eyebrow" data-reveal>{{ blog.title }}</a>
+      <h1 class="h1" data-reveal="words">{{ article.title }}</h1>
+      <p class="page-hero__text" data-reveal>{{ article.published_at | date: format: 'date' }} · {{ article.author }}</p>
+    </div>
+  </header>
+  {%- if article.image -%}
+    <div class="container article__cover" data-reveal="clip">
+      {{ article.image | image_url: width: 2000 | image_tag: loading: 'eager', widths: '800, 1200, 1600, 2000', sizes: '100vw', alt: article.title }}
+    </div>
+  {%- endif -%}
+  <div class="section">
+    <div class="container container--narrow">
+      <div class="rte article__content">{{ article.content }}</div>
+      {%- if article.tags.size > 0 -%}
+        <div class="article__tags">{% for tag in article.tags %}<span class="chip">{{ tag }}</span>{% endfor %}</div>
+      {%- endif -%}
+      <a href="{{ blog.url }}" class="link-arrow article__back">{% render 'icon', name: 'arrow' %} {{ 'blogs.back' | t }}</a>
+    </div>
+  </div>
+</article>
+
+{% schema %}
+{
+  "name": "Artigo",
+  "class": "section-main-article",
+  "settings": []
+}
+{% endschema %}
