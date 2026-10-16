@@ -31,6 +31,18 @@ O Gabriel viu o link e gostou ("bem profissional, bem bonitão"). Pediu só este
 4. Sobre as fotos, ele mesmo entendeu que são de exemplo ("tu tá me mandando mais pra ver o layout"). Mesmo assim, as fotos
    dos projetos agora mostram o piso em primeiro plano, sem cozinha ou escada ocupando a foto.
 
+### Segunda rodada (15/10, à tarde)
+
+Com o site novo no ar, ele mandou: "que site que tá ficando absurdo de bom… vale cada centavo". Pediu mais duas coisas, feitas:
+
+1. **Tirar as explicações** (ele circulou o corte técnico com as camadas numeradas de cada piso). Os cortes saíram da home e
+   das páginas de serviço. No computador, o painel ao lado da lista de serviços agora mostra só a foto do piso, maior,
+   com o número e o nome do serviço. Nas páginas de serviço, no lugar do corte entrou um cartão de orçamento grátis.
+2. **Fotos dos serviços mostrando mais piso do que a casa** ("no hardwood aparece mais uma cozinha", "no laminado mais um
+   quarto", "no tile aparece mais o gabinete"). As 6 fotos foram trocadas por fotos em que o piso ocupa a maior parte:
+   salas vazias com piso de madeira, vinílico cinza e laminado escuro, porcelanato polido, carvalho brilhando depois da
+   restauração e degraus combinando com o piso do corredor.
+
 ## O que tem no site
 
 **Página inicial** (`index.html`):
@@ -39,7 +51,7 @@ O Gabriel viu o link e gostou ("bem profissional, bem bonitão"). Pediu só este
 - **Painel com o vídeo de piso** (cantos arredondados, como o da Mastery Floors) e o texto no centro, como no anúncio que o Gabriel mandou: local entre linhas finas, *Floors done right the first time.* em serifada, 4 itens com ✓, botão branco *Get a free estimate* e o link *View our work ↓*. Embaixo, a nota do Google (4.9 · 137 reviews) e o botão de pausar. No celular, o vídeo é outro, em pé.
 - **O fundador**, logo abaixo do topo: foto do Gabriel, a frase da missão, a bio do site antigo e, embaixo, os números do site antigo (6 serviços, 24h, 100%, 4.9).
 - **Avaliações do Google passando** em duas faixas, em sentidos opostos. Param com o mouse em cima, dá para arrastar e tem botão de pausar.
-- **Serviços** ("Every floor. One accountable crew."): lista dos 6 serviços. No computador, ao passar o mouse, a foto e o **corte técnico** do piso mudam ao lado (camadas, encaixe macho e fêmea, prego escondido, junta de dilatação, membrana do porcelanato, medidas dos degraus). Cada serviço leva à sua página.
+- **Serviços** ("Every floor. One accountable crew."): lista dos 6 serviços, cada um com uma foto em que o piso ocupa a maior parte. No computador, ao passar o mouse, a foto grande ao lado muda. Cada serviço leva à sua página.
 - **Projetos recentes passando**, com o nome da cidade e o tipo de serviço. Clicar abre a foto grande.
 - **Why homeowners choose us** (os 4 itens do site antigo) e **How it works** (4 passos).
 - **Área atendida**: as 18 cidades do site antigo e um **mapa** com as cidades nas coordenadas reais, a divisa entre os condados e a montanha do logo a leste.
@@ -49,15 +61,17 @@ O Gabriel viu o link e gostou ("bem profissional, bem bonitão"). Pediu só este
 - Barra fixa no celular (ligar, mandar texto, orçamento).
 
 **Páginas de serviço** (uma por serviço, boas para o Google): `hardwood-floor-installation/`, `luxury-vinyl-plank/`,
-`laminate-flooring/`, `tile-installation/`, `hardwood-floor-refinishing/` e `stair-treads/`. Cada uma tem o que está incluído,
-o corte técnico, "Good to know", o passo a passo, os projetos, perguntas próprias e o formulário com o serviço já marcado.
+`laminate-flooring/`, `tile-installation/`, `hardwood-floor-refinishing/` e `stair-treads/`. Cada uma tem o que está incluído
+(com um cartão de orçamento grátis ao lado), "Good to know", o passo a passo, os projetos, perguntas próprias e o formulário
+com o serviço já marcado.
 
 **Também:** página 404, prévia bonita do link no WhatsApp (`assets/img/og-image.jpg`), dados estruturados para o Google
 (empresa, horários, área atendida, serviços, FAQ e trilha de navegação), `sitemap.xml` e `robots.txt` gerados na publicação.
 As animações e o vídeo desligam sozinhos para quem ativou "reduzir movimento".
 
-**Testes (15/10, depois dos ajustes):** Lighthouse no computador 100 em desempenho, acessibilidade, boas práticas e SEO;
-no celular, 94 em desempenho e 100 nos outros três. Zero problemas no teste de acessibilidade (axe) em todas as páginas.
+**Testes (16/10, depois da segunda rodada):** Lighthouse no computador 100 em desempenho, acessibilidade, boas práticas
+e SEO; no celular, 94 em desempenho na home e 96 nas páginas de serviço, 100 nos outros três. Zero problemas no teste de
+acessibilidade (axe) em todas as páginas.
 
 Identidade: logo vetorizado a partir do PNG que o Gabriel mandou. Preto **#0E0E0D**, osso **#EBE7E0** e o vermelho do "R"
 da camisa dele, **#C8102E**. Fontes, dentro de `assets/fonts/`: **Cormorant Garamond** nos títulos (a serifada elegante
@@ -70,7 +84,7 @@ maiúsculas espaçadas, ecoa o "F L O O R S" do logo).
 - [ ] **Link "Read them on Google"**: trocar pelo link do perfil do Google da empresa (Google Maps → Compartilhar).
 - [ ] **Nota e quantidade**: 4.9 e 137 avaliações vieram do site antigo. Confirmar os números de hoje (aparecem na linha do Google no topo, nos números do fundador, na seção de avaliações, nas páginas de serviço e na `og-image.jpg`).
 - [ ] **Fotos dos projetos**: hoje são fotos de banco de imagens (Unsplash), recortadas no piso, com cidades de exemplo. Pedir ao Gabriel as fotos dos trabalhos e a cidade de cada um.
-- [ ] **Fotos dos serviços**: também são de banco de imagens. Trocar pelas dele quando tiver.
+- [ ] **Fotos dos serviços**: também são de banco de imagens (Pexels), escolhidas com o piso ocupando a foto. Trocar pelas dele quando tiver, de preferência fotos em que o piso apareça mais do que os móveis (é o que ele mesmo pediu).
 - [ ] **Vídeo do topo**: montado com 3 clipes gratuitos de piso, do Coverr e do Mixkit (veja [O vídeo do topo](#o-vídeo-do-topo)). Dá para trocar por filmagens dos pisos que ele instalou ou por um vídeo gerado por IA (prompts prontos em `tools/PROMPTS.md`).
 - [ ] **Nome da empresa**: o logo e a camisa dizem *Black Rock Floors*; o site antigo e o e-mail dizem *Black Rock Remodeling LLC*. Hoje o site usa "Black Rock Floors" em tudo. Confirmar o nome e se quer o nome da LLC no rodapé.
 - [ ] **Número de registro na L&I**: em Washington, a lei (RCW 18.27.100) pede o número de registro de empreiteiro na propaganda que mostra o nome da empresa, e o site conta como propaganda (vale confirmar com a L&I). Pedir o número e colocar no rodapé; também passa confiança.
@@ -166,6 +180,7 @@ black-rock-floors/
 └── tools/PROMPTS.md                 prompts para gerar clipes de piso por IA
 ```
 
-Créditos: fontes Archivo e Cormorant Garamond (SIL Open Font License); fotos de exemplo do [Unsplash](https://unsplash.com/license)
-(licença Unsplash); clipes do vídeo do [Coverr](https://coverr.co/license) (Coverr License) e do [Mixkit](https://mixkit.co/license/)
+Créditos: fontes Archivo e Cormorant Garamond (SIL Open Font License); fotos de exemplo dos serviços do
+[Pexels](https://www.pexels.com/license/) (licença Pexels) e dos projetos do [Unsplash](https://unsplash.com/license)
+(licença Unsplash), as duas com uso comercial liberado e sem crédito obrigatório; clipes do vídeo do [Coverr](https://coverr.co/license) (Coverr License) e do [Mixkit](https://mixkit.co/license/)
 (Mixkit Stock Video Free License); logo e foto do Gabriel enviados por ele.

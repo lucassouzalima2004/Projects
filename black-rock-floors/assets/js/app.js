@@ -387,20 +387,18 @@
     });
   }
 
-  /* ---------- Serviços: foto e corte do serviço ativo (computador) ---------- */
+  /* ---------- Serviços: foto do serviço ativo (computador) ---------- */
   const services = $('[data-services]');
   if (services) {
     const rows = $$('[data-svc]', services);
     const photo = $('[data-stage-photo]', services);
-    const drawing = $('[data-stage-drawing]', services);
     const num = $('[data-stage-num]', services);
     const name = $('[data-stage-name]', services);
     const shots = [];
-    const sections = [];
     let active = 0;
     let staged = false;
 
-    // Monta o painel fixo (fotos grandes + cortes) só no computador e só quando a seção chega perto
+    // Monta o painel fixo (fotos grandes) só no computador e só quando a seção chega perto
     const buildStage = () => {
       if (staged || !isDesktop()) return;
       staged = true;
@@ -415,10 +413,6 @@
         big.classList.toggle('is-active', i === active);
         photo.append(big);
         shots.push(big);
-        const xs = $('.svc-xsec', row).cloneNode(true);
-        xs.classList.toggle('is-active', i === active);
-        drawing.append(xs);
-        sections.push(xs);
       });
       photo.insertAdjacentHTML('beforeend', '<span class="planks-cover" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>');
       if ('IntersectionObserver' in window) {
@@ -440,7 +434,6 @@
       active = i;
       rows.forEach((r, k) => r.classList.toggle('is-active', k === i));
       shots.forEach((s, k) => s.classList.toggle('is-active', k === i));
-      sections.forEach((s, k) => s.classList.toggle('is-active', k === i));
       num.textContent = String(i + 1).padStart(2, '0');
       name.textContent = $('.svc-name a', rows[i]).textContent;
     };
