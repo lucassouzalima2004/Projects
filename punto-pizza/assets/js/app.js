@@ -122,38 +122,6 @@ function initHeader() {
   window.addEventListener('resize', () => { if (window.innerWidth > 1060) close(); });
 }
 
-/* ---------- Vídeo do topo ---------- */
-
-function initHeroVideo() {
-  const v = $('.hero video');
-  if (!v) return;
-  const btn = $('.video-toggle');
-  const saveData = navigator.connection && navigator.connection.saveData;
-  if (reduceMotion || saveData) { if (btn) btn.hidden = true; return; } // fica só a foto
-
-  // Escolhe o arquivo pelo formato da tela: em pé, médio ou grande
-  const tall = window.matchMedia('(max-aspect-ratio: 4/5)').matches;
-  const px = window.innerWidth * Math.min(window.devicePixelRatio || 1, 2);
-  const name = tall ? 'hero-tall' : px > 1600 ? 'hero-1080' : 'hero-720';
-  const webm = v.canPlayType('video/webm; codecs="vp9"') === 'probably';
-  v.muted = true;
-  v.addEventListener('playing', () => v.classList.add('ready'), { once: true });
-
-  let userPaused = false;
-  const play = () => { if (!v.src) return; const p = v.play(); if (p) p.catch(() => {}); };
-  // O vídeo só começa a baixar depois que a página carregou: a foto do topo aparece primeiro
-  const start = () => { v.src = v.dataset.base + name + (webm ? '.webm' : '.mp4'); if (!userPaused) play(); };
-  if (document.readyState === 'complete') start(); else window.addEventListener('load', start, { once: true });
-  // Pausa quando sai da tela (economiza bateria) e volta quando aparece
-  new IntersectionObserver(([e]) => { if (!userPaused) e.isIntersecting ? play() : v.pause(); }).observe(v);
-  if (btn) btn.addEventListener('click', () => {
-    userPaused = !v.paused;
-    if (userPaused) v.pause(); else play();
-    btn.setAttribute('aria-pressed', String(userPaused));
-    btn.setAttribute('aria-label', userPaused ? 'Riproduci il video' : 'Metti in pausa il video');
-  });
-}
-
 /* ---------- Títulos que entram palavra por palavra ---------- */
 
 function splitWords(el) {
@@ -208,17 +176,12 @@ function initReveal() {
 
 function initScrollFx() {
   if (reduceMotion) return;
-  const hero = $('.hero');
   const speeds = $$('[data-speed]');
   const spins = $$('[data-spin]');
   let ticking = false;
   const update = () => {
     ticking = false;
     const vh = window.innerHeight;
-    if (hero) {
-      const p = Math.min(1, Math.max(0, window.scrollY / hero.offsetHeight));
-      hero.style.setProperty('--p', p.toFixed(4));
-    }
     speeds.forEach(el => {
       const r = el.getBoundingClientRect();
       if (r.bottom < -200 || r.top > vh + 200) return;
@@ -458,7 +421,6 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(paintStatus, 60000);
   initSmooth();
   initHeader();
-  initHeroVideo();
   initReveal();
   initScrollFx();
   initCounters();
