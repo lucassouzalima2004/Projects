@@ -152,7 +152,7 @@ jobs:
       - name: Conferir o site no ar
         run: |
           for i in 1 2 3 4 5 6; do
-            if curl -fsS --max-time 20 "$WORKERS_URL/" | grep -q "Crystal-clear"; then
+            if curl -fsS --max-time 20 "$WORKERS_URL/" | grep -q "Home or business"; then
               echo "Site no ar: $WORKERS_URL"
               echo "### Site no ar: $WORKERS_URL" >> "$GITHUB_STEP_SUMMARY"
               if [ "$SITE_URL" != "$WORKERS_URL" ]; then
