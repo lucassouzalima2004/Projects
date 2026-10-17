@@ -46,6 +46,10 @@ Ainda em 17/10, olhando a v3:
 - "Esse texto aqui é errado em italiano": o texto do topo da página Senza glutine agora é **o texto que ele mandou**, palavra por palavra
   (dois parágrafos: "Chi è celiaco o deve evitare il glutine..." e "Nasce in un laboratorio dedicato..."). O título "Un laboratorio
   tutto suo" da mesma página virou "Un laboratorio dedicato", como ele escreve.
+- "Teu tradutor tá fazendo mal o trampo": os 4 cartões de "Come la prepariamo" e o aviso para celíacos da página Senza glutine
+  agora têm **o texto que ele mandou** (com **forno dedicado**, confirmado por ele). Aproveitando, foram reescritas em italiano mais natural
+  algumas frases que soavam traduzidas: a introdução dos cartões, o método da home ("Lasciamo lievitare...", "Ingredienti di qualità",
+  "vieni a ritirarla"), o título "Tre passi e la pizza è da te", a primeira pergunta frequente do senza glutine e duas frases do "Chi siamo".
 
 ## O que tem no site
 
@@ -108,7 +112,8 @@ filtros, busca, "Scegli per me", abas, CAP, menu do celular, barra fixa, o mapa 
 - [ ] **AIC**: confirmar que a adesão ao programa Alimentazione Fuori Casa está em dia e que ele pode usar o logo da AIC no site (o logo foi vetorizado da imagem que ele mandou; se a AIC mandou o arquivo oficial, melhor usar esse).
 - [ ] **"Única pizzaria delivery de Verona na AIC"**: ele disse isso no áudio, mas **não está no site**. Uma frase de "única" precisa ser verdade e dá para conferir na lista de locais da AIC (app AiC Mobile). Se ele confirmar, dá para acrescentar.
 - [ ] **Massas**: o site diz "classico, integrale, al carbone vegetale con cereali o senza glutine" (do site antigo, das avaliações e do Carlos). O menu do app não mostra as massas por item. Confirmar quais pizzas aceitam cada massa e se tem acréscimo.
-- [ ] **Senza glutine** (informação de segurança para celíacos, confirmar tudo): "ingredientes e utensílios separados" e "cozimento/forno separado" vêm de avaliações de clientes; "laboratório dedicado" vem do site antigo dele. E dá para misturar pizzas normais e sem glúten no mesmo pedido?
+- [x] **Senza glutine**: o texto dos cartões (espaço dedicado, ingredientes e utensílios, **forno dedicado**) e o aviso para celíacos são do próprio Carlos (17/10).
+- [ ] Ainda confirmar: dá para misturar pizzas normais e sem glúten no mesmo pedido? (está na pergunta frequente)
 - [ ] **Horário**: terça a domingo 17:00–21:30, segunda fechado (do site antigo). Confirmar.
 - [ ] **Zona de entrega**: CAP 37137 e 37138 (do Just Eat). Pelo app ele entrega mais longe? Tem taxa de entrega e pedido mínimo?
 - [ ] **Fotos do método** (massa, farinha, molho): são quadros de clipes gratuitos do Mixkit, não da cozinha dele. A pizza de mortadela do passo 4 é dos anúncios dele, mas não está no menu do app. Se ele mandar vídeos ou fotos da cozinha, troca.
