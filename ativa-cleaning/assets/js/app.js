@@ -1,5 +1,5 @@
-/* Comportamento do site da Ativa: cabeçalho e menu, a janela empoeirada do topo que o rodo limpa,
-   a janela interativa ("o que limpamos"), antes/depois de arrastar, carrosséis, pedido de orçamento
+/* Comportamento do site da Ativa: cabeçalho e menu, o porta-retrato empoeirado do topo que o pano limpa,
+   o seletor Residential | Commercial, antes/depois de arrastar, carrosséis, pedido de orçamento
    (e-mail ou WhatsApp) e Meta Pixel. Contatos e números vêm de config.js. */
 (function () {
   'use strict';
@@ -71,33 +71,32 @@
   $$('[data-ticker] .ticker__track').forEach(t => { if (t.firstElementChild) t.appendChild(t.firstElementChild.cloneNode(true)); });
 
   /* =========================================================================
-     Janela do topo: o vidro começa empoeirado, o rodo limpa em "S" (como um
-     limpador de janelas de verdade) e a pessoa termina arrastando o dedo/mouse.
+     Porta-retrato do topo: a foto da equipe começa empoeirada, o pano de
+     microfibra limpa em "S" e a pessoa termina passando o mouse ou o dedo.
      ====================================================================== */
   (function pane() {
     const root = $('[data-pane]');
     if (!root) return;
     const glass = $('[data-glass]', root);
     const canvas = $('[data-grime]', root);
-    const sq = $('[data-squeegee]', root);
+    const tool = $('[data-tool]', root);
     const hint = $('[data-pane-hint]', root);
     const badge = $('[data-pane-badge]', root);
     const resetBtn = $('[data-pane-reset]', root);
     const ctx = canvas.getContext && canvas.getContext('2d');
     if (!ctx) return;
 
-    // Quem pediu menos movimento já vê o vidro limpo
+    // Quem pediu menos movimento já vê a foto limpa
     if (reduce) { root.classList.add('is-done'); badge.hidden = false; resetBtn.hidden = true; return; }
 
     const COLS = 16, ROWS = 20, TOTAL = COLS * ROWS;
-    const HALF = Math.PI / 2;
-    let W = 0, H = 0, blade = 120, cell = 20;
+    let W = 0, H = 0, brush = 100, cell = 20;
     let grid = new Uint8Array(TOTAL), left = TOTAL;
     let state = 'idle';            // idle → auto → ready/play → done
     let autoDone = false, autoEndY = 0, seed = 11, raf = 0;
-    let down = false, last = null, lastA = HALF;
+    let down = false, last = null, tilt = 0;
 
-    // Números aleatórios sempre iguais para a mesma "sujeira"
+    // Números aleatórios sempre iguais para a mesma poeira
     const rng = a => () => {
       a = a + 0x6D2B79F5 | 0;
       let t = Math.imul(a ^ a >>> 15, 1 | a);
@@ -112,9 +111,9 @@
       canvas.width = Math.round(W * dpr);
       canvas.height = Math.round(H * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      blade = Math.max(80, Math.min(140, W * .27));
+      brush = Math.max(70, Math.min(124, W * .26));
       cell = Math.min(W / COLS, H / ROWS);
-      sq.style.width = `${blade}px`;
+      tool.style.width = `${brush * 1.15}px`;
     }
 
     function paint() {
@@ -122,48 +121,38 @@
       grid = new Uint8Array(TOTAL); left = TOTAL;
       ctx.globalCompositeOperation = 'source-over';
       ctx.clearRect(0, 0, W, H);
-      // película de poeira, mais grossa embaixo
+      // camada de poeira, mais grossa embaixo
       const g = ctx.createLinearGradient(0, 0, 0, H);
-      g.addColorStop(0, 'rgba(226, 220, 207, .80)');
-      g.addColorStop(.55, 'rgba(210, 200, 182, .87)');
-      g.addColorStop(1, 'rgba(170, 154, 128, .94)');
+      g.addColorStop(0, 'rgba(216, 212, 203, .82)');
+      g.addColorStop(.55, 'rgba(202, 196, 184, .88)');
+      g.addColorStop(1, 'rgba(180, 172, 158, .94)');
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, W, H);
       // manchas
-      for (let i = 0; i < 34; i++) {
-        const x = r() * W, y = r() * H, rad = 20 + r() * 110, dark = r() > .4;
+      for (let i = 0; i < 30; i++) {
+        const x = r() * W, y = r() * H, rad = 20 + r() * 110, dark = r() > .45;
         const c = ctx.createRadialGradient(x, y, 0, x, y, rad);
-        c.addColorStop(0, dark ? `rgba(118, 98, 70, ${.06 + r() * .12})` : `rgba(255, 255, 255, ${.06 + r() * .1})`);
-        c.addColorStop(1, 'rgba(118, 98, 70, 0)');
+        c.addColorStop(0, dark ? `rgba(108, 98, 82, ${.05 + r() * .12})` : `rgba(255, 255, 255, ${.08 + r() * .12})`);
+        c.addColorStop(1, 'rgba(108, 98, 82, 0)');
         ctx.fillStyle = c;
         ctx.beginPath(); ctx.arc(x, y, rad, 0, Math.PI * 2); ctx.fill();
       }
       // poeira fina
-      const n = Math.round(W * H / 55);
+      const n = Math.round(W * H / 50);
       for (let i = 0; i < n; i++) {
-        const s = .3 + r() * 1.3;
-        ctx.fillStyle = r() > .25 ? `rgba(92, 76, 54, ${.08 + r() * .35})` : `rgba(255, 255, 255, ${.15 + r() * .3})`;
+        const s = .3 + r() * 1.4;
+        ctx.fillStyle = r() > .3 ? `rgba(86, 76, 62, ${.08 + r() * .32})` : `rgba(255, 255, 255, ${.2 + r() * .35})`;
         ctx.fillRect(r() * W, r() * H, s, s);
       }
-      // marcas de gotas de chuva secas
-      for (let i = 0; i < 46; i++) {
-        const x = r() * W, y = r() * H * .92, rad = 2 + r() * 9;
-        const c = ctx.createRadialGradient(x, y, rad * .45, x, y, rad);
-        c.addColorStop(0, 'rgba(255, 255, 255, .05)');
-        c.addColorStop(.75, `rgba(108, 90, 64, ${.18 + r() * .25})`);
-        c.addColorStop(1, 'rgba(108, 90, 64, 0)');
-        ctx.fillStyle = c;
-        ctx.beginPath(); ctx.arc(x, y, rad, 0, Math.PI * 2); ctx.fill();
-      }
-      // escorridos
+      // fiapos
       ctx.lineCap = 'round';
-      for (let i = 0; i < 16; i++) {
-        let x = r() * W;
-        const y = r() * H * .5, len = H * (.15 + r() * .45);
-        ctx.strokeStyle = `rgba(118, 100, 74, ${.08 + r() * .14})`;
-        ctx.lineWidth = 1 + r() * 2.5;
-        ctx.beginPath(); ctx.moveTo(x, y);
-        for (let k = 0; k < len; k += 8) { x += (r() - .5) * 2.2; ctx.lineTo(x, y + k); }
+      for (let i = 0; i < 46; i++) {
+        const x = r() * W, y = r() * H, len = 6 + r() * 18, a = r() * Math.PI * 2;
+        ctx.strokeStyle = r() > .5 ? `rgba(255, 255, 255, ${.3 + r() * .3})` : `rgba(80, 70, 58, ${.2 + r() * .25})`;
+        ctx.lineWidth = .6 + r() * .8;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.quadraticCurveTo(x + Math.cos(a + 1) * len * .6, y + Math.sin(a + 1) * len * .6, x + Math.cos(a) * len, y + Math.sin(a) * len);
         ctx.stroke();
       }
       // "clean me" escrito com o dedo na poeira
@@ -184,52 +173,44 @@
       ctx.restore();
     }
 
-    // Marca as células da grade por onde a lâmina passou (para saber quanto já está limpo)
-    function mark(x, y, a) {
-      const h = blade / 2, n = Math.ceil(blade / (cell * .5));
-      const c = Math.cos(a), s = Math.sin(a);
-      for (let k = 0; k <= n; k++) {
-        const t = -h + blade * k / n, px = x + c * t, py = y + s * t;
-        if (px < 0 || py < 0 || px >= W || py >= H) continue;
-        const i = Math.floor(py / H * ROWS) * COLS + Math.floor(px / W * COLS);
-        if (!grid[i]) { grid[i] = 1; left--; }
+    // Marca as células da grade por onde o pano passou (para saber quanto já está limpo)
+    function mark(x, y) {
+      const rad = brush / 2, st = cell * .5;
+      for (let dy = -rad; dy <= rad; dy += st) {
+        for (let dx = -rad; dx <= rad; dx += st) {
+          if (dx * dx + dy * dy > rad * rad) continue;
+          const px = x + dx, py = y + dy;
+          if (px < 0 || py < 0 || px >= W || py >= H) continue;
+          const i = Math.floor(py / H * ROWS) * COLS + Math.floor(px / W * COLS);
+          if (!grid[i]) { grid[i] = 1; left--; }
+        }
       }
     }
 
-    // A lâmina (perpendicular ao movimento) apaga a poeira entre dois pontos
-    function wipe(x0, y0, a0, x1, y1, a1) {
-      const h = blade / 2;
-      const c0 = Math.cos(a0) * h, s0 = Math.sin(a0) * h, c1 = Math.cos(a1) * h, s1 = Math.sin(a1) * h;
+    // O pano apaga a poeira entre dois pontos
+    function wipe(x0, y0, x1, y1) {
       ctx.globalCompositeOperation = 'destination-out';
-      ctx.fillStyle = '#000';
-      ctx.beginPath();
-      ctx.moveTo(x0 - c0, y0 - s0); ctx.lineTo(x0 + c0, y0 + s0);
-      ctx.lineTo(x1 + c1, y1 + s1); ctx.lineTo(x1 - c1, y1 - s1);
-      ctx.closePath(); ctx.fill();
-      // contorno fino para não sobrar risco entre um trecho e outro
-      ctx.lineWidth = 2;
-      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.lineWidth = brush;
       ctx.strokeStyle = '#000';
+      ctx.beginPath();
+      ctx.moveTo(x0, y0);
+      ctx.lineTo(x1 + .01, y1);
       ctx.stroke();
       const steps = Math.max(1, Math.ceil(Math.hypot(x1 - x0, y1 - y0) / (cell * .5)));
-      for (let j = 1; j <= steps; j++) {
-        const k = j / steps;
-        mark(x0 + (x1 - x0) * k, y0 + (y1 - y0) * k, a0 + angleDiff(a0, a1) * k);
-      }
+      for (let j = 1; j <= steps; j++) mark(x0 + (x1 - x0) * j / steps, y0 + (y1 - y0) * j / steps);
     }
 
-    function angleDiff(a, b) { return Math.atan2(Math.sin(b - a), Math.cos(b - a)); }
-    function turn(a, b, k) { return a + angleDiff(a, b) * k; }
-
-    // Posiciona o rodo: centro da lâmina em (x, y), lâmina na direção a
-    function place(x, y, a) {
-      const s = blade / 200;
-      sq.style.transform = `translate(${x}px, ${y}px) rotate(${a}rad) translate(${-100 * s}px, ${-8 * s}px)`;
+    // Posiciona o pano no ponto (x, y), inclinado para o lado em que está indo
+    function place(x, y, dx) {
+      const target = Math.max(-.35, Math.min(.35, (dx || 0) * .02));
+      tilt += (target - tilt) * .25;
+      tool.style.transform = `translate(${x}px, ${y}px) rotate(${tilt}rad) translate(-50%, -50%)`;
     }
 
     // Caminho em "S": passa da esquerda para a direita, faz a curva em U e volta
     function rowsPath(fromY, toY) {
-      const sp = blade * .8, m = blade * .42, r = sp / 2, pts = [];
+      const sp = brush * .78, m = brush * .3, r = sp / 2, pts = [];
       const line = (x0, y0, x1, y1) => {
         const n = Math.max(1, Math.ceil(Math.hypot(x1 - x0, y1 - y0) / 6));
         for (let i = 1; i <= n; i++) pts.push([x0 + (x1 - x0) * i / n, y0 + (y1 - y0) * i / n]);
@@ -238,12 +219,13 @@
         const n = Math.max(6, Math.ceil(Math.abs(a1 - a0) * r / 6));
         for (let i = 1; i <= n; i++) { const a = a0 + (a1 - a0) * i / n; pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]); }
       };
+      const HALF = Math.PI / 2;
       let y = fromY, right = true;
-      pts.push([-blade * .8, y]);
+      pts.push([-brush * .8, y]);
       for (;;) {
         const xEnd = right ? W - m : m;
         line(pts[pts.length - 1][0], y, xEnd, y);
-        if (y + sp > toY) { line(xEnd, y, right ? W + blade : -blade, y); break; }
+        if (y + sp > toY) { line(xEnd, y, right ? W + brush : -brush, y); break; }
         if (right) arc(xEnd, y + r, -HALF, HALF);
         else arc(xEnd, y + r, -HALF, -3 * HALF);
         y += sp;
@@ -252,27 +234,28 @@
       return { pts, lastY: y };
     }
 
-    // Anima o rodo por um caminho; ao terminar chama done()
+    // Anima o pano por um caminho; ao terminar chama done()
     function run(path, done) {
       const pts = path.pts, L = [0];
       for (let i = 1; i < pts.length; i++) L[i] = L[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
       const total = L[L.length - 1];
       const dur = Math.max(900, total / Math.max(.9, W / 480));
-      let i = 0, prev = pts[0], prevA = HALF, t0 = 0;
+      let i = 0, prev = pts[0], t0 = 0;
       root.classList.add('is-wiping');
-      place(prev[0], prev[1], prevA);
+      place(prev[0], prev[1], 0);
       const step = now => {
         if (!t0) t0 = now;
         const k = Math.min(1, (now - t0) / dur);
         const d = (1 - Math.cos(Math.PI * k)) / 2 * total;
+        let dx = 0;
         while (i < pts.length - 1 && L[i + 1] <= d) {
           i++;
           const p = pts[i];
-          const a = turn(prevA, Math.atan2(p[1] - prev[1], p[0] - prev[0]) + HALF, .5);
-          wipe(prev[0], prev[1], prevA, p[0], p[1], a);
-          prev = p; prevA = a;
+          dx += p[0] - prev[0];
+          wipe(prev[0], prev[1], p[0], p[1]);
+          prev = p;
         }
-        place(prev[0], prev[1], prevA);
+        place(prev[0], prev[1], dx);
         if (k < 1) raf = requestAnimationFrame(step);
         else { root.classList.remove('is-wiping'); done(); }
       };
@@ -282,15 +265,10 @@
     // Aplica um caminho sem animação (ao redimensionar a tela)
     function applyInstant(path) {
       const pts = path.pts;
-      let prevA = HALF;
-      for (let i = 1; i < pts.length; i++) {
-        const a = turn(prevA, Math.atan2(pts[i][1] - pts[i - 1][1], pts[i][0] - pts[i - 1][0]) + HALF, .5);
-        wipe(pts[i - 1][0], pts[i - 1][1], prevA, pts[i][0], pts[i][1], a);
-        prevA = a;
-      }
+      for (let i = 1; i < pts.length; i++) wipe(pts[i - 1][0], pts[i - 1][1], pts[i][0], pts[i][1]);
     }
 
-    const autoPath = () => rowsPath(blade * .42, H * .58);
+    const autoPath = () => rowsPath(brush * .4, H * .58);
 
     function startAuto() {
       if (state !== 'idle') return;
@@ -303,14 +281,14 @@
       });
     }
 
-    // "Tap here": o rodo termina o vidro sozinho
+    // "Tap here": o pano termina sozinho
     function autoFinish() {
       if (state === 'done' || state === 'auto') return;
       cancelAnimationFrame(raf);
       state = 'auto';
       hint.hidden = true;
-      const from = autoDone ? autoEndY + blade * .8 : blade * .42;
-      run(rowsPath(from, H + blade * .3), finish);
+      const from = autoDone ? autoEndY + brush * .78 : brush * .4;
+      run(rowsPath(from, H + brush * .3), finish);
     }
 
     function finish() {
@@ -332,13 +310,13 @@
 
     glass.addEventListener('pointerdown', e => {
       if (state === 'done') return;
-      if (state === 'auto') { cancelAnimationFrame(raf); }
+      if (state === 'auto') cancelAnimationFrame(raf);
       state = 'play';
       down = true;
       last = pos(e);
       try { glass.setPointerCapture(e.pointerId); } catch (_) { /* sem captura */ }
       root.classList.add('is-wiping');
-      place(last[0], last[1], lastA);
+      place(last[0], last[1], 0);
       hint.hidden = true;
     });
 
@@ -346,16 +324,14 @@
       const mouse = e.pointerType === 'mouse';
       if (!canPlay() || (!down && !mouse)) return;
       const p = pos(e);
-      if (!last) { last = p; root.classList.add('is-wiping'); place(p[0], p[1], lastA); return; }
+      if (!last) { last = p; root.classList.add('is-wiping'); place(p[0], p[1], 0); return; }
       const dx = p[0] - last[0], dy = p[1] - last[1];
       if (dx * dx + dy * dy < 9) return;
-      // com o mouse, só passar por cima já limpa (depois que o rodo terminou a demonstração)
-      if (state === 'idle') state = 'play';
-      const a = turn(lastA, Math.atan2(dy, dx) + HALF, .35);
-      wipe(last[0], last[1], lastA, p[0], p[1], a);
-      last = p; lastA = a;
-      place(p[0], p[1], a);
-      if (state === 'ready') state = 'play';
+      // com o mouse, só passar por cima já limpa
+      state = 'play';
+      wipe(last[0], last[1], p[0], p[1]);
+      last = p;
+      place(p[0], p[1], dx);
       if (left < TOTAL * .7) hint.hidden = true;
       check();
     });
@@ -383,7 +359,7 @@
       hint.hidden = false;
     });
 
-    // Redimensionou: refaz a sujeira no novo tamanho (e o que o rodo já tinha limpado)
+    // Redimensionou: refaz a poeira no novo tamanho (e o que o pano já tinha limpado)
     let lastW = 0;
     const onResize = () => {
       const w = glass.getBoundingClientRect().width;
@@ -397,7 +373,7 @@
       if (state === 'idle') armAuto();
     };
 
-    // Começa quando a janela aparece na tela
+    // Começa quando o porta-retrato aparece na tela
     let armed = false;
     function armAuto() {
       if (armed) return;
@@ -421,35 +397,37 @@
     });
   })();
 
-  // ---------- Janela interativa: o que limpamos ----------
-  (function anatomy() {
-    const root = $('[data-anatomy]');
-    if (!root) return;
-    const btns = $$('button[data-part]', root);
-    const parts = $$('.an-part', root);
-    const dots = $$('[data-dot]', root);
-    let auto = true, idx = 0, timer = 0;
-    const set = key => {
-      root.dataset.active = key;
-      parts.forEach(p => p.classList.toggle('is-on', p.dataset.part === key));
-      dots.forEach(d => d.classList.toggle('is-on', d.dataset.dot === key));
-      btns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.part === key)));
-    };
-    const pick = key => { auto = false; clearInterval(timer); set(key); };
-    btns.forEach(b => {
-      b.addEventListener('click', () => pick(b.dataset.part));
-      b.addEventListener('mouseenter', () => pick(b.dataset.part));
-      b.addEventListener('focus', () => pick(b.dataset.part));
+  // ---------- Residencial | Comercial ----------
+  const switcher = $('[data-switch]');
+  const tabs = $$('[data-tab]');
+  function showTab(key, focus) {
+    if (!switcher) return;
+    switcher.dataset.active = key;
+    tabs.forEach(t => {
+      const on = t.dataset.tab === key;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      if (on && focus) t.focus();
     });
-    dots.forEach(d => { d.style.cursor = 'pointer'; d.addEventListener('click', () => pick(d.dataset.dot)); });
-    if (reduce || !('IntersectionObserver' in window)) { set('glass'); return; }
-    new IntersectionObserver(([e]) => {
-      clearInterval(timer);
-      if (!e.isIntersecting || !auto) return;
-      set(btns[idx].dataset.part);
-      timer = setInterval(() => { idx = (idx + 1) % btns.length; set(btns[idx].dataset.part); }, 2600);
-    }, { threshold: .35 }).observe(root);
-  })();
+    $$('[data-panel]').forEach(p => {
+      const on = p.dataset.panel === key;
+      if (on && p.hidden) {
+        p.hidden = false;
+        p.classList.add('is-in');
+        if (!reduce) { p.classList.remove('is-entering'); void p.offsetWidth; p.classList.add('is-entering'); }
+      } else if (!on) p.hidden = true;
+    });
+  }
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => showTab(t.dataset.tab));
+    t.addEventListener('keydown', e => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      e.preventDefault();
+      showTab(tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length].dataset.tab, true);
+    });
+  });
+  // Links "Residential" e "Commercial" do menu abrem a aba certa
+  $$('[data-tab-link]').forEach(a => a.addEventListener('click', () => showTab(a.dataset.tabLink)));
 
   // ---------- Antes e depois ----------
   $$('[data-compare]').forEach(fig => {
