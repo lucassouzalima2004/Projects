@@ -651,6 +651,12 @@ def other_page():
 {projects}
         </div>
       </div>
+      <div class="wrap marquee-foot">
+        <button class="motion-btn" type="button" data-motion-toggle aria-pressed="false">
+          <svg class="i i-pause" aria-hidden="true"><use href="#i-pause"/></svg><svg class="i i-play" aria-hidden="true"><use href="#i-play"/></svg>
+          <span data-label-pause>Pause</span><span data-label-play>Play</span>
+        </button>
+      </div>
     </section>
 
     <section class="other-list section" aria-labelledby="other-title">

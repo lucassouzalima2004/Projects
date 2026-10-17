@@ -161,9 +161,9 @@ páginas com essa lista. No Chrome e no Android não aparecia.
 - **Faixa do topo** com "aberto agora / fechado agora" calculado pelo horário de Seattle, telefone, "Text us" e horário.
 - **Painel com o vídeo de piso** (cantos arredondados, como o da Mastery Floors) e o texto no centro, como no anúncio que o Gabriel mandou: local entre linhas finas, *Floors done right the first time.* em serifada, 4 itens com ✓, botão branco *Get a free estimate* e o link *View our work ↓*. Embaixo, a nota do Google (4.9 · 137 reviews) e o botão de pausar. No celular, o vídeo é outro, em pé.
 - **O fundador**, logo abaixo do topo: foto do Gabriel, a frase da missão, a bio do site antigo e, embaixo, os números do site antigo (6 serviços, 24h, 100%, 4.9).
-- **Avaliações do Google passando** em duas faixas, em sentidos opostos. Param com o mouse em cima, dá para arrastar e tem botão de pausar.
+- **Avaliações do Google**: a nota (4.9, 137 avaliações) e o link para lê-las no Google. As faixas com depoimentos passando na tela voltam quando chegarem as avaliações reais (veja a lista abaixo).
 - **Serviços** ("Every floor. One accountable crew."): lista dos 6 serviços, cada um com uma foto em que o piso ocupa a maior parte. No computador, ao passar o mouse, a foto grande ao lado muda. Cada serviço leva à sua página.
-- **Projetos recentes passando**: fotos reais dos trabalhos do Gabriel, com o nome da cidade. Clicar abre a foto grande.
+- **Projetos recentes passando**: fotos reais dos trabalhos do Gabriel, com o nome da cidade. Clicar abre a foto grande. Param com o mouse em cima, dá para arrastar e têm botão de pausar.
 - **Why homeowners choose us** (os 4 itens do site antigo) e **How it works** (4 passos).
 - **Área atendida**: as 18 cidades do site antigo, mais Snohomish, e um **mapa** com as cidades nas coordenadas reais, a divisa entre os condados e a montanha do logo a leste.
 - **FAQ**: as 8 perguntas do site antigo, com respostas.
@@ -198,7 +198,7 @@ maiúsculas espaçadas, ecoa o "F L O O R S" do logo).
 
 ## Antes de mostrar ao Gabriel: o que é exemplo e precisa confirmar
 
-- [ ] **Avaliações do Google**: as 8 que aparecem são **exemplos escritos por nós**. Troque pelas avaliações reais do perfil do Google dele antes de ligar o domínio (`index.html`, seção 3). Enquanto isso, a prévia `.workers.dev` não aparece no Google (`noindex`).
+- [ ] **Avaliações reais do Google**: as 8 de exemplo, escritas por nós, saíram em 17/10, antes de o site ir para o domínio (no domínio ele é público e aparece no Google). Para as faixas voltarem, peça ao Gabriel 6 a 8 avaliações reais (o nome como aparece no Google e o texto). O modelo das faixas está no commit "Take the example reviews off"; o CSS e o JavaScript continuam no site.
 - [ ] **Link "Read them on Google"**: trocar pelo link do perfil do Google da empresa (Google Maps → Compartilhar).
 - [ ] **Nota e quantidade**: 4.9 e 137 avaliações vieram do site antigo. Confirmar os números de hoje (aparecem na linha do Google no topo, nos números do fundador, na seção de avaliações, nas páginas de serviço e na `og-image.jpg`).
 - [x] **Fotos dos projetos**: fotos reais dele, com a cidade de cada trabalho (16/10).
