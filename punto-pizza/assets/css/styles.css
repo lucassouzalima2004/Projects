@@ -204,9 +204,12 @@ h2.display + .lead { margin-top: .7em; }
 .btn-sm { min-height: 44px; padding: .55em 1.1em; font-size: .95rem; }
 .promo-tag {
   display: inline-flex; align-items: center; justify-content: center;
-  padding: .15em .55em; border-radius: 999px;
-  background: var(--oro); color: var(--forno); font-weight: 800; font-size: .85em;
+  padding: .15em .6em; border-radius: 999px;
+  background: var(--oro); color: var(--forno); font-weight: 800; font-size: .8em;
 }
+/* botão com o aviso do desconto numa segunda linha (barra fixa do celular) */
+.btn-stack { flex-direction: column; gap: 1px; line-height: 1.1; }
+.btn-stack small { font-size: .74em; font-weight: 600; }
 
 .link-arrow {
   display: inline-flex; align-items: center; gap: .4em; width: fit-content;

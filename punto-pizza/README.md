@@ -41,15 +41,17 @@ Ainda em 17/10, olhando a v3:
 - "Aqui falta o **Carbone vegetale con cereali**": a massa entrou nos cartões de massas do topo do menu (agora são 4, em duas colunas)
   e nas outras frases que listam as massas (home e menu).
 - A foto de perto da Margherita ("acho muito feio, não se entende nada") virou a **foto inteira** da pizza.
+- O "−5 €" dos botões estava sendo entendido como desconto em todo pedido: agora todo "−5 €" diz **"sul primo ordine"**
+  (botões do topo da home, do menu e da consegna, barra fixa do celular e o título "Scarica l'app: −5 € sul primo ordine").
 
 ## O que tem no site
 
 **Home** (`index.html`):
 
 1. **Topo**: fundo escuro e quente; à esquerda, "aperto ora / chiuso" pelo horário de Verona, o título
-   "Pizza a domicilio a Verona, *fatta come si deve*." entrando palavra por palavra, os botões **Ordina ora −5 €** e
+   "Pizza a domicilio a Verona, *fatta come si deve*." entrando palavra por palavra, os botões **Ordina ora · −5 € sul primo ordine** e
    **Sfoglia il menu**, a nota do Google e os diferenciais. À direita, **a margherita do Carlos girando** num prato inclinado,
-   com três folhas de manjericão flutuando, o selo **−5 €** e a etiqueta da *Margherita Come Si Deve* (leva à seção dela).
+   com três folhas de manjericão flutuando, o selo **−5 € sul primo ordine dall'app** e a etiqueta da *Margherita Come Si Deve* (leva à seção dela).
    No celular, a pizza fica em cima e o texto embaixo.
 2. Faixa vermelha correndo com os diferenciais (impasto 24 ore, San Marzano DOP, fiordilatte artigianale...).
 3. **La Margherita come si deve**: a foto inteira da pizza do Carlos, com o fundo original, os 4 ingredientes do app e o preço.
@@ -79,7 +81,7 @@ No computador são cartões com foto grande; no celular, linhas com a foto ao la
 - Seções que entram ao rolar, títulos palavra por palavra, pizzas recortadas flutuando e girando com a rolagem, botões que
   "puxam" levemente o mouse, cards que sobem ao passar o mouse e fotos que giram de leve.
 - Tudo desliga sozinho para quem ativou "reduzir movimento" no celular ou no computador.
-- Barra fixa no celular (Ordina −5 € / Chiama), página 404, prévia bonita no WhatsApp (`assets/img/og-image.jpg`), dados para o Google
+- Barra fixa no celular (Ordina ora, com "−5 € sul primo ordine dall'app" embaixo / Chiama), página 404, prévia bonita no WhatsApp (`assets/img/og-image.jpg`), dados para o Google
   (pizzaria, horários, menu com preços e fotos, perguntas, trilha), `sitemap.xml` e `robots.txt` gerados na publicação.
 
 **Testes (17/10, v3):** Lighthouse no computador 99–100 em desempenho e 100 em acessibilidade, boas práticas e SEO; no celular,
