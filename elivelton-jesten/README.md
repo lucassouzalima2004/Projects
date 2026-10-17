@@ -19,7 +19,7 @@ e LinkedIn no orçamento, e um **painel** onde ele vê de que cidade vêm as vis
 - **Obras**: 66 fotos e vídeos reais das equipas, organizados por obra (15 obras, como o depósito circular, a fundação
   industrial, o posto de abastecimento, o edifício em Sant Cugat). Cada quadro da galeria é uma obra com o número de
   fotos; ao abrir, a galeria em ecrã inteiro passa pelas fotos dessa obra e segue para a próxima. Filtro por tipo
-  (estrutura, obra nova, indústria e infraestruturas, remodelação) e botões do Instagram e do Facebook por baixo.
+  (estrutura, obra nova, indústria e infraestruturas, remodelação) e botões do Instagram, do Facebook e do LinkedIn por baixo.
 - **Orçamento**: formulário (com anexo de projeto até 10 MB) e os contactos diretos, com um quadro por país:
   Portugal (comercial@jesten.pt e dois telefones) e Espanha (ofitec@jesten.pt e dois telefones), mais o e-mail geral
   (geral@jesten.pt), WhatsApp, Instagram, Facebook e LinkedIn quando preenchidos e a morada com mapa.

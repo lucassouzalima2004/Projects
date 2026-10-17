@@ -1131,12 +1131,22 @@ html:not(.js) .hdr--overlay {
   margin-top: 18px;
 }
 
+/* Título à esquerda e texto à direita, nas mesmas colunas da grelha de baixo:
+   o texto começa onde começa o segundo cartão dos serviços (ou a terceira coluna das obras) */
 .sec-head--split {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: end;
-  gap: 20px clamp(32px, 6vw, 96px);
+  gap: 20px var(--gap);
   max-width: none;
+}
+
+.sec-head--thirds {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.sec-head--thirds > :first-child {
+  grid-column: span 2;
 }
 
 .sec-head--center {
@@ -1160,6 +1170,8 @@ html:not(.js) .hdr--overlay {
 .svc {
   position: relative;
   isolation: isolate;
+  display: flex;
+  flex-direction: column;
   padding: clamp(28px, 3vw, 42px);
   border: 1px solid transparent;
   border-radius: var(--r-lg);
@@ -1248,6 +1260,10 @@ html:not(.js) .hdr--overlay {
 
 .svc__text {
   margin-bottom: 24px;
+}
+
+.svc .chips {
+  margin-top: auto;
 }
 
 .chips {
@@ -1638,12 +1654,11 @@ html:not(.js) .hdr--overlay {
   background: var(--gold);
 }
 
+/* Por baixo da galeria: o "ver mais" numa linha e as redes sociais na seguinte, todas com a mesma largura */
 .gallery__foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 16px 24px;
+  display: grid;
+  justify-items: center;
+  gap: 28px;
   margin-top: 44px;
 }
 
@@ -1656,19 +1671,21 @@ html:not(.js) .hdr--overlay {
   justify-content: center;
 }
 
-/* Redes sociais por baixo da galeria, cada uma com a cor da marca no ícone */
+/* Redes sociais: colunas iguais (o número vem em --n), cada uma com a cor da marca no ícone */
 .gallery__social {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 14px;
+  width: min(100%, calc(var(--n, 3) * 340px + (var(--n, 3) - 1) * 14px));
 }
 
 .social-pill {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 14px;
-  padding: 7px 20px 7px 7px;
+  min-width: 0;
+  padding: 7px 18px 7px 7px;
   border: 1px solid var(--line);
   border-radius: 999px;
   background: #fff;
@@ -1688,6 +1705,7 @@ html:not(.js) .hdr--overlay {
 
 .social-pill__icon {
   display: grid;
+  flex: none;
   place-items: center;
   width: 42px;
   height: 42px;
@@ -1715,7 +1733,16 @@ html:not(.js) .hdr--overlay {
 
 .social-pill__text {
   display: grid;
+  flex: 1;
+  min-width: 0;
   line-height: 1.25;
+}
+
+.social-pill__text small,
+.social-pill__text b {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .social-pill__text small {
@@ -1727,10 +1754,35 @@ html:not(.js) .hdr--overlay {
   font: 600 14.5px/1.3 var(--display);
 }
 
+/* A seta fica sempre na ponta direita, alinhada entre os botões */
 .social-pill__go {
+  flex: none;
   width: 16px !important;
   height: 16px !important;
+  margin-left: auto;
   color: var(--mute);
+}
+
+/* Tablet e telemóvel: uma coluna, com o "ver mais" e as redes da mesma largura */
+@media (max-width: 980px) {
+  .gallery__foot {
+    gap: 12px;
+  }
+
+  .gallery__more,
+  .gallery__social {
+    width: min(100%, 440px);
+  }
+
+  .gallery__more .btn {
+    width: 100%;
+  }
+
+  .gallery__social {
+    grid-auto-flow: row;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
 }
 
 .gallery__more[hidden] {
@@ -1890,7 +1942,7 @@ html:not(.js) .gallery__more {
   position: absolute;
   top: 32px;
   left: 32px;
-  right: 32px;
+  right: calc((100% - 3 * var(--gap)) / 4 - 32px);
   height: 2px;
   border-radius: 2px;
 }
@@ -1902,7 +1954,7 @@ html:not(.js) .gallery__more {
 .steps::after {
   background: linear-gradient(90deg, var(--gold), #f6c86a);
   transform-origin: left;
-  transition: transform 1.6s linear 0.25s;
+  transition: transform 1.26s linear 0.25s;
 }
 
 .js .steps:not(.is-in)::after {
@@ -2053,7 +2105,7 @@ html:not(.js) .gallery__more {
 }
 
 .region {
-  padding: 16px 18px 12px;
+  padding: 16px 16px 12px 14px;
   border: 1px solid var(--line);
   border-radius: var(--r-md);
   background: #fff;
@@ -2329,6 +2381,11 @@ html:not(.js) .gallery__more {
   background: #f8f8f7;
   cursor: pointer;
   transition: border-color 0.2s;
+}
+
+/* o espaço da direita é para o botão de remover, que só aparece com um ficheiro escolhido */
+.file:not(.has-file) {
+  padding-right: 16px;
 }
 
 .file:hover {
@@ -3215,6 +3272,10 @@ html:not(.js) .gallery__more {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .sec-head--thirds > :first-child {
+    grid-column: auto;
+  }
+
   .about__media {
     max-width: 620px;
   }
@@ -3327,8 +3388,28 @@ html:not(.js) .gallery__more {
     flex: 1 1 100%;
   }
 
+  /* Tudo na mesma coluna: botões, vídeo e cartões com a mesma largura */
+  .hero__aside {
+    justify-items: stretch;
+  }
+
   .play {
     padding-right: 18px;
+  }
+
+  .btn--block {
+    padding-inline: 16px;
+  }
+
+  .about__cta .btn,
+  .hire .btn {
+    width: 100%;
+    height: auto;
+    min-height: 56px;
+    padding: 12px 16px;
+    white-space: normal;
+    line-height: 1.25;
+    text-align: center;
   }
 
   .play__icon {
@@ -3409,10 +3490,14 @@ html:not(.js) .gallery__more {
     padding: 18px 20px;
   }
 
+  .sec-head--center {
+    margin-inline: 0;
+    text-align: left;
+  }
+
   .steps {
     grid-template-columns: minmax(0, 1fr);
     gap: 0;
-    padding-left: 4px;
   }
 
   .step {
@@ -3452,13 +3537,26 @@ html:not(.js) .gallery__more {
   }
 
   .hire__body {
-    padding: 30px 24px 34px;
+    padding: 30px 20px 32px;
   }
 
   .quote__card {
-    margin-inline: calc(var(--pad) * -0.5);
     padding: 26px 20px;
     border-radius: var(--r-lg);
+  }
+
+  /* Anexo: sem o "nenhum ficheiro" (não cabia ao lado do botão); com ficheiro, o botão fica só com o clipe */
+  .file:not(.has-file) .file__name {
+    display: none;
+  }
+
+  .file.has-file .file__btn {
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    gap: 0;
+    font-size: 0;
   }
 
   .ftr__top {
@@ -3514,7 +3612,9 @@ html:not(.js) .gallery__more {
   .mobile-bar__cta {
     height: 52px;
     justify-content: space-between;
-    padding: 0 22px 0 24px;
+    gap: 8px;
+    padding: 0 18px 0 20px;
+    font-size: 15px;
     box-shadow: none;
   }
 }
@@ -3522,6 +3622,30 @@ html:not(.js) .gallery__more {
 @media (max-width: 380px) {
   .ftr__top {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Ecrãs muito estreitos: um botão longo (ex.: em francês) passa a duas linhas em vez de ficar cortado */
+  .btn--lg,
+  .btn--block,
+  .mobile-bar__cta {
+    height: auto;
+    padding-block: 8px;
+    padding-inline: 16px;
+    white-space: normal;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .btn--block {
+    min-height: 50px;
+  }
+
+  .btn--lg {
+    min-height: 56px;
+  }
+
+  .mobile-bar__cta {
+    min-height: 52px;
   }
 }
 

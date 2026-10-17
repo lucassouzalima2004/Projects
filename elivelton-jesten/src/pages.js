@@ -530,8 +530,7 @@ function socialPills(ctx) {
         `<a class="social-pill social-pill--${kind}" href="${esc(href)}" target="_blank" rel="noopener"><span class="social-pill__icon">${icon(kind)}</span><span class="social-pill__text"><small>${esc(
           label,
         )}</small><b>${esc(name)}</b></span>${icon('out', 'social-pill__go')}</a>`,
-    )
-    .join('');
+    );
 }
 
 function works(ctx, groups) {
@@ -619,7 +618,7 @@ function works(ctx, groups) {
   return `
 <section class="section" id="${s.anchors.works}">
   <div class="wrap">
-    <header class="sec-head sec-head--split" data-reveal="text">
+    <header class="sec-head sec-head--split sec-head--thirds" data-reveal="text">
       <div>${eyebrow(s.works.kicker)}<h2 class="h2">${words(s.works.title)}</h2></div>
       <div class="sec-aside"><p class="sec-intro">${esc(s.works.intro)}</p>${updated}</div>
     </header>
@@ -634,7 +633,7 @@ function works(ctx, groups) {
             )}" data-less="${esc(s.works.less)}"><span>${esc(s.works.more)}</span>${icon('plus')}</button></div>`
           : ''
       }
-      ${social ? `<div class="gallery__social">${social}</div>` : ''}
+      ${social.length ? `<div class="gallery__social" style="--n:${social.length}">${social.join('')}</div>` : ''}
     </div>
   </div>
   <script type="application/json" id="works-data">${json(data)}</script>
@@ -882,7 +881,7 @@ export function careersPage(ctx) {
     <div class="quote__intro" data-reveal="text">
       ${eyebrow(f.title)}
       <h2 class="h2">${words(c.applyTitle)}</h2>
-      <p class="sec-intro">${esc(c.lead)}</p>
+      <p class="sec-intro">${esc(c.applyText)}</p>
       <p class="quote__sub">${esc(c.direct)}</p>
       ${regions(ctx, { emails: false })}
       ${contacts(ctx, { only: ['mail', 'whatsapp'], whatsappText: c.whatsappText })}
