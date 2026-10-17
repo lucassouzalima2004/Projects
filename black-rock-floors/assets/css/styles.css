@@ -482,7 +482,6 @@ strong { font-weight: 640; }
   display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr); align-items: end;
   gap: 32px clamp(32px, 6vw, 96px); margin-bottom: clamp(44px, 5vw, 76px);
 }
-.reviews-head:last-child { margin-bottom: 0; }  /* sem as faixas de depoimentos embaixo */
 .reviews .h2 { max-width: 21ch; }
 .rating { display: flex; align-items: flex-end; gap: 22px; justify-self: end; }
 .rating-score {
