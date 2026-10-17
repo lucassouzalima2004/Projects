@@ -36,6 +36,12 @@ Depois da v2 (áudio de 17/10), o Carlos **não gostou do topo com vídeo** e pe
 - Na parte do senza glutine, **o logo da AIC e o texto dele**, palavra por palavra (página Senza glutine, logo abaixo do topo,
   e um selo na faixa do senza glutine da home).
 
+Ainda em 17/10, olhando a v3:
+
+- "Aqui falta o **Carbone vegetale con cereali**": a massa entrou nos cartões de massas do topo do menu (agora são 4, em duas colunas)
+  e nas outras frases que listam as massas (home e menu).
+- A foto de perto da Margherita ("acho muito feio, não se entende nada") virou a **foto inteira** da pizza.
+
 ## O que tem no site
 
 **Home** (`index.html`):
@@ -46,7 +52,7 @@ Depois da v2 (áudio de 17/10), o Carlos **não gostou do topo com vídeo** e pe
    com três folhas de manjericão flutuando, o selo **−5 €** e a etiqueta da *Margherita Come Si Deve* (leva à seção dela).
    No celular, a pizza fica em cima e o texto embaixo.
 2. Faixa vermelha correndo com os diferenciais (impasto 24 ore, San Marzano DOP, fiordilatte artigianale...).
-3. **La Margherita come si deve**: um recorte de perto da foto do Carlos (cornicione, molho e manjericão), os 4 ingredientes do app e o preço.
+3. **La Margherita come si deve**: a foto inteira da pizza do Carlos, com o fundo original, os 4 ingredientes do app e o preço.
 4. **Le nostre pizze**: carrossel com 12 pizzas e as **fotos reais do app** (dá para arrastar com o mouse, usar as setas ou o dedo), com os selos do app (Novità, Eccellenza, Più venduto...).
 5. **Fatta come si deve**: o método em 4 passos; no computador a foto da esquerda fica parada e troca conforme o passo que está na tela.
 6. **Senza glutine. Con tutto il resto.**: o selo da **AIC Alimentazione Fuori Casa**, a pizza Luna recortada e a avaliação da Ilaria por cima.
@@ -56,7 +62,7 @@ Depois da v2 (áudio de 17/10), o Carlos **não gostou do topo com vídeo** e pe
 10. Chamada final vermelha "Hai fame?" com duas pizzas flutuando.
 
 **Menu** (`menu/`): o menu do app com **foto de cada item**: Pizze classiche (31), Le nostre specialità (8), Pizze baby (4),
-Fritti, Bibite e Birre. Abas fixas com a "pílula" que desliza até a seção da tela, filtros (**Consigliate**, Vegetariane, Piccanti),
+Fritti, Bibite e Birre. No topo, as 4 massas (classico, integrale, carbone vegetale con cereali e senza glutine). Abas fixas com a "pílula" que desliza até a seção da tela, filtros (**Consigliate**, Vegetariane, Piccanti),
 busca por ingrediente ("porcini", "bufala"...) e o botão **"Scegli per me"**, que sorteia uma pizza e gira a foto.
 No computador são cartões com foto grande; no celular, linhas com a foto ao lado, como num app de delivery.
 
@@ -93,10 +99,10 @@ filtros, busca, "Scegli per me", abas, CAP, menu do celular, barra fixa, o mapa 
 
 ## Antes de mostrar ao Carlos: o que confirmar
 
-- [ ] **Marca d'água na margherita**: a foto que ele pediu para o topo (a mesma da *Margherita Come Si Deve* no app) tem uma **marca d'água fraca de banco de imagens** no meio. Na pizza girando ela quase não aparece (o recorte de perto da seção da Margherita evita essa parte), mas a foto pode não ser dele. Se for de banco de imagens, ele precisa da licença ou de uma foto própria. Vale perguntar; se ele mandar outra foto, veja [A pizza que gira no topo](#a-pizza-que-gira-no-topo).
+- [ ] **Marca d'água na margherita**: a foto que ele pediu para o topo (a mesma da *Margherita Come Si Deve* no app) tem uma **marca d'água fraca de banco de imagens** no meio. Na pizza girando ela quase não aparece (e na foto inteira da seção da Margherita aparece de leve no centro), mas a foto pode não ser dele. Se for de banco de imagens, ele precisa da licença ou de uma foto própria. Vale perguntar; se ele mandar outra foto, veja [A pizza que gira no topo](#a-pizza-que-gira-no-topo).
 - [ ] **AIC**: confirmar que a adesão ao programa Alimentazione Fuori Casa está em dia e que ele pode usar o logo da AIC no site (o logo foi vetorizado da imagem que ele mandou; se a AIC mandou o arquivo oficial, melhor usar esse).
 - [ ] **"Única pizzaria delivery de Verona na AIC"**: ele disse isso no áudio, mas **não está no site**. Uma frase de "única" precisa ser verdade e dá para conferir na lista de locais da AIC (app AiC Mobile). Se ele confirmar, dá para acrescentar.
-- [ ] **Massas**: o site diz "classico, integrale o senza glutine" (do site antigo e das avaliações). O menu do app não mostra as massas por item. Confirmar quais pizzas aceitam cada massa e se tem acréscimo.
+- [ ] **Massas**: o site diz "classico, integrale, al carbone vegetale con cereali o senza glutine" (do site antigo, das avaliações e do Carlos). O menu do app não mostra as massas por item. Confirmar quais pizzas aceitam cada massa e se tem acréscimo.
 - [ ] **Senza glutine** (informação de segurança para celíacos, confirmar tudo): "ingredientes e utensílios separados" e "cozimento/forno separado" vêm de avaliações de clientes; "laboratório dedicado" vem do site antigo dele. E dá para misturar pizzas normais e sem glúten no mesmo pedido?
 - [ ] **Horário**: terça a domingo 17:00–21:30, segunda fechado (do site antigo). Confirmar.
 - [ ] **Zona de entrega**: CAP 37137 e 37138 (do Just Eat). Pelo app ele entrega mais longe? Tem taxa de entrega e pedido mínimo?
@@ -191,7 +197,7 @@ punto-pizza/
 ├── assets/js/app.js              horário, rolagem, animações, carrossel, filtros, CAP, mapa
 ├── assets/js/vendor/lenis.min.js rolagem suave (MIT)
 ├── assets/fonts/                 Bricolage Grotesque e Instrument Serif (só os caracteres usados)
-├── assets/img/                   logo, logo da AIC, favicon, QR do app, og-image, a Margherita de perto
+├── assets/img/                   logo, logo da AIC, favicon, QR do app, og-image, a foto da Margherita
 │   ├── hero/                     a margherita que gira no topo e as folhas de manjericão
 │   ├── menu/                     fotos de cada item do menu (do app)
 │   ├── cut/                      pizzas recortadas (fundo transparente)
