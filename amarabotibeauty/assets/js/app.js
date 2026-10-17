@@ -328,10 +328,21 @@
     return `<svg class="${cls}" viewBox="0 0 200 240" style="color:${esc(p.color)}" aria-hidden="true" focusable="false">${draw(p.label || p.line || L(p.name))}</svg>`;
   }
 
-  function visual(p, extra = '') {
-    const inner = p.photo ? `<img class="pv__img" src="${esc(p.photo)}" alt="" loading="lazy" decoding="async">` : art(p);
-    return `<span class="pv" style="--d:${(p.order * 1.7) % 6}"${extra}><span class="pv__glow"></span><span class="pv__float">${inner}</span><span class="pv__floor"></span></span>`;
+  // Foto do produto numa vitrine clara (o fundo branco da foto some nela); sem foto, o frasco desenhado
+  function visual(p, eager = false) {
+    if (p.photo) {
+      return `<span class="pv pv--photo" style="--d:${(p.order * 1.7) % 6}"><span class="pv__window"></span><span class="pv__float"><img class="pv__img" src="${esc(p.photo)}" alt="" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></span><span class="pv__floor"></span></span>`;
+    }
+    return `<span class="pv" style="--d:${(p.order * 1.7) % 6}"><span class="pv__glow"></span><span class="pv__float">${art(p)}</span><span class="pv__floor"></span></span>`;
   }
+
+  // Descrição só no idioma em que ela existe (as do site oficial são só em português)
+  const descOf = (p) => {
+    const d = p.desc;
+    if (!d) return '';
+    if (typeof d === 'string') return state.lang === 'pt' ? d : '';
+    return d[state.lang] || '';
+  };
 
   /* ------------------------------------------------------------ pedaços de produto */
   function stockHTML(p) {
@@ -388,7 +399,8 @@
       .filter((p) => {
         if (!words.length) return true;
         const cat = S.categories.find((c) => c.id === p.cat);
-        const hay = norm([p.name.pt || p.name, p.name.it, p.line, p.size, L(p.family), L(p.desc), cat && cat.name.pt, cat && cat.name.it].join(' '));
+        const desc = p.desc && typeof p.desc === 'object' ? [p.desc.pt, p.desc.it].join(' ') : p.desc;
+        const hay = norm([p.name.pt || p.name, p.name.it, p.line, p.size, L(p.family), desc, cat && cat.name.pt, cat && cat.name.it].join(' '));
         return words.every((w) => hay.includes(w));
       })
       .sort((a, b) => (a.stock > 0 ? 0 : 1) - (b.stock > 0 ? 0 : 1) || a.order - b.order);
@@ -729,14 +741,14 @@
     if (!p) return;
     const fam = L(p.family);
     $('[data-quick]').innerHTML = `
-      <div class="quick__art" style="--glow:${esc(p.glow)}">${visual(p)}</div>
+      <div class="quick__art" style="--glow:${esc(p.glow)}">${visual(p, true)}</div>
       <div class="quick__info">
         <button class="icon-btn quick__x" type="button" data-close><svg aria-hidden="true"><use href="#i-close"/></svg><span class="sr-only">${esc(t('ui.close'))}</span></button>
         <p class="card__line">${esc(p.line)}</p>
         <h2 class="quick__name" id="quick-name">${esc(L(p.name))}</h2>
         <p class="quick__price">${money(p.price)}</p>
         ${p.size || fam ? `<ul class="quick__tags">${p.size ? `<li><b>${esc(t('product.size'))}</b>${esc(p.size)}</li>` : ''}${fam ? `<li><b>${esc(t('product.family'))}</b>${esc(fam)}</li>` : ''}</ul>` : ''}
-        ${L(p.desc) ? `<p class="quick__desc">${esc(L(p.desc))}</p>` : ''}
+        ${descOf(p) ? `<p class="quick__desc">${esc(descOf(p))}</p>` : ''}
         <p class="quick__stock">${stockHTML(p)}</p>
         <div class="quick__act" data-act="${esc(p.id)}">${actHTML(p)}</div>
         <button class="quick__go" type="button" data-cart-open${state.cart.size ? '' : ' hidden'}>${esc(t('cart.open'))} →</button>
@@ -752,7 +764,7 @@
 
   function renderSpotDots() {
     const featured = state.products.filter((p) => p.featured && p.stock > 0);
-    state.spot = (featured.length ? featured : state.products.filter((p) => p.stock > 0)).slice(0, 6);
+    state.spot = (featured.length ? featured : state.products.filter((p) => p.stock > 0)).slice(0, 8);
     $('#amados').hidden = !state.spot.length;
     if (!state.spot.length) return;
     state.spotI = Math.min(state.spotI, state.spot.length - 1);
@@ -767,7 +779,7 @@
     const meta = [L(p.family), p.size].filter(Boolean);
     return `<p class="card__line">${esc(p.line)}</p>
       <h3 class="spot__name">${esc(L(p.name))}</h3>
-      ${L(p.desc) ? `<p class="spot__desc">${esc(L(p.desc))}</p>` : ''}
+      ${descOf(p) ? `<p class="spot__desc">${esc(descOf(p))}</p>` : ''}
       ${meta.length ? `<p class="spot__meta">${meta.map((m) => `<span>${esc(m)}</span>`).join('<span aria-hidden="true">✦</span>')}</p>` : ''}
       <p class="spot__price">${money(p.price)}</p>
       <div class="spot__act"><div data-act="${esc(p.id)}">${actHTML(p)}</div></div>`;
@@ -788,8 +800,8 @@
     $$('.dot', spotEl).forEach((d, k) => d.setAttribute('aria-current', String(k === i)));
 
     const swap = () => {
-      artEl.innerHTML = visual(p);
-      artEl.firstElementChild.classList.add('is-alive');
+      artEl.innerHTML = visual(p, true);
+      artEl.classList.add('is-alive');
       artEl.dataset.open = p.id;
       artEl.setAttribute('aria-label', `${t('product.details')}: ${L(p.name)}`);
       info.innerHTML = spotInfoHTML(p);
@@ -884,7 +896,10 @@
   }
 
   function renderMarquee() {
-    const lines = Array.from(new Set(state.products.map((p) => p.line).filter(Boolean)));
+    // As linhas com mais produtos, até 14
+    const freq = new Map();
+    state.products.forEach((p) => p.line && p.line !== 'O Boticário' && freq.set(p.line, (freq.get(p.line) || 0) + 1));
+    const lines = Array.from(freq.entries()).sort((a, b) => b[1] - a[1]).slice(0, 14).map(([l]) => l);
     let items = lines.length ? lines : ['O Boticário'];
     while (items.length < 10) items = items.concat(items);
     const one = items.map((l) => `<span class="marquee__item">${esc(l)}<svg aria-hidden="true"><use href="#i-spark"/></svg></span>`).join('');

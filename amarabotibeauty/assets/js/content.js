@@ -34,7 +34,7 @@ window.SITE = {
   lowStock: 3,
 
   // Quantos produtos aparecem antes do botão "Ver mais"
-  pageSize: 12,
+  pageSize: 16,
 
   /* ---------------------------------------------------------------------------
      2. CATEGORIAS (a ordem aqui é a ordem dos botões da vitrine)
@@ -47,6 +47,7 @@ window.SITE = {
     { id: 'make',      name: { pt: 'Maquiagem',         it: 'Make-up' } },
     { id: 'masculino', name: { pt: 'Masculino',         it: 'Uomo' } },
     { id: 'kits',      name: { pt: 'Kits & presentes',  it: 'Kit & regali' } },
+    { id: 'acessorios', name: { pt: 'Acessórios',       it: 'Accessori' } },
   ],
 
   // Cor de cada linha, usada no desenho do frasco quando o produto não tem cor nem foto

@@ -1,6 +1,7 @@
 # Amarabotibeauty · site
 
-Loja de produtos **O Boticário na Itália** (cliente: Jean, WhatsApp da logo +39 351 420 4866), em português e italiano.
+Loja de produtos **O Boticário na Itália** (cliente: Jean, WhatsApp da logo +39 351 420 4866), em português e italiano,
+com os produtos reais do [oboticario.pt](https://www.oboticario.pt).
 Vitrine com estoque, sacola e pedido pelo WhatsApp. Visual preto e dourado da logo, tudo centralizado e animado.
 
 É HTML, CSS e JavaScript puros: sem build e sem bibliotecas. Dá para abrir o `index.html` direto no navegador.
@@ -11,13 +12,18 @@ Vitrine com estoque, sacola e pedido pelo WhatsApp. Visual preto e dourado da lo
   brilhos dourados flutuando como os da logo, título entrando palavra por palavra e um traço dourado que se desenha.
   No computador, o medalhão acompanha o mouse.
 - **Faixa dourada** correndo com as linhas (Lily, Malbec, Floratta, Nativa SPA...). Ela é montada sozinha a partir dos produtos.
-- **Vitrine**: categorias (o botão dourado desliza até a escolhida), busca sem acento, "Ver mais" de 12 em 12.
+- **Vitrine**: categorias (o botão dourado desliza até a escolhida), busca sem acento, "Ver mais" de 16 em 16.
   Cada produto mostra linha, nome, tamanho, preço e o estoque: "Em estoque", "Últimas 2 unidades" ou "Esgotado".
   Esgotados vão para o fim da lista e trocam o botão por **Avise-me** (abre o WhatsApp pedindo aviso).
   A sacola nunca deixa pegar mais do que tem em estoque.
-- **Frascos desenhados**: enquanto não há fotos, o site desenha cada produto (perfume redondo, quadrado, alto, loção com
-  válvula, pote, bisnaga, spray, sérum, gloss, blush, máscara, kit de presente) na cor do produto, com o nome da linha
-  no rótulo. Quando houver foto, ela entra no lugar do desenho.
+- **Produtos reais do [oboticario.pt](https://www.oboticario.pt)** (o site que a Jean mandou): o catálogo inteiro deles,
+  518 produtos em 8 categorias (perfumes, masculino, corpo & banho, cabelos, rosto, maquiagem, kits & presentes com os
+  kits de Natal, acessórios), com nome, linha, tamanho, preço, descrição e a foto oficial de cada um. A foto fica numa "vitrine" clara com borda dourada dentro do card
+  escuro (o fundo branco da foto some nela), tingida de leve com a cor do produto, que o importador tira da própria foto.
+  Os nomes aparecem em português do Brasil (Desodorante, Cílios, Shampoo...) e em italiano (Lozione Idratante, Crema Mani...).
+  A descrição do site oficial só existe em português: no italiano ela não aparece.
+- **Frasco desenhado** para produto sem foto (por exemplo, um produto novo que a Jean puser na planilha): o site desenha
+  perfume, loção, pote, bisnaga, spray, sérum, gloss, blush, máscara ou kit na cor do produto, com o nome da linha no rótulo.
 - **Detalhes** do produto numa janela (toque na imagem).
 - **Mais amados**: carrossel com os produtos marcados como destaque, troca sozinho a cada 6,5 s (pausa com o mouse em cima,
   no botão de pausa ou fora da tela), setas, pontos e arrastar no celular. O fundo muda para a cor do produto.
@@ -96,18 +102,37 @@ Observações:
 - Se um produto da sacola esgotar, a cliente vê um aviso quando voltar ao site, e a sacola se ajusta sozinha.
 - Para regerar o modelo depois de mudar o `products.js`: `node amarabotibeauty/tools/exportar-planilha.mjs`.
 
+## Catálogo do oboticario.pt
+
+Os produtos vieram do site oficial com `tools/importar-oboticario.py` (Python 3 + Pillow). Para trazer produtos novos
+(os kits de Natal, por exemplo) ou atualizar os preços:
+
+```bash
+pip install pillow
+python3 amarabotibeauty/tools/importar-oboticario.py --atualizar
+```
+
+Ele lê o sitemap e cada página de produto, baixa só as fotos que faltam, e reescreve `assets/js/products.js`
+**mantendo o estoque e os destaques** que já estão lá. Produto novo entra com estoque 5 (ou 0 se estiver esgotado no
+site deles). Fica de fora o que não é do Boticário (protetor Australian Gold) e o que não é produto (sacos e cartões
+de presente). Depois, rode `node amarabotibeauty/tools/exportar-planilha.mjs` para atualizar o modelo da planilha.
+
 ## Fotos dos produtos
 
-Coloque as fotos em `assets/img/produtos/` (crie a pasta) e preencha `photo` no `products.js` (ou a coluna `foto`).
-Funcionam melhor com **fundo transparente** (PNG ou WebP), frasco em pé e centralizado, uns 800 px de altura:
-o brilho e a sombra do site ficam por trás. Use fotos próprias do cliente ou as oficiais do material de revenda,
-se a revenda permitir.
+As fotos estão em `assets/img/produtos/<id>.webp`: a foto oficial, com as sobras de fundo branco cortadas, em 560×560.
+Para trocar uma foto, salve outra com o mesmo nome (ou mude `photo` no `products.js` / a coluna `foto`).
+Fotos com fundo branco ficam perfeitas na vitrine clara; fotos com fundo colorido aparecem como um quadro.
+As fotos e textos são do Grupo Boticário: confirme com a Jean se a revenda pode usá-los (normalmente pode,
+para vender os produtos da marca).
 
 ## Antes de mostrar para o cliente
 
-O conteúdo atual é de **exemplo**. Confirme com Jean e troque:
+Os produtos são os reais do oboticario.pt, mas **o estoque é de exemplo** (5 de cada, alguns com poucas unidades e os
+esgotados no site deles). Confirme com a Jean e troque:
 
-- [ ] Produtos, preços e quantidades (hoje são 28 produtos de exemplo, com nomes e preços de oboticario.pt em out/2026)
+- [ ] Quais produtos ela vende e quantos tem de cada (o resto fica com estoque 0, ou sai da lista)
+- [ ] Preços: hoje são os do site de Portugal, em euro. Ela vende pelo mesmo valor na Itália?
+- [ ] Quais são os "Mais amados" dela (`featured`)
 - [ ] WhatsApp que recebe os pedidos: usei o da logo (351 420 4866). A conversa no WhatsApp veio de outro número (+39 333 546 1353)
 - [ ] Instagram (Jean tem, mas usa pouco)
 - [ ] Cidade e entrega: retira pessoalmente? Envia para toda a Itália? Frete e prazo? (pergunta "Vocês entregam?")
@@ -115,8 +140,7 @@ O conteúdo atual é de **exemplo**. Confirme com Jean e troque:
 - [ ] Se é revenda oficial ou independente (rodapé: "Revenda independente de produtos O Boticário") e se todos os produtos
       são lacrados (pergunta "Os produtos são originais?")
 - [ ] Texto do "Sobre" (hoje é genérico: "nasceu para levar os perfumes e cuidados do Boticário para quem vive na Itália")
-- [ ] Descrições e famílias dos perfumes
-- [ ] Fotos dos produtos
+- [ ] Se pode usar as fotos e descrições oficiais do Boticário
 - [ ] Planilha de estoque ligada e compartilhada (seção acima)
 - [ ] Domínio próprio, se quiser (variável `AMARA_SITE_URL` no workflow)
 
@@ -155,7 +179,8 @@ amarabotibeauty/
 ├── assets/js/products.js    produtos, preços e estoque
 ├── assets/js/app.js         comportamento (vitrine, sacola, pedido, desenhos, animações, planilha)
 ├── assets/img/              logo, ícones e imagem de prévia do link
-└── tools/                   imagem de prévia (og.html) e modelo da planilha (não vão para o ar)
+├── assets/img/produtos/     fotos dos produtos
+└── tools/                   importador do oboticario.pt, imagem de prévia (og.html) e modelo da planilha (não vão para o ar)
 ```
 
 Fontes: Bodoni Moda (títulos), Great Vibes (assinatura, como a logo) e Jost (textos), do Google Fonts.
