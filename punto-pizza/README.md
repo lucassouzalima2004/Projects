@@ -43,6 +43,9 @@ Ainda em 17/10, olhando a v3:
 - A foto de perto da Margherita ("acho muito feio, não se entende nada") virou a **foto inteira** da pizza.
 - O "−5 €" dos botões estava sendo entendido como desconto em todo pedido: agora todo "−5 €" diz **"sul primo ordine"**
   (botões do topo da home, do menu e da consegna, barra fixa do celular e o título "Scarica l'app: −5 € sul primo ordine").
+- "Esse texto aqui é errado em italiano": o texto do topo da página Senza glutine agora é **o texto que ele mandou**, palavra por palavra
+  (dois parágrafos: "Chi è celiaco o deve evitare il glutine..." e "Nasce in un laboratorio dedicato..."). O título "Un laboratorio
+  tutto suo" da mesma página virou "Un laboratorio dedicato", como ele escreve.
 
 ## O que tem no site
 

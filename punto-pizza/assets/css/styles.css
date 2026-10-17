@@ -810,6 +810,7 @@ h2.display + .lead { margin-top: .7em; }
 .page-hero > .wrap { position: relative; z-index: 1; max-width: 900px; }
 .page-hero h1 { margin-bottom: .35em; }
 .page-hero .lead { margin-inline: auto; margin-bottom: 0; }
+.page-hero .lead + .lead { margin-top: .9em; }
 .page-hero .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 30px; }
 .page-hero .float { position: absolute; z-index: 0; width: clamp(200px, 26vw, 380px); filter: drop-shadow(0 30px 50px rgba(0, 0, 0, .7)); }
 .page-hero .float.a { left: -6%; top: 14%; }
