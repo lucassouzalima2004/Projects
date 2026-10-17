@@ -1,0 +1,29 @@
+id,categoria,linha,nome,nome_it,tamanho,preco,estoque,destaque,novo,foto,cor,desenho,familia,familia_it,descricao,descricao_it
+lily-edp,Perfumes,Lily,Lily Eau de Parfum,,75 ml,"64,90",4,sim,,,#EBC3B0,round,Floral,Floreale,"O floral mais elegante do Boticário, com o lírio como estrela. Sofisticado do dia à noite.","Il floreale più elegante di O Boticário, con il giglio protagonista. Raffinato dal giorno alla sera."
+floratta-rose-sucree-edp,Perfumes,Floratta,Floratta Rose Sucrèe Eau de Parfum,,75 ml,"37,40",6,sim,sim,,#F0A7B4,tall,Floral adocicado,Floreale dolce,"Rosas com um toque doce e delicado. Romântico, feminino e fácil de amar.","Rose con un tocco dolce e delicato. Romantico, femminile e facile da amare."
+liz-vanilla-edt,Perfumes,Liz,Liz Vanilla Eau de Toilette,,100 ml,"34,99",2,,sim,,#E9D2A4,square,Floral baunilhado,Floreale vanigliato,A delicadeza de Liz com o aconchego da baunilha.,La delicatezza di Liz con il calore della vaniglia.
+egeo-dolce,Perfumes,Egeo,Egeo Dolce Desodorante Colônia,Egeo Dolce Eau de Cologne,90 ml,"32,99",0,,,,#E8587A,tall,Gourmand,,"Doce, divertido e marcante. Para quem ama perfumes gourmand.","Dolce, divertente e deciso. Per chi ama i profumi gourmand."
+aura-edp,Perfumes,Aura,Aura Eau de Parfum,,75 ml,"50,00",3,,sim,,#E6B2A0,round,,,O perfume da linha Aura by Helena Coelho. Luminoso e envolvente.,Il profumo della linea Aura by Helena Coelho. Luminoso e avvolgente.
+malbec-edt,Masculino,Malbec,Malbec Eau de Toilette,,100 ml,"49,90",5,sim,,,#5E1B2C,square,Amadeirado,Legnoso,"O clássico masculino do Boticário, com álcool vínico envelhecido em barris de carvalho.","Il classico maschile di O Boticário, con alcol di vino invecchiato in botti di rovere."
+malbec-black-legend-edt,Masculino,Malbec,Malbec Black Legend Eau de Toilette,,100 ml,"37,40",3,,sim,,#1F1A1E,square,Amadeirado intenso,Legnoso intenso,A versão mais intensa e misteriosa de Malbec.,La versione più intensa e misteriosa di Malbec.
+zaad-edp,Masculino,Zaad,Zaad Eau de Parfum,,95 ml,"64,90",1,,,,#2C4766,tall,Amadeirado aromático,Legnoso aromatico,"Marcante e sofisticado, para ocasiões especiais.","Deciso e sofisticato, per le occasioni speciali."
+malbec-black-legend-deo,Masculino,Malbec,Malbec Black Legend Desodorante Spray,Malbec Black Legend Deodorante Spray,125 ml,"9,99",8,,,,#1F1A1E,spray,,,,
+malbec-black-legend-locao,Masculino,Malbec,Malbec Black Legend Loção Hidratante Corporal,Malbec Black Legend Lozione Corpo Idratante,200 ml,"12,99",0,,,,#1F1A1E,flip,,,,
+nativa-ameixa-negra-locao,Corpo & banho,Nativa SPA,Nativa SPA Ameixa Negra Loção Hidratante,Nativa SPA Prugna Nera Lozione Idratante,400 ml,"21,99",7,sim,,,#5A2742,pump,,,Hidratação prolongada com a fragrância envolvente da ameixa negra. Um best-seller da marca.,Idratazione prolungata con la fragranza avvolgente della prugna nera. Un best-seller del marchio.
+lily-creme,Corpo & banho,Lily,Lily Creme Hidratante Acetinado,Lily Crema Corpo Idratante,250 g,"34,99",2,,,,#EBC3B0,jar,,,A fragrância de Lily num creme acetinado que deixa a pele perfumada o dia todo.,La fragranza di Lily in una crema vellutata che profuma la pelle tutto il giorno.
+floratta-rose-sucree-creme,Corpo & banho,Floratta,Floratta Rose Sucrèe Creme Hidratante,Floratta Rose Sucrèe Crema Idratante,200 g,"16,99",5,,sim,,#F0A7B4,jar,,,,
+cuide-se-bem-deleite,Corpo & banho,Cuide-se Bem,Cuide-se Bem Deleite Loção Hidratante,Cuide-se Bem Deleite Lozione Idratante,400 ml,"14,99",9,,,,#D9A06B,pump,,,,
+cuide-se-bem-pessegura,Corpo & banho,Cuide-se Bem,Cuide-se Bem Pessegura Loção Hidratante,Cuide-se Bem Pessegura Lozione Idratante,400 ml,"14,99",4,,,,#F2A783,flip,,,,
+nativa-quinoa-shampoo,Cabelos,Nativa SPA,Nativa SPA Quinoa Shampoo,,300 ml,"12,99",6,,,,#E2C17F,flip,,,,
+nativa-quinoa-condicionador,Cabelos,Nativa SPA,Nativa SPA Quinoa Condicionador,Nativa SPA Quinoa Balsamo,250 ml,"12,99",6,,,,#E2C17F,tube,,,,
+nativa-quinoa-mascara,Cabelos,Nativa SPA,Nativa SPA Quinoa Máscara Capilar,Nativa SPA Quinoa Maschera Capelli,250 g,"16,99",0,,,,#E2C17F,jar,,,,
+botik-acido-hialuronico,Rosto,Botik,Botik Creme Facial Ácido Hialurônico,Botik Crema Viso Acido Ialuronico,40 g,"32,99",3,,,,#BCD5E6,pot,,,"Hidratação intensa para o rosto, com textura leve.","Idratazione intensa per il viso, dalla texture leggera."
+botik-vitamina-c,Rosto,Botik,Botik Sérum Vitamina C,Botik Siero Vitamina C,30 ml,"29,99",2,,,,#F0B03C,dropper,,,,
+berenice-lip-tint,Maquiagem,"Quem Disse, Berenice?","Creamy Lip Tint Quem Disse, Berenice?",,4 ml,"10,99",10,,sim,,#C24461,gloss,,,,
+aura-blush,Maquiagem,Aura,Blush Aura by Helena Coelho,,9 g,"19,00",3,,,,#E58C83,compact,,,,
+aura-mascara,Maquiagem,Aura,Máscara de Cílios Aura by Helena Coelho,Mascara Aura by Helena Coelho,12 ml,"17,00",5,,,,#1F1A1E,mascara,,,,
+aura-gloss,Maquiagem,Aura,Gloss Boss Aura by Helena Coelho,,,"16,00",0,,,,#E9A08F,gloss,,,,
+kit-lily,Kits & presentes,Lily,Kit Presente Lily,Kit Regalo Lily,,"68,99",2,sim,,,#EBC3B0,box,,,Produtos da linha Lily numa caixa pronta para presentear.,Prodotti della linea Lily in una confezione pronta da regalare.
+kit-malbec,Kits & presentes,Malbec,Kit Presente Malbec,Kit Regalo Malbec,,"46,99",3,,,,#5E1B2C,box,,,O presente certo para ele: Malbec numa caixa elegante.,Il regalo giusto per lui: Malbec in una confezione elegante.
+kit-floratta,Kits & presentes,Floratta,Kit Presente Floratta,Kit Regalo Floratta,,"60,99",1,,,,#F0A7B4,box,,,,
+kit-nativa-orquidea,Kits & presentes,Nativa SPA,Kit Nativa SPA Orquídea,Kit Nativa SPA Orchidea,,"49,99",0,,,,#A97BBE,box,,,,

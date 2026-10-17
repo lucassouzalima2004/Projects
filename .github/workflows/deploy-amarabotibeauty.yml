@@ -1,0 +1,165 @@
+# Publica o site da Amarabotibeauty no Cloudflare, sempre no mesmo link:
+#   https://amarabotibeauty.<subdomínio da conta>.workers.dev  (o endereço exato aparece no resumo da execução)
+# Cada push que mexe em amarabotibeauty/ (no main ou no branch claude/amazing-heisenberg-oh6er8) atualiza esse link.
+#
+# Vai como Worker com arquivos estáticos (Workers Static Assets), como os outros sites do repositório,
+# porque a conta já chegou ao limite de projetos do Cloudflare Pages.
+#
+# Usa os mesmos secrets dos outros sites (Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN   token do Cloudflare que pode publicar Workers (obrigatório)
+#   CLOUDFLARE_ACCOUNT_ID  ID da conta (opcional: sem ele, o workflow descobre a conta pelo token)
+# E uma variável opcional (mesma tela, aba Variables):
+#   AMARA_SITE_URL         o endereço final, quando um domínio próprio estiver ligado ao site
+#                          (ex.: https://amarabotibeauty.it). Sem ela, o canonical, o sitemap
+#                          e a prévia do link usam o endereço .workers.dev.
+# Enquanto o token não existir, o workflow só avisa e não falha.
+name: Deploy Amarabotibeauty (Cloudflare)
+
+on:
+  push:
+    branches: [main, claude/amazing-heisenberg-oh6er8]
+    paths:
+      - 'amarabotibeauty/**'
+      - '.github/workflows/deploy-amarabotibeauty.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: amarabotibeauty-deploy
+  cancel-in-progress: false
+
+env:
+  WORKER: amarabotibeauty
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.creds.outputs.ready }}
+    steps:
+      - name: Conferir o token do Cloudflare
+        id: creds
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -n "$TOKEN" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=Cloudflare sem credenciais::Falta o secret CLOUDFLARE_API_TOKEN. Cadastre em Settings → Secrets and variables → Actions e rode de novo (abra a execução em Actions → Re-run all jobs)."
+          fi
+
+  deploy:
+    needs: check
+    if: needs.check.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      ACCOUNT_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID }}
+      SITE_VAR: ${{ vars.AMARA_SITE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar o wrangler
+        run: npm install --no-save --no-audit --no-fund --include=optional wrangler@4
+
+      - name: Conta do Cloudflare
+        run: |
+          id="$ACCOUNT_SECRET"
+          if [ -z "$id" ]; then
+            # Sem o secret, descobre a conta pelo próprio token
+            auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+            id=$(curl -sS -H "$auth" "https://api.cloudflare.com/client/v4/accounts?per_page=50" | jq -r '.result[]?.id')
+            if [ -z "$id" ]; then
+              id=$(curl -sS -H "$auth" "https://api.cloudflare.com/client/v4/memberships?per_page=50" | jq -r '.result[]?.account.id')
+            fi
+            count=$(printf '%s\n' "$id" | grep -c . || true)
+            if [ "$count" != "1" ]; then
+              echo "::error title=Conta do Cloudflare::O token dá acesso a $count contas. Cadastre o secret CLOUDFLARE_ACCOUNT_ID com o ID da conta certa (Cloudflare → Workers & Pages → Account ID)."
+              exit 1
+            fi
+            echo "::add-mask::$id"
+            echo "Conta encontrada pelo token."
+          fi
+          echo "CLOUDFLARE_ACCOUNT_ID=$id" >> "$GITHUB_ENV"
+
+      - name: Endereço do site e conferência do nome
+        run: |
+          acc="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID"
+          auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+          sub=$(curl -sS -H "$auth" "$acc/workers/subdomain" | jq -r '.result.subdomain // empty')
+          if [ -z "$sub" ]; then
+            echo "::error title=workers.dev::A conta não tem subdomínio workers.dev. Crie em Cloudflare → Workers & Pages → (lado direito) Subdomain e rode de novo."
+            exit 1
+          fi
+          url="https://$WORKER.$sub.workers.dev"
+          echo "WORKERS_URL=$url" >> "$GITHUB_ENV"
+          site="${SITE_VAR:-$url}"
+          echo "SITE_URL=${site%/}" >> "$GITHUB_ENV"
+          # Não sobrescreve um Worker com o mesmo nome que não seja este site
+          if curl -sS -H "$auth" "$acc/workers/scripts/$WORKER/settings" | jq -e '.success' > /dev/null; then
+            if curl -fsS --max-time 20 "$url/" | grep -q "Amarabotibeauty"; then
+              echo "O Worker $WORKER já é este site: vai ser atualizado."
+            else
+              echo "::error title=Nome em uso::Já existe um Worker chamado $WORKER nesta conta que não é este site. Apague ou renomeie esse Worker, ou troque WORKER no topo deste workflow."
+              exit 1
+            fi
+          else
+            echo "Primeira publicação: o Worker $WORKER vai ser criado."
+          fi
+
+      - name: Montar o site
+        run: |
+          mkdir -p _site
+          cp -R amarabotibeauty/. _site/
+          # Anotações internas, a página da imagem de prévia e a planilha-modelo não vão para o ar
+          rm -rf _site/README.md _site/tools
+          today=$(date -u +%F)
+          f=_site/index.html
+          # Endereço completo no og:image (o WhatsApp exige), canonical, og:url e dados para o Google
+          sed -i "s#content=\"assets/img/og-image.jpg\"#content=\"$SITE_URL/assets/img/og-image.jpg\"#" "$f"
+          sed -i "0,/<\/title>/s#</title>#</title>\n  <link rel=\"canonical\" href=\"$SITE_URL/\">\n  <meta property=\"og:url\" content=\"$SITE_URL/\">#" "$f"
+          sed -i "s#\"image\": \"assets/img/og-image.jpg\"#\"url\": \"$SITE_URL/\",\n    \"image\": \"$SITE_URL/assets/img/og-image.jpg\"#; s#\"logo\": \"assets/img/logo.webp\"#\"logo\": \"$SITE_URL/assets/img/logo.webp\"#" "$f"
+          grep -n "canonical\|og:image\"\|\"url\"\|\"logo\"" "$f"
+          sed -i "s#content=\"/assets/img/og-image.jpg\"#content=\"$SITE_URL/assets/img/og-image.jpg\"#" _site/404.html
+          {
+            echo '<?xml version="1.0" encoding="UTF-8"?>'
+            echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+            echo "  <url><loc>$SITE_URL/</loc><lastmod>$today</lastmod></url>"
+            echo '</urlset>'
+          } > _site/sitemap.xml
+          printf 'User-agent: *\nAllow: /\n\nSitemap: %s/sitemap.xml\n' "$SITE_URL" > _site/robots.txt
+          cat > wrangler.jsonc <<EOF
+          {
+            "name": "$WORKER",
+            "compatibility_date": "2025-10-01",
+            "workers_dev": true,
+            "preview_urls": false,
+            "assets": {
+              "directory": "./_site",
+              "not_found_handling": "404-page",
+              "html_handling": "auto-trailing-slash"
+            }
+          }
+          EOF
+
+      - name: Publicar
+        run: npx wrangler deploy --config wrangler.jsonc
+
+      - name: Conferir o site no ar
+        run: |
+          for i in 1 2 3 4 5 6; do
+            if curl -fsS --max-time 20 "$WORKERS_URL/" | grep -q "Amarabotibeauty"; then
+              echo "Site no ar: $WORKERS_URL"
+              echo "### Site no ar: $WORKERS_URL" >> "$GITHUB_STEP_SUMMARY"
+              if [ "$SITE_URL" != "$WORKERS_URL" ]; then
+                echo "Endereço oficial (canonical e sitemap): $SITE_URL" >> "$GITHUB_STEP_SUMMARY"
+              fi
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::warning title=Site ainda não respondeu::A publicação terminou, mas $WORKERS_URL ainda não respondeu. Tente abrir de novo em alguns minutos."
+          echo "### Publicado em: $WORKERS_URL (ainda carregando)" >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,18 @@
+# Cabeçalhos do Cloudflare (este arquivo não aparece no site).
+
+# Enquanto o site estiver só no endereço .workers.dev (prévia), o Google não indexa.
+# Quando um domínio próprio for ligado ao site, ele fica indexável normalmente.
+https://:worker.:subdomain.workers.dev/*
+  X-Robots-Tag: noindex
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+# Imagens: uma semana (se trocar um arquivo, use um nome novo para atualizar na hora)
+/assets/img/*
+  Cache-Control: public, max-age=604800
+
+# Lista de produtos: sempre a versão mais nova
+/assets/js/products.js
+  Cache-Control: no-cache
