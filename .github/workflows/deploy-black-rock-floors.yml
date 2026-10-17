@@ -11,10 +11,10 @@
 # Usa os mesmos secrets dos outros sites do repositório (Settings → Secrets and variables → Actions):
 #   CLOUDFLARE_API_TOKEN   token do Cloudflare que pode publicar Workers (obrigatório)
 #   CLOUDFLARE_ACCOUNT_ID  ID da conta (opcional: sem ele, o workflow descobre a conta pelo token)
-# E uma variável opcional (mesma tela, aba Variables):
-#   BLACKROCK_SITE_URL     o endereço final, quando o domínio do Gabriel estiver ligado ao site
-#                          (ex.: https://www.blackrockfloors.com). Sem ela, o canonical, o sitemap
-#                          e a prévia do link usam o endereço .workers.dev.
+# O endereço final é o domínio do Gabriel (FINAL_URL, logo abaixo). Enquanto ele não abrir este site, o canonical,
+# o sitemap e a prévia do link usam o endereço .workers.dev; quando abrir, a publicação seguinte passa a usar o
+# domínio sozinha. Para forçar outro endereço, crie a variável (mesma tela, aba Variables):
+#   BLACKROCK_SITE_URL     ex.: https://www.blackrockfloors.com
 # Enquanto o token não existir, o workflow só avisa e não falha.
 name: Deploy Black Rock Floors (Cloudflare)
 
@@ -35,6 +35,7 @@ concurrency:
 
 env:
   WORKER: blackrockfloors
+  FINAL_URL: https://www.blackrockfloors.com
 
 jobs:
   check:
@@ -99,7 +100,16 @@ jobs:
           fi
           url="https://$WORKER.$sub.workers.dev"
           echo "WORKERS_URL=$url" >> "$GITHUB_ENV"
-          site="${SITE_VAR:-$url}"
+          site="$SITE_VAR"
+          if [ -z "$site" ]; then
+            # O domínio só vira o endereço oficial quando já abre este site (antes disso, ele mostra outra coisa)
+            final=$(curl -fsS --max-time 20 "$FINAL_URL/" 2>/dev/null || true)
+            if grep -q "Floors done right" <<< "$final"; then
+              site="$FINAL_URL"
+            else
+              site="$url"
+            fi
+          fi
           echo "SITE_URL=${site%/}" >> "$GITHUB_ENV"
           # Não sobrescreve um Worker com o mesmo nome que não seja este site
           if curl -sS -H "$auth" "$acc/workers/scripts/$WORKER/settings" | jq -e '.success' > /dev/null; then
@@ -166,6 +176,16 @@ jobs:
               echo "### Site no ar: $WORKERS_URL" >> "$GITHUB_STEP_SUMMARY"
               if [ "$SITE_URL" != "$WORKERS_URL" ]; then
                 echo "Endereço oficial (canonical e sitemap): $SITE_URL" >> "$GITHUB_STEP_SUMMARY"
+              fi
+              # O domínio do Gabriel já abre o site?
+              final=$(curl -fsS --max-time 20 "$FINAL_URL/" 2>/dev/null || true)
+              if grep -q "Floors done right" <<< "$final"; then
+                echo "Domínio no ar: $FINAL_URL" >> "$GITHUB_STEP_SUMMARY"
+                if [ "$SITE_URL" != "${FINAL_URL%/}" ]; then
+                  echo "::notice title=Domínio ligado::$FINAL_URL já abre o site. Rode a publicação de novo (Re-run all jobs) para o canonical e o sitemap passarem a usar o domínio."
+                fi
+              else
+                echo "Domínio $FINAL_URL ainda não abre este site (veja \"Ligar o domínio\" no README)." >> "$GITHUB_STEP_SUMMARY"
               fi
               # O vídeo precisa responder com um pedaço (206), senão o iPhone não toca
               code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 -H 'Range: bytes=0-1' "$WORKERS_URL/assets/video/hero-tall.mp4" || true)

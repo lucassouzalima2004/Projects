@@ -315,13 +315,32 @@ No ar em <https://blackrockfloors.lucassouzalima10.workers.dev> (o endereço tam
   confere o vídeo (206) e a 404 (sem cache).
 - No endereço `.workers.dev`, o site vai com `noindex` (arquivo `_headers`): o Google não indexa a prévia.
 
-### Ligar o domínio do Gabriel (que está no Wix)
+### Ligar o domínio do Gabriel: `blackrockfloors.com`
 
-1. No Cloudflare: **Add a domain** com o domínio dele. O Cloudflare mostra dois *nameservers*.
-2. No Wix: em **Domains**, abra o domínio e troque os *nameservers* pelos do Cloudflare (o domínio continua registrado no Wix).
-3. Quando o Cloudflare confirmar o domínio: **Workers & Pages → blackrockfloors → Settings → Domains & Routes → Add → Custom domain**, com `www.dominio.com` e o domínio sem `www`.
-4. No GitHub: **Settings → Secrets and variables → Actions → Variables → New repository variable** `BLACKROCK_SITE_URL` = `https://www.dominio.com`, e rode o workflow de novo (**Actions → Deploy Black Rock Floors → Run workflow**). Assim o canonical e o sitemap passam a usar o domínio.
-5. No Google Search Console, adicione o domínio e envie `https://www.dominio.com/sitemap.xml`. No Perfil da Empresa no Google, coloque o link do site novo.
+**Situação em 17/10:** o domínio está registrado no Wix (desde 12/10) e os *nameservers* já são os do Cloudflare
+(`hadlee` e `terin.ns.cloudflare.com`, os mesmos do genialup.com, ou seja, a conta do Lucas). Os passos 1 e 2 estão
+feitos. Mas o domínio ainda aponta para o Wix, que responde "página não encontrada": faltam os passos 3 a 7.
+
+1. ~~Cloudflare: **Add a domain**~~ (feito).
+2. ~~Wix: trocar os *nameservers* pelos do Cloudflare~~ (feito em 17/10). O domínio continua registrado no Wix, e a
+   renovação anual também é lá.
+3. **Antes de ligar:** trocar as avaliações de exemplo pelas reais, ou tirar os depoimentos (veja a lista "Antes de
+   mostrar ao Gabriel"). No domínio, o site fica aberto ao Google e ao público.
+4. Cloudflare → `blackrockfloors.com` → **DNS → Records**: apague os registros de `blackrockfloors.com` e de `www`
+   que vieram do Wix (tipos A, AAAA ou CNAME). O domínio não tem e-mail (nenhum registro MX), então nada mais muda.
+5. Cloudflare → **Workers & Pages → blackrockfloors → Settings → Domains & Routes → Add → Custom domain**:
+   `www.blackrockfloors.com`; depois, de novo, `blackrockfloors.com`. O Cloudflare cria os registros e o certificado
+   sozinho (leva alguns minutos).
+6. Recomendado: Cloudflare → `blackrockfloors.com` → **Rules → Redirect Rules**, com o modelo **Redirect from root
+   to WWW** (301). Assim o endereço sem www leva ao com www, o oficial.
+7. Publicar de novo: GitHub → **Actions → Deploy Black Rock Floors** → abra a última execução → **Re-run all jobs**.
+   O botão "Run workflow" não aparece porque o workflow não está no branch padrão do repositório. O workflow vê que
+   `https://www.blackrockfloors.com` já abre o site e passa o canonical, o sitemap e a prévia do link para o domínio
+   (é o `FINAL_URL` no topo do workflow). O resumo da execução mostra "Domínio no ar".
+8. Google: no Search Console, adicione `blackrockfloors.com` (a verificação por DNS é automática com o Cloudflare) e
+   envie `https://www.blackrockfloors.com/sitemap.xml`. No Perfil da Empresa no Google, coloque o site novo.
+
+O endereço `.workers.dev` continua funcionando, com `noindex`, como prévia.
 
 ## Ver no computador
 
