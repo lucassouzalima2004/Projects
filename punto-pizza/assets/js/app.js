@@ -378,31 +378,6 @@ function initMenu() {
   });
 }
 
-/* ---------- Zona de entrega por CAP ---------- */
-
-function initCap() {
-  $$('.cap-form').forEach(form => {
-    const caps = (form.dataset.caps || '').split(/\s+/).filter(Boolean);
-    const input = $('input', form);
-    const out = form.nextElementSibling;
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      const v = input.value.replace(/\D/g, '');
-      out.className = 'cap-out';
-      if (v.length !== 5) {
-        out.textContent = 'Scrivi un CAP di 5 cifre, per esempio 37138.';
-        out.classList.add('no');
-      } else if (caps.includes(v)) {
-        out.textContent = `Sì! Consegniamo al CAP ${v}. Buon appetito!`;
-        out.classList.add('ok');
-      } else {
-        out.textContent = `Il ${v} è fuori dalla nostra zona di consegna. Chiamaci allo ${CONFIG.phone}: vediamo se riusciamo ad arrivare. Oppure ritira in pizzeria.`;
-        out.classList.add('no');
-      }
-    });
-  });
-}
-
 /* ---------- Mapa do Google só quando a pessoa pede (sem cookies antes disso) ---------- */
 
 function initMap() {
@@ -428,7 +403,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initStory();
   initMagnetic();
   initMenu();
-  initCap();
   initMap();
   $$('[data-year]').forEach(el => { el.textContent = new Date().getFullYear(); });
 });

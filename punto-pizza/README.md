@@ -13,6 +13,7 @@ Pela conversa no WhatsApp e pelos áudios de 14/10:
 - É pizzaria **com delivery**. Instagram: <https://instagram.com/puntopizzaverona>.
 - Perguntou se o site é de uma página só ou de várias: combinamos **várias páginas**.
 - Combinado: a primeira prévia vai quase pronta, em até 2 dias. Ele paga os R$ 1.000 quando aprovar a prévia, antes dos ajustes finais.
+  **Aprovado e pago em 17/10**, depois da v3 ("Se faz essas melhorias, fechou").
 
 Depois da primeira prévia (15/10):
 
@@ -50,6 +51,16 @@ Ainda em 17/10, olhando a v3:
   agora têm **o texto que ele mandou** (com **forno dedicado**, confirmado por ele). Aproveitando, foram reescritas em italiano mais natural
   algumas frases que soavam traduzidas: a introdução dos cartões, o método da home ("Lasciamo lievitare...", "Ingredienti di qualità",
   "vieni a ritirarla"), o título "Tre passi e la pizza è da te", a primeira pergunta frequente do senza glutine e duas frases do "Chi siamo".
+- Por último (17/10, 18:14–18:51), ele mandou **o texto em italiano de quase todo o site**, que entrou palavra por palavra:
+  o topo da home ("Pizza a domicilio a Verona" / "La pizza fatta come si deve." e dois parágrafos), a faixa do senza glutine
+  ("La libertà di scegliere la tua pizza..." e três itens com título), os 4 passos do método, os 3 passos de "Ordinare è facile"
+  (agora com rótulos "01 · Scarica l'app..."), os cartões das 4 massas no menu, os dois jeitos de pedir na consegna (app e telefono),
+  as perguntas frequentes da consegna (6) e do senza glutine (4) e a chamada final do senza glutine ("Una pizza per tutti. Senza rinunce.").
+- **"Esse aqui de Just Eat elimina"**: o Just Eat saiu do site todo (cartão da consegna, linha da home, nota do menu, descrição para o Google).
+- As **zonas de entrega** agora são as que ele listou (Santa Lucia, Golosine, Borgo Milano, San Massimo, Borgo Nuovo, Borgo Roma,
+  Madonna di Dossobuono, Dossobuono, Caselle, Borgo Venezia e Porto San Pancrazio, e algumas áreas vizinhas). Como isso vai muito
+  além dos CAP 37137 e 37138 que vinham do Just Eat, a **verificação por CAP saiu**: o site mostra as zonas e, como ele escreveu,
+  manda conferir o endereço no app antes de pedir (ou ligar).
 
 ## O que tem no site
 
@@ -67,7 +78,7 @@ Ainda em 17/10, olhando a v3:
 6. **Senza glutine. Con tutto il resto.**: o selo da **AIC Alimentazione Fuori Casa**, a pizza Luna recortada e a avaliação da Ilaria por cima.
 7. **Como pedir em 3 passos**, os botões da App Store e do Google Play e o **QR code** do app para quem está no computador.
 8. **Avaliações em duas faixas que correm** em sentidos opostos (param com o mouse em cima) e a nota 4,6 contando.
-9. **Horários** (o dia de hoje marcado), **"Consegniamo da te?"** (verificação do CAP) e endereço.
+9. **Horários** (o dia de hoje marcado), **"Consegniamo da te?"** (as zonas de entrega) e endereço.
 10. Chamada final vermelha "Hai fame?" com duas pizzas flutuando.
 
 **Menu** (`menu/`): o menu do app com **foto de cada item**: Pizze classiche (31), Le nostre specialità (8), Pizze baby (4),
@@ -77,7 +88,7 @@ No computador são cartões com foto grande; no celular, linhas com a foto ao la
 
 **Senza glutine** (`senza-glutine/`): logo da **AIC** com o texto do Carlos sobre o programma Alimentazione Fuori Casa, como preparam, aviso para celíacos, avaliações de clientes celíacos, as duas cervejas sem glúten do app e perguntas.
 
-**Consegna e ritiro** (`consegna/`): as 3 formas de pedir (app, telefone, Just Eat), verificação do CAP, retirada, horários e perguntas.
+**Consegna e ritiro** (`consegna/`): as 2 formas de pedir (app e telefone), as zonas de entrega, retirada, horários e perguntas.
 
 **Chi siamo e contatti** (`contatti/`): "Punto Pizza, da Carlos", contatos, horários e o **mapa do Google só quando a pessoa clica**
 (antes disso o Google não coloca cookies).
@@ -91,12 +102,13 @@ No computador são cartões com foto grande; no celular, linhas com a foto ao la
 - Barra fixa no celular (Ordina ora, com "−5 € sul primo ordine dall'app" embaixo / Chiama), página 404, prévia bonita no WhatsApp (`assets/img/og-image.jpg`), dados para o Google
   (pizzaria, horários, menu com preços e fotos, perguntas, trilha), `sitemap.xml` e `robots.txt` gerados na publicação.
 
-**Testes (17/10, v3):** Lighthouse no computador 99–100 em desempenho e 100 em acessibilidade, boas práticas e SEO; no celular,
-91 (home) e 95 (senza glutine) em desempenho e 100 nos outros três. Zero problemas no teste de acessibilidade (axe) em todas as páginas,
-no celular e no computador (o vermelho escuro e o cinza dos passos do método foram escurecidos para passar sobre a areia).
-Sem rolagem lateral em nenhuma página. A página não "pula" enquanto carrega (CLS abaixo de 0,02 com internet lenta).
+**Testes (18/10, depois dos textos do Carlos):** Lighthouse no computador 100 em desempenho, acessibilidade, boas práticas e SEO;
+no celular, 91 (home) e 95 (consegna) em desempenho e 100 nos outros três. Zero problemas no teste de acessibilidade (axe) em todas
+as páginas, no celular e no computador. Sem rolagem lateral em nenhuma página (360, 390 e 1440 px). A página não "pula" enquanto
+carrega (CLS 0,0003 no computador e 0,014 no celular, com internet lenta).
 Testados também: a pizza girando e a etiqueta que leva à Margherita, o celular baixando a imagem menor, carrossel (setas e arrastar),
-filtros, busca, "Scegli per me", abas, CAP, menu do celular, barra fixa, o mapa e os 93 links internos, sem erros de JavaScript.
+filtros, busca, "Scegli per me", abas, as zonas de entrega, nenhum link para o Just Eat, menu do celular, barra fixa, o mapa e os
+93 links internos, sem erros de JavaScript.
 
 ### Identidade
 
@@ -111,11 +123,12 @@ filtros, busca, "Scegli per me", abas, CAP, menu do celular, barra fixa, o mapa 
 - [ ] **Marca d'água na margherita**: a foto que ele pediu para o topo (a mesma da *Margherita Come Si Deve* no app) tem uma **marca d'água fraca de banco de imagens** no meio. Na pizza girando ela quase não aparece (e na foto inteira da seção da Margherita aparece de leve no centro), mas a foto pode não ser dele. Se for de banco de imagens, ele precisa da licença ou de uma foto própria. Vale perguntar; se ele mandar outra foto, veja [A pizza que gira no topo](#a-pizza-que-gira-no-topo).
 - [ ] **AIC**: confirmar que a adesão ao programa Alimentazione Fuori Casa está em dia e que ele pode usar o logo da AIC no site (o logo foi vetorizado da imagem que ele mandou; se a AIC mandou o arquivo oficial, melhor usar esse).
 - [ ] **"Única pizzaria delivery de Verona na AIC"**: ele disse isso no áudio, mas **não está no site**. Uma frase de "única" precisa ser verdade e dá para conferir na lista de locais da AIC (app AiC Mobile). Se ele confirmar, dá para acrescentar.
-- [ ] **Massas**: o site diz "classico, integrale, al carbone vegetale con cereali o senza glutine" (do site antigo, das avaliações e do Carlos). O menu do app não mostra as massas por item. Confirmar quais pizzas aceitam cada massa e se tem acréscimo.
+- [x] **Massas**: classico, integrale, ai cereali con carbone vegetale e senza glutine, com os textos do Carlos.
+- [ ] Ainda sobre as massas: o menu do app não mostra as massas por item. Todas as pizzas aceitam as 4 massas? Tem acréscimo?
 - [x] **Senza glutine**: o texto dos cartões (espaço dedicado, ingredientes e utensílios, **forno dedicado**) e o aviso para celíacos são do próprio Carlos (17/10).
-- [ ] Ainda confirmar: dá para misturar pizzas normais e sem glúten no mesmo pedido? (está na pergunta frequente)
+- [x] Pizzas normais e sem glúten no mesmo pedido: sim (resposta do próprio Carlos na pergunta frequente).
 - [ ] **Horário**: terça a domingo 17:00–21:30, segunda fechado (do site antigo). Confirmar.
-- [ ] **Zona de entrega**: CAP 37137 e 37138 (do Just Eat). Pelo app ele entrega mais longe? Tem taxa de entrega e pedido mínimo?
+- [x] **Zona de entrega**: as zonas que o Carlos listou (17/10). Falta saber: tem taxa de entrega e pedido mínimo? (hoje o site não fala disso)
 - [ ] **Fotos do método** (massa, farinha, molho): são quadros de clipes gratuitos do Mixkit, não da cozinha dele. A pizza de mortadela do passo 4 é dos anúncios dele, mas não está no menu do app. Se ele mandar vídeos ou fotos da cozinha, troca.
 - [ ] **Promoção de 5 €** no primeiro pedido pelo app: continua valendo?
 - [ ] **Nota do Google**: "4,6 · più di 340 recensioni" (do banner dele). Atualizar quando ligar o domínio.
@@ -136,7 +149,7 @@ O conteúdo fica direto no HTML (é o que o Google lê).
 | A Margherita em destaque | `index.html`, seção 2 |
 | Horário | `CONFIG.hours` no topo do `assets/js/app.js` (calcula o "Aperto ora"), as tabelas `class="orari"`, o rodapé e o `openingHoursSpecification` no `<head>` da home e do contatti. Buscar `17:00` na pasta toda |
 | Telefone | Buscar e substituir: `045 862 2340` e `390458622340` |
-| CAP de entrega | `data-caps="37137 37138"` nos formulários (`index.html` e `consegna/index.html`), a lista `class="caps"`, as perguntas de consegna e o `areaServed` no `<head>` da home |
+| Zonas de entrega | As listas `class="zones"` (`index.html` e `consegna/index.html`), a pergunta "In quali zone consegnate?" (texto e bloco `FAQPage` no `<head>` da consegna) e o `areaServed` no `<head>` da home |
 | Link do app (pedido com −5 €) | Buscar `url.velocissimo.app/o/157`. Lojas: `apps.apple.com/it/app/punto-pizza` e `it.webapp.puntopizza` |
 | Avaliações | `index.html`, seção 7 (cada faixa repete a lista para correr sem fim: mude nas duas `<ul>`), e `senza-glutine/index.html` |
 | Texto e logo da AIC | `senza-glutine/index.html`, seção `id="aic"` (o texto é o do Carlos), o selo `class="aic-chip"` na home e o logo em `assets/img/aic.svg` |
@@ -204,7 +217,7 @@ punto-pizza/
 ├── 404.html                      página "não encontrada"
 ├── _headers                      cabeçalhos do Cloudflare (noindex na prévia, cache)
 ├── assets/css/styles.css         visual (cores e fontes no topo)
-├── assets/js/app.js              horário, rolagem, animações, carrossel, filtros, CAP, mapa
+├── assets/js/app.js              horário, rolagem, animações, carrossel, filtros, mapa
 ├── assets/js/vendor/lenis.min.js rolagem suave (MIT)
 ├── assets/fonts/                 Bricolage Grotesque e Instrument Serif (só os caracteres usados)
 ├── assets/img/                   logo, logo da AIC, favicon, QR do app, og-image, a foto da Margherita
