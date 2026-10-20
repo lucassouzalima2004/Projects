@@ -1,0 +1,85 @@
+# Publica o site da Bora Signs no Cloudflare Pages (projeto "bora-signs").
+#
+# Usa os mesmos secrets do site da manicure (Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN   token do Cloudflare com a permissão "Account · Cloudflare Pages · Edit"
+#   CLOUDFLARE_ACCOUNT_ID  ID da conta do Cloudflare
+# Push na main publica em produção; push em outra branch publica uma prévia com endereço próprio.
+# Enquanto os secrets não existirem, o workflow só avisa e não falha.
+name: Deploy Bora Signs (Cloudflare Pages)
+
+on:
+  push:
+    branches: [main, claude/trusting-pasteur-mwwc40]
+    paths:
+      - 'bora-signs/**'
+      - '.github/workflows/deploy-bora-signs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bora-signs-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PROJECT: bora-signs
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.creds.outputs.ready }}
+    steps:
+      - name: Conferir os secrets do Cloudflare
+        id: creds
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n "$TOKEN" ] && [ -n "$ACCOUNT" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=Cloudflare sem credenciais::Adicione CLOUDFLARE_API_TOKEN e CLOUDFLARE_ACCOUNT_ID em Settings → Secrets and variables → Actions e rode este workflow de novo (Actions → Deploy Bora Signs → Run workflow)."
+          fi
+
+  deploy:
+    needs: check
+    if: needs.check.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Montar o site
+        run: node bora-signs/build.mjs
+
+      - name: Instalar o wrangler
+        run: npm install --no-save --no-audit --no-fund --include=optional wrangler@4
+
+      - name: Criar o projeto no Cloudflare Pages (só na primeira vez)
+        run: |
+          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects"
+          auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+          if ! curl -fsS -o /dev/null -H "$auth" "$api/$PROJECT"; then
+            curl -sS --fail-with-body -X POST -H "$auth" -H "Content-Type: application/json" \
+              --data "{\"name\":\"$PROJECT\",\"production_branch\":\"${{ github.event.repository.default_branch }}\"}" "$api"
+          fi
+
+      - name: Publicar
+        run: |
+          npx wrangler pages deploy bora-signs/dist --project-name="$PROJECT" --branch="${{ github.ref_name }}" --commit-dirty=true | tee deploy.log
+
+      - name: Endereço do site
+        run: |
+          {
+            echo "### Bora Signs publicado"
+            grep -oE 'https://[a-z0-9.-]+\.pages\.dev' deploy.log | sort -u | sed 's/^/- /'
+          } >> "$GITHUB_STEP_SUMMARY"
