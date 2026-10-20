@@ -1,8 +1,10 @@
 # Publica o site da Bora Signs no Cloudflare, sempre no mesmo link:
 #   https://bora-signs.<subdomínio da conta>.workers.dev  (o endereço exato aparece no resumo da execução)
 #
-# Vai como Worker com arquivos estáticos (como a Punto Pizza e a Giselle), porque a conta já chegou ao limite de
-# projetos do Cloudflare Pages. Usa os mesmos secrets dos outros sites (Settings → Secrets and variables → Actions):
+# Vai como Worker com arquivos estáticos (como a Punto Pizza e a Black Rock Floors), porque a conta já chegou ao limite de
+# projetos do Cloudflare Pages. O script bora-signs/worker.js só roda nos vídeos (entrega o pedaço pedido, sem o qual o
+# iPhone não toca o vídeo do topo) e em endereços que não existem (404 sem cache).
+# Usa os mesmos secrets dos outros sites (Settings → Secrets and variables → Actions):
 #   CLOUDFLARE_API_TOKEN   token do Cloudflare que pode publicar Workers (obrigatório)
 #   CLOUDFLARE_ACCOUNT_ID  ID da conta (opcional: sem ele, o workflow descobre a conta pelo token)
 #
@@ -115,13 +117,16 @@ jobs:
           cat > wrangler.jsonc <<EOF
           {
             "name": "$WORKER",
+            "main": "./bora-signs/worker.js",
             "compatibility_date": "2025-10-01",
             "workers_dev": true,
             "preview_urls": false,
             "assets": {
               "directory": "./bora-signs/dist",
-              "not_found_handling": "404-page",
-              "html_handling": "auto-trailing-slash"
+              "binding": "ASSETS",
+              "not_found_handling": "none",
+              "html_handling": "auto-trailing-slash",
+              "run_worker_first": ["/assets/video/*"]
             }
           }
           EOF
@@ -135,6 +140,13 @@ jobs:
             if curl -fsS --max-time 20 "$PREVIEW_URL/vehicle-signage" | grep -q "Drag to"; then
               echo "Site no ar: $PREVIEW_URL"
               echo "### Bora Signs no ar: $PREVIEW_URL" >> "$GITHUB_STEP_SUMMARY"
+              # O vídeo precisa responder com um pedaço (206), senão o iPhone não toca
+              code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 -H 'Range: bytes=0-1' "$PREVIEW_URL/assets/video/hero-mobile.mp4" || true)
+              if [ "$code" = "206" ]; then
+                echo "Vídeo responde por pedaço (206): toca no iPhone."
+              else
+                echo "::warning title=Vídeo sem Range::O vídeo respondeu $code em vez de 206. O iPhone pode não tocar o vídeo do topo: confira o worker.js."
+              fi
               exit 0
             fi
             sleep 10

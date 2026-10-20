@@ -71,6 +71,8 @@ O workflow `.github/workflows/deploy-bora-signs.yml` monta o site e publica no C
 estáticos (a conta já chegou ao limite de projetos do Pages, como nos outros sites do repositório), sempre no mesmo link:
 `https://bora-signs.<subdomínio da conta>.workers.dev`. O endereço exato aparece no resumo da execução em **Actions**.
 Usa o secret `CLOUDFLARE_API_TOKEN` (e `CLOUDFLARE_ACCOUNT_ID`, se existir).
+O `worker.js` só entra em dois casos: nos vídeos, para entregar o pedaço do arquivo que o navegador pede (sem isso o
+iPhone não toca o vídeo do topo), e em endereços que não existem (página 404 sem cache).
 
 Enquanto o site não estiver no domínio, o link fica fora do Google (`noindex`), para não competir com o site atual no Wix.
 Quando `www.borasigns.com.au` apontar para o Worker, crie a variável `BORASIGNS_SITE_URL` = `https://www.borasigns.com.au`
@@ -124,6 +126,7 @@ envie `https://www.borasigns.com.au/sitemap.xml` e, se pedirem verificação por
 ```
 bora-signs/
 ├── build.mjs               gera dist/: páginas, sitemap, robots.txt e _redirects
+├── worker.js               vídeos por pedaço (iPhone) e 404 no Cloudflare
 ├── src/
 │   ├── site.mjs            dados da empresa e configurações
 │   ├── content.mjs         textos de todas as páginas
