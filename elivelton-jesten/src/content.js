@@ -50,7 +50,7 @@ const DEFAULT = {
       { country: 'PT', number: '+351 938 972 066' },
       { country: 'PT', number: '+351 963 430 099' },
       { country: 'ES', number: '+34 745 065 618' },
-      { country: 'ES', number: '+34 642 29 96 85' },
+      { country: 'ES', number: '+34 642 299 685' },
     ],
     whatsapp: '351963430099',
     instagram: 'https://www.instagram.com/jestenconstrucoes',
@@ -610,6 +610,21 @@ const mediaUrl = (v) => {
   return MEDIA_URL.test(s) && !s.includes('..') ? s : '';
 };
 const emailOk = (v) => /^[^\s@<>"]{1,64}@[^\s@<>"]{1,190}\.[a-z]{2,}$/i.test(str(v, 254));
+
+// Telefones de Portugal e de Espanha sempre em grupos de 3, como pediu o cliente (+351 938 972 066, +34 642 299 685).
+// Sem indicativo, usa o do país do quadro; números de outros países ficam como foram escritos.
+const DIAL = { PT: '351', ES: '34' };
+export function phoneFmt(number, country) {
+  const n = String(number).trim();
+  let d = n.replace(/\D/g, '');
+  let code = '';
+  if (/^(\+|00)/.test(n)) {
+    if (n.startsWith('00')) d = d.slice(2);
+    code = Object.values(DIAL).find((c) => d.startsWith(c) && d.length === c.length + 9) || '';
+    d = d.slice(code.length);
+  } else if (d.length === 9) code = DIAL[country] || '';
+  return code ? `+${code} ${d.replace(/(\d{3})(?=\d)/g, '$1 ')}` : n;
+}
 const i18n = (v, max) => Object.fromEntries(LANGS.map((l) => [l, str(v?.[l], max)]));
 const color = (v) => (/^#[0-9a-f]{6}$/i.test(String(v)) ? String(v).toLowerCase() : '#8a877e');
 const focus = (v) => (/^\d{1,3}(\.\d+)?% \d{1,3}(\.\d+)?%$/.test(String(v)) ? String(v) : '');
@@ -651,7 +666,10 @@ export function sanitizeContent(c) {
         .filter((e) => emailOk(e.email)),
       phones: (Array.isArray(contacts.phones) ? contacts.phones : [])
         .slice(0, 8)
-        .map((p) => ({ country: /^[A-Z]{2}$/.test(String(p?.country)) ? p.country : 'PT', number: str(p?.number, 30).replace(/[^\d+ ()-]/g, '') }))
+        .map((p) => {
+          const country = /^[A-Z]{2}$/.test(String(p?.country)) ? p.country : 'PT';
+          return { country, number: phoneFmt(str(p?.number, 30).replace(/[^\d+ ()-]/g, ''), country) };
+        })
         .filter((p) => /\d{6}/.test(p.number.replace(/\D/g, ''))),
       whatsapp: str(contacts.whatsapp, 20).replace(/\D/g, ''),
       instagram: httpsUrl(contacts.instagram),

@@ -1,6 +1,7 @@
 // Monta o HTML das páginas públicas (início, carreiras, privacidade, termos e 404) em cada idioma.
 import { STRINGS, LANGS, clientStrings } from './i18n.js';
 import { icon } from './icons.js';
+import { phoneFmt } from './content.js';
 
 export const PAGES = ['home', 'careers', 'privacy', 'terms'];
 
@@ -717,7 +718,7 @@ function contacts(ctx, { only, whatsappText = ctx.s.quote.whatsappText } = {}) {
   const ch = s.quote.channels;
   const rows = [];
   if (c.email) rows.push(['mail', `mailto:${c.email}`, esc(c.emails?.length ? ch.general : ch.email), c.email, false]);
-  if (c.whatsapp) rows.push(['whatsapp', waHref(c.whatsapp, whatsappText), esc(ch.whatsapp), `+${c.whatsapp.replace(/^(\d{3})(\d{3})(\d{3})(\d+)$/, '$1 $2 $3 $4')}`, true]);
+  if (c.whatsapp) rows.push(['whatsapp', waHref(c.whatsapp, whatsappText), esc(ch.whatsapp), phoneFmt(`+${c.whatsapp}`), true]);
   if (c.instagram) rows.push(['instagram', c.instagram, esc(ch.instagram), `@${c.instagram.replace(/\/+$/, '').split('/').pop() || ''}`, true]);
   // O endereço do Facebook e do LinkedIn pode ser comprido (profile.php?id=…): mostra-se o nome da empresa
   if (c.facebook) rows.push(['facebook', c.facebook, esc(ch.facebook), 'Jesten Construções', true]);

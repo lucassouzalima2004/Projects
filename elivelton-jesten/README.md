@@ -54,7 +54,8 @@ vetor a partir do PNG do cliente.
 - **Página inicial**: foto do topo (qualquer foto ou vídeo da galeria pode ir para o topo) e a sua legenda, os 4
   números e a faixa de recrutamento.
 - **Contatos e redes**: e-mail geral, e-mail de orçamentos e telefones de cada país, WhatsApp, Instagram, **Facebook**,
-  **LinkedIn**, morada, NIF, alvará.
+  **LinkedIn**, morada, NIF, alvará. Os telefones de Portugal e de Espanha ficam sempre em grupos de 3 (+34 642 299 685),
+  como o cliente pediu, mesmo que sejam escritos de outra forma.
 - **Mensagens**: pedidos de orçamento e candidaturas, com anexo para baixar e botões de responder por e-mail,
   WhatsApp e ligar.
 - **Conta**: trocar a senha, espaço usado, sair.
@@ -147,8 +148,6 @@ otimizados (baixa os originais do jesten.pt se a pasta `tools/originals/` estive
 
 ## O que ainda falta confirmar
 
-- [ ] Confirmar o segundo telefone de Espanha: o cliente escreveu +34 642 299 985, mas o número dele no WhatsApp é
-      +34 642 29 96 85 (é o que está no site).
 - [ ] Número do **alvará** de construção (IMPIC), se a empresa tiver: aparece no rodapé.
 - [ ] Revisar com o cliente os textos dos serviços, de "Como trabalhamos" e da página de carreiras (o que a empresa
       oferece), e os locais das obras nas legendas (só pus local onde a foto ou o vídeo mostravam: Sant Cugat,
