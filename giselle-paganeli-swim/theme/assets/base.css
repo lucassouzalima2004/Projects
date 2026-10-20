@@ -784,6 +784,36 @@ site-header.is-condensed .wordmark__name {
   font-size: clamp(1rem, 0.8rem + 0.7vw, 1.4rem);
 }
 
+@media (max-width: 479px) {
+  .header__bar .wordmark__name,
+  site-header.is-condensed .header__bar .wordmark__name {
+    font-size: 0.94rem;
+    letter-spacing: 0.16em;
+    margin-right: -0.16em;
+  }
+
+  .header__bar .header__side {
+    gap: 0;
+  }
+
+  .header__bar .header__icon {
+    min-width: 2.5rem;
+  }
+}
+
+@media (max-width: 379px) {
+  .header__bar .wordmark__name,
+  site-header.is-condensed .header__bar .wordmark__name {
+    font-size: 0.86rem;
+    letter-spacing: 0.14em;
+    margin-right: -0.14em;
+  }
+
+  .header__bar .header__icon {
+    min-width: 2.25rem;
+  }
+}
+
 .cart-count {
   position: absolute;
   top: 0.35rem;
