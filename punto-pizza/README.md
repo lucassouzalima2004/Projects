@@ -62,6 +62,17 @@ Ainda em 17/10, olhando a v3:
   além dos CAP 37137 e 37138 que vinham do Just Eat, a **verificação por CAP saiu**: o site mostra as zonas e, como ele escreveu,
   manda conferir o endereço no app antes de pedir (ou ligar).
 
+Em 18/10 ele mostrou o site para a **responsável da AIC**, que pediu três mudanças (entraram palavra por palavra):
+
+- A seção da AIC agora diz **"Programma AFC"** e "Punto Pizza aderisce al programma AFC (Alimentazione Fuori Casa) dell'Associazione
+  Italiana Celiachia…", em dois parágrafos. Para ficar igual, o nome do programa foi trocado também no selo da home, nas duas
+  perguntas frequentes que falam dele, na descrição da página para o Google e nos dados estruturados.
+- O cartão "Ingredienti e attrezzature dedicati" virou **"Ingredienti, attrezzature e procedure dedicate"**, com o texto novo.
+- O aviso para celíacos virou **"Hai bisogno di informazioni?"** ("Per qualsiasi dubbio o esigenza… Chiamaci allo 045 862 2340 prima di ordinare…").
+
+E pediu para **tirar o preço da etiqueta da Margherita no topo** (agora: "San Marzano DOP e fiordilatte"). O preço continua
+na seção da Margherita e no menu.
+
 ## O que tem no site
 
 **Home** (`index.html`):
@@ -190,9 +201,19 @@ No ar em <https://puntopizza.lucassouzalima10.workers.dev> (o endereço também 
 ### Ligar o domínio do Carlos (`puntopizzaverona.it`)
 
 Hoje o domínio aponta para o site que ele montou numa plataforma de funis (LeadConnector/HighLevel).
+Consulta pública de 20/10: o domínio está na **Register.it** (nameservers `ns1.register.it` e `ns2.register.it`) e o **e-mail
+também é da Register.it** (MX `10 mail.register.it`). Há ainda dois registros TXT: o SPF `v=spf1 include:spf.webapps.net ~all`
+e a verificação do Google (`google-site-verification=...`). Esses três **precisam continuar existindo** depois da troca,
+senão o e-mail dele para de funcionar e o Search Console perde a verificação.
 
-1. Descobrir onde o domínio `.it` está registrado (Aruba, Register.it, GoDaddy...) e pedir o acesso ao Carlos.
-2. No Cloudflare: **Add a domain** com `puntopizzaverona.it`. O Cloudflare mostra dois *nameservers*; troque no registrador.
+O site é um Worker do Cloudflare, e um Worker só recebe um domínio próprio quando o domínio está no Cloudflare. Por isso a troca
+é de *nameservers*, e não um registro A/CNAME na Register.it.
+
+1. Pedir ao Carlos o acesso ao painel da Register.it (ou fazer a troca junto com ele).
+2. No Cloudflare: **Add a domain** com `puntopizzaverona.it` (plano Free). Na lista de registros que o Cloudflare importa,
+   confira que estão lá o **MX `mail.register.it`** e os **dois TXT** acima; se faltar algum, crie igual. Apague os registros
+   A/CNAME de `puntopizzaverona.it` e `www` que apontam para o site antigo (o passo 3 cria os novos).
+   O Cloudflare mostra dois *nameservers* (algo como `nome.ns.cloudflare.com`): é isso que se manda ao Carlos para trocar na Register.it.
 3. Quando o Cloudflare confirmar o domínio: **Workers & Pages → puntopizza → Settings → Domains & Routes → Add → Custom domain**, com `www.puntopizzaverona.it` e `puntopizzaverona.it`.
 4. No GitHub: **Settings → Secrets and variables → Actions → Variables → New repository variable** `PUNTOPIZZA_SITE_URL` = `https://www.puntopizzaverona.it`, e rode o workflow de novo (**Actions → Deploy Punto Pizza → Run workflow**).
 5. No Google Search Console, adicione o domínio e envie `https://www.puntopizzaverona.it/sitemap.xml`. No Perfil da Empresa no Google, confira que o link do site é esse.

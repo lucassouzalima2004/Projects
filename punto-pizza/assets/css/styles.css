@@ -607,6 +607,7 @@ h2.display + .lead { margin-top: .7em; }
 }
 .aic-logo img { width: 100%; height: auto; }
 .aic-copy .lead { margin: 0; max-width: 34em; }
+.aic-copy .lead + .lead { margin-top: .9em; }
 @media (max-width: 860px) { .aic { grid-template-columns: minmax(0, 1fr); } .aic-logo { aspect-ratio: auto; } }
 .gf-visual { position: relative; display: grid; place-items: center; }
 .gf-visual .float { width: min(100%, 520px); filter: drop-shadow(0 40px 50px rgba(34, 28, 24, .45)); transform: translateY(var(--ty, 0)); }
