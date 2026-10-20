@@ -1,0 +1,55 @@
+{%- comment -%}
+  Email sign-up with explicit consent. Creates a Shopify customer subscribed to email marketing.
+  Accepts: id (unique), tags, button_label, consent (rich text), class
+{%- endcomment -%}
+{%- liquid
+  assign form_id = id | default: 'newsletter'
+  assign button = 'newsletter.button' | t
+  if button_label != blank
+    assign button = button_label
+  endif
+  assign customer_tags = tags | default: 'newsletter'
+-%}
+{%- form 'customer', id: form_id, class: 'newsletter-form' -%}
+  <input type="hidden" name="contact[tags]" value="{{ customer_tags }}">
+  {%- if form.posted_successfully? -%}
+    <p class="form-message form-message--success" tabindex="-1">
+      {%- render 'icon', name: 'check' -%}
+      <span>{{ 'newsletter.success' | t }}</span>
+    </p>
+  {%- else -%}
+    <div class="newsletter-form__row">
+      <label class="visually-hidden" for="{{ form_id }}-email">{{ 'newsletter.label' | t }}</label>
+      <input
+        id="{{ form_id }}-email"
+        class="newsletter-form__input"
+        type="email"
+        name="contact[email]"
+        value="{{ form.email }}"
+        autocomplete="email"
+        autocorrect="off"
+        autocapitalize="off"
+        placeholder="{{ 'newsletter.placeholder' | t }}"
+        required
+        {% if form.errors %}aria-invalid="true" aria-describedby="{{ form_id }}-error"{% endif %}
+      >
+      <button type="submit" class="newsletter-form__button">
+        <span>{{ button }}</span>
+        {%- render 'icon', name: 'arrow' -%}
+      </button>
+    </div>
+    <label class="consent">
+      <input type="checkbox" required>
+      <span class="consent__text">
+        {%- if consent != blank -%}
+          {{ consent | strip_html }}
+        {%- else -%}
+          {{ 'newsletter.consent' | t }}
+        {%- endif -%}
+      </span>
+    </label>
+    {%- if form.errors -%}
+      <p id="{{ form_id }}-error" class="form-message form-message--error">{{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}</p>
+    {%- endif -%}
+  {%- endif -%}
+{%- endform -%}

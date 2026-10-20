@@ -1,0 +1,55 @@
+{%- comment -%}
+  Responsive image with a built-in artwork fallback (crops of Thomas Cole, The Garden of Eden, 1828 — public domain)
+  shown until a photo is chosen in the theme editor.
+
+  Accepts:
+  - image: image object (optional)
+  - artwork: garden | lake | canopy | palm | valley | flowers | stream | bloom | none
+  - sizes, widths, class, alt, loading ('lazy' by default), priority (true for the first visible image)
+{%- endcomment -%}
+{%- liquid
+  assign loading = loading | default: 'lazy'
+  assign sizes = sizes | default: '100vw'
+  assign widths = widths | default: '480, 720, 960, 1280, 1600, 1920'
+  assign fetchpriority = 'auto'
+  if priority
+    assign loading = 'eager'
+    assign fetchpriority = 'high'
+  endif
+-%}
+{%- if image != blank -%}
+  {%- assign alt_text = alt | default: image.alt -%}
+  {{ image | image_url: width: 1920 | image_tag: widths: widths, sizes: sizes, loading: loading, class: class, alt: alt_text, fetchpriority: fetchpriority }}
+{%- elsif artwork != blank and artwork != 'none' -%}
+  {%- liquid
+    case artwork
+      when 'garden'
+        assign w = 1800
+        assign h = 1325
+      when 'valley'
+        assign w = 1600
+        assign h = 909
+      when 'stream'
+        assign w = 1600
+        assign h = 960
+      when 'bloom'
+        assign w = 900
+        assign h = 887
+      else
+        assign w = 900
+        assign h = 1125
+    endcase
+    assign file = 'eden-' | append: artwork | append: '.jpg'
+  -%}
+  <img
+    src="{{ file | asset_url }}"
+    alt="{{ alt | escape }}"
+    width="{{ w }}"
+    height="{{ h }}"
+    loading="{{ loading }}"
+    fetchpriority="{{ fetchpriority }}"
+    class="{{ class }} is-artwork"
+  >
+{%- else -%}
+  {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+{%- endif -%}

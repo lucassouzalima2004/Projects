@@ -1,0 +1,85 @@
+<section class="not-found scheme-{{ section.settings.color_scheme }}">
+  <div class="not-found__inner page-width">
+    <div class="not-found__arch arch">
+      {%- render 'media', artwork: section.settings.artwork, sizes: '(min-width: 990px) 30vw, 70vw', widths: '360, 540, 720' -%}
+    </div>
+    <p class="overline">404</p>
+    <h1 class="page-hero__title">{{ 'templates.404.title' | t }}</h1>
+    <p>{{ 'templates.404.text' | t }}</p>
+    <a href="{{ routes.root_url }}" class="button">{{ 'templates.404.link' | t }}</a>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "404 page",
+  "tag": "div",
+  "class": "section-404",
+  "settings": [
+    {
+      "type": "select",
+      "id": "artwork",
+      "label": "Artwork",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "garden",
+          "label": "The Garden"
+        },
+        {
+          "value": "lake",
+          "label": "Lake and mountain"
+        },
+        {
+          "value": "canopy",
+          "label": "Vines"
+        },
+        {
+          "value": "palm",
+          "label": "Palms"
+        },
+        {
+          "value": "valley",
+          "label": "Valley"
+        },
+        {
+          "value": "flowers",
+          "label": "Flowers"
+        },
+        {
+          "value": "stream",
+          "label": "Stream"
+        },
+        {
+          "value": "bloom",
+          "label": "Bloom"
+        }
+      ],
+      "default": "lake"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colors",
+      "options": [
+        {
+          "value": "pearl",
+          "label": "Pearl"
+        },
+        {
+          "value": "ivory",
+          "label": "Off-white"
+        },
+        {
+          "value": "sand",
+          "label": "Sand"
+        }
+      ],
+      "default": "pearl"
+    }
+  ]
+}
+{% endschema %}

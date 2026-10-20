@@ -1,0 +1,48 @@
+<article class="article scheme-{{ section.settings.color_scheme }}">
+  <header class="article__head page-width page-width--narrow" data-reveal>
+    <a href="{{ blog.url }}" class="overline">{{ blog.title }}</a>
+    <h1 class="article__title">{{ article.title }}</h1>
+    <p class="article__meta">{{ article.published_at | time_tag: format: 'date' }}{% if article.author %} · {{ article.author }}{% endif %}</p>
+  </header>
+  {%- if article.image -%}
+    <div class="article__media page-width" data-reveal>
+      {{ article.image | image_url: width: 2000 | image_tag: sizes: '100vw', widths: '720, 1080, 1500, 2000', alt: article.title, loading: 'eager' }}
+    </div>
+  {%- endif -%}
+  <div class="article__content rte page-width page-width--narrow" data-reveal>
+    {{ article.content }}
+  </div>
+  <footer class="article__foot page-width page-width--narrow">
+    <a href="{{ blog.url }}" class="link link--arrow">{%- render 'icon', name: 'arrow-left' -%}<span>{{ 'templates.blog.back' | t: title: blog.title }}</span></a>
+  </footer>
+</article>
+
+{% schema %}
+{
+  "name": "Journal article",
+  "tag": "div",
+  "class": "section-article",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colors",
+      "options": [
+        {
+          "value": "pearl",
+          "label": "Pearl"
+        },
+        {
+          "value": "ivory",
+          "label": "Off-white"
+        },
+        {
+          "value": "sand",
+          "label": "Sand"
+        }
+      ],
+      "default": "pearl"
+    }
+  ]
+}
+{% endschema %}

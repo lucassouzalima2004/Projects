@@ -1,0 +1,161 @@
+{%- comment -%}
+  Product card with hover image, color swatches and quick add by size.
+
+  Accepts:
+  - product: product object
+  - sizes: image sizes attribute
+  - priority: true for cards above the fold
+{%- endcomment -%}
+{%- liquid
+  assign color_index = nil
+  assign size_index = nil
+  for option in product.options_with_values
+    assign option_name = option.name | downcase
+    if option_name == 'color' or option_name == 'colour' or option_name == 'cor' or option_name == 'colore'
+      assign color_index = forloop.index0
+    elsif option_name == 'size' or option_name == 'tamanho' or option_name == 'taglia' or option_name == 'taille'
+      assign size_index = forloop.index0
+    endif
+  endfor
+
+  assign current = product.selected_or_first_available_variant
+  assign sizes = sizes | default: '(min-width: 990px) 25vw, 50vw'
+  assign loading = 'lazy'
+  if priority
+    assign loading = 'eager'
+  endif
+
+  assign quick_add = false
+  if settings.card_quick_add and product.available and settings.prelaunch_enabled == false and size_index != nil
+    assign quick_add = true
+  endif
+
+  assign show_swatches = false
+  if color_index != nil and product.options_with_values[color_index].values.size > 1
+    assign show_swatches = true
+  endif
+
+  assign primary = current.featured_media | default: product.featured_media
+  assign secondary = nil
+  if settings.card_hover_image
+    for media in product.media
+      if media.id != primary.id and media.media_type == 'image'
+        assign secondary = media
+        break
+      endif
+    endfor
+  endif
+-%}
+<product-card
+  class="card"
+  data-color-index="{{ color_index }}"
+  data-size-index="{{ size_index }}"
+  data-current-color="{% if color_index != nil %}{{ current.options[color_index] | escape }}{% endif %}"
+>
+  <div class="card__media">
+    <a href="{{ current.url | default: product.url }}" class="card__images" tabindex="-1" aria-hidden="true" data-card-link>
+      {%- if primary -%}
+        {{
+          primary
+          | image_url: width: 1080
+          | image_tag:
+            widths: '360, 540, 720, 900, 1080',
+            sizes: sizes,
+            class: 'card__img card__img--primary',
+            loading: loading,
+            alt: product.title
+        }}
+        {%- if secondary -%}
+          {{
+            secondary
+            | image_url: width: 1080
+            | image_tag:
+              widths: '360, 540, 720, 900, 1080',
+              sizes: sizes,
+              class: 'card__img card__img--secondary',
+              loading: 'lazy',
+              alt: ''
+          }}
+        {%- endif -%}
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag: 'card__img placeholder-svg' }}
+      {%- endif -%}
+    </a>
+
+    {%- if product.available == false -%}
+      <span class="badge">{{ 'products.product.sold_out' | t }}</span>
+    {%- elsif product.compare_at_price > product.price -%}
+      <span class="badge badge--accent">{{ 'products.product.on_sale' | t }}</span>
+    {%- elsif product.tags contains 'new' -%}
+      <span class="badge">{{ 'products.product.new' | t }}</span>
+    {%- endif -%}
+
+    {%- if quick_add -%}
+      <div class="card__quick" data-quick-add>
+        <p class="card__quick-label">{{ 'products.card.quick_add' | t }}</p>
+        <div class="card__sizes" role="group" aria-label="{{ 'products.card.quick_add_label' | t: title: product.title | escape }}">
+          {%- for value in product.options_with_values[size_index].values -%}
+            <button type="button" class="card__size" data-size="{{ value | escape }}">{{ value }}</button>
+          {%- endfor -%}
+        </div>
+      </div>
+      <button
+        type="button"
+        class="card__quick-toggle"
+        aria-label="{{ 'products.card.quick_add_label' | t: title: product.title | escape }}"
+        aria-expanded="false"
+        data-quick-toggle
+      >
+        {%- render 'icon', name: 'plus' -%}
+      </button>
+    {%- endif -%}
+  </div>
+
+  <div class="card__info">
+    <h3 class="card__title">
+      <a href="{{ current.url | default: product.url }}" data-card-link>{{ product.title }}</a>
+    </h3>
+    {%- if product.type != blank -%}
+      <p class="card__type">{{ product.type }}</p>
+    {%- endif -%}
+    {% render 'price', product: product, class: 'card__price' %}
+
+    {%- if show_swatches -%}
+      <ul class="card__swatches" role="list">
+        {%- for value in product.options_with_values[color_index].values -%}
+          {%- assign value_name = value | append: '' -%}
+          {%- assign is_current = false -%}
+          {%- if current.options[color_index] == value_name -%}
+            {%- assign is_current = true -%}
+          {%- endif -%}
+          <li>
+            <button
+              type="button"
+              class="swatch swatch--sm{% if is_current %} is-active{% endif %}"
+              style="--swatch: {% render 'swatch-color', value: value %};"
+              data-color="{{ value | escape }}"
+              aria-label="{{ value | escape }}"
+              aria-pressed="{{ is_current }}"
+            ></button>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+
+  {%- if quick_add or show_swatches -%}
+    <script type="application/json" data-card-variants>
+      [
+        {%- for variant in product.variants -%}
+          {
+            "id": {{ variant.id }},
+            "options": {{ variant.options | json }},
+            "available": {{ variant.available | json }},
+            "url": {{ variant.url | json }},
+            "image": {% if variant.featured_media %}{{ variant.featured_media | image_url: width: 1080 | json }}{% else %}null{% endif %}
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      ]
+    </script>
+  {%- endif -%}
+</product-card>

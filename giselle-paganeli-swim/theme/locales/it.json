@@ -1,0 +1,240 @@
+{
+  "accessibility": {
+    "close": "Chiudi",
+    "skip_to_content": "Vai al contenuto"
+  },
+  "customer": {
+    "account": {
+      "addresses": "Indirizzi",
+      "date": "Data",
+      "details": "Dati dell'account",
+      "logout": "Esci",
+      "no_orders": "Non hai ancora effettuato ordini.",
+      "order": "Ordine",
+      "orders": "Storico ordini",
+      "status": "Stato",
+      "title": "Il mio account",
+      "total": "Totale"
+    },
+    "activate": {
+      "confirm": "Conferma password",
+      "submit": "Attiva account",
+      "title": "Attiva il tuo account"
+    },
+    "addresses": {
+      "add": "Aggiungi un nuovo indirizzo",
+      "address1": "Indirizzo",
+      "city": "Città",
+      "country": "Paese",
+      "default": "Indirizzo predefinito",
+      "save": "Salva indirizzo",
+      "set_default": "Imposta come indirizzo predefinito",
+      "zip": "CAP"
+    },
+    "login": {
+      "create": "Crea un account",
+      "email": "Email",
+      "forgot": "Password dimenticata?",
+      "guest": "Continua come ospite",
+      "password": "Password",
+      "submit": "Accedi",
+      "title": "Accedi"
+    },
+    "order": {
+      "product": "Prodotto",
+      "quantity": "Quantità",
+      "shipping_address": "Indirizzo di spedizione",
+      "title": "Ordine {{ name }}"
+    },
+    "recover": {
+      "submit": "Invia",
+      "success": "Ti abbiamo inviato un'email con il link per aggiornare la password.",
+      "title": "Reimposta la password"
+    },
+    "register": {
+      "first_name": "Nome",
+      "last_name": "Cognome",
+      "submit": "Crea account",
+      "title": "Crea un account"
+    },
+    "reset": {
+      "submit": "Reimposta password",
+      "title": "Scegli una nuova password"
+    }
+  },
+  "general": {
+    "pagination": {
+      "label": "Paginazione",
+      "next": "Pagina successiva",
+      "page": "Pagina {{ number }}",
+      "previous": "Pagina precedente"
+    },
+    "search": {
+      "pages": "Pagine",
+      "placeholder": "Cosa stai cercando?",
+      "products": "Prodotti",
+      "submit": "Cerca",
+      "suggestions": "Suggerimenti",
+      "title": "Cerca",
+      "view_all": "Vedi tutti i risultati per “{{ terms }}”"
+    }
+  },
+  "gift_cards": {
+    "issued": {
+      "expired": "Questa gift card è scaduta",
+      "expires_on": "Scade il {{ expires_on }}",
+      "print": "Stampa questa gift card",
+      "shop_link": "Visita il negozio",
+      "subtext": "La tua gift card",
+      "title": "Ecco la tua gift card da {{ value }} per {{ shop }}!"
+    }
+  },
+  "localization": {
+    "country_label": "Paese / valuta",
+    "language_label": "Lingua"
+  },
+  "newsletter": {
+    "button": "Iscriviti",
+    "consent": "Accetto di ricevere email e la privacy policy. Posso annullare l'iscrizione in qualsiasi momento.",
+    "label": "Email",
+    "placeholder": "La tua email",
+    "success": "Grazie — benvenuta nel giardino."
+  },
+  "products": {
+    "card": {
+      "quick_add": "Aggiungi alla borsa",
+      "quick_add_label": "Scegli la taglia per {{ title }}"
+    },
+    "product": {
+      "add_to_cart": "Aggiungi alla borsa",
+      "added": "Aggiunto alla borsa",
+      "new": "Novità",
+      "on_sale": "Saldi",
+      "price": {
+        "from": "Da",
+        "regular_price": "Prezzo di listino"
+      },
+      "select_size": "Seleziona la taglia",
+      "size_guide": "Guida alle taglie",
+      "sold_out": "Esaurito",
+      "taxes_included": "Tasse incluse.",
+      "unavailable": "Non disponibile",
+      "zoom": "Apri l'immagine a schermo intero"
+    }
+  },
+  "sections": {
+    "cart": {
+      "checkout": "Procedi all'acquisto",
+      "continue": "Scopri la collezione",
+      "decrease": "Diminuisci la quantità di {{ title }}",
+      "empty": "La tua borsa è vuota",
+      "empty_text": "Entra nel giardino e trova il capo pensato per la tua prossima fuga.",
+      "error": "Si è verificato un errore. Riprova.",
+      "free_shipping_reached": "La spedizione è gratuita.",
+      "free_shipping_remaining": "Mancano {{ amount }} alla spedizione gratuita",
+      "increase": "Aumenta la quantità di {{ title }}",
+      "note": "Aggiungi una nota all'ordine",
+      "quantity_for": "Quantità di {{ title }}",
+      "remove": "Rimuovi",
+      "subtotal": "Subtotale",
+      "title": "La tua borsa",
+      "view": "Vedi la borsa"
+    },
+    "contact": {
+      "business": "Aziende",
+      "company": "Azienda o struttura",
+      "consent": "Accetto che i miei dati vengano usati per rispondere al messaggio, come descritto nella privacy policy.",
+      "customer_care": "Servizio clienti",
+      "email": "Email",
+      "instagram": "Seguici",
+      "message": "Messaggio",
+      "name": "Nome",
+      "optional": "(facoltativo)",
+      "phone": "Telefono",
+      "submit": "Invia messaggio",
+      "success": "Grazie, il tuo messaggio è stato inviato. Ti risponderemo presto.",
+      "topic": "Argomento",
+      "topic_placeholder": "Scegli un argomento",
+      "website": "Sito web",
+      "whatsapp": "Scrivici"
+    },
+    "faq": {
+      "no_results": "Nessuna domanda corrisponde alla ricerca.",
+      "search": "Cerca tra le domande"
+    },
+    "featured_collection": {
+      "placeholder": "Nome del prodotto",
+      "view_all": "Vedi tutto: {{ title }}"
+    },
+    "footer": {
+      "payment": "Metodi di pagamento"
+    },
+    "gallery": {
+      "label": "Galleria"
+    },
+    "header": {
+      "account": "Account",
+      "cart": "Borsa",
+      "cart_count": "Articoli nella borsa:",
+      "menu": "Menu"
+    },
+    "hero": {
+      "scroll": "Scorri"
+    },
+    "lookbook": {
+      "shop": "Scopri"
+    },
+    "password": {
+      "days": "Giorni",
+      "enter": "Entra",
+      "hours": "Ore",
+      "label": "Password",
+      "minutes": "Minuti",
+      "owner": "Entra con la password",
+      "seconds": "Secondi"
+    }
+  },
+  "templates": {
+    "404": {
+      "link": "Torna al giardino",
+      "text": "La pagina che cerchi è stata spostata o non esiste più.",
+      "title": "Questo sentiero esce dal giardino"
+    },
+    "blog": {
+      "back": "Torna a {{ title }}"
+    },
+    "collection": {
+      "all": "Tutto",
+      "apply": "Applica",
+      "categories": "Categorie",
+      "clear_all": "Rimuovi tutti",
+      "empty": "Nessun capo corrisponde a questi filtri.",
+      "filter": "Filtra",
+      "from": "Da",
+      "layout": "Disposizione",
+      "layout_large": "Immagini più grandi",
+      "layout_small": "Più prodotti per riga",
+      "product_count": {
+        "one": "{{ count }} capo",
+        "other": "{{ count }} capi"
+      },
+      "show_results": {
+        "one": "Mostra {{ count }} capo",
+        "other": "Mostra {{ count }} capi"
+      },
+      "sort_by": "Ordina per",
+      "to": "A"
+    },
+    "search": {
+      "no_results": "Nessun risultato per “{{ terms }}”. Prova un'altra parola o esplora la collezione.",
+      "no_results_short": "Nessun risultato",
+      "page": "Pagina",
+      "results_count": {
+        "one": "{{ count }} risultato",
+        "other": "{{ count }} risultati"
+      },
+      "results_for": "Risultati per “{{ terms }}”",
+      "title": "Cerca"
+    }
+  }
+}

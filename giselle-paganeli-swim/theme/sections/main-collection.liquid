@@ -1,0 +1,451 @@
+{%- liquid
+  assign sort_by = collection.sort_by | default: collection.default_sort_by
+  assign tiles = section.blocks | where: 'type', 'tile'
+  assign categories = section.blocks | where: 'type', 'category'
+  assign active_count = 0
+  for filter in collection.filters
+    if filter.type == 'price_range'
+      if filter.min_value.value != nil or filter.max_value.value != nil
+        assign active_count = active_count | plus: 1
+      endif
+    else
+      assign active_count = active_count | plus: filter.active_values.size
+    endif
+  endfor
+  assign facet_form_id = 'FacetForm-' | append: section.id
+-%}
+<section class="collection scheme-{{ section.settings.color_scheme }}">
+  <header class="collection__head page-width" data-reveal>
+    {%- if section.settings.overline != blank -%}
+      <p class="overline">{{ section.settings.overline }}</p>
+    {%- endif -%}
+    <h1 class="collection__title">{{ collection.title }}</h1>
+    {%- if section.settings.show_description and collection.description != blank -%}
+      <div class="collection__desc rte">{{ collection.description }}</div>
+    {%- endif -%}
+
+    {%- if categories.size > 0 -%}
+      <nav class="collection__cats" aria-label="{{ 'templates.collection.categories' | t }}">
+        <ul role="list">
+          {%- if section.settings.show_all_link -%}
+            <li>
+              <a href="{{ routes.all_products_collection_url }}" class="chip{% if collection.handle == 'all' %} is-active{% endif %}"{% if collection.handle == 'all' %} aria-current="page"{% endif %}>
+                {{- 'templates.collection.all' | t -}}
+              </a>
+            </li>
+          {%- endif -%}
+          {%- for block in categories -%}
+            {%- liquid
+              assign category = block.settings.collection
+              if category == blank
+                assign category = collections[block.settings.handle]
+              endif
+            -%}
+            {%- if category != blank -%}
+              <li {{ block.shopify_attributes }}>
+                <a href="{{ category.url }}" class="chip{% if category.handle == collection.handle %} is-active{% endif %}"{% if category.handle == collection.handle %} aria-current="page"{% endif %}>
+                  {{- block.settings.label | default: category.title -}}
+                </a>
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      </nav>
+    {%- endif -%}
+  </header>
+
+  <facet-filters class="collection__body" data-section="{{ section.id }}">
+    <div class="toolbar">
+      <div class="toolbar__inner page-width">
+        {%- if section.settings.show_filters -%}
+          <button type="button" class="toolbar__filter" data-drawer-open="Filters-{{ section.id }}" aria-controls="Filters-{{ section.id }}" aria-expanded="false">
+            {%- render 'icon', name: 'filter' -%}
+            <span>{{ 'templates.collection.filter' | t }}</span>
+            <span class="toolbar__badge" data-swap="badge">{% if active_count > 0 %}{{ active_count }}{% endif %}</span>
+          </button>
+        {%- else -%}
+          <span></span>
+        {%- endif -%}
+
+        <p class="toolbar__count" data-swap="count">{{ 'templates.collection.product_count' | t: count: collection.products_count }}</p>
+
+        <div class="toolbar__right">
+          {%- if section.settings.show_sort -%}
+            <label class="toolbar__sort">
+              <span class="visually-hidden">{{ 'templates.collection.sort_by' | t }}</span>
+              <select name="sort_by" form="{{ facet_form_id }}" data-sort>
+                {%- for option in collection.sort_options -%}
+                  <option value="{{ option.value | escape }}"{% if option.value == sort_by %} selected{% endif %}>{{ option.name }}</option>
+                {%- endfor -%}
+              </select>
+              {%- render 'icon', name: 'chevron' -%}
+            </label>
+          {%- endif -%}
+          <div class="toolbar__grid" role="group" aria-label="{{ 'templates.collection.layout' | t }}">
+            <button type="button" class="toolbar__cols toolbar__cols--few" data-cols="few" aria-pressed="false" aria-label="{{ 'templates.collection.layout_large' | t }}">
+              <span></span><span></span>
+            </button>
+            <button type="button" class="toolbar__cols toolbar__cols--many" data-cols="many" aria-pressed="true" aria-label="{{ 'templates.collection.layout_small' | t }}">
+              <span></span><span></span><span></span><span></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-width">
+      <div class="active-filters" data-swap="active">
+        {%- if active_count > 0 -%}
+          <ul role="list">
+            {%- for filter in collection.filters -%}
+              {%- for value in filter.active_values -%}
+                <li>
+                  <a href="{{ value.url_to_remove }}" class="chip chip--remove" data-facet-link>
+                    {{- value.label -}}
+                    {%- render 'icon', name: 'close' -%}
+                  </a>
+                </li>
+              {%- endfor -%}
+              {%- if filter.type == 'price_range' -%}
+                {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+                  <li>
+                    <a href="{{ filter.url_to_remove }}" class="chip chip--remove" data-facet-link>
+                      {{- filter.min_value.value | default: 0 | money_without_trailing_zeros }}–{{ filter.max_value.value | default: filter.range_max | money_without_trailing_zeros -}}
+                      {%- render 'icon', name: 'close' -%}
+                    </a>
+                  </li>
+                {%- endif -%}
+              {%- endif -%}
+            {%- endfor -%}
+            <li>
+              <a href="{{ collection.url }}?sort_by={{ sort_by }}" class="link link--small" data-facet-link>{{ 'templates.collection.clear_all' | t }}</a>
+            </li>
+          </ul>
+        {%- endif -%}
+      </div>
+
+      <div class="collection__grid" data-swap="grid">
+        {%- paginate collection.products by section.settings.per_page -%}
+          {%- if collection.products.size == 0 -%}
+            <div class="collection__empty">
+              {%- render 'icon', name: 'clover' -%}
+              <p>{{ 'templates.collection.empty' | t }}</p>
+              {%- if active_count > 0 -%}
+                <a href="{{ collection.url }}" class="button" data-facet-link>{{ 'templates.collection.clear_all' | t }}</a>
+              {%- endif -%}
+            </div>
+          {%- else -%}
+            <ul class="product-grid product-grid--collection" role="list" data-grid>
+              {%- for product in collection.products -%}
+                {%- assign product_position = forloop.index -%}
+                {%- assign priority = false -%}
+                {%- if forloop.index <= 4 and paginate.current_page == 1 -%}
+                  {%- assign priority = true -%}
+                {%- endif -%}
+                <li class="product-grid__item" data-reveal style="--i: {{ forloop.index0 | modulo: 4 }};">
+                  {%- render 'product-card', product: product, priority: priority, sizes: '(min-width: 990px) 30vw, 50vw' -%}
+                </li>
+                {%- if paginate.current_page == 1 and active_count == 0 -%}
+                  {%- for tile in tiles -%}
+                    {%- if tile.settings.position == product_position -%}
+                      <li class="product-grid__item tile tile--{{ tile.settings.span }}" data-reveal {{ tile.shopify_attributes }}>
+                        <a href="{{ tile.settings.link | default: '#' }}" class="tile__link">
+                          <span class="tile__media">
+                            {%- render 'media',
+                              image: tile.settings.image,
+                              artwork: tile.settings.artwork,
+                              sizes: '(min-width: 990px) 60vw, 100vw',
+                              widths: '540, 720, 960, 1280'
+                            -%}
+                          </span>
+                          <span class="tile__content">
+                            {%- if tile.settings.overline != blank -%}
+                              <span class="overline">{{ tile.settings.overline }}</span>
+                            {%- endif -%}
+                            <span class="tile__title">{{ tile.settings.heading }}</span>
+                            {%- if tile.settings.link_label != blank -%}
+                              <span class="tile__cta">{{ tile.settings.link_label }}</span>
+                            {%- endif -%}
+                          </span>
+                        </a>
+                      </li>
+                    {%- endif -%}
+                  {%- endfor -%}
+                {%- endif -%}
+              {%- endfor -%}
+            </ul>
+            {% render 'pagination', paginate: paginate %}
+          {%- endif -%}
+        {%- endpaginate -%}
+      </div>
+    </div>
+
+    {%- if section.settings.show_filters -%}
+      <side-drawer id="Filters-{{ section.id }}" class="drawer drawer--left" aria-hidden="true">
+        <div class="drawer__overlay" data-drawer-close></div>
+        <div class="drawer__panel facets" role="dialog" aria-modal="true" aria-label="{{ 'templates.collection.filter' | t }}" tabindex="-1">
+          <div class="drawer__header">
+            <h2 class="drawer__title">{{ 'templates.collection.filter' | t }}</h2>
+            <button type="button" class="drawer__close" data-drawer-close aria-label="{{ 'accessibility.close' | t }}">
+              {%- render 'icon', name: 'close' -%}
+            </button>
+          </div>
+          <form id="{{ facet_form_id }}" class="drawer__body facets__form" data-facet-form>
+            <div data-swap="facets">
+              {%- for filter in collection.filters -%}
+                {%- liquid
+                  assign filter_label = filter.label | downcase
+                  assign is_color = false
+                  if filter_label == 'color' or filter_label == 'colour' or filter_label == 'cor' or filter_label == 'colore'
+                    assign is_color = true
+                  endif
+                -%}
+                {%- case filter.type -%}
+                  {%- when 'list' or 'boolean' -%}
+                    <details class="facet"{% if filter.active_values.size > 0 or forloop.index < 4 %} open{% endif %}>
+                      <summary class="facet__summary">
+                        <span>{{ filter.label }}</span>
+                        {%- if filter.active_values.size > 0 -%}
+                          <span class="facet__active">{{ filter.active_values.size }}</span>
+                        {%- endif -%}
+                        {%- render 'icon', name: 'plus' -%}
+                      </summary>
+                      <ul class="facet__values{% if is_color %} facet__values--swatches{% endif %}" role="list">
+                        {%- for value in filter.values -%}
+                          {%- assign disabled = false -%}
+                          {%- if value.count == 0 and value.active == false -%}
+                            {%- assign disabled = true -%}
+                          {%- endif -%}
+                          <li>
+                            <label class="facet__option{% if disabled %} is-disabled{% endif %}">
+                              <input
+                                type="checkbox"
+                                name="{{ value.param_name }}"
+                                value="{{ value.value | escape }}"
+                                {% if value.active %}
+                                  checked
+                                {% endif %}
+                                {% if disabled %}
+                                  disabled
+                                {% endif %}
+                              >
+                              {%- if is_color -%}
+                                <span class="swatch swatch--sm" style="--swatch: {% render 'swatch-color', value: value.label %};"></span>
+                              {%- else -%}
+                                <span class="facet__box">{%- render 'icon', name: 'check' -%}</span>
+                              {%- endif -%}
+                              <span class="facet__label">{{ value.label }}</span>
+                              <span class="facet__count">{{ value.count }}</span>
+                            </label>
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+                    </details>
+                  {%- when 'price_range' -%}
+                    <details class="facet" open>
+                      <summary class="facet__summary">
+                        <span>{{ filter.label }}</span>
+                        {%- render 'icon', name: 'plus' -%}
+                      </summary>
+                      <div class="facet__price">
+                        <label class="field">
+                          <span>{{ 'templates.collection.from' | t }} ({{ cart.currency.symbol }})</span>
+                          <input
+                            type="number"
+                            inputmode="numeric"
+                            min="0"
+                            name="{{ filter.min_value.param_name }}"
+                            {% if filter.min_value.value != nil %}
+                              value="{{ filter.min_value.value | divided_by: 100 }}"
+                            {% endif %}
+                            placeholder="0"
+                          >
+                        </label>
+                        <label class="field">
+                          <span>{{ 'templates.collection.to' | t }} ({{ cart.currency.symbol }})</span>
+                          <input
+                            type="number"
+                            inputmode="numeric"
+                            min="0"
+                            name="{{ filter.max_value.param_name }}"
+                            {% if filter.max_value.value != nil %}
+                              value="{{ filter.max_value.value | divided_by: 100 }}"
+                            {% endif %}
+                            placeholder="{{ filter.range_max | divided_by: 100 }}"
+                          >
+                        </label>
+                      </div>
+                    </details>
+                {%- endcase -%}
+              {%- endfor -%}
+            </div>
+            <noscript><button type="submit" class="button">{{ 'templates.collection.apply' | t }}</button></noscript>
+          </form>
+          <div class="drawer__footer facets__footer">
+            <a href="{{ collection.url }}?sort_by={{ sort_by }}" class="link link--small" data-facet-link>{{ 'templates.collection.clear_all' | t }}</a>
+            <button type="button" class="button" data-drawer-close>
+              <span data-swap="results">{{ 'templates.collection.show_results' | t: count: collection.products_count }}</span>
+            </button>
+          </div>
+        </div>
+      </side-drawer>
+    {%- endif -%}
+  </facet-filters>
+</section>
+
+{% schema %}
+{
+  "name": "Product grid",
+  "tag": "div",
+  "class": "section-collection",
+  "settings": [
+    {
+      "type": "text",
+      "id": "overline",
+      "label": "Small heading",
+      "default": "The Garden of Eden 2027"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show collection description",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_all_link",
+      "label": "Show “All” before the categories",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "per_page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "label": "Products per page",
+      "default": 24
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filters",
+      "label": "Enable filters",
+      "info": "Choose the filters (size, color, category…) in the Shopify Search & Discovery app.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sort",
+      "label": "Enable sorting",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colors",
+      "options": [
+        { "value": "pearl", "label": "Pearl" },
+        { "value": "ivory", "label": "Off-white" },
+        { "value": "sand", "label": "Sand" }
+      ],
+      "default": "pearl"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category link",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Bikinis"
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "text",
+          "id": "handle",
+          "label": "Collection handle",
+          "default": "bikinis",
+          "info": "Used while no collection is chosen above."
+        }
+      ]
+    },
+    {
+      "type": "tile",
+      "name": "Editorial tile",
+      "settings": [
+        {
+          "type": "range",
+          "id": "position",
+          "min": 1,
+          "max": 24,
+          "step": 1,
+          "label": "Show after product",
+          "default": 3
+        },
+        {
+          "type": "select",
+          "id": "span",
+          "label": "Width",
+          "options": [
+            { "value": "single", "label": "One column" },
+            { "value": "double", "label": "Two columns" }
+          ],
+          "default": "double"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "select",
+          "id": "artwork",
+          "label": "Artwork until an image is chosen",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "garden", "label": "The Garden" },
+            { "value": "lake", "label": "Lake and mountain" },
+            { "value": "canopy", "label": "Vines" },
+            { "value": "palm", "label": "Palms" },
+            { "value": "valley", "label": "Valley" },
+            { "value": "flowers", "label": "Flowers" },
+            { "value": "stream", "label": "Stream" },
+            { "value": "bloom", "label": "Bloom" }
+          ],
+          "default": "valley"
+        },
+        {
+          "type": "text",
+          "id": "overline",
+          "label": "Small heading",
+          "default": "Lookbook"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Enter the Garden"
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "Link label",
+          "default": "Discover"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,50 @@
+/* Only in the preview build: a discreet note that products and prices are samples. */
+.preview-note {
+  position: fixed;
+  left: 1rem;
+  bottom: calc(1rem + env(safe-area-inset-bottom));
+  z-index: 250;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: calc(100% - 2rem);
+  padding: 0.55rem 0.6rem 0.55rem 1.1rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--c-pearl, #f3efe7) 92%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(30, 20, 15, 0.14);
+  color: var(--c-cafe, #382821);
+  font: 400 0.7rem/1.3 'Jost', sans-serif;
+  letter-spacing: 0.06em;
+}
+
+.preview-note strong {
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.preview-note button {
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.preview-note button:hover {
+  background: rgba(56, 40, 33, 0.08);
+}
+
+.template-product .preview-note {
+  bottom: calc(5.5rem + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 990px) {
+  .template-product .preview-note {
+    bottom: 1rem;
+  }
+}

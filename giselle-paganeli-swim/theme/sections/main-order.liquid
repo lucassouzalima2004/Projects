@@ -1,0 +1,40 @@
+<section class="account page-width">
+  <header class="account__head">
+    <a href="{{ routes.account_url }}" class="link link--small">{{ 'customer.account.title' | t }}</a>
+    <h1 class="page-hero__title">{{ 'customer.order.title' | t: name: order.name }}</h1>
+    <p>{{ order.created_at | time_tag: format: 'date_at_time' }}</p>
+  </header>
+  <div class="account__grid">
+    <table class="table">
+      <thead><tr><th>{{ 'customer.order.product' | t }}</th><th>{{ 'customer.order.quantity' | t }}</th><th>{{ 'customer.account.total' | t }}</th></tr></thead>
+      <tbody>
+        {%- for line_item in order.line_items -%}
+          <tr>
+            <td><a href="{{ line_item.product.url }}">{{ line_item.title }}</a></td>
+            <td>{{ line_item.quantity }}</td>
+            <td>{{ line_item.final_line_price | money }}</td>
+          </tr>
+        {%- endfor -%}
+      </tbody>
+      <tfoot>
+        <tr><td colspan="2">{{ 'sections.cart.subtotal' | t }}</td><td>{{ order.line_items_subtotal_price | money }}</td></tr>
+        {%- for shipping_method in order.shipping_methods -%}
+          <tr><td colspan="2">{{ shipping_method.title }}</td><td>{{ shipping_method.price | money }}</td></tr>
+        {%- endfor -%}
+        <tr><td colspan="2">{{ 'customer.account.total' | t }}</td><td>{{ order.total_net_amount | money_with_currency }}</td></tr>
+      </tfoot>
+    </table>
+    <aside>
+      <h2 class="h4">{{ 'customer.order.shipping_address' | t }}</h2>
+      {{ order.shipping_address | format_address }}
+      <p>{{ order.fulfillment_status_label }}</p>
+    </aside>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Customer order",
+  "settings": []
+}
+{% endschema %}

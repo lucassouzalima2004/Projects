@@ -1,0 +1,77 @@
+<section class="page scheme-{{ section.settings.color_scheme }}">
+  <div class="page__inner page-width page-width--{{ section.settings.width }}">
+    {%- if section.settings.show_title -%}
+      <header class="page__head" data-reveal>
+        {%- render 'icon', name: 'clover' -%}
+        <h1 class="page__title">{{ page.title }}</h1>
+      </header>
+    {%- endif -%}
+    <div class="page__content rte" data-reveal>
+      {{ page.content }}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Page content",
+  "tag": "div",
+  "class": "section-page",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "Show page title",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        {
+          "value": "narrow",
+          "label": "Narrow"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        }
+      ],
+      "default": "narrow"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colors",
+      "options": [
+        {
+          "value": "pearl",
+          "label": "Pearl"
+        },
+        {
+          "value": "ivory",
+          "label": "Off-white"
+        },
+        {
+          "value": "sand",
+          "label": "Sand"
+        },
+        {
+          "value": "cafe",
+          "label": "Café"
+        },
+        {
+          "value": "garden",
+          "label": "Garden green"
+        },
+        {
+          "value": "nero",
+          "label": "Black"
+        }
+      ],
+      "default": "pearl"
+    }
+  ]
+}
+{% endschema %}

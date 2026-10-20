@@ -1,0 +1,79 @@
+{%- if section.blocks.size > 0 -%}
+  <announcement-bar class="announcement scheme-{{ section.settings.color_scheme }}" data-interval="{{ section.settings.interval }}">
+    <div class="announcement__track">
+      {%- for block in section.blocks -%}
+        <p class="announcement__item{% if forloop.first %} is-active{% endif %}" {{ block.shopify_attributes }}>
+          {%- if block.settings.link != blank -%}
+            <a href="{{ block.settings.link }}">{{ block.settings.text }}</a>
+          {%- else -%}
+            {{ block.settings.text }}
+          {%- endif -%}
+        </p>
+      {%- endfor -%}
+    </div>
+  </announcement-bar>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Announcement bar",
+  "class": "section-announcement",
+  "max_blocks": 6,
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colors",
+      "options": [
+        { "value": "pearl", "label": "Pearl" },
+        { "value": "ivory", "label": "Off-white" },
+        { "value": "sand", "label": "Sand" },
+        { "value": "cafe", "label": "Café" },
+        { "value": "garden", "label": "Garden green" },
+        { "value": "nero", "label": "Black" }
+      ],
+      "default": "cafe"
+    },
+    {
+      "type": "range",
+      "id": "interval",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "label": "Change message every",
+      "default": 5
+    }
+  ],
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "Message",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Embrace your oasis"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement bar",
+      "blocks": [
+        { "type": "announcement" }
+      ]
+    }
+  ]
+}
+{% endschema %}

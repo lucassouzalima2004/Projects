@@ -1,0 +1,24 @@
+{%- comment -%}
+  Brand logo: uploaded image, or the text wordmark from theme settings.
+  Accepts: tone ('light' to force the light version on dark backgrounds — only affects the text wordmark)
+{%- endcomment -%}
+{%- if settings.logo != blank -%}
+  {%- assign logo_width_2x = settings.logo_width | times: 2 -%}
+  {{
+    settings.logo
+    | image_url: width: logo_width_2x
+    | image_tag:
+      class: 'logo__image',
+      widths: '200, 300, 400, 600',
+      sizes: 'var(--logo-width)',
+      alt: shop.name,
+      loading: 'eager'
+  }}
+{%- else -%}
+  <span class="wordmark{% if tone == 'light' %} wordmark--light{% endif %}">
+    <span class="wordmark__name">{{ settings.wordmark_name | default: shop.name }}</span>
+    {%- if settings.wordmark_sub != blank -%}
+      <span class="wordmark__sub">{{ settings.wordmark_sub }}</span>
+    {%- endif -%}
+  </span>
+{%- endif -%}

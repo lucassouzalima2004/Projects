@@ -1,0 +1,240 @@
+{
+  "accessibility": {
+    "close": "Fechar",
+    "skip_to_content": "Pular para o conteúdo"
+  },
+  "customer": {
+    "account": {
+      "addresses": "Endereços",
+      "date": "Data",
+      "details": "Dados da conta",
+      "logout": "Sair",
+      "no_orders": "Você ainda não fez nenhum pedido.",
+      "order": "Pedido",
+      "orders": "Histórico de pedidos",
+      "status": "Status",
+      "title": "Minha conta",
+      "total": "Total"
+    },
+    "activate": {
+      "confirm": "Confirmar senha",
+      "submit": "Ativar conta",
+      "title": "Ative sua conta"
+    },
+    "addresses": {
+      "add": "Adicionar novo endereço",
+      "address1": "Endereço",
+      "city": "Cidade",
+      "country": "País",
+      "default": "Endereço padrão",
+      "save": "Salvar endereço",
+      "set_default": "Definir como endereço padrão",
+      "zip": "CEP"
+    },
+    "login": {
+      "create": "Criar uma conta",
+      "email": "E-mail",
+      "forgot": "Esqueceu a senha?",
+      "guest": "Continuar como visitante",
+      "password": "Senha",
+      "submit": "Entrar",
+      "title": "Entrar"
+    },
+    "order": {
+      "product": "Produto",
+      "quantity": "Quantidade",
+      "shipping_address": "Endereço de entrega",
+      "title": "Pedido {{ name }}"
+    },
+    "recover": {
+      "submit": "Enviar",
+      "success": "Enviamos um e-mail com o link para redefinir sua senha.",
+      "title": "Redefinir senha"
+    },
+    "register": {
+      "first_name": "Nome",
+      "last_name": "Sobrenome",
+      "submit": "Criar conta",
+      "title": "Criar uma conta"
+    },
+    "reset": {
+      "submit": "Redefinir senha",
+      "title": "Escolha uma nova senha"
+    }
+  },
+  "general": {
+    "pagination": {
+      "label": "Paginação",
+      "next": "Próxima página",
+      "page": "Página {{ number }}",
+      "previous": "Página anterior"
+    },
+    "search": {
+      "pages": "Páginas",
+      "placeholder": "O que você procura?",
+      "products": "Produtos",
+      "submit": "Buscar",
+      "suggestions": "Sugestões",
+      "title": "Buscar",
+      "view_all": "Ver todos os resultados para “{{ terms }}”"
+    }
+  },
+  "gift_cards": {
+    "issued": {
+      "expired": "Este vale-presente expirou",
+      "expires_on": "Válido até {{ expires_on }}",
+      "print": "Imprimir vale-presente",
+      "shop_link": "Visitar a loja",
+      "subtext": "Seu vale-presente",
+      "title": "Aqui está seu vale-presente de {{ value }} para {{ shop }}!"
+    }
+  },
+  "localization": {
+    "country_label": "País / moeda",
+    "language_label": "Idioma"
+  },
+  "newsletter": {
+    "button": "Inscrever-se",
+    "consent": "Aceito receber e-mails e a política de privacidade. Posso cancelar a inscrição a qualquer momento.",
+    "label": "E-mail",
+    "placeholder": "Seu e-mail",
+    "success": "Obrigada — bem-vinda ao jardim."
+  },
+  "products": {
+    "card": {
+      "quick_add": "Adicionar à sacola",
+      "quick_add_label": "Escolha o tamanho de {{ title }}"
+    },
+    "product": {
+      "add_to_cart": "Adicionar à sacola",
+      "added": "Adicionado à sacola",
+      "new": "Novo",
+      "on_sale": "Promoção",
+      "price": {
+        "from": "A partir de",
+        "regular_price": "Preço original"
+      },
+      "select_size": "Selecione seu tamanho",
+      "size_guide": "Guia de tamanhos",
+      "sold_out": "Esgotado",
+      "taxes_included": "Impostos incluídos.",
+      "unavailable": "Indisponível",
+      "zoom": "Abrir imagem em tela cheia"
+    }
+  },
+  "sections": {
+    "cart": {
+      "checkout": "Finalizar compra",
+      "continue": "Descobrir a coleção",
+      "decrease": "Diminuir a quantidade de {{ title }}",
+      "empty": "Sua sacola está vazia",
+      "empty_text": "Entre no jardim e encontre a peça feita para a sua próxima viagem.",
+      "error": "Algo deu errado. Tente novamente.",
+      "free_shipping_reached": "Seu frete é grátis.",
+      "free_shipping_remaining": "Faltam {{ amount }} para o frete grátis",
+      "increase": "Aumentar a quantidade de {{ title }}",
+      "note": "Adicionar uma observação ao pedido",
+      "quantity_for": "Quantidade de {{ title }}",
+      "remove": "Remover",
+      "subtotal": "Subtotal",
+      "title": "Sua sacola",
+      "view": "Ver sacola"
+    },
+    "contact": {
+      "business": "Empresas",
+      "company": "Empresa ou hotel",
+      "consent": "Aceito que meus dados sejam usados para responder à mensagem, conforme a política de privacidade.",
+      "customer_care": "Atendimento",
+      "email": "E-mail",
+      "instagram": "Siga-nos",
+      "message": "Mensagem",
+      "name": "Nome",
+      "optional": "(opcional)",
+      "phone": "Telefone",
+      "submit": "Enviar mensagem",
+      "success": "Obrigada, sua mensagem foi enviada. Responderemos em breve.",
+      "topic": "Assunto",
+      "topic_placeholder": "Escolha um assunto",
+      "website": "Site",
+      "whatsapp": "Fale conosco"
+    },
+    "faq": {
+      "no_results": "Nenhuma pergunta corresponde à busca.",
+      "search": "Buscar nas perguntas"
+    },
+    "featured_collection": {
+      "placeholder": "Nome do produto",
+      "view_all": "Ver tudo: {{ title }}"
+    },
+    "footer": {
+      "payment": "Formas de pagamento"
+    },
+    "gallery": {
+      "label": "Galeria"
+    },
+    "header": {
+      "account": "Conta",
+      "cart": "Sacola",
+      "cart_count": "Itens na sacola:",
+      "menu": "Menu"
+    },
+    "hero": {
+      "scroll": "Role"
+    },
+    "lookbook": {
+      "shop": "Descobrir"
+    },
+    "password": {
+      "days": "Dias",
+      "enter": "Entrar",
+      "hours": "Horas",
+      "label": "Senha",
+      "minutes": "Minutos",
+      "owner": "Entrar com senha",
+      "seconds": "Segundos"
+    }
+  },
+  "templates": {
+    "404": {
+      "link": "Voltar ao jardim",
+      "text": "A página que você procura mudou de lugar ou não existe mais.",
+      "title": "Este caminho leva para fora do jardim"
+    },
+    "blog": {
+      "back": "Voltar para {{ title }}"
+    },
+    "collection": {
+      "all": "Tudo",
+      "apply": "Aplicar",
+      "categories": "Categorias",
+      "clear_all": "Limpar tudo",
+      "empty": "Nenhuma peça corresponde a esses filtros.",
+      "filter": "Filtrar",
+      "from": "De",
+      "layout": "Layout da grade",
+      "layout_large": "Imagens maiores",
+      "layout_small": "Mais produtos por linha",
+      "product_count": {
+        "one": "{{ count }} peça",
+        "other": "{{ count }} peças"
+      },
+      "show_results": {
+        "one": "Mostrar {{ count }} peça",
+        "other": "Mostrar {{ count }} peças"
+      },
+      "sort_by": "Ordenar por",
+      "to": "Até"
+    },
+    "search": {
+      "no_results": "Nenhum resultado para “{{ terms }}”. Tente outra palavra ou explore a coleção.",
+      "no_results_short": "Nenhum resultado",
+      "page": "Página",
+      "results_count": {
+        "one": "{{ count }} resultado",
+        "other": "{{ count }} resultados"
+      },
+      "results_for": "Resultados para “{{ terms }}”",
+      "title": "Buscar"
+    }
+  }
+}

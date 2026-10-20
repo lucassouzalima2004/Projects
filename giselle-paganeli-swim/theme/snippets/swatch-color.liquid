@@ -1,0 +1,28 @@
+{%- comment -%}
+  Outputs a CSS color for an option value. Native Shopify swatches first, then the list in
+  Theme settings › Products › Color swatches, then the value itself as a CSS color name.
+  Accepts: value (product option value or string)
+{%- endcomment -%}
+{%- liquid
+  assign found = blank
+  if value.swatch.color
+    assign found = value.swatch.color
+  elsif value.swatch.image
+    assign found = value.swatch.image | image_url: width: 64 | prepend: 'url(' | append: ') center / cover'
+  else
+    assign wanted = value | append: '' | strip | downcase
+    assign lines = settings.swatch_colors | newline_to_br | split: '<br />'
+    for line in lines
+      assign parts = line | split: ':'
+      assign name = parts.first | strip | downcase
+      if name == wanted and parts.size > 1
+        assign found = parts.last | strip
+        break
+      endif
+    endfor
+  endif
+  if found == blank
+    assign found = value | append: '' | handleize | replace: '-', ''
+  endif
+-%}
+{{- found -}}

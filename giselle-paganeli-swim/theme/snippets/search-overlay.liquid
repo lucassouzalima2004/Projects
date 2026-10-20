@@ -1,0 +1,45 @@
+{%- liquid
+  assign suggestions = settings.search_menu | default: linklists['search-suggestions']
+-%}
+<side-drawer id="SearchOverlay" class="drawer drawer--top" aria-hidden="true">
+  <div class="drawer__overlay" data-drawer-close></div>
+  <div class="drawer__panel search-overlay" role="dialog" aria-modal="true" aria-label="{{ 'general.search.title' | t }}" tabindex="-1">
+    <predictive-search class="search-overlay__inner" data-enabled="{{ settings.predictive_search }}">
+      <form action="{{ routes.search_url }}" method="get" role="search" class="search-overlay__form">
+        <label class="visually-hidden" for="SearchOverlayInput">{{ 'general.search.title' | t }}</label>
+        <input
+          id="SearchOverlayInput"
+          class="search-overlay__input"
+          type="search"
+          name="q"
+          autocomplete="off"
+          placeholder="{{ 'general.search.placeholder' | t }}"
+          role="combobox"
+          aria-expanded="false"
+          aria-controls="PredictiveResults"
+          aria-autocomplete="list"
+        >
+        <input type="hidden" name="options[prefix]" value="last">
+        <button type="submit" class="search-overlay__submit" aria-label="{{ 'general.search.submit' | t }}">
+          {%- render 'icon', name: 'arrow' -%}
+        </button>
+      </form>
+      <button type="button" class="drawer__close search-overlay__close" data-drawer-close aria-label="{{ 'accessibility.close' | t }}">
+        {%- render 'icon', name: 'close' -%}
+      </button>
+
+      {%- if suggestions.links.size > 0 -%}
+        <nav class="search-overlay__suggestions" aria-label="{{ 'general.search.suggestions' | t }}" data-search-suggestions>
+          <p class="overline">{{ 'general.search.suggestions' | t }}</p>
+          <ul role="list">
+            {%- for link in suggestions.links -%}
+              <li><a href="{{ link.url }}" class="chip">{{ link.title }}</a></li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+      {%- endif -%}
+
+      <div id="PredictiveResults" class="predictive-results" data-results></div>
+    </predictive-search>
+  </div>
+</side-drawer>

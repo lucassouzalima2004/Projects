@@ -1,0 +1,167 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero-garden",
+      "settings": {
+        "artwork": "garden",
+        "overline": "The Garden of Eden 2027",
+        "heading": "Enter the Garden",
+        "claim": "embrace your oasis",
+        "button_label": "Discover the collection",
+        "button_link": "shopify://collections/all",
+        "reveal": true,
+        "focal_x": 50,
+        "focal_y": 45
+      }
+    },
+    "statement": {
+      "type": "statement",
+      "settings": {
+        "show_ornament": true,
+        "overline": "Giselle Paganeli Swim",
+        "text": "Italian elegance, <em>Brazilian sensuality</em>.",
+        "caption": "Born in Milan · Made in Brazil",
+        "size": "large",
+        "color_scheme": "pearl"
+      }
+    },
+    "intro": {
+      "type": "editorial-split",
+      "settings": {
+        "artwork": "lake",
+        "shape": "arch",
+        "artwork_2": "flowers",
+        "caption": "After Thomas Cole, The Garden of Eden, 1828",
+        "layout": "image-left",
+        "overline": "The collection",
+        "heading": "The Garden of Eden 2027",
+        "text": "<p>Water, gardens, stone and skin. A summer that moves between the stillness of Lake Como and the warmth of Brazil — swimwear and resortwear designed as a refuge of beauty and calm.</p>",
+        "link_label": "Explore the collection",
+        "link": "shopify://pages/the-garden-of-eden",
+        "color_scheme": "ivory"
+      }
+    },
+    "collection": {
+      "type": "featured-collection",
+      "blocks": {
+        "tab-1": {
+          "type": "tab",
+          "settings": {
+            "label": "Bikinis",
+            "handle": "bikinis"
+          }
+        },
+        "tab-2": {
+          "type": "tab",
+          "settings": {
+            "label": "Swimsuits",
+            "handle": "swimsuits"
+          }
+        },
+        "tab-3": {
+          "type": "tab",
+          "settings": {
+            "label": "Resortwear",
+            "handle": "resortwear"
+          }
+        }
+      },
+      "block_order": [
+        "tab-1",
+        "tab-2",
+        "tab-3"
+      ],
+      "settings": {
+        "overline": "Shop",
+        "heading": "The Collection",
+        "limit": 8,
+        "columns": 4,
+        "mobile_layout": "carousel",
+        "show_view_all": true,
+        "color_scheme": "pearl"
+      }
+    },
+    "story": {
+      "type": "story-duo",
+      "settings": {
+        "artwork_left": "canopy",
+        "label_left": "Born in Milan",
+        "artwork_right": "palm",
+        "label_right": "Made in Brazil",
+        "overline": "The Story",
+        "heading": "Two places, one oasis",
+        "text": "<p>A house of swimwear conceived in Milan and crafted in Brazil, for women who travel to resorts, spas and quiet shores.</p>",
+        "link_label": "Read the story",
+        "link": "shopify://pages/the-story",
+        "color_scheme": "ivory"
+      }
+    },
+    "gallery": {
+      "type": "editorial-gallery",
+      "blocks": {
+        "image-1": {
+          "type": "image",
+          "settings": {
+            "artwork": "flowers",
+            "shape": "portrait",
+            "caption": "Flowers of the garden"
+          }
+        },
+        "image-2": {
+          "type": "image",
+          "settings": {
+            "artwork": "stream",
+            "shape": "landscape",
+            "caption": "The spring"
+          }
+        },
+        "image-3": {
+          "type": "image",
+          "settings": {
+            "artwork": "lake",
+            "shape": "arch",
+            "caption": "Lake and mountain"
+          }
+        },
+        "image-4": {
+          "type": "image",
+          "settings": {
+            "artwork": "canopy",
+            "shape": "portrait",
+            "caption": "Vines and grapes"
+          }
+        },
+        "image-5": {
+          "type": "image",
+          "settings": {
+            "artwork": "bloom",
+            "shape": "landscape",
+            "caption": "Bloom"
+          }
+        }
+      },
+      "block_order": [
+        "image-1",
+        "image-2",
+        "image-3",
+        "image-4",
+        "image-5"
+      ],
+      "settings": {
+        "overline": "Lookbook",
+        "heading": "Water, stone and light",
+        "link_label": "Enter the Garden",
+        "link": "shopify://pages/the-garden-of-eden",
+        "color_scheme": "pearl"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "statement",
+    "intro",
+    "collection",
+    "story",
+    "gallery"
+  ]
+}

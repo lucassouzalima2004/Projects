@@ -1,0 +1,102 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "title-1": {
+          "type": "title",
+          "settings": {
+            "show_collection": true,
+            "show_type": true
+          }
+        },
+        "price-2": {
+          "type": "price",
+          "settings": {}
+        },
+        "variant_picker-3": {
+          "type": "variant_picker",
+          "settings": {}
+        },
+        "buy_buttons-4": {
+          "type": "buy_buttons",
+          "settings": {}
+        },
+        "description-5": {
+          "type": "description",
+          "settings": {}
+        },
+        "accordion-6": {
+          "type": "accordion",
+          "settings": {
+            "heading": "Fit",
+            "source": "fit",
+            "content": "<p>Fit details are being finalised for this piece.</p>",
+            "open": false
+          }
+        },
+        "accordion-7": {
+          "type": "accordion",
+          "settings": {
+            "heading": "Composition & lining",
+            "source": "composition",
+            "content": "<p>Composition and lining details will be published with the final product sheet.</p>",
+            "open": false
+          }
+        },
+        "accordion-8": {
+          "type": "accordion",
+          "settings": {
+            "heading": "Care",
+            "source": "care",
+            "content": "<p>Rinse in cold fresh water after each use. Hand wash, do not tumble dry, dry flat in the shade.</p>",
+            "open": false
+          }
+        },
+        "accordion-9": {
+          "type": "accordion",
+          "settings": {
+            "heading": "Shipping & returns",
+            "source": "shipping",
+            "content": "<p>Delivery times and costs are shown at checkout.</p>",
+            "open": false
+          }
+        },
+        "origin-10": {
+          "type": "origin",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "title-1",
+        "price-2",
+        "variant_picker-3",
+        "buy_buttons-4",
+        "description-5",
+        "accordion-6",
+        "accordion-7",
+        "accordion-8",
+        "accordion-9",
+        "origin-10"
+      ],
+      "settings": {
+        "gallery_layout": "editorial",
+        "color_scheme": "pearl"
+      }
+    },
+    "recommendations": {
+      "type": "product-recommendations",
+      "settings": {
+        "overline": "The Garden of Eden 2027",
+        "heading": "Complete the look",
+        "intent": "related",
+        "limit": 4,
+        "color_scheme": "pearl"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "recommendations"
+  ]
+}

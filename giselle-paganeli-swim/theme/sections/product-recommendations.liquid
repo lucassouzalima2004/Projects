@@ -1,0 +1,94 @@
+<product-recommendations
+  class="recommendations scheme-{{ section.settings.color_scheme }}"
+  data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ section.settings.limit }}&intent={{ section.settings.intent }}"
+>
+  {%- if recommendations.performed and recommendations.products_count > 0 -%}
+    <div class="page-width">
+      <header class="section-head">
+        {%- if section.settings.overline != blank -%}
+          <p class="overline">{{ section.settings.overline }}</p>
+        {%- endif -%}
+        <h2 class="h2">{{ section.settings.heading }}</h2>
+      </header>
+      <ul class="product-grid" role="list" style="--cols: {{ section.settings.limit | at_most: 4 }};">
+        {%- for recommendation in recommendations.products -%}
+          <li class="product-grid__item" data-reveal style="--i: {{ forloop.index0 }};">
+            {%- render 'product-card', product: recommendation, sizes: '(min-width: 990px) 25vw, 50vw' -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  {%- endif -%}
+</product-recommendations>
+
+{% schema %}
+{
+  "name": "Product recommendations",
+  "tag": "section",
+  "class": "section-recommendations",
+  "settings": [
+    {
+      "type": "text",
+      "id": "overline",
+      "label": "Small heading",
+      "default": "The Garden of Eden 2027"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Complete the look"
+    },
+    {
+      "type": "select",
+      "id": "intent",
+      "label": "Products",
+      "options": [
+        {
+          "value": "related",
+          "label": "Related (automatic)"
+        },
+        {
+          "value": "complementary",
+          "label": "Complementary (set in Search & Discovery)"
+        }
+      ],
+      "default": "related"
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "label": "Number of products",
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colors",
+      "options": [
+        {
+          "value": "pearl",
+          "label": "Pearl"
+        },
+        {
+          "value": "ivory",
+          "label": "Off-white"
+        },
+        {
+          "value": "sand",
+          "label": "Sand"
+        }
+      ],
+      "default": "pearl"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product recommendations"
+    }
+  ]
+}
+{% endschema %}

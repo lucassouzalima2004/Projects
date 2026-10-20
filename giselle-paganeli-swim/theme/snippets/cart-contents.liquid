@@ -1,0 +1,77 @@
+{%- comment -%}
+  Cart drawer contents. Re-rendered through sections/cart-drawer.liquid after every cart change.
+{%- endcomment -%}
+<div id="CartContents" class="cart-contents" data-item-count="{{ cart.item_count }}">
+  <div class="drawer__header">
+    <h2 class="drawer__title">
+      {{ 'sections.cart.title' | t }}
+      {%- if cart.item_count > 0 %} <span class="drawer__count">({{ cart.item_count }})</span>{% endif -%}
+    </h2>
+    <button type="button" class="drawer__close" data-drawer-close aria-label="{{ 'accessibility.close' | t }}">
+      {%- render 'icon', name: 'close' -%}
+    </button>
+  </div>
+
+  {%- if cart.item_count > 0 -%}
+    {%- liquid
+      assign threshold = settings.free_shipping_threshold | times: 100
+      assign show_progress = false
+      if threshold > 0 and cart.currency.iso_code == shop.currency
+        assign show_progress = true
+        assign remaining = threshold | minus: cart.total_price
+        assign progress = cart.total_price | times: 100 | divided_by: threshold
+        if progress > 100
+          assign progress = 100
+        endif
+      endif
+    -%}
+    {%- if show_progress -%}
+      <div class="shipping-progress">
+        <p>
+          {%- if remaining > 0 -%}
+            {%- assign remaining_money = remaining | money -%}
+            {{ 'sections.cart.free_shipping_remaining' | t: amount: remaining_money }}
+          {%- else -%}
+            {{ 'sections.cart.free_shipping_reached' | t }}
+          {%- endif -%}
+        </p>
+        <div class="shipping-progress__bar"><span style="width: {{ progress }}%"></span></div>
+      </div>
+    {%- endif -%}
+
+    <cart-items class="cart-lines-wrap" data-section="cart-drawer">
+      <ul class="cart-lines" role="list">
+        {%- for item in cart.items -%}
+          {%- render 'cart-line', item: item, index: forloop.index -%}
+        {%- endfor -%}
+      </ul>
+    </cart-items>
+
+    <div class="drawer__footer">
+      {%- if settings.cart_note -%}
+        <details class="cart-note">
+          <summary>{{ 'sections.cart.note' | t }}</summary>
+          <textarea name="note" data-cart-note rows="3" aria-label="{{ 'sections.cart.note' | t }}">{{ cart.note }}</textarea>
+        </details>
+      {%- endif -%}
+      <div class="cart-total">
+        <span>{{ 'sections.cart.subtotal' | t }}</span>
+        <span class="cart-total__value">{{ cart.total_price | money_with_currency }}</span>
+      </div>
+      {%- if settings.cart_footer_text != blank -%}
+        <div class="cart-footer-text rte">{{ settings.cart_footer_text }}</div>
+      {%- endif -%}
+      <form action="{{ routes.cart_url }}" method="post" class="cart-checkout">
+        <button type="submit" name="checkout" class="button button--full">{{ 'sections.cart.checkout' | t }}</button>
+      </form>
+      <a href="{{ routes.cart_url }}" class="link link--small cart-view">{{ 'sections.cart.view' | t }}</a>
+    </div>
+  {%- else -%}
+    <div class="cart-empty">
+      <div class="cart-empty__arch">{%- render 'icon', name: 'clover' -%}</div>
+      <p class="cart-empty__title">{{ 'sections.cart.empty' | t }}</p>
+      <p class="cart-empty__text">{{ 'sections.cart.empty_text' | t }}</p>
+      <a href="{{ routes.all_products_collection_url }}" class="button">{{ 'sections.cart.continue' | t }}</a>
+    </div>
+  {%- endif -%}
+</div>

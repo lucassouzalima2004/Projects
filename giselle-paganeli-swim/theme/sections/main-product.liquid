@@ -1,0 +1,470 @@
+{%- liquid
+  assign color_index = nil
+  assign size_index = nil
+  for option in product.options_with_values
+    assign option_name = option.name | downcase
+    if option_name == 'color' or option_name == 'colour' or option_name == 'cor' or option_name == 'colore'
+      assign color_index = forloop.index0
+    elsif option_name == 'size' or option_name == 'tamanho' or option_name == 'taglia' or option_name == 'taille'
+      assign size_index = forloop.index0
+    endif
+  endfor
+
+  comment
+    Sizes are only preselected when the visitor arrives on a specific variant, so nobody adds the wrong size by accident.
+  endcomment
+  assign current = product.selected_or_first_available_variant
+  assign size_chosen = true
+  if size_index != nil and product.selected_variant == blank and product.options_with_values[size_index].values.size > 1
+    assign size_chosen = false
+  endif
+
+  assign size_page = settings.size_guide_page | default: pages['size-guide']
+  assign shipping_page = settings.shipping_page | default: pages['shipping-returns']
+  assign form_id = 'ProductForm-' | append: section.id
+  assign prelaunch_id = 'Prelaunch-' | append: section.id
+  assign prelaunch_tags = 'prelaunch,' | append: product.handle
+-%}
+
+<product-info
+  class="product scheme-{{ section.settings.color_scheme }}"
+  data-section="{{ section.id }}"
+  data-url="{{ product.url }}"
+  data-color-index="{{ color_index }}"
+  data-size-index="{{ size_index }}"
+>
+  <div class="product__inner page-width">
+    <product-gallery class="product__gallery gallery-{{ section.settings.gallery_layout }}" data-gallery>
+      <ul class="product__media-list" role="list" data-media-list>
+        {%- for media in product.media -%}
+          <li
+            class="product__media-item"
+            data-media-id="{{ media.id }}"
+            {% if media.alt != blank %}
+              data-media-alt="{{ media.alt | escape }}"
+            {% endif %}
+          >
+            {%- if media.media_type == 'image' -%}
+              <button type="button" class="product__zoom" data-zoom="{{ forloop.index0 }}" aria-label="{{ 'products.product.zoom' | t }}">
+                {%- liquid
+                  assign media_loading = 'lazy'
+                  if forloop.index < 3
+                    assign media_loading = 'eager'
+                  endif
+                  assign media_alt = media.alt | default: product.title
+                -%}
+                {{
+                  media
+                  | image_url: width: 1800
+                  | image_tag:
+                    widths: '540, 720, 960, 1200, 1500, 1800',
+                    sizes: '(min-width: 990px) 58vw, 100vw',
+                    loading: media_loading,
+                    alt: media_alt,
+                    class: 'product__img'
+                }}
+              </button>
+            {%- else -%}
+              <div class="product__video">{{ media | media_tag: image_size: '1200x' }}</div>
+            {%- endif -%}
+          </li>
+        {%- else -%}
+          <li class="product__media-item">{{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}</li>
+        {%- endfor -%}
+      </ul>
+      {%- if product.media.size > 1 -%}
+        <div class="product__counter" aria-hidden="true">
+          <span data-counter-current>1</span> / {{ product.media.size }}
+        </div>
+        <div class="product__dots" aria-hidden="true">
+          {%- for media in product.media -%}
+            <span class="product__dot{% if forloop.first %} is-active{% endif %}"></span>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </product-gallery>
+
+    <div class="product__info">
+      <div class="product__sticky">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'title' -%}
+              <div class="product__head" {{ block.shopify_attributes }}>
+                {%- if block.settings.show_collection and collection -%}
+                  <a href="{{ collection.url }}" class="overline product__collection">{{ collection.title }}</a>
+                {%- elsif block.settings.show_type and product.type != blank -%}
+                  <p class="overline product__collection">{{ product.type }}</p>
+                {%- endif -%}
+                <h1 class="product__title">{{ product.title }}</h1>
+              </div>
+
+            {%- when 'price' -%}
+              <div class="product__price" {{ block.shopify_attributes }}>
+                {%- render 'price', product: product, variant: current -%}
+                {%- if cart.taxes_included or shop.taxes_included -%}
+                  <p class="product__tax">{{ 'products.product.taxes_included' | t }}</p>
+                {%- endif -%}
+              </div>
+
+            {%- when 'text' -%}
+              {%- if block.settings.text != blank -%}
+                <div class="product__text rte" {{ block.shopify_attributes }}>{{ block.settings.text }}</div>
+              {%- endif -%}
+
+            {%- when 'variant_picker' -%}
+              {%- unless product.has_only_default_variant -%}
+                <div class="variant-picker" {{ block.shopify_attributes }} data-variant-picker>
+                  {%- for option in product.options_with_values -%}
+                    {%- assign option_index = forloop.index0 -%}
+                    {%- assign is_color = false -%}
+                    {%- assign is_size = false -%}
+                    {%- if option_index == color_index -%}{%- assign is_color = true -%}{%- endif -%}
+                    {%- if option_index == size_index -%}{%- assign is_size = true -%}{%- endif -%}
+                    <fieldset class="variant-picker__option{% if is_color %} variant-picker__option--color{% endif %}{% if is_size %} variant-picker__option--size{% endif %}" data-option-index="{{ option_index }}">
+                      <legend class="variant-picker__legend">
+                        <span>{{ option.name }}</span>
+                        {%- if is_size and size_chosen == false -%}
+                          <span class="variant-picker__value" data-option-value></span>
+                        {%- else -%}
+                          <span class="variant-picker__value" data-option-value>{{ current.options[option_index] }}</span>
+                        {%- endif -%}
+                        {%- if is_size and size_page != blank -%}
+                          <button type="button" class="link link--small variant-picker__guide" data-drawer-open="SizeGuide-{{ section.id }}" aria-controls="SizeGuide-{{ section.id }}" aria-expanded="false">
+                            {{- 'products.product.size_guide' | t -}}
+                          </button>
+                        {%- endif -%}
+                      </legend>
+                      <div class="variant-picker__values">
+                        {%- for value in option.values -%}
+                          {%- liquid
+                            assign input_id = section.id | append: '-' | append: option_index | append: '-' | append: forloop.index0
+                            assign value_name = value | append: ''
+                            assign checked = false
+                            if current.options[option_index] == value_name
+                              assign checked = true
+                            endif
+                            if is_size and size_chosen == false
+                              assign checked = false
+                            endif
+                          -%}
+                          <input
+                            type="radio"
+                            class="variant-picker__input visually-hidden"
+                            id="{{ input_id }}"
+                            name="{{ section.id }}-option-{{ option_index }}"
+                            value="{{ value | escape }}"
+                            {% if checked %}
+                              checked
+                            {% endif %}
+                          >
+                          {%- if is_color -%}
+                            <label for="{{ input_id }}" class="swatch" style="--swatch: {% render 'swatch-color', value: value %};" title="{{ value | escape }}">
+                              <span class="visually-hidden">{{ value }}</span>
+                            </label>
+                          {%- else -%}
+                            <label for="{{ input_id }}" class="pill">{{ value }}</label>
+                          {%- endif -%}
+                        {%- endfor -%}
+                      </div>
+                    </fieldset>
+                  {%- endfor -%}
+                </div>
+              {%- endunless -%}
+
+            {%- when 'buy_buttons' -%}
+              <div class="product__buy" {{ block.shopify_attributes }}>
+                {%- if settings.prelaunch_enabled -%}
+                  <div class="prelaunch">
+                    <p class="prelaunch__title">{{ settings.prelaunch_heading }}</p>
+                    <p class="prelaunch__text">{{ settings.prelaunch_text }}</p>
+                    {% render 'newsletter-form', id: prelaunch_id, tags: prelaunch_tags %}
+                  </div>
+                {%- else -%}
+                  {%- form 'product', product, id: form_id, class: 'product-form', novalidate: 'novalidate', data-product-form: '' -%}
+                    <input type="hidden" name="id" value="{% if size_chosen %}{{ current.id }}{% endif %}" data-variant-id>
+                    <div class="product-form__error" role="alert" data-form-error hidden></div>
+                    <button
+                      type="submit"
+                      name="add"
+                      class="button button--full product-form__submit"
+                      data-add-button
+                      {% if current.available == false or size_chosen == false %}
+                        disabled
+                      {% endif %}
+                    >
+                      <span data-add-label>
+                        {%- if current.available == false -%}
+                          {{ 'products.product.sold_out' | t }}
+                        {%- elsif size_chosen == false -%}
+                          {{ 'products.product.select_size' | t }}
+                        {%- else -%}
+                          {{ 'products.product.add_to_cart' | t }}
+                        {%- endif -%}
+                      </span>
+                    </button>
+                    {%- if settings.show_dynamic_checkout -%}
+                      <div class="product-form__express">{{ form | payment_button }}</div>
+                    {%- endif -%}
+                  {%- endform -%}
+                {%- endif -%}
+              </div>
+
+            {%- when 'description' -%}
+              {%- if product.description != blank -%}
+                <div class="product__description rte" {{ block.shopify_attributes }}>{{ product.description }}</div>
+              {%- endif -%}
+
+            {%- when 'accordion' -%}
+              {%- liquid
+                assign content = blank
+                case block.settings.source
+                  when 'fit'
+                    assign content = product.metafields.custom.fit.value
+                    if product.metafields.custom.model_info != blank
+                      assign model_info = product.metafields.custom.model_info.value | prepend: '<p class="product__model">' | append: '</p>'
+                      assign content = content | append: model_info
+                    endif
+                  when 'composition'
+                    assign content = product.metafields.custom.composition.value
+                    if product.metafields.custom.lining != blank
+                      assign lining = product.metafields.custom.lining.value | prepend: '<p>' | append: '</p>'
+                      assign content = content | append: lining
+                    endif
+                  when 'care'
+                    assign content = product.metafields.custom.care.value
+                  when 'shipping'
+                    assign content = shipping_page.content
+                endcase
+                if content == blank
+                  assign content = block.settings.content
+                endif
+              -%}
+              {%- if content != blank -%}
+                <details class="accordion" {{ block.shopify_attributes }}{% if block.settings.open %} open{% endif %}>
+                  <summary class="accordion__summary">
+                    <span>{{ block.settings.heading }}</span>
+                    {%- render 'icon', name: 'plus' -%}
+                  </summary>
+                  <div class="accordion__content rte">
+                    {%- if content contains '<' -%}
+                      {{ content }}
+                    {%- else -%}
+                      {{ content | newline_to_br }}
+                    {%- endif -%}
+                  </div>
+                </details>
+              {%- endif -%}
+
+            {%- when 'origin' -%}
+              <div class="product__origin" {{ block.shopify_attributes }}>
+                {%- render 'icon', name: 'clover' -%}
+                <span>{{ product.metafields.custom.origin.value | default: settings.origin_label }}</span>
+              </div>
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+
+  {%- unless settings.prelaunch_enabled -%}
+    <div class="sticky-buy" data-sticky-buy aria-hidden="true">
+      <div class="sticky-buy__info">
+        <span class="sticky-buy__title">{{ product.title }}</span>
+        <span class="sticky-buy__price" data-sticky-price>{{ current.price | money }}</span>
+      </div>
+      <button type="button" class="button sticky-buy__button" data-sticky-add tabindex="-1">
+        {{- 'products.product.add_to_cart' | t -}}
+      </button>
+    </div>
+  {%- endunless -%}
+
+  <script type="application/json" data-product-json>
+    {
+      "id": {{ product.id }},
+      "url": {{ product.url | json }},
+      "colorIndex": {% if color_index != nil %}{{ color_index }}{% else %}null{% endif %},
+      "sizeIndex": {% if size_index != nil %}{{ size_index }}{% else %}null{% endif %},
+      "variants": [
+        {%- for variant in product.variants -%}
+          {
+            "id": {{ variant.id }},
+            "options": {{ variant.options | json }},
+            "available": {{ variant.available | json }},
+            "price": {{ variant.price | money | json }},
+            "compare": {% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | money | json }}{% else %}null{% endif %},
+            "media": {% if variant.featured_media %}{{ variant.featured_media.id }}{% else %}null{% endif %}
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      ]
+    }
+  </script>
+</product-info>
+
+{%- if size_page != blank -%}
+  <side-drawer id="SizeGuide-{{ section.id }}" class="drawer drawer--right" aria-hidden="true">
+    <div class="drawer__overlay" data-drawer-close></div>
+    <div class="drawer__panel" role="dialog" aria-modal="true" aria-label="{{ size_page.title | escape }}" tabindex="-1">
+      <div class="drawer__header">
+        <h2 class="drawer__title">{{ size_page.title }}</h2>
+        <button type="button" class="drawer__close" data-drawer-close aria-label="{{ 'accessibility.close' | t }}">
+          {%- render 'icon', name: 'close' -%}
+        </button>
+      </div>
+      <div class="drawer__body rte size-guide">{{ size_page.content }}</div>
+    </div>
+  </side-drawer>
+{%- endif -%}
+
+<dialog class="zoom" data-zoom-dialog aria-label="{{ product.title | escape }}">
+  <button type="button" class="zoom__close" data-zoom-close aria-label="{{ 'accessibility.close' | t }}">
+    {%- render 'icon', name: 'close' -%}
+  </button>
+  <ul class="zoom__list" role="list">
+    {%- for media in product.media -%}
+      {%- if media.media_type == 'image' -%}
+        {%- assign media_alt = media.alt | default: product.title -%}
+        <li>
+          {{
+            media
+            | image_url: width: 2400
+            | image_tag: loading: 'lazy', widths: '1200, 1800, 2400', sizes: '100vw', alt: media_alt
+          }}
+        </li>
+      {%- endif -%}
+    {%- endfor -%}
+  </ul>
+</dialog>
+
+<script type="application/ld+json">
+  {{ product | structured_data }}
+</script>
+
+{% schema %}
+{
+  "name": "Product",
+  "tag": "section",
+  "class": "section-product",
+  "blocks": [
+    {
+      "type": "title",
+      "name": "Title",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_collection",
+          "label": "Show collection above the title",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_type",
+          "label": "Otherwise show product type",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "price",
+      "name": "Price",
+      "limit": 1,
+      "settings": []
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text"
+        }
+      ]
+    },
+    {
+      "type": "variant_picker",
+      "name": "Color and size",
+      "limit": 1,
+      "settings": []
+    },
+    {
+      "type": "buy_buttons",
+      "name": "Add to bag",
+      "limit": 1,
+      "settings": []
+    },
+    {
+      "type": "description",
+      "name": "Description",
+      "limit": 1,
+      "settings": []
+    },
+    {
+      "type": "accordion",
+      "name": "Collapsible row",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Details"
+        },
+        {
+          "type": "select",
+          "id": "source",
+          "label": "Content",
+          "options": [
+            { "value": "custom", "label": "Text below" },
+            { "value": "fit", "label": "Fit (metafields custom.fit and custom.model_info)" },
+            { "value": "composition", "label": "Composition (metafields custom.composition and custom.lining)" },
+            { "value": "care", "label": "Care (metafield custom.care)" },
+            { "value": "shipping", "label": "Shipping & returns page" }
+          ],
+          "default": "custom"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Text",
+          "info": "Used when the chosen source is empty."
+        },
+        {
+          "type": "checkbox",
+          "id": "open",
+          "label": "Open by default",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "origin",
+      "name": "Origin",
+      "limit": 1,
+      "settings": []
+    }
+  ],
+  "settings": [
+    {
+      "type": "select",
+      "id": "gallery_layout",
+      "label": "Gallery on desktop",
+      "options": [
+        { "value": "editorial", "label": "Editorial (first image large, then pairs)" },
+        { "value": "stack", "label": "One image per row" }
+      ],
+      "default": "editorial"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colors",
+      "options": [
+        { "value": "pearl", "label": "Pearl" },
+        { "value": "ivory", "label": "Off-white" },
+        { "value": "sand", "label": "Sand" }
+      ],
+      "default": "pearl"
+    }
+  ]
+}
+{% endschema %}

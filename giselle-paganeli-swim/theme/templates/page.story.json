@@ -1,0 +1,106 @@
+{
+  "sections": {
+    "banner": {
+      "type": "image-banner",
+      "settings": {
+        "artwork": "palm",
+        "height": "large",
+        "position": "center",
+        "veil": 30,
+        "priority": true,
+        "overline": "The Story",
+        "heading": "Born in Milan, made in Brazil",
+        "heading_as_title": true
+      }
+    },
+    "founder": {
+      "type": "editorial-split",
+      "settings": {
+        "artwork": "canopy",
+        "shape": "portrait",
+        "artwork_2": "none",
+        "layout": "image-right",
+        "overline": "The founder",
+        "heading": "Giselle Paganeli",
+        "text": "<p>The founder's story will be told here in her own words: how a Brazilian woman living in Italy turned her love for water, travel and design into a swimwear house.</p>",
+        "signature": "Giselle Paganeli",
+        "link_label": "",
+        "color_scheme": "pearl"
+      }
+    },
+    "quote": {
+      "type": "statement",
+      "settings": {
+        "show_ornament": true,
+        "text": "A refuge of <em>beauty and calm</em>, wherever the water is.",
+        "caption": "Giselle Paganeli",
+        "size": "medium",
+        "color_scheme": "sand"
+      }
+    },
+    "duo": {
+      "type": "story-duo",
+      "settings": {
+        "artwork_left": "lake",
+        "label_left": "Milano",
+        "artwork_right": "bloom",
+        "label_right": "Brasil",
+        "overline": "Two origins",
+        "heading": "Between the lake and the sea",
+        "text": "<p>Designed with Italian restraint, made in Brazil with the know-how of its swimwear tradition.</p>",
+        "link_label": "Discover the collection",
+        "link": "shopify://collections/all",
+        "color_scheme": "ivory"
+      }
+    },
+    "values": {
+      "type": "columns",
+      "blocks": {
+        "column-1": {
+          "type": "column",
+          "settings": {
+            "artwork": "lake",
+            "overline": "I",
+            "heading": "Italian elegance",
+            "text": "<p>Clean lines, a precise cut and the discipline of Milanese design.</p>"
+          }
+        },
+        "column-2": {
+          "type": "column",
+          "settings": {
+            "artwork": "flowers",
+            "overline": "II",
+            "heading": "Brazilian sensuality",
+            "text": "<p>The ease, warmth and confidence of Brazilian beachwear.</p>"
+          }
+        },
+        "column-3": {
+          "type": "column",
+          "settings": {
+            "artwork": "stream",
+            "overline": "III",
+            "heading": "Quiet luxury",
+            "text": "<p>Pieces made to last beyond a season, for resorts, spas and quiet shores.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "column-1",
+        "column-2",
+        "column-3"
+      ],
+      "settings": {
+        "overline": "The house",
+        "heading": "What we believe",
+        "color_scheme": "pearl"
+      }
+    }
+  },
+  "order": [
+    "banner",
+    "founder",
+    "quote",
+    "duo",
+    "values"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "sections": {
+    "hero": {
+      "type": "page-hero",
+      "settings": {
+        "overline": "Contact",
+        "heading": "",
+        "text": "<p>For orders, sizes or a private appointment — and for boutiques, resorts and spas.</p>",
+        "color_scheme": "pearl"
+      }
+    },
+    "form": {
+      "type": "contact-form",
+      "settings": {
+        "overline": "Write to us",
+        "heading": "We would love to hear from you",
+        "text": "<p>Our client care team answers within two working days.</p>",
+        "customer_topics": "Orders and delivery, Sizes and fit, Exchanges and returns, Product care, Other",
+        "business_topics": "Boutiques and retailers, Resorts and hotels, Spas and wellness, Press and collaborations",
+        "business_text": "<p><strong>Boutiques, resorts and spas</strong><br>Tell us about your property and we will share the wholesale line sheet.</p>",
+        "color_scheme": "pearl"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "form"
+  ]
+}

@@ -1,0 +1,94 @@
+<section class="search-page scheme-{{ section.settings.color_scheme }}">
+  <header class="search-page__head page-width" data-reveal>
+    {%- render 'icon', name: 'clover' -%}
+    <h1 class="search-page__title">
+      {%- if search.performed -%}
+        {{ 'templates.search.results_for' | t: terms: search.terms }}
+      {%- else -%}
+        {{ 'templates.search.title' | t }}
+      {%- endif -%}
+    </h1>
+    <form action="{{ routes.search_url }}" method="get" role="search" class="search-page__form">
+      <label for="SearchPageInput" class="visually-hidden">{{ 'general.search.title' | t }}</label>
+      <input id="SearchPageInput" type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'general.search.placeholder' | t }}" autocomplete="off">
+      <input type="hidden" name="options[prefix]" value="last">
+      <button type="submit" aria-label="{{ 'general.search.submit' | t }}">{%- render 'icon', name: 'arrow' -%}</button>
+    </form>
+    {%- if search.performed -%}
+      <p class="search-page__count">{{ 'templates.search.results_count' | t: count: search.results_count }}</p>
+    {%- endif -%}
+  </header>
+
+  {%- if search.performed -%}
+    <div class="page-width" data-search-results>
+      {%- paginate search.results by section.settings.per_page -%}
+        {%- if search.results_count == 0 -%}
+          <div class="collection__empty">
+            <p>{{ 'templates.search.no_results' | t: terms: search.terms }}</p>
+            <a href="{{ routes.all_products_collection_url }}" class="button">{{ 'sections.cart.continue' | t }}</a>
+          </div>
+        {%- else -%}
+          <ul class="product-grid" role="list" style="--cols: 4;">
+            {%- for item in search.results -%}
+              {%- case item.object_type -%}
+                {%- when 'product' -%}
+                  <li class="product-grid__item" data-reveal style="--i: {{ forloop.index0 | modulo: 4 }};">
+                    {%- render 'product-card', product: item, sizes: '(min-width: 990px) 25vw, 50vw' -%}
+                  </li>
+                {%- when 'page' or 'article' -%}
+                  <li class="product-grid__item" data-reveal>
+                    <a href="{{ item.url }}" class="result-card">
+                      <span class="overline">{{ 'templates.search.page' | t }}</span>
+                      <span class="result-card__title">{{ item.title }}</span>
+                      <span class="result-card__text">{{ item.content | strip_html | truncatewords: 22 }}</span>
+                      {%- render 'icon', name: 'arrow' -%}
+                    </a>
+                  </li>
+              {%- endcase -%}
+            {%- endfor -%}
+          </ul>
+          {% render 'pagination', paginate: paginate %}
+        {%- endif -%}
+      {%- endpaginate -%}
+    </div>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Search results",
+  "tag": "div",
+  "class": "section-search",
+  "settings": [
+    {
+      "type": "range",
+      "id": "per_page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "label": "Results per page",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colors",
+      "options": [
+        {
+          "value": "pearl",
+          "label": "Pearl"
+        },
+        {
+          "value": "ivory",
+          "label": "Off-white"
+        },
+        {
+          "value": "sand",
+          "label": "Sand"
+        }
+      ],
+      "default": "pearl"
+    }
+  ]
+}
+{% endschema %}

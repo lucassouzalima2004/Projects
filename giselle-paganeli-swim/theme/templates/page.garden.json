@@ -1,0 +1,147 @@
+{
+  "sections": {
+    "banner": {
+      "type": "image-banner",
+      "settings": {
+        "artwork": "garden",
+        "height": "full",
+        "position": "bottom",
+        "veil": 25,
+        "priority": true,
+        "overline": "Collection 2027",
+        "heading": "The Garden of Eden",
+        "heading_as_title": true,
+        "text": "<p>embrace your oasis</p>",
+        "caption": "Thomas Cole, The Garden of Eden, 1828. Public domain."
+      }
+    },
+    "concept": {
+      "type": "rich-text",
+      "settings": {
+        "overline": "The concept",
+        "heading": "Enter the Garden",
+        "text": "<p>The collection begins with Thomas Cole's <em>The Garden of Eden</em> (1828): water, gardens, architecture and skin composing a universe of contemplation and desire. The light of Lake Como and the Mediterranean summer meet the energy of Brazil.</p>",
+        "width": "narrow",
+        "color_scheme": "pearl"
+      }
+    },
+    "look": {
+      "type": "lookbook",
+      "blocks": {
+        "hotspot-1": {
+          "type": "hotspot",
+          "settings": {
+            "x": 30,
+            "y": 40
+          }
+        },
+        "hotspot-2": {
+          "type": "hotspot",
+          "settings": {
+            "x": 58,
+            "y": 62
+          }
+        },
+        "hotspot-3": {
+          "type": "hotspot",
+          "settings": {
+            "x": 78,
+            "y": 34
+          }
+        }
+      },
+      "block_order": [
+        "hotspot-1",
+        "hotspot-2",
+        "hotspot-3"
+      ],
+      "settings": {
+        "artwork": "stream",
+        "layout": "image-left",
+        "overline": "Shop the look",
+        "heading": "By the spring",
+        "text": "<p>Tap the points on the image to discover each piece.</p>",
+        "color_scheme": "ivory"
+      }
+    },
+    "gallery": {
+      "type": "editorial-gallery",
+      "blocks": {
+        "image-1": {
+          "type": "image",
+          "settings": {
+            "artwork": "canopy",
+            "shape": "portrait",
+            "caption": "Vines"
+          }
+        },
+        "image-2": {
+          "type": "image",
+          "settings": {
+            "artwork": "valley",
+            "shape": "landscape",
+            "caption": "The valley"
+          }
+        },
+        "image-3": {
+          "type": "image",
+          "settings": {
+            "artwork": "flowers",
+            "shape": "arch",
+            "caption": "Flowers"
+          }
+        },
+        "image-4": {
+          "type": "image",
+          "settings": {
+            "artwork": "palm",
+            "shape": "portrait",
+            "caption": "Palms"
+          }
+        }
+      },
+      "block_order": [
+        "image-1",
+        "image-2",
+        "image-3",
+        "image-4"
+      ],
+      "settings": {
+        "overline": "Campaign",
+        "heading": "Water, stone and light",
+        "color_scheme": "pearl"
+      }
+    },
+    "shop": {
+      "type": "featured-collection",
+      "blocks": {
+        "tab-1": {
+          "type": "tab",
+          "settings": {
+            "label": "All",
+            "handle": "all"
+          }
+        }
+      },
+      "block_order": [
+        "tab-1"
+      ],
+      "settings": {
+        "overline": "The Garden of Eden 2027",
+        "heading": "Shop the collection",
+        "limit": 12,
+        "columns": 4,
+        "mobile_layout": "grid",
+        "show_view_all": true,
+        "color_scheme": "pearl"
+      }
+    }
+  },
+  "order": [
+    "banner",
+    "concept",
+    "look",
+    "gallery",
+    "shop"
+  ]
+}

@@ -1,0 +1,56 @@
+{%- comment -%}
+  One cart line. Accepts: item, index (1-based line number), page (true on the cart page)
+{%- endcomment -%}
+<li class="cart-line" data-line="{{ index }}">
+  <a href="{{ item.url }}" class="cart-line__media" tabindex="-1" aria-hidden="true">
+    {%- if item.image -%}
+      {{ item.image | image_url: width: 360 | image_tag: loading: 'lazy', alt: item.product.title, sizes: '(min-width: 990px) 140px, 96px', widths: '180, 360' }}
+    {%- endif -%}
+  </a>
+  <div class="cart-line__info">
+    <div class="cart-line__head">
+      <a href="{{ item.url }}" class="cart-line__title">{{ item.product.title }}</a>
+      <span class="cart-line__price">
+        {%- if item.original_line_price > item.final_line_price -%}
+          <s>{{ item.original_line_price | money }}</s>
+        {%- endif -%}
+        {{ item.final_line_price | money }}
+      </span>
+    </div>
+    {%- unless item.product.has_only_default_variant -%}
+      <p class="cart-line__options">
+        {%- for option in item.options_with_values -%}
+          <span>{{ option.name }}: {{ option.value }}</span>
+        {%- endfor -%}
+      </p>
+    {%- endunless -%}
+    {%- for discount in item.line_level_discount_allocations -%}
+      <p class="cart-line__discount">{{ discount.discount_application.title }} (−{{ discount.amount | money }})</p>
+    {%- endfor -%}
+    <div class="cart-line__actions">
+      <div class="qty" data-qty>
+        <button type="button" class="qty__btn" data-qty-step="-1" aria-label="{{ 'sections.cart.decrease' | t: title: item.product.title | escape }}">
+          {%- render 'icon', name: 'minus' -%}
+        </button>
+        <input
+          class="qty__input"
+          type="number"
+          inputmode="numeric"
+          min="0"
+          value="{{ item.quantity }}"
+          data-line="{{ index }}"
+          {% if page %}
+            name="updates[]"
+          {% endif %}
+          aria-label="{{ 'sections.cart.quantity_for' | t: title: item.product.title | escape }}"
+        >
+        <button type="button" class="qty__btn" data-qty-step="1" aria-label="{{ 'sections.cart.increase' | t: title: item.product.title | escape }}">
+          {%- render 'icon', name: 'plus' -%}
+        </button>
+      </div>
+      <button type="button" class="link link--small" data-line-remove="{{ index }}">
+        {{- 'sections.cart.remove' | t -}}
+      </button>
+    </div>
+  </div>
+</li>

@@ -1,0 +1,34 @@
+<section class="account-form page-width page-width--narrow">
+  <div class="account-form__card" data-login>
+    {%- render 'icon', name: 'clover' -%}
+    <h1 class="page-hero__title">{{ 'customer.login.title' | t }}</h1>
+    {%- form 'customer_login', novalidate: 'novalidate', class: 'form' -%}
+      {%- if form.errors -%}<div class="form-message form-message--error" role="alert">{{ form.errors | default_errors }}</div>{%- endif -%}
+      <label class="field"><span>{{ 'customer.login.email' | t }}</span><input type="email" name="customer[email]" autocomplete="email" required></label>
+      <label class="field"><span>{{ 'customer.login.password' | t }}</span><input type="password" name="customer[password]" autocomplete="current-password" required></label>
+      <button type="submit" class="button button--full">{{ 'customer.login.submit' | t }}</button>
+      <a href="#recover" class="link link--small">{{ 'customer.login.forgot' | t }}</a>
+      <a href="{{ routes.account_register_url }}" class="link link--small">{{ 'customer.login.create' | t }}</a>
+    {%- endform -%}
+  </div>
+  <div class="account-form__card" id="recover">
+    <h2 class="h4">{{ 'customer.recover.title' | t }}</h2>
+    {%- form 'recover_customer_password', class: 'form' -%}
+      {%- if form.posted_successfully? -%}<p class="form-message form-message--success">{{ 'customer.recover.success' | t }}</p>{%- endif -%}
+      <label class="field"><span>{{ 'customer.login.email' | t }}</span><input type="email" name="email" autocomplete="email" required></label>
+      <button type="submit" class="button">{{ 'customer.recover.submit' | t }}</button>
+    {%- endform -%}
+  </div>
+  {%- if shop.checkout.guest_login -%}
+    <div class="account-form__card">
+      {%- form 'guest_login' -%}<button type="submit" class="button button--ghost">{{ 'customer.login.guest' | t }}</button>{%- endform -%}
+    </div>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Customer login",
+  "settings": []
+}
+{% endschema %}

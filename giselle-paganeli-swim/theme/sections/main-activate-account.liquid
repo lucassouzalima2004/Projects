@@ -1,0 +1,18 @@
+<section class="account-form page-width page-width--narrow">
+  <div class="account-form__card">
+    <h1 class="page-hero__title">{{ 'customer.activate.title' | t }}</h1>
+    {%- form 'activate_customer_password', class: 'form' -%}
+      {%- if form.errors -%}<div class="form-message form-message--error" role="alert">{{ form.errors | default_errors }}</div>{%- endif -%}
+      <label class="field"><span>{{ 'customer.login.password' | t }}</span><input type="password" name="customer[password]" autocomplete="new-password" required></label>
+      <label class="field"><span>{{ 'customer.activate.confirm' | t }}</span><input type="password" name="customer[password_confirmation]" autocomplete="new-password" required></label>
+      <button type="submit" class="button button--full">{{ 'customer.activate.submit' | t }}</button>
+    {%- endform -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Activate account",
+  "settings": []
+}
+{% endschema %}

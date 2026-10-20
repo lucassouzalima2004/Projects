@@ -1,0 +1,12 @@
+{
+  "current": "Default",
+  "presets": {
+    "Default": {
+      "logo_width": 190,
+      "card_ratio": "portrait",
+      "cart_type": "drawer",
+      "free_shipping_threshold": 0,
+      "prelaunch_enabled": false
+    }
+  }
+}

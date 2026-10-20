@@ -1,0 +1,63 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "settings": {
+        "show_title": true,
+        "width": "narrow"
+      }
+    },
+    "topics": {
+      "type": "help-center",
+      "blocks": {
+        "topic-1": {
+          "type": "topic",
+          "settings": {
+            "heading": "Size guide",
+            "text": "Find your perfect fit",
+            "link": "shopify://pages/size-guide"
+          }
+        },
+        "topic-2": {
+          "type": "topic",
+          "settings": {
+            "heading": "Care",
+            "text": "Keep every piece beautiful",
+            "link": "shopify://pages/care"
+          }
+        },
+        "topic-3": {
+          "type": "topic",
+          "settings": {
+            "heading": "Shipping & returns",
+            "text": "Delivery, exchanges and returns",
+            "link": "shopify://pages/shipping-returns"
+          }
+        },
+        "topic-4": {
+          "type": "topic",
+          "settings": {
+            "heading": "Contact",
+            "text": "Write to our client care",
+            "link": "shopify://pages/contact"
+          }
+        }
+      },
+      "block_order": [
+        "topic-1",
+        "topic-2",
+        "topic-3",
+        "topic-4"
+      ],
+      "settings": {
+        "overline": "Client care",
+        "heading": "Other topics",
+        "color_scheme": "ivory"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "topics"
+  ]
+}

@@ -1,0 +1,348 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Eden",
+    "theme_version": "1.0.0",
+    "theme_author": "Genialup",
+    "theme_documentation_url": "https://genialup.com",
+    "theme_support_url": "https://genialup.com"
+  },
+  {
+    "name": "Logo & identity",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo",
+        "info": "Horizontal version, SVG or PNG with transparent background. While empty, the text wordmark below is used."
+      },
+      {
+        "type": "range",
+        "id": "logo_width",
+        "min": 80,
+        "max": 320,
+        "step": 10,
+        "unit": "px",
+        "label": "Logo width (desktop)",
+        "default": 190
+      },
+      {
+        "type": "text",
+        "id": "wordmark_name",
+        "label": "Wordmark",
+        "default": "Giselle Paganeli"
+      },
+      {
+        "type": "text",
+        "id": "wordmark_sub",
+        "label": "Wordmark line 2",
+        "default": "Swim"
+      },
+      {
+        "type": "text",
+        "id": "signature",
+        "label": "Origin signature",
+        "default": "Born in Milan · Made in Brazil"
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon",
+        "info": "Square image, 64 × 64 px or larger."
+      }
+    ]
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Brand palette"
+      },
+      {
+        "type": "color",
+        "id": "color_background",
+        "label": "Pearl (page background)",
+        "default": "#f3efe7"
+      },
+      {
+        "type": "color",
+        "id": "color_surface",
+        "label": "Off-white (cards and panels)",
+        "default": "#faf8f3"
+      },
+      {
+        "type": "color",
+        "id": "color_sand",
+        "label": "Sand",
+        "default": "#d6c5ae"
+      },
+      {
+        "type": "color",
+        "id": "color_text",
+        "label": "Café (text)",
+        "default": "#382821"
+      },
+      {
+        "type": "color",
+        "id": "color_nero",
+        "label": "Black",
+        "default": "#111111"
+      },
+      {
+        "type": "color",
+        "id": "color_accent",
+        "label": "Terracotta (accent)",
+        "default": "#ad634d"
+      },
+      {
+        "type": "color",
+        "id": "color_gold",
+        "label": "Aged gold (details)",
+        "default": "#a8895b"
+      },
+      {
+        "type": "header",
+        "content": "Editorial"
+      },
+      {
+        "type": "color",
+        "id": "color_garden",
+        "label": "Deep garden green",
+        "default": "#2f3a2b"
+      },
+      {
+        "type": "color",
+        "id": "color_water",
+        "label": "Lake blue",
+        "default": "#7d97a0"
+      }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Headings use Cormorant Garamond and text uses Jost, both under the SIL Open Font License and served from the theme files."
+      },
+      {
+        "type": "range",
+        "id": "heading_scale",
+        "min": 80,
+        "max": 130,
+        "step": 5,
+        "unit": "%",
+        "label": "Heading size",
+        "default": 100
+      },
+      {
+        "type": "range",
+        "id": "body_scale",
+        "min": 90,
+        "max": 115,
+        "step": 5,
+        "unit": "%",
+        "label": "Text size",
+        "default": 100
+      }
+    ]
+  },
+  {
+    "name": "Layout & motion",
+    "settings": [
+      {
+        "type": "range",
+        "id": "page_width",
+        "min": 1100,
+        "max": 1800,
+        "step": 20,
+        "unit": "px",
+        "label": "Maximum page width",
+        "default": 1520
+      },
+      {
+        "type": "checkbox",
+        "id": "animations_reveal",
+        "label": "Reveal sections on scroll",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "page_transitions",
+        "label": "Fade between pages",
+        "info": "Uses the browser's view transitions where available.",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Products",
+    "settings": [
+      {
+        "type": "select",
+        "id": "card_ratio",
+        "label": "Product image shape",
+        "options": [
+          { "value": "portrait", "label": "Portrait 4:5" },
+          { "value": "tall", "label": "Tall 2:3" },
+          { "value": "square", "label": "Square" }
+        ],
+        "default": "portrait"
+      },
+      {
+        "type": "checkbox",
+        "id": "card_hover_image",
+        "label": "Show second image on hover",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "card_quick_add",
+        "label": "Quick add sizes on product cards",
+        "default": true
+      },
+      {
+        "type": "textarea",
+        "id": "swatch_colors",
+        "label": "Color swatches",
+        "info": "One color per line, as Name: #hex. Matches the Color option values of your products. Native Shopify swatches take priority when set.",
+        "default": "Pearl: #f3efe7\nIvory: #faf8f3\nSand: #d6c5ae\nCacao: #4b3226\nCafé: #382821\nNero: #111111\nBlack: #111111\nTerracotta: #ad634d\nGold: #a8895b\nGarden: #2f3a2b\nLake: #7d97a0"
+      },
+      {
+        "type": "page",
+        "id": "size_guide_page",
+        "label": "Size guide page",
+        "info": "Its content opens in a side panel on product pages."
+      },
+      {
+        "type": "page",
+        "id": "shipping_page",
+        "label": "Shipping & returns page"
+      },
+      {
+        "type": "text",
+        "id": "origin_label",
+        "label": "Origin label",
+        "default": "Made in Brazil"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_dynamic_checkout",
+        "label": "Show express checkout buttons",
+        "info": "Apple Pay, Google Pay, Shop Pay, PayPal… as enabled in your payment settings.",
+        "default": false
+      }
+    ]
+  },
+  {
+    "name": "Cart",
+    "settings": [
+      {
+        "type": "select",
+        "id": "cart_type",
+        "label": "Cart type",
+        "options": [
+          { "value": "drawer", "label": "Side drawer" },
+          { "value": "page", "label": "Cart page" }
+        ],
+        "default": "drawer"
+      },
+      {
+        "type": "number",
+        "id": "free_shipping_threshold",
+        "label": "Free shipping from",
+        "info": "In your store currency, whole units. 0 hides the progress bar. Must match your shipping rates.",
+        "default": 0
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_note",
+        "label": "Allow order notes",
+        "default": false
+      },
+      {
+        "type": "richtext",
+        "id": "cart_footer_text",
+        "label": "Text under the checkout button",
+        "default": "<p>Taxes and shipping calculated at checkout.</p>"
+      }
+    ]
+  },
+  {
+    "name": "Pre-launch",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Show the collection without selling it yet. Product pages replace “Add to bag” with a waiting list sign-up, and products are tagged in your customer list. To hide the whole store instead, use the password page in Online Store › Preferences."
+      },
+      {
+        "type": "checkbox",
+        "id": "prelaunch_enabled",
+        "label": "Enable pre-launch mode",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "prelaunch_heading",
+        "label": "Message on product pages",
+        "default": "The Garden opens soon"
+      },
+      {
+        "type": "textarea",
+        "id": "prelaunch_text",
+        "label": "Text",
+        "default": "Leave your email to be the first to enter the garden and to receive the launch date."
+      }
+    ]
+  },
+  {
+    "name": "Contact & social",
+    "settings": [
+      {
+        "type": "text",
+        "id": "contact_email",
+        "label": "Customer care email"
+      },
+      {
+        "type": "text",
+        "id": "whatsapp_number",
+        "label": "WhatsApp number",
+        "info": "International format, digits only, e.g. 393331234567."
+      },
+      {
+        "type": "text",
+        "id": "social_instagram",
+        "label": "Instagram",
+        "info": "https://www.instagram.com/…"
+      },
+      {
+        "type": "text",
+        "id": "social_tiktok",
+        "label": "TikTok"
+      },
+      {
+        "type": "text",
+        "id": "social_pinterest",
+        "label": "Pinterest"
+      }
+    ]
+  },
+  {
+    "name": "Search",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "predictive_search",
+        "label": "Show results while typing",
+        "default": true
+      },
+      {
+        "type": "link_list",
+        "id": "search_menu",
+        "label": "Suggested links in search",
+        "info": "Shown before typing. Leave empty to hide."
+      }
+    ]
+  }
+]

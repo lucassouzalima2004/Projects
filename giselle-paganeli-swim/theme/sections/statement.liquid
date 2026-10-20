@@ -1,0 +1,117 @@
+<section class="statement scheme-{{ section.settings.color_scheme }} statement--{{ section.settings.size }}">
+  <div class="statement__inner page-width" data-reveal>
+    {%- if section.settings.show_ornament -%}
+      {%- render 'icon', name: 'clover' -%}
+    {%- endif -%}
+    {%- if section.settings.overline != blank -%}
+      <p class="overline">{{ section.settings.overline }}</p>
+    {%- endif -%}
+    {%- if section.settings.text != blank -%}
+      <p class="statement__text">{{ section.settings.text }}</p>
+    {%- endif -%}
+    {%- if section.settings.caption != blank -%}
+      <p class="statement__caption">{{ section.settings.caption }}</p>
+    {%- endif -%}
+    {%- if section.settings.link_label != blank -%}
+      <a href="{{ section.settings.link }}" class="link link--arrow">
+        <span>{{ section.settings.link_label }}</span>
+        {%- render 'icon', name: 'arrow' -%}
+      </a>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Statement",
+  "tag": "div",
+  "class": "section-statement",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_ornament",
+      "label": "Show flower ornament",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "overline",
+      "label": "Small heading"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "Italian elegance, <em>Brazilian sensuality</em>."
+    },
+    {
+      "type": "text",
+      "id": "caption",
+      "label": "Caption"
+    },
+    {
+      "type": "select",
+      "id": "size",
+      "label": "Text size",
+      "options": [
+        {
+          "value": "large",
+          "label": "Large"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        }
+      ],
+      "default": "large"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Link label"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colors",
+      "options": [
+        {
+          "value": "pearl",
+          "label": "Pearl"
+        },
+        {
+          "value": "ivory",
+          "label": "Off-white"
+        },
+        {
+          "value": "sand",
+          "label": "Sand"
+        },
+        {
+          "value": "cafe",
+          "label": "Café"
+        },
+        {
+          "value": "garden",
+          "label": "Garden green"
+        },
+        {
+          "value": "nero",
+          "label": "Black"
+        }
+      ],
+      "default": "pearl"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Statement"
+    }
+  ]
+}
+{% endschema %}

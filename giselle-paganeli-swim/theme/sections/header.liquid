@@ -1,0 +1,279 @@
+{%- liquid
+  assign menu = section.settings.menu
+  assign transparent = false
+  if section.settings.transparent_home and template.name == 'index'
+    assign transparent = true
+  endif
+-%}
+<site-header
+  class="site-header"
+  data-sticky="{{ section.settings.sticky }}"
+  {% if transparent %}
+    data-transparent
+  {% endif %}
+>
+  <header class="header">
+    <div class="header__bar">
+      <div class="header__side header__side--left">
+        <button
+          type="button"
+          class="header__icon header__burger"
+          data-drawer-open="MenuDrawer"
+          aria-controls="MenuDrawer"
+          aria-expanded="false"
+          aria-label="{{ 'sections.header.menu' | t }}"
+        >
+          {%- render 'icon', name: 'menu' -%}
+        </button>
+        <button
+          type="button"
+          class="header__icon header__search"
+          data-drawer-open="SearchOverlay"
+          aria-controls="SearchOverlay"
+          aria-expanded="false"
+        >
+          {%- render 'icon', name: 'search' -%}
+          <span class="header__label">{{ 'general.search.title' | t }}</span>
+        </button>
+        {%- if section.settings.show_localization -%}
+          {% render 'localization-form', id: 'Header', class: 'localization localization--header' %}
+        {%- endif -%}
+      </div>
+
+      {%- capture logo_link -%}
+        <a href="{{ routes.root_url }}" class="logo" aria-label="{{ shop.name | escape }}">
+          {%- render 'wordmark' -%}
+        </a>
+      {%- endcapture -%}
+      {%- if template.name == 'index' -%}
+        <h1 class="header__logo">{{ logo_link }}</h1>
+      {%- else -%}
+        <div class="header__logo">{{ logo_link }}</div>
+      {%- endif -%}
+
+      <div class="header__side header__side--right">
+        {%- if shop.customer_accounts_enabled -%}
+          <a href="{{ routes.account_url }}" class="header__icon header__account" aria-label="{{ 'sections.header.account' | t }}">
+            {%- render 'icon', name: 'account' -%}
+          </a>
+        {%- endif -%}
+        <a
+          href="{{ routes.cart_url }}"
+          class="header__icon header__cart"
+          {% if settings.cart_type == 'drawer' %}
+            data-drawer-open="CartDrawer" aria-controls="CartDrawer" aria-expanded="false" role="button"
+          {% endif %}
+        >
+          {%- render 'icon', name: 'bag' -%}
+          <span class="header__label">{{ 'sections.header.cart' | t }}</span>
+          <span class="cart-count" data-cart-count{% if cart.item_count == 0 %} hidden{% endif %}>
+            <span class="visually-hidden">{{ 'sections.header.cart_count' | t }}</span>
+            <span data-cart-count-value>{{ cart.item_count }}</span>
+          </span>
+        </a>
+      </div>
+    </div>
+
+    {%- if menu.links.size > 0 -%}
+      <nav class="header__nav" aria-label="{{ 'sections.header.menu' | t }}">
+        <ul class="menu" role="list">
+          {%- for link in menu.links -%}
+            <li class="menu__item">
+              {%- if link.links != blank -%}
+                <button
+                  type="button"
+                  class="menu__link{% if link.child_active or link.active %} is-active{% endif %}"
+                  aria-expanded="false"
+                  aria-controls="MegaMenu-{{ forloop.index }}"
+                  data-mega-toggle
+                >
+                  {{- link.title -}}
+                </button>
+                <div id="MegaMenu-{{ forloop.index }}" class="mega" data-mega>
+                  <div class="mega__inner">
+                    <ul class="mega__links" role="list">
+                      {%- for child in link.links -%}
+                        <li style="--i: {{ forloop.index }}">
+                          <a href="{{ child.url }}" class="mega__link"{% if child.current %} aria-current="page"{% endif %}>
+                            {{- child.title -}}
+                          </a>
+                          {%- if child.links != blank -%}
+                            <ul class="mega__sublinks" role="list">
+                              {%- for grandchild in child.links -%}
+                                <li><a href="{{ grandchild.url }}">{{ grandchild.title }}</a></li>
+                              {%- endfor -%}
+                            </ul>
+                          {%- endif -%}
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                    {%- if section.settings.mega_heading != blank -%}
+                      <a href="{{ section.settings.mega_link | default: routes.all_products_collection_url }}" class="mega__feature">
+                        <span class="mega__media arch">
+                          {%- render 'media',
+                            image: section.settings.mega_image,
+                            artwork: section.settings.mega_artwork,
+                            sizes: '320px',
+                            widths: '320, 480, 640',
+                            alt: section.settings.mega_heading
+                          -%}
+                        </span>
+                        <span class="mega__caption">
+                          <span class="overline">{{ section.settings.mega_overline }}</span>
+                          <span class="mega__title">{{ section.settings.mega_heading }}</span>
+                        </span>
+                      </a>
+                    {%- endif -%}
+                  </div>
+                </div>
+              {%- else -%}
+                <a
+                  href="{{ link.url }}"
+                  class="menu__link{% if link.active %} is-active{% endif %}"
+                  {% if link.current %}
+                    aria-current="page"
+                  {% endif %}
+                >
+                  {{- link.title -}}
+                </a>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      </nav>
+    {%- endif -%}
+  </header>
+</site-header>
+
+<side-drawer id="MenuDrawer" class="drawer drawer--left" aria-hidden="true">
+  <div class="drawer__overlay" data-drawer-close></div>
+  <div class="drawer__panel menu-drawer" role="dialog" aria-modal="true" aria-label="{{ 'sections.header.menu' | t }}" tabindex="-1">
+    <div class="drawer__header">
+      <a href="{{ routes.root_url }}" class="logo logo--small">{%- render 'wordmark' -%}</a>
+      <button type="button" class="drawer__close" data-drawer-close aria-label="{{ 'accessibility.close' | t }}">
+        {%- render 'icon', name: 'close' -%}
+      </button>
+    </div>
+    <nav class="menu-drawer__nav" aria-label="{{ 'sections.header.menu' | t }}">
+      <ul role="list">
+        {%- for link in menu.links -%}
+          <li style="--i: {{ forloop.index }}">
+            {%- if link.links != blank -%}
+              <details class="menu-drawer__details"{% if link.child_active %} open{% endif %}>
+                <summary class="menu-drawer__link">
+                  <span>{{ link.title }}</span>
+                  {%- render 'icon', name: 'plus' -%}
+                </summary>
+                <ul class="menu-drawer__sub" role="list">
+                  {%- for child in link.links -%}
+                    <li><a href="{{ child.url }}"{% if child.current %} aria-current="page"{% endif %}>{{ child.title }}</a></li>
+                  {%- endfor -%}
+                </ul>
+              </details>
+            {%- else -%}
+              <a href="{{ link.url }}" class="menu-drawer__link"{% if link.current %} aria-current="page"{% endif %}>{{ link.title }}</a>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+    <div class="menu-drawer__footer">
+      {%- if shop.customer_accounts_enabled -%}
+        <a href="{{ routes.account_url }}" class="link">
+          {%- render 'icon', name: 'account' -%}
+          <span>{{ 'sections.header.account' | t }}</span>
+        </a>
+      {%- endif -%}
+      {% render 'localization-form', id: 'MenuDrawer', class: 'localization' %}
+      {% render 'social-links' %}
+      {%- if settings.signature != blank -%}
+        <p class="signature">{{ settings.signature }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</side-drawer>
+
+{% schema %}
+{
+  "name": "Header",
+  "class": "section-header",
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "select",
+      "id": "sticky",
+      "label": "Sticky header",
+      "options": [
+        { "value": "scroll-up", "label": "On scroll up" },
+        { "value": "always", "label": "Always" },
+        { "value": "none", "label": "None" }
+      ],
+      "default": "scroll-up"
+    },
+    {
+      "type": "checkbox",
+      "id": "transparent_home",
+      "label": "Transparent over the home page hero",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_localization",
+      "label": "Show country and language selectors",
+      "info": "Visible when more than one market or language is active.",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Dropdown feature"
+    },
+    {
+      "type": "image_picker",
+      "id": "mega_image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "mega_artwork",
+      "label": "Artwork until an image is chosen",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "garden", "label": "The Garden" },
+        { "value": "lake", "label": "Lake and mountain" },
+        { "value": "canopy", "label": "Vines" },
+        { "value": "palm", "label": "Palms" },
+        { "value": "valley", "label": "Valley" },
+        { "value": "flowers", "label": "Flowers" },
+        { "value": "stream", "label": "Stream" },
+        { "value": "bloom", "label": "Bloom" }
+      ],
+      "default": "lake"
+    },
+    {
+      "type": "text",
+      "id": "mega_overline",
+      "label": "Small heading",
+      "default": "New collection"
+    },
+    {
+      "type": "text",
+      "id": "mega_heading",
+      "label": "Heading",
+      "default": "The Garden of Eden 2027"
+    },
+    {
+      "type": "url",
+      "id": "mega_link",
+      "label": "Link"
+    }
+  ]
+}
+{% endschema %}

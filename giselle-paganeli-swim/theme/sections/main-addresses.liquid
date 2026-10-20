@@ -1,0 +1,39 @@
+<section class="account page-width page-width--narrow">
+  <header class="account__head">
+    <a href="{{ routes.account_url }}" class="link link--small">{{ 'customer.account.title' | t }}</a>
+    <h1 class="page-hero__title">{{ 'customer.account.addresses' | t }}</h1>
+  </header>
+  {%- for address in customer.addresses -%}
+    <div class="account-form__card">
+      {{ address | format_address }}
+      {%- if address == customer.default_address -%}<p class="overline">{{ 'customer.addresses.default' | t }}</p>{%- endif -%}
+      {%- form 'customer_address', address, class: 'form' -%}
+        <label class="field"><span>{{ 'customer.addresses.address1' | t }}</span><input type="text" name="address[address1]" value="{{ form.address1 }}" autocomplete="address-line1"></label>
+        <label class="field"><span>{{ 'customer.addresses.city' | t }}</span><input type="text" name="address[city]" value="{{ form.city }}" autocomplete="address-level2"></label>
+        <label class="field"><span>{{ 'customer.addresses.zip' | t }}</span><input type="text" name="address[zip]" value="{{ form.zip }}" autocomplete="postal-code"></label>
+        <label class="field"><span>{{ 'customer.addresses.country' | t }}</span><select name="address[country]" data-default="{{ form.country }}">{{ all_country_option_tags }}</select></label>
+        <button type="submit" class="button">{{ 'customer.addresses.save' | t }}</button>
+      {%- endform -%}
+    </div>
+  {%- endfor -%}
+  <div class="account-form__card">
+    <h2 class="h4">{{ 'customer.addresses.add' | t }}</h2>
+    {%- form 'customer_address', customer.new_address, class: 'form' -%}
+      <label class="field"><span>{{ 'customer.register.first_name' | t }}</span><input type="text" name="address[first_name]" autocomplete="given-name"></label>
+      <label class="field"><span>{{ 'customer.register.last_name' | t }}</span><input type="text" name="address[last_name]" autocomplete="family-name"></label>
+      <label class="field"><span>{{ 'customer.addresses.address1' | t }}</span><input type="text" name="address[address1]" autocomplete="address-line1"></label>
+      <label class="field"><span>{{ 'customer.addresses.city' | t }}</span><input type="text" name="address[city]" autocomplete="address-level2"></label>
+      <label class="field"><span>{{ 'customer.addresses.zip' | t }}</span><input type="text" name="address[zip]" autocomplete="postal-code"></label>
+      <label class="field"><span>{{ 'customer.addresses.country' | t }}</span><select name="address[country]">{{ all_country_option_tags }}</select></label>
+      <label class="consent"><input type="checkbox" name="address[default]" value="1"><span>{{ 'customer.addresses.set_default' | t }}</span></label>
+      <button type="submit" class="button">{{ 'customer.addresses.add' | t }}</button>
+    {%- endform -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Customer addresses",
+  "settings": []
+}
+{% endschema %}

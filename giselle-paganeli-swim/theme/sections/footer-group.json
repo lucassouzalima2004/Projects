@@ -1,0 +1,57 @@
+{
+  "type": "footer",
+  "name": "Footer group",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "brand": {
+          "type": "brand",
+          "settings": {
+            "text": "<p>Premium swimwear and resortwear. Italian elegance, Brazilian sensuality.</p>"
+          }
+        },
+        "menu-shop": {
+          "type": "menu",
+          "settings": {
+            "heading": "Shop",
+            "menu": "footer"
+          }
+        },
+        "contact": {
+          "type": "contact",
+          "settings": {
+            "heading": "Contact",
+            "text": "<p>Boutiques, resorts and spas: <a href=\"/pages/contact\">wholesale enquiries</a></p>"
+          }
+        },
+        "menu-care": {
+          "type": "menu",
+          "settings": {
+            "heading": "Client care",
+            "menu": "customer-care"
+          }
+        }
+      },
+      "block_order": [
+        "brand",
+        "menu-shop",
+        "menu-care",
+        "contact"
+      ],
+      "settings": {
+        "color_scheme": "cafe",
+        "show_newsletter": true,
+        "newsletter_heading": "Join the Garden",
+        "newsletter_text": "<p>Private previews, travel notes and the first look at every new chapter.</p>",
+        "show_localization": true,
+        "show_payment_icons": true,
+        "show_big_wordmark": true,
+        "legal_menu": "legal"
+      }
+    }
+  },
+  "order": [
+    "footer"
+  ]
+}

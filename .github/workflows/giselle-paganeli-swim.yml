@@ -1,0 +1,109 @@
+# Giselle Paganeli Swim — tema Shopify + prévia navegável.
+#
+# Sempre: roda o Theme Check (linter oficial da Shopify), gera a prévia e anexa o tema em .zip
+# (Actions → este workflow → Artifacts → "tema-shopify-eden"), pronto para Loja virtual → Temas → Adicionar tema → Fazer upload.
+#
+# Prévia no Cloudflare Pages (https://giselle-paganeli-swim.pages.dev): usa os mesmos secrets do site da manicure
+#   CLOUDFLARE_API_TOKEN   token do Cloudflare com a permissão "Account · Cloudflare Pages · Edit"
+#   CLOUDFLARE_ACCOUNT_ID  ID da conta do Cloudflare
+# Enquanto os secrets não existirem, só a publicação é pulada.
+name: Giselle Paganeli Swim (tema + prévia)
+
+on:
+  push:
+    branches: [main, claude/confident-davinci-6bq9wp]
+    paths:
+      - 'giselle-paganeli-swim/**'
+      - '.github/workflows/giselle-paganeli-swim.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: giselle-paganeli-swim-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PROJECT: giselle-paganeli-swim
+
+jobs:
+  theme:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: giselle-paganeli-swim/preview
+    outputs:
+      deploy: ${{ steps.creds.outputs.ready }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Instalar dependências da prévia
+        run: npm ci --no-audit --no-fund
+
+      - name: Theme Check (Shopify)
+        run: npm run check
+
+      - name: Gerar a prévia
+        run: npm run build
+
+      - name: Anexar o tema (.zip para upload na Shopify)
+        uses: actions/upload-artifact@v4
+        with:
+          name: tema-shopify-eden
+          path: giselle-paganeli-swim/theme
+          if-no-files-found: error
+
+      - name: Conferir os secrets do Cloudflare
+        id: creds
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n "$TOKEN" ] && [ -n "$ACCOUNT" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=Prévia não publicada::Adicione CLOUDFLARE_API_TOKEN e CLOUDFLARE_ACCOUNT_ID em Settings → Secrets and variables → Actions para publicar a prévia."
+          fi
+
+  deploy:
+    needs: theme
+    if: needs.theme.outputs.deploy == 'true'
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Criar o projeto no Cloudflare Pages (só na primeira vez)
+        run: |
+          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects"
+          auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+          if ! curl -fsS -o /dev/null -H "$auth" "$api/$PROJECT"; then
+            curl -sS --fail-with-body -X POST -H "$auth" -H "Content-Type: application/json" \
+              --data "{\"name\":\"$PROJECT\",\"production_branch\":\"${{ github.event.repository.default_branch }}\"}" "$api"
+          fi
+          domain=$(curl -fsS -H "$auth" "$api/$PROJECT" | jq -r '.result.subdomain')
+          echo "DOMAIN=$domain" >> "$GITHUB_ENV"
+
+      - name: Gerar a prévia com o endereço final
+        working-directory: giselle-paganeli-swim/preview
+        run: |
+          npm ci --no-audit --no-fund --omit=dev
+          PREVIEW_ORIGIN="https://$DOMAIN" OUT="$GITHUB_WORKSPACE/_site" npm run build
+
+      - name: Publicar
+        run: npx --yes wrangler@4 pages deploy _site --project-name="$PROJECT" --branch="${{ github.ref_name }}" --commit-dirty=true
+
+      - name: Endereço da prévia
+        run: echo "Prévia no ar: https://$DOMAIN" >> "$GITHUB_STEP_SUMMARY"

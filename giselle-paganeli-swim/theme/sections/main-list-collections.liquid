@@ -1,0 +1,65 @@
+<section class="list-collections scheme-{{ section.settings.color_scheme }}">
+  <div class="page-width">
+    <header class="section-head" data-reveal>
+      {%- render 'icon', name: 'clover' -%}
+      <h1 class="page-hero__title">{{ section.settings.heading }}</h1>
+    </header>
+    <ul class="list-collections__grid" role="list">
+      {%- for collection in collections -%}
+        {%- if collection.handle != 'all' and collection.products_count > 0 -%}
+          <li data-reveal style="--i: {{ forloop.index0 | modulo: 3 }};">
+            <a href="{{ collection.url }}" class="collection-card">
+              <span class="collection-card__media arch">
+                {%- if collection.featured_image -%}
+                  {{ collection.featured_image | image_url: width: 900 | image_tag: loading: 'lazy', sizes: '(min-width: 990px) 30vw, 90vw', widths: '360, 540, 720, 900', alt: collection.title }}
+                {%- elsif collection.products.first.featured_media -%}
+                  {{ collection.products.first.featured_media | image_url: width: 900 | image_tag: loading: 'lazy', sizes: '(min-width: 990px) 30vw, 90vw', widths: '360, 540, 720, 900', alt: collection.title }}
+                {%- else -%}
+                  {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                {%- endif -%}
+              </span>
+              <span class="collection-card__title">{{ collection.title }}</span>
+              <span class="collection-card__count">{{ 'templates.collection.product_count' | t: count: collection.products_count }}</span>
+            </a>
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Collections list",
+  "tag": "div",
+  "class": "section-list-collections",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop by category"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colors",
+      "options": [
+        {
+          "value": "pearl",
+          "label": "Pearl"
+        },
+        {
+          "value": "ivory",
+          "label": "Off-white"
+        },
+        {
+          "value": "sand",
+          "label": "Sand"
+        }
+      ],
+      "default": "pearl"
+    }
+  ]
+}
+{% endschema %}

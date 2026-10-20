@@ -1,0 +1,154 @@
+{
+  "sections": {
+    "hero": {
+      "type": "page-hero",
+      "settings": {
+        "overline": "Atendimento",
+        "heading": "Client care",
+        "text": "<p>Sizes, care, delivery and exchanges — everything you need, in one place.</p>",
+        "color_scheme": "pearl"
+      }
+    },
+    "topics": {
+      "type": "help-center",
+      "blocks": {
+        "topic-1": {
+          "type": "topic",
+          "settings": {
+            "heading": "Size guide",
+            "text": "Find your perfect fit",
+            "link": "shopify://pages/size-guide"
+          }
+        },
+        "topic-2": {
+          "type": "topic",
+          "settings": {
+            "heading": "Care",
+            "text": "Keep every piece beautiful",
+            "link": "shopify://pages/care"
+          }
+        },
+        "topic-3": {
+          "type": "topic",
+          "settings": {
+            "heading": "Shipping & returns",
+            "text": "Delivery, exchanges and returns",
+            "link": "shopify://pages/shipping-returns"
+          }
+        },
+        "topic-4": {
+          "type": "topic",
+          "settings": {
+            "heading": "Contact",
+            "text": "Write to our client care",
+            "link": "shopify://pages/contact"
+          }
+        }
+      },
+      "block_order": [
+        "topic-1",
+        "topic-2",
+        "topic-3",
+        "topic-4"
+      ],
+      "settings": {
+        "heading": "",
+        "color_scheme": "pearl"
+      }
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "group-1": {
+          "type": "group",
+          "settings": {
+            "heading": "Sizes & fit"
+          }
+        },
+        "question-2": {
+          "type": "question",
+          "settings": {
+            "question": "How do I choose my size?",
+            "answer": "<p>Every product page has a size guide with body measurements in centimetres. Measure bust, waist and hips and compare them with the table. Between two sizes? Write to us and we will help you choose.</p>"
+          }
+        },
+        "question-3": {
+          "type": "question",
+          "settings": {
+            "question": "Are bikinis sold as a set?",
+            "answer": "<p>Yes, each bikini is sold as a set — top and bottom in the same size and color.</p>"
+          }
+        },
+        "group-4": {
+          "type": "group",
+          "settings": {
+            "heading": "Orders & delivery"
+          }
+        },
+        "question-5": {
+          "type": "question",
+          "settings": {
+            "question": "Where do you ship?",
+            "answer": "<p>We ship to the countries available at checkout. Delivery times and costs are shown before payment.</p>"
+          }
+        },
+        "question-6": {
+          "type": "question",
+          "settings": {
+            "question": "Can I buy without creating an account?",
+            "answer": "<p>Yes. You can check out as a guest and follow your order with the link in the confirmation email.</p>"
+          }
+        },
+        "group-7": {
+          "type": "group",
+          "settings": {
+            "heading": "Exchanges & returns"
+          }
+        },
+        "question-8": {
+          "type": "question",
+          "settings": {
+            "question": "Can I exchange or return a piece?",
+            "answer": "<p>Unworn pieces with their hygiene liner and labels may be exchanged or returned within the period described in our returns policy.</p>"
+          }
+        },
+        "group-9": {
+          "type": "group",
+          "settings": {
+            "heading": "Care"
+          }
+        },
+        "question-10": {
+          "type": "question",
+          "settings": {
+            "question": "How should I care for my swimwear?",
+            "answer": "<p>Rinse in cold fresh water after every use, wash by hand with a mild soap, do not wring and dry flat in the shade. Avoid contact with rough surfaces and sunscreen stains.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "group-1",
+        "question-2",
+        "question-3",
+        "group-4",
+        "question-5",
+        "question-6",
+        "group-7",
+        "question-8",
+        "group-9",
+        "question-10"
+      ],
+      "settings": {
+        "overline": "Questions",
+        "heading": "Frequently asked questions",
+        "show_search": true,
+        "color_scheme": "ivory"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "topics",
+    "faq"
+  ]
+}

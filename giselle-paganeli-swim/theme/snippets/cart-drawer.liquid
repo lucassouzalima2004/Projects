@@ -1,0 +1,14 @@
+{%- if settings.cart_type == 'drawer' -%}
+  <side-drawer id="CartDrawer" class="drawer drawer--right" data-cart-drawer aria-hidden="true">
+    <div class="drawer__overlay" data-drawer-close></div>
+    <div
+      class="drawer__panel"
+      role="dialog"
+      aria-modal="true"
+      aria-label="{{ 'sections.cart.title' | t }}"
+      tabindex="-1"
+    >
+      {% render 'cart-contents' %}
+    </div>
+  </side-drawer>
+{%- endif -%}

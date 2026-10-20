@@ -1,0 +1,60 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-collection",
+      "blocks": {
+        "category-1": {
+          "type": "category",
+          "settings": {
+            "label": "Bikinis",
+            "handle": "bikinis"
+          }
+        },
+        "category-2": {
+          "type": "category",
+          "settings": {
+            "label": "Swimsuits",
+            "handle": "swimsuits"
+          }
+        },
+        "category-3": {
+          "type": "category",
+          "settings": {
+            "label": "Resortwear",
+            "handle": "resortwear"
+          }
+        },
+        "tile-4": {
+          "type": "tile",
+          "settings": {
+            "position": 4,
+            "span": "double",
+            "artwork": "valley",
+            "overline": "Lookbook",
+            "heading": "Enter the Garden",
+            "link_label": "Discover the story",
+            "link": "shopify://pages/the-garden-of-eden"
+          }
+        }
+      },
+      "block_order": [
+        "category-1",
+        "category-2",
+        "category-3",
+        "tile-4"
+      ],
+      "settings": {
+        "overline": "The Garden of Eden 2027",
+        "show_description": true,
+        "show_all_link": true,
+        "per_page": 24,
+        "show_filters": true,
+        "show_sort": true,
+        "color_scheme": "pearl"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
