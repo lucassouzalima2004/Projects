@@ -209,14 +209,25 @@ senão o e-mail dele para de funcionar e o Search Console perde a verificação.
 O site é um Worker do Cloudflare, e um Worker só recebe um domínio próprio quando o domínio está no Cloudflare. Por isso a troca
 é de *nameservers*, e não um registro A/CNAME na Register.it.
 
-1. Pedir ao Carlos o acesso ao painel da Register.it (ou fazer a troca junto com ele).
-2. No Cloudflare: **Add a domain** com `puntopizzaverona.it` (plano Free). Na lista de registros que o Cloudflare importa,
-   confira que estão lá o **MX `mail.register.it`** e os **dois TXT** acima; se faltar algum, crie igual. Apague os registros
-   A/CNAME de `puntopizzaverona.it` e `www` que apontam para o site antigo (o passo 3 cria os novos).
-   O Cloudflare mostra dois *nameservers* (algo como `nome.ns.cloudflare.com`): é isso que se manda ao Carlos para trocar na Register.it.
-3. Quando o Cloudflare confirmar o domínio: **Workers & Pages → puntopizza → Settings → Domains & Routes → Add → Custom domain**, com `www.puntopizzaverona.it` e `puntopizzaverona.it`.
-4. No GitHub: **Settings → Secrets and variables → Actions → Variables → New repository variable** `PUNTOPIZZA_SITE_URL` = `https://www.puntopizzaverona.it`, e rode o workflow de novo (**Actions → Deploy Punto Pizza → Run workflow**).
-5. No Google Search Console, adicione o domínio e envie `https://www.puntopizzaverona.it/sitemap.xml`. No Perfil da Empresa no Google, confira que o link do site é esse.
+O workflow já cuida da parte do Cloudflare que dá para automatizar. A cada execução ele confere o domínio e escreve no
+**resumo da execução** (Actions → Deploy Punto Pizza → a última execução) em que pé está:
+
+1. **No Cloudflare: Add a domain** com `puntopizzaverona.it` (plano Free). Na lista de registros que o Cloudflare importa,
+   confira que estão lá o **MX `mail.register.it`** e os **dois TXT** acima; se faltar algum, crie igual. Os registros A/CNAME
+   do site antigo podem ficar: assim o site antigo continua no ar até a troca, e o workflow os substitui na hora de ligar o novo.
+2. **Rode o workflow** (Actions → Deploy Punto Pizza → Run workflow). O resumo mostra os **dois nameservers do Cloudflare**:
+   é isso que se manda ao Carlos, para trocar `ns1/ns2.register.it` no painel da Register.it (ou faça você, com o acesso dele).
+3. Quando a troca pegar (o Cloudflare manda e-mail e o domínio fica *Active*; pode levar de minutos a algumas horas),
+   **rode o workflow de novo**. Ele liga `puntopizzaverona.it` e `www.puntopizzaverona.it` ao site e passa a usar
+   `https://puntopizzaverona.it` no canonical, no sitemap e na prévia do WhatsApp. O site antigo também usava o endereço sem
+   `www`, então o Google não perde nada.
+   - Se aparecer erro de permissão, o token do Cloudflare precisa também de **Zone → Workers Routes → Edit** e **Zone → DNS → Edit**
+     (ou ligue à mão: Workers & Pages → puntopizza → Settings → Domains & Routes → Add → Custom domain).
+4. No Google Search Console (a verificação do domínio continua valendo pelo TXT), envie `https://puntopizzaverona.it/sitemap.xml`.
+   No Perfil da Empresa no Google, confira que o link do site é esse.
+
+Para usar outro endereço no canonical (por exemplo, com `www`), crie a variável `PUNTOPIZZA_SITE_URL` em
+Settings → Secrets and variables → Actions → Variables.
 
 ## Ver no computador
 

@@ -8,10 +8,13 @@
 # Usa os mesmos secrets dos outros sites do repositório (Settings → Secrets and variables → Actions):
 #   CLOUDFLARE_API_TOKEN   token do Cloudflare que pode publicar Workers (obrigatório)
 #   CLOUDFLARE_ACCOUNT_ID  ID da conta (opcional: sem ele, o workflow descobre a conta pelo token)
-# E uma variável opcional (mesma tela, aba Variables):
-#   PUNTOPIZZA_SITE_URL    o endereço final, quando o domínio do Carlos estiver ligado ao site
-#                          (ex.: https://www.puntopizzaverona.it). Sem ela, o canonical, o sitemap
-#                          e a prévia do link usam o endereço .workers.dev.
+#
+# Domínio do Carlos (puntopizzaverona.it): a cada execução o workflow confere se ele já está nesta conta do Cloudflare.
+#   - Ainda não está: o resumo da execução explica como adicionar.
+#   - Está, mas os nameservers ainda são os da Register.it: o resumo mostra os dois nameservers para mandar ao Carlos.
+#   - Ativo: liga puntopizzaverona.it e www.puntopizzaverona.it ao site e passa a usar https://puntopizzaverona.it
+#     no canonical, no sitemap e na prévia do link. Para usar outro endereço, crie a variável opcional
+#     PUNTOPIZZA_SITE_URL (Settings → Secrets and variables → Actions → Variables).
 # Enquanto o token não existir, o workflow só avisa e não falha.
 name: Deploy Punto Pizza (Cloudflare)
 
@@ -32,6 +35,7 @@ concurrency:
 
 env:
   WORKER: puntopizza
+  DOMAIN: puntopizzaverona.it
 
 jobs:
   check:
@@ -85,6 +89,33 @@ jobs:
           fi
           echo "CLOUDFLARE_ACCOUNT_ID=$id" >> "$GITHUB_ENV"
 
+      - name: Domínio do Carlos
+        run: |
+          # Só usa o domínio quando ele já está nesta conta e ativo (nameservers trocados na Register.it)
+          auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+          res=$(curl -sS -H "$auth" "https://api.cloudflare.com/client/v4/zones?name=$DOMAIN&account.id=$CLOUDFLARE_ACCOUNT_ID" || true)
+          zone=$(printf '%s' "$res" | jq -r '.result[0].id // empty' 2>/dev/null || true)
+          status=$(printf '%s' "$res" | jq -r '.result[0].status // empty' 2>/dev/null || true)
+          if [ -z "$zone" ]; then
+            echo "O domínio $DOMAIN ainda não está nesta conta do Cloudflare (ou o token não pode ver domínios)."
+            {
+              echo "### Domínio $DOMAIN: ainda não está no Cloudflare"
+              echo "Cloudflare → **Add a domain** → \`$DOMAIN\` (plano Free). Confira que o **MX mail.register.it** e os **dois TXT** (SPF e google-site-verification) foram importados: são o e-mail e o Search Console do Carlos."
+              echo "Depois rode este workflow de novo (Actions → Deploy Punto Pizza → Run workflow): os nameservers para mandar ao Carlos aparecem aqui."
+            } >> "$GITHUB_STEP_SUMMARY"
+          elif [ "$status" != "active" ]; then
+            ns=$(printf '%s' "$res" | jq -r '.result[0].name_servers // [] | join(" e ")')
+            echo "::notice title=Domínio $DOMAIN::Esperando a troca dos nameservers na Register.it. Novos nameservers: $ns"
+            {
+              echo "### Domínio $DOMAIN: esperando a troca dos nameservers"
+              echo "No painel da Register.it, trocar ns1.register.it e ns2.register.it por: **$ns**"
+              echo "Quando o Cloudflare confirmar (status active), rode este workflow de novo: ele liga o domínio ao site."
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Domínio $DOMAIN ativo no Cloudflare: vai ser ligado ao site."
+            echo "ZONE_ID=$zone" >> "$GITHUB_ENV"
+          fi
+
       - name: Endereço do site e conferência do nome
         run: |
           acc="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID"
@@ -96,7 +127,7 @@ jobs:
           fi
           url="https://$WORKER.$sub.workers.dev"
           echo "WORKERS_URL=$url" >> "$GITHUB_ENV"
-          site="${SITE_VAR:-$url}"
+          if [ -n "$ZONE_ID" ]; then site="${SITE_VAR:-https://$DOMAIN}"; else site="${SITE_VAR:-$url}"; fi
           echo "SITE_URL=${site%/}" >> "$GITHUB_ENV"
           # Não sobrescreve um Worker com o mesmo nome que não seja este site
           if curl -sS -H "$auth" "$acc/workers/scripts/$WORKER/settings" | jq -e '.success' > /dev/null; then
@@ -152,6 +183,31 @@ jobs:
       - name: Publicar
         run: npx wrangler deploy --config wrangler.jsonc
 
+      - name: Ligar o domínio ao site
+        if: env.ZONE_ID != ''
+        run: |
+          acc="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID"
+          auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+          for host in "$DOMAIN" "www.$DOMAIN"; do
+            # Já ligado a este site? Então não mexe em nada
+            cur=$(curl -sS -H "$auth" "$acc/workers/domains?hostname=$host" | jq -r '.result[0].service // empty' 2>/dev/null || true)
+            if [ "$cur" = "$WORKER" ]; then echo "$host já está ligado ao Worker $WORKER."; continue; fi
+            # Os registros A/AAAA/CNAME deste endereço ainda apontam para o site antigo: saem agora (MX e TXT ficam)
+            curl -sS -H "$auth" "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?name=$host&per_page=50" \
+              | jq -r '.result[]? | select(.type == "A" or .type == "AAAA" or .type == "CNAME") | .id' 2>/dev/null \
+              | while read -r rid; do
+                  curl -sS -X DELETE -H "$auth" "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$rid" > /dev/null && echo "Registro antigo de $host removido."
+                done || true
+            body=$(jq -nc --arg h "$host" --arg s "$WORKER" --arg z "$ZONE_ID" '{hostname: $h, service: $s, zone_id: $z, environment: "production"}')
+            res=$(curl -sS -X PUT -H "$auth" -H "Content-Type: application/json" "$acc/workers/domains" -d "$body" || true)
+            if printf '%s' "$res" | jq -e '.success' > /dev/null 2>&1; then
+              echo "$host ligado ao Worker $WORKER."
+            else
+              msg=$(printf '%s' "$res" | jq -r '[.errors[]?.message] | join("; ")' 2>/dev/null || true)
+              echo "::warning title=Domínio $host::Não deu para ligar ao site: ${msg:-$res}. Se falar de permissão, o token precisa também de Zone → Workers Routes → Edit e Zone → DNS → Edit; ou ligue à mão em Workers & Pages → $WORKER → Settings → Domains & Routes → Add → Custom domain (apagando antes, em DNS, os registros A/CNAME antigos de $host)."
+            fi
+          done
+
       - name: Conferir o site no ar
         run: |
           for i in 1 2 3 4 5 6; do
@@ -167,3 +223,17 @@ jobs:
           done
           echo "::warning title=Site ainda não respondeu::A publicação terminou, mas $WORKERS_URL ainda não respondeu. Tente abrir de novo em alguns minutos."
           echo "### Publicado em: $WORKERS_URL (ainda carregando)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Conferir o domínio
+        if: env.ZONE_ID != ''
+        run: |
+          # O certificado do domínio pode levar alguns minutos na primeira vez: aqui só avisa, não falha
+          for i in 1 2 3 4 5 6 7 8; do
+            if curl -fsS --max-time 20 "https://$DOMAIN/" | grep -q "fatta come si deve"; then
+              echo "Site no ar no domínio: https://$DOMAIN"
+              echo "### No domínio do Carlos: https://$DOMAIN" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "::warning title=Domínio ainda carregando::https://$DOMAIN ainda não mostra o site novo. O certificado pode levar alguns minutos; abra de novo daqui a pouco."
