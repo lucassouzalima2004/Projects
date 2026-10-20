@@ -3,10 +3,12 @@
 # Sempre: roda o Theme Check (linter oficial da Shopify), gera a prévia e anexa o tema em .zip
 # (Actions → este workflow → Artifacts → "tema-shopify-eden"), pronto para Loja virtual → Temas → Adicionar tema → Fazer upload.
 #
-# Prévia no Cloudflare Pages (https://giselle-paganeli-swim.pages.dev): usa os mesmos secrets do site da manicure
-#   CLOUDFLARE_API_TOKEN   token do Cloudflare com a permissão "Account · Cloudflare Pages · Edit"
-#   CLOUDFLARE_ACCOUNT_ID  ID da conta do Cloudflare
-# Enquanto os secrets não existirem, só a publicação é pulada.
+# Prévia: publicada como Worker com arquivos estáticos (como a Punto Pizza, porque a conta já chegou ao limite de
+# projetos do Cloudflare Pages), sempre no mesmo link: https://giselle-paganeli-swim.<subdomínio da conta>.workers.dev
+# (o endereço exato aparece no resumo da execução). Usa os mesmos secrets dos outros sites:
+#   CLOUDFLARE_API_TOKEN   token do Cloudflare que pode publicar Workers (obrigatório)
+#   CLOUDFLARE_ACCOUNT_ID  ID da conta (opcional: sem ele, o workflow descobre a conta pelo token)
+# Enquanto o token não existir, só a publicação é pulada.
 name: Giselle Paganeli Swim (tema + prévia)
 
 on:
@@ -22,10 +24,10 @@ permissions:
 
 concurrency:
   group: giselle-paganeli-swim-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 env:
-  PROJECT: giselle-paganeli-swim
+  WORKER: giselle-paganeli-swim
 
 jobs:
   theme:
@@ -58,17 +60,16 @@ jobs:
           path: giselle-paganeli-swim/theme
           if-no-files-found: error
 
-      - name: Conferir os secrets do Cloudflare
+      - name: Conferir o token do Cloudflare
         id: creds
         env:
           TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          if [ -n "$TOKEN" ] && [ -n "$ACCOUNT" ]; then
+          if [ -n "$TOKEN" ]; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::warning title=Prévia não publicada::Adicione CLOUDFLARE_API_TOKEN e CLOUDFLARE_ACCOUNT_ID em Settings → Secrets and variables → Actions para publicar a prévia."
+            echo "::warning title=Prévia não publicada::Falta o secret CLOUDFLARE_API_TOKEN (Settings → Secrets and variables → Actions)."
           fi
 
   deploy:
@@ -77,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ACCOUNT_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v4
 
@@ -85,26 +86,79 @@ jobs:
         with:
           node-version: 22
 
-      - name: Criar o projeto no Cloudflare Pages (só na primeira vez)
+      - name: Conta do Cloudflare
         run: |
-          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects"
-          auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
-          if ! curl -fsS -o /dev/null -H "$auth" "$api/$PROJECT"; then
-            curl -sS --fail-with-body -X POST -H "$auth" -H "Content-Type: application/json" \
-              --data "{\"name\":\"$PROJECT\",\"production_branch\":\"${{ github.event.repository.default_branch }}\"}" "$api"
+          id="$ACCOUNT_SECRET"
+          if [ -z "$id" ]; then
+            # Sem o secret, descobre a conta pelo próprio token
+            auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+            id=$(curl -sS -H "$auth" "https://api.cloudflare.com/client/v4/accounts?per_page=50" | jq -r '.result[]?.id')
+            if [ -z "$id" ]; then
+              id=$(curl -sS -H "$auth" "https://api.cloudflare.com/client/v4/memberships?per_page=50" | jq -r '.result[]?.account.id')
+            fi
+            count=$(printf '%s\n' "$id" | grep -c . || true)
+            if [ "$count" != "1" ]; then
+              echo "::error title=Conta do Cloudflare::O token dá acesso a $count contas. Cadastre o secret CLOUDFLARE_ACCOUNT_ID com o ID da conta certa."
+              exit 1
+            fi
+            echo "::add-mask::$id"
           fi
-          domain=$(curl -fsS -H "$auth" "$api/$PROJECT" | jq -r '.result.subdomain')
-          echo "DOMAIN=$domain" >> "$GITHUB_ENV"
+          echo "CLOUDFLARE_ACCOUNT_ID=$id" >> "$GITHUB_ENV"
+
+      - name: Endereço da prévia e conferência do nome
+        run: |
+          acc="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID"
+          auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+          sub=$(curl -sS -H "$auth" "$acc/workers/subdomain" | jq -r '.result.subdomain // empty')
+          if [ -z "$sub" ]; then
+            echo "::error title=workers.dev::A conta não tem subdomínio workers.dev. Crie em Cloudflare → Workers & Pages → Subdomain e rode de novo."
+            exit 1
+          fi
+          url="https://$WORKER.$sub.workers.dev"
+          echo "PREVIEW_URL=$url" >> "$GITHUB_ENV"
+          # Não sobrescreve um Worker com o mesmo nome que não seja esta prévia
+          if curl -sS -H "$auth" "$acc/workers/scripts/$WORKER/settings" | jq -e '.success' > /dev/null; then
+            if curl -fsS --max-time 20 "$url/" | grep -q "Giselle Paganeli"; then
+              echo "O Worker $WORKER já é esta prévia: vai ser atualizado."
+            else
+              echo "::error title=Nome em uso::Já existe um Worker chamado $WORKER nesta conta que não é esta prévia. Troque WORKER no topo deste workflow."
+              exit 1
+            fi
+          else
+            echo "Primeira publicação: o Worker $WORKER vai ser criado."
+          fi
 
       - name: Gerar a prévia com o endereço final
         working-directory: giselle-paganeli-swim/preview
         run: |
           npm ci --no-audit --no-fund --omit=dev
-          PREVIEW_ORIGIN="https://$DOMAIN" OUT="$GITHUB_WORKSPACE/_site" npm run build
+          PREVIEW_ORIGIN="$PREVIEW_URL" OUT="$GITHUB_WORKSPACE/_site" npm run build
+          cat > "$GITHUB_WORKSPACE/wrangler.jsonc" <<EOF
+          {
+            "name": "$WORKER",
+            "compatibility_date": "2025-10-01",
+            "workers_dev": true,
+            "preview_urls": false,
+            "assets": {
+              "directory": "./_site",
+              "not_found_handling": "404-page",
+              "html_handling": "auto-trailing-slash"
+            }
+          }
+          EOF
 
       - name: Publicar
-        run: npx --yes wrangler@4 pages deploy _site --project-name="$PROJECT" --branch="${{ github.ref_name }}" --commit-dirty=true
+        run: npx --yes wrangler@4 deploy --config wrangler.jsonc
 
-      - name: Endereço da prévia
+      - name: Conferir a prévia no ar
         run: |
-          echo "Prévia no ar: https://$DOMAIN" >> "$GITHUB_STEP_SUMMARY"
+          for i in 1 2 3 4 5 6; do
+            if curl -fsS --max-time 20 "$PREVIEW_URL/products/eden-one-piece" | grep -q "Eden One-piece"; then
+              echo "Prévia no ar: $PREVIEW_URL"
+              echo "### Prévia no ar: $PREVIEW_URL" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::warning title=Prévia ainda carregando::A publicação terminou, mas $PREVIEW_URL ainda não respondeu. Abra de novo em alguns minutos."
+          echo "### Publicada em: $PREVIEW_URL (ainda carregando)" >> "$GITHUB_STEP_SUMMARY"

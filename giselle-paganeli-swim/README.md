@@ -42,7 +42,7 @@ npm run check      # Theme Check, o linter oficial da Shopify (hoje: 0 problemas
 npm run csv        # regenera shopify/products-import.csv a partir de preview/data/catalog.mjs
 ```
 
-No GitHub, o workflow **Giselle Paganeli Swim (tema + prévia)** roda o Theme Check, anexa o tema em `.zip` (aba *Artifacts* da execução) e, se os secrets do Cloudflare já estiverem configurados (os mesmos da manicure), publica a prévia em `https://giselle-paganeli-swim.pages.dev`. A prévia tem `noindex` e um aviso discreto de que produtos e preços são de exemplo.
+No GitHub, o workflow **Giselle Paganeli Swim (tema + prévia)** roda o Theme Check, anexa o tema em `.zip` (aba *Artifacts* da execução) e publica a prévia no Cloudflare como Worker (como a Punto Pizza, por causa do limite de projetos do Pages), usando o mesmo `CLOUDFLARE_API_TOKEN`: `https://giselle-paganeli-swim.<subdomínio da conta>.workers.dev` — o link exato sai no resumo da execução. A prévia tem `noindex` e um aviso discreto de que produtos e preços são de exemplo.
 
 ## Colocar na Shopify
 
