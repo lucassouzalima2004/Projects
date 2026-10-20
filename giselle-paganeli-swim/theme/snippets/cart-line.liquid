@@ -1,7 +1,7 @@
 {%- comment -%}
   One cart line. Accepts: item, index (1-based line number), page (true on the cart page)
 {%- endcomment -%}
-<li class="cart-line" data-line="{{ index }}">
+<li class="cart-line" data-line="{{ index }}" style="--i: {{ index }};">
   <a href="{{ item.url }}" class="cart-line__media" tabindex="-1" aria-hidden="true">
     {%- if item.image -%}
       {{ item.image | image_url: width: 360 | image_tag: loading: 'lazy', alt: item.product.title, sizes: '(min-width: 990px) 140px, 96px', widths: '180, 360' }}

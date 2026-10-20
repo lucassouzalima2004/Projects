@@ -11,6 +11,7 @@ export function createSite({ files, catalog, origin = '', contentForHeader = () 
     moneyFormat: catalog.shop.moneyFormat,
     currency: catalog.shop.currency,
     assetBase: `${origin}/assets/`,
+    templateOverrides: catalog.templateOverrides,
   });
   const store = createStore(catalog, { origin });
 

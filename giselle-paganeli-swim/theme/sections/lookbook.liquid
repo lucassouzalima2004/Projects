@@ -1,4 +1,4 @@
-<section class="lookbook scheme-{{ section.settings.color_scheme }} lookbook--{{ section.settings.layout }}">
+<section class="lookbook scheme-{{ section.settings.color_scheme }} lookbook--{{ section.settings.layout }} lookbook--{{ section.settings.image_ratio }}">
   <div class="lookbook__inner page-width">
     <div class="lookbook__visual" data-reveal>
       <div class="lookbook__media">
@@ -135,6 +135,23 @@
         }
       ],
       "default": "stream"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "info": "Use portrait for a vertical photo, so the points stay on the pieces.",
+      "options": [
+        {
+          "value": "landscape",
+          "label": "Landscape"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait 4:5"
+        }
+      ],
+      "default": "landscape"
     },
     {
       "type": "select",

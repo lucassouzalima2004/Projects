@@ -170,7 +170,8 @@
       "payment": "Formas de pagamento"
     },
     "gallery": {
-      "label": "Galeria"
+      "label": "Galeria",
+      "drag": "Arraste"
     },
     "header": {
       "account": "Conta",

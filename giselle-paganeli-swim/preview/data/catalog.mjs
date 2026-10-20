@@ -1,5 +1,6 @@
 // Sample catalog for the preview. Names, prices and texts are placeholders until the brand
 // confirms the final line sheet; no material or performance claims are made here.
+// Photos are Pexels stock pictures (see media/photos/CREDITS.md), for the preview only.
 
 const SIZES = ['XS', 'S', 'M', 'L', 'XL'];
 
@@ -8,153 +9,141 @@ export const products = [
     handle: 'eva-triangle-bikini',
     title: 'Eva Triangle Bikini',
     type: 'Bikini',
-    style: 'triangle',
     collections: ['bikinis'],
     price: 18500,
-    colors: ['Pearl', 'Terracotta', 'Nero'],
+    photos: { Nero: ['12184254', '12184162'], Pearl: ['28390584', '18892579'] },
     tags: ['new'],
-    soldOut: [['Terracotta', 'XS']],
+    soldOut: [['Pearl', 'XS']],
     description:
-      '<p>A triangle bikini cut with Milanese precision: sliding cups, ties at the neck and back, and a bottom that rests low on the hips.</p><p>Sold as a set — top and bottom in the same size.</p>',
-    fit: 'Adjustable triangle top with neck and back ties. Medium-coverage bottom.',
+      '<p>A triangle bikini cut with Milanese precision: soft cups, ties at the neck and back, and a bottom that rests low on the hips.</p><p>Sold as a set — top and bottom in the same size.</p>',
+    fit: 'Triangle top with neck and back ties. Medium-coverage bottom.',
   },
   {
-    handle: 'bellagio-bandeau-bikini',
-    title: 'Bellagio Bandeau Bikini',
+    handle: 'bellagio-bikini',
+    title: 'Bellagio Bikini',
     type: 'Bikini',
-    style: 'bandeau',
     collections: ['bikinis'],
     price: 19500,
-    colors: ['Sand', 'Cacao', 'Nero'],
+    photos: { Nero: ['18037479'] },
     description:
-      '<p>Named after the pearl of Lake Como. A softly gathered bandeau that frames the shoulders, paired with a classic bottom.</p><p>Sold as a set.</p>',
-    fit: 'Strapless bandeau top. Classic-coverage bottom.',
-  },
-  {
-    handle: 'varenna-balconette-bikini',
-    title: 'Varenna Balconette Bikini',
-    type: 'Bikini',
-    style: 'balconette',
-    collections: ['bikinis'],
-    price: 21000,
-    colors: ['Terracotta', 'Pearl'],
-    tags: ['new'],
-    description:
-      '<p>A balconette with a structured line and thin shoulder straps, inspired by the terraces of Varenna.</p><p>Sold as a set.</p>',
-    fit: 'Balconette top with shoulder straps. Medium-coverage bottom.',
-  },
-  {
-    handle: 'giardino-halter-bikini',
-    title: 'Giardino Halter Bikini',
-    type: 'Bikini',
-    style: 'halter',
-    collections: ['bikinis'],
-    price: 19000,
-    colors: ['Cacao', 'Sand'],
-    soldOut: [['Sand', 'XL']],
-    description:
-      '<p>A halter top that ties at the nape of the neck, made for long afternoons in the garden. Paired with a high-cut bottom.</p><p>Sold as a set.</p>',
-    fit: 'Halter top tied at the neck. High-cut bottom.',
-  },
-  {
-    handle: 'trevo-ring-bikini',
-    title: 'Trevo Ring Bikini',
-    type: 'Bikini',
-    style: 'ring',
-    collections: ['bikinis'],
-    price: 20500,
-    colors: ['Nero', 'Pearl', 'Terracotta'],
-    description:
-      '<p>The house symbol, the clover, becomes jewellery: a ring detail at the centre of a soft bandeau.</p><p>Sold as a set.</p>',
-    fit: 'Bandeau top with centre ring detail. Classic-coverage bottom.',
+      '<p>Named after the pearl of Lake Como. A minimal triangle with tie-side bottom, made for still water and long swims.</p><p>Sold as a set.</p>',
+    fit: 'Triangle top. Tie-side bottom, adjustable at the hips.',
   },
   {
     handle: 'cascata-tie-side-bikini',
     title: 'Cascata Tie-side Bikini',
     type: 'Bikini',
-    style: 'tieside',
     collections: ['bikinis'],
     price: 18000,
-    colors: ['Sand', 'Terracotta'],
+    photos: { Sand: ['8369995', '8369989'] },
+    tags: ['new'],
     description:
-      '<p>Like the waterfall in the painting: light, fluid, tied at the hips with soft bows.</p><p>Sold as a set.</p>',
-    fit: 'Small triangle top. Tie-side bottom, adjustable at the hips.',
+      '<p>Like the waterfall in the painting: light and fluid. A soft bralette top with a tie-side bottom, in the colour of warm sand.</p><p>Sold as a set.</p>',
+    fit: 'Bralette top. Tie-side bottom, adjustable at the hips.',
+  },
+  {
+    handle: 'giardino-bikini',
+    title: 'Giardino Bikini',
+    type: 'Bikini',
+    collections: ['bikinis'],
+    price: 19000,
+    photos: { Terracotta: ['17995823'] },
+    soldOut: [['Terracotta', 'XL']],
+    description:
+      '<p>Terracotta among the leaves: a triangle top and a high-cut bottom made for long afternoons in the garden.</p><p>Sold as a set.</p>',
+    fit: 'Triangle top. High-cut bottom.',
+  },
+  {
+    handle: 'villa-bikini',
+    title: 'Villa Bikini',
+    type: 'Bikini',
+    collections: ['bikinis'],
+    price: 21000,
+    photos: { Pearl: ['3769133', '5282577'] },
+    description:
+      '<p>Pearl white for the pools of Italian villas. A clean top with a scooped back and a classic bottom.</p><p>Sold as a set.</p>',
+    fit: 'Bralette top. Classic-coverage bottom.',
+  },
+  {
+    handle: 'palma-bikini',
+    title: 'Palma Bikini',
+    type: 'Bikini',
+    collections: ['bikinis'],
+    price: 18500,
+    photos: { Nero: ['4497012'] },
+    description:
+      '<p>An essential black bikini, shown here with the Riva Resort Shirt knotted at the waist.</p><p>Sold as a set.</p>',
+    fit: 'Classic-coverage bottom.',
   },
   {
     handle: 'eden-one-piece',
     title: 'Eden One-piece',
     type: 'Swimsuit',
-    style: 'scoop',
     collections: ['swimsuits'],
     price: 26000,
-    colors: ['Nero', 'Terracotta', 'Pearl'],
+    photos: { Nero: ['4827962', '4497794'], Pearl: ['7261223'] },
     tags: ['new'],
     description:
-      '<p>The signature piece of the collection. A one-piece with a soft scoop neckline and an open back — essential, timeless, made to be worn from the water to the terrace.</p>',
-    fit: 'Scoop neckline, open back. Medium leg.',
+      '<p>The signature piece of the collection. A one-piece with a soft scoop neckline — essential, timeless, made to be worn from the water to the terrace.</p>',
+    fit: 'Scoop neckline. Medium leg.',
   },
   {
-    handle: 'como-plunge-one-piece',
-    title: 'Como Plunge One-piece',
+    handle: 'como-one-piece',
+    title: 'Como One-piece',
     type: 'Swimsuit',
-    style: 'plunge',
     collections: ['swimsuits'],
     price: 27000,
-    colors: ['Cacao', 'Nero'],
-    description:
-      '<p>A deep plunging neckline with Italian restraint. Long lines and a refined back for evenings by the lake.</p>',
-    fit: 'Plunge neckline. Medium leg, low back.',
-  },
-  {
-    handle: 'paradiso-one-shoulder-swimsuit',
-    title: 'Paradiso One-shoulder Swimsuit',
-    type: 'Swimsuit',
-    style: 'oneshoulder',
-    collections: ['swimsuits'],
-    price: 27500,
-    colors: ['Terracotta', 'Sand'],
-    description:
-      '<p>An asymmetric line drawn across the shoulder. Sculptural and sensual, in the spirit of Brazilian summers.</p>',
-    fit: 'One-shoulder neckline. High leg.',
-  },
-  {
-    handle: 'serra-high-leg-one-piece',
-    title: 'Serra High-leg One-piece',
-    type: 'Swimsuit',
-    style: 'highleg',
-    collections: ['swimsuits'],
-    price: 25500,
-    colors: ['Pearl', 'Nero'],
+    photos: { Pearl: ['7732170', '6339291'] },
     soldOut: [['Pearl', 'M']],
     description:
-      '<p>A square neckline and a high leg that lengthens the silhouette — named after the mountains of Brazil.</p>',
-    fit: 'Square neckline. High leg, medium back coverage.',
+      '<p>A pearl one-piece with a sculpted neckline, for the rocks and coves of the Mediterranean.</p>',
+    fit: 'Sculpted neckline. Medium leg.',
+  },
+  {
+    handle: 'paradiso-one-piece',
+    title: 'Paradiso One-piece',
+    type: 'Swimsuit',
+    collections: ['swimsuits'],
+    price: 27500,
+    photos: { Terracotta: ['7788703', '29462470'] },
+    description:
+      '<p>Terracotta against the sea: a one-piece with long lines and a high leg, in the spirit of Brazilian summers.</p>',
+    fit: 'High leg, open back.',
+  },
+  {
+    handle: 'serra-long-sleeve-one-piece',
+    title: 'Serra Long-sleeve One-piece',
+    type: 'Swimsuit',
+    collections: ['swimsuits'],
+    price: 28500,
+    photos: { Nero: ['5980148'] },
+    description:
+      '<p>Long sleeves and a round neck: a swimsuit that becomes a bodysuit for the evening. Named after the mountains of Brazil.</p>',
+    fit: 'Long sleeves, round neck. Medium leg.',
   },
   {
     handle: 'riva-resort-shirt',
     title: 'Riva Resort Shirt',
     type: 'Resortwear',
-    style: 'shirt',
     collections: ['resortwear'],
     price: 24000,
-    colors: ['Pearl', 'Sand'],
+    photos: { Pearl: ['18791718', '10899208'] },
     description:
-      '<p>A relaxed resort shirt with a camp collar, to wear open over swimwear or knotted at the waist.</p>',
-    fit: 'Relaxed fit. Camp collar, short sleeves.',
+      '<p>A relaxed white shirt to wear open over swimwear or knotted at the waist, from the beach to lunch.</p>',
+    fit: 'Relaxed fit, long sleeves to roll up.',
   },
   {
     handle: 'lido-resort-shorts',
     title: 'Lido Resort Shorts',
     type: 'Resortwear',
-    style: 'shorts',
     collections: ['resortwear'],
-    price: 18000,
-    colors: ['Pearl', 'Sand'],
+    price: 16000,
+    photos: { Terracotta: ['10756859'] },
     description:
-      '<p>Easy shorts with a drawstring waist, made to pair with the Riva shirt from the beach to lunch.</p>',
-    fit: 'Relaxed fit, drawstring waist.',
+      '<p>Easy shorts with an elastic waist, made to pair with a white shirt from the beach to the village.</p>',
+    fit: 'Relaxed fit, elastic waist.',
   },
-].map((product) => ({ sizes: SIZES, tags: [], soldOut: [], ...product }));
+].map((product) => ({ sizes: SIZES, tags: [], soldOut: [], ...product, colors: Object.keys(product.photos) }));
 
 export const collections = [
   {
@@ -317,3 +306,20 @@ export const colorHex = {
   Nero: '#151313',
   Terracotta: '#ad634d',
 };
+
+// Preview only: the "Shop the look" block on The Garden of Eden page uses a real photo with points on each piece.
+export const templateOverrides = {
+  'page.garden': {
+    sections: {
+      look: {
+        settings: { image: 'preview:photo/4497012', image_ratio: 'portrait', overline: 'Shop the look', heading: 'Under the palms' },
+        blocks: {
+          shirt: { type: 'hotspot', settings: { product: 'riva-resort-shirt', x: 38, y: 58 } },
+          bikini: { type: 'hotspot', settings: { product: 'palma-bikini', x: 62, y: 77 } },
+        },
+        block_order: ['shirt', 'bikini'],
+      },
+    },
+  },
+};
+

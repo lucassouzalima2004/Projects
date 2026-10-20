@@ -1,4 +1,4 @@
-/* Eden — theme scripts for Giselle Paganeli Swim. No dependencies. */
+/* Eden — theme scripts for Giselle Paganeli Swim. Optional dependency: Lenis (smooth scroll), loaded before this file. */
 (() => {
   const theme = window.theme || {};
   const routes = theme.routes || {};
@@ -91,6 +91,224 @@
     });
   };
 
+  /* ---------- Motion ---------- */
+  const motionSettings = theme.motion || {};
+  const motionAllowed = () => !reduceMotion.matches && document.body && document.body.dataset.animate === 'true';
+
+  // One animation loop for everything that follows the scroll or the pointer.
+  // A job receives the frame time and returns true while it still needs frames.
+  const ticker = {
+    jobs: new Set(),
+    running: false,
+    last: 0,
+    add(job) {
+      this.jobs.add(job);
+      this.kick();
+    },
+    remove(job) {
+      this.jobs.delete(job);
+    },
+    kick() {
+      if (this.running) return;
+      this.running = true;
+      this.last = performance.now();
+      requestAnimationFrame((time) => this.frame(time));
+    },
+    frame(time) {
+      const dt = Math.min(64, time - this.last) || 16.7;
+      this.last = time;
+      let again = false;
+      this.jobs.forEach((job) => {
+        if (job(dt)) again = true;
+      });
+      if (again) requestAnimationFrame((next) => this.frame(next));
+      else this.running = false;
+    },
+  };
+  window.addEventListener('scroll', () => ticker.kick(), { passive: true });
+  window.addEventListener('resize', () => ticker.kick(), { passive: true });
+
+  // Smooth scroll with inertia on mouse and trackpad. Touch screens keep their native scrolling.
+  let lenis = null;
+  const startSmoothScroll = () => {
+    if (lenis || !motionSettings.smoothScroll || !window.Lenis || reduceMotion.matches) return;
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    lenis = new window.Lenis({
+      autoRaf: true,
+      lerp: 0.09,
+      wheelMultiplier: 0.9,
+      anchors: { offset: -120 },
+      allowNestedScroll: true,
+      stopInertiaOnNavigate: true,
+      prevent: (node) => Boolean(node.closest && node.closest('side-drawer, dialog, [data-lenis-prevent]')),
+    });
+    lenis.on('scroll', () => ticker.kick());
+  };
+
+  const lockScroll = (locked) => {
+    document.body.classList.toggle('is-locked', locked);
+    if (lenis) {
+      if (locked) lenis.stop();
+      else lenis.start();
+    }
+  };
+
+  // Parallax: editorial images drift slightly inside their frames.
+  const parallaxItems = new Set();
+  const parallaxObserver =
+    'IntersectionObserver' in window
+      ? new IntersectionObserver(
+          (entries) =>
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) parallaxItems.add(entry.target);
+              else parallaxItems.delete(entry.target);
+            }),
+          { rootMargin: '20% 0px' }
+        )
+      : null;
+  const PARALLAX = '.split__media img, .duo__media img, .banner__media img, .columns__media img, .tile__media img, .newsletter__bg img';
+  const registerParallax = (root) => {
+    if (!motionSettings.parallax || !parallaxObserver || !motionAllowed()) return;
+    qsa(PARALLAX, root).forEach((img) => {
+      if (img.hasAttribute('data-parallax')) return;
+      img.setAttribute('data-parallax', '');
+      parallaxObserver.observe(img);
+    });
+  };
+  ticker.add(() => {
+    if (!parallaxItems.size) return false;
+    const viewport = window.innerHeight;
+    const frames = Array.from(parallaxItems, (img) => [img, img.parentElement.getBoundingClientRect()]);
+    frames.forEach(([img, frame]) => {
+      const offset = (frame.top + frame.height / 2 - viewport / 2) / (viewport + frame.height);
+      img.style.translate = `0 ${(-offset * frame.height * 0.12).toFixed(1)}px`;
+    });
+    return false;
+  });
+
+  // Headings rise word by word when they enter the screen.
+  const SPLIT =
+    '.hero__title, .statement__text, .section-head .h2, .page-hero__title, .collection__title, .banner__title, .split__title, .duo__title, .footer__newsletter-title, .search-page__title, .gate__title, .product__title, .page__title';
+  const splitObserver =
+    'IntersectionObserver' in window
+      ? new IntersectionObserver(
+          (entries) =>
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add('is-split-in');
+              splitObserver.unobserve(entry.target);
+            }),
+          { rootMargin: '0px 0px -8% 0px' }
+        )
+      : null;
+  const splitWords = (element) => {
+    let index = 0;
+    const walk = (node) => {
+      Array.from(node.childNodes).forEach((child) => {
+        if (child.nodeType === Node.TEXT_NODE) {
+          if (!child.textContent.trim()) return;
+          const fragment = document.createDocumentFragment();
+          child.textContent.split(/(\s+)/).forEach((part) => {
+            if (!part) return;
+            if (!part.trim()) {
+              fragment.appendChild(document.createTextNode(part));
+              return;
+            }
+            const outer = document.createElement('span');
+            const inner = document.createElement('span');
+            outer.className = 'split-word';
+            inner.style.setProperty('--w', index);
+            inner.textContent = part;
+            index += 1;
+            outer.appendChild(inner);
+            fragment.appendChild(outer);
+          });
+          child.replaceWith(fragment);
+        } else if (child.nodeType === Node.ELEMENT_NODE && child.tagName !== 'BR') {
+          walk(child);
+        }
+      });
+    };
+    walk(element);
+  };
+  const registerSplits = (root) => {
+    if (!motionSettings.splitHeadings || !splitObserver || !motionAllowed()) return;
+    qsa(SPLIT, root).forEach((element) => {
+      if (element.dataset.split) return;
+      element.dataset.split = 'true';
+      element.setAttribute('aria-label', element.textContent.replace(/\s+/g, ' ').trim());
+      splitWords(element);
+      splitObserver.observe(element);
+    });
+  };
+
+  // Lazy images fade in once loaded instead of popping in.
+  const fadeImages = (root) => {
+    qsa('img[loading="lazy"]:not([data-fade]):not(.is-loaded)', root).forEach((img) => {
+      if (img.complete && img.naturalWidth) {
+        img.classList.add('is-loaded');
+        return;
+      }
+      img.setAttribute('data-fade', '');
+      const done = () => img.classList.add('is-loaded');
+      img.addEventListener('load', done, { once: true });
+      img.addEventListener('error', done, { once: true });
+    });
+  };
+
+  const enhance = (root = document) => {
+    observeReveals(root);
+    registerSplits(root);
+    registerParallax(root);
+    fadeImages(root);
+  };
+
+  // Collapsible rows open and close smoothly where the browser cannot animate <details> by itself (Safari, Firefox).
+  const nativeDetails =
+    window.CSS && CSS.supports && CSS.supports('selector(::details-content)') && CSS.supports('interpolate-size: allow-keywords');
+  document.addEventListener('click', (event) => {
+    const summary = event.target.closest('details > summary');
+    if (!summary || nativeDetails || reduceMotion.matches) return;
+    const details = summary.parentElement;
+    const body = summary.nextElementSibling;
+    if (!body || typeof body.animate !== 'function') return;
+    event.preventDefault();
+    if (details.dataset.animating) return;
+    details.dataset.animating = 'true';
+    body.style.overflow = 'hidden';
+    const options = { duration: 450, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' };
+    const finish = () => {
+      body.style.overflow = '';
+      delete details.dataset.animating;
+    };
+    if (details.open) {
+      body.animate([{ height: `${body.offsetHeight}px`, opacity: 1 }, { height: '0px', opacity: 0 }], options).onfinish = () => {
+        details.open = false;
+        finish();
+      };
+    } else {
+      details.open = true;
+      body.animate([{ height: '0px', opacity: 0 }, { height: `${body.offsetHeight}px`, opacity: 1 }], options).onfinish = finish;
+    }
+  });
+
+  // The product photo travels from the card to the product page (cross-document view transitions).
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('product-card a[href]');
+    if (!link || event.defaultPrevented || event.metaKey || event.ctrlKey || !motionAllowed()) return;
+    const image = qs('.card__img--primary', link.closest('product-card'));
+    if (!image) return;
+    qsa('.card__img--primary').forEach((other) => {
+      other.style.viewTransitionName = '';
+    });
+    image.style.viewTransitionName = 'product-hero';
+  });
+  window.addEventListener('pageshow', () =>
+    qsa('.card__img--primary').forEach((image) => {
+      image.style.viewTransitionName = '';
+    })
+  );
+
   /* ---------- Drawers (menu, cart, search, filters, size guide) ---------- */
   class SideDrawer extends HTMLElement {
     connectedCallback() {
@@ -113,7 +331,7 @@
       this.classList.add('is-open');
       this.setAttribute('aria-hidden', 'false');
       qsa(`[aria-controls="${this.id}"]`).forEach((el) => el.setAttribute('aria-expanded', 'true'));
-      document.body.classList.add('is-locked');
+      lockScroll(true);
       requestAnimationFrame(() => {
         const target = qs('input[type="search"]', this) || this.panel;
         target.focus({ preventScroll: true });
@@ -127,7 +345,7 @@
       this.setAttribute('aria-hidden', 'true');
       this.inert = true;
       qsa(`[aria-controls="${this.id}"]`).forEach((el) => el.setAttribute('aria-expanded', 'false'));
-      if (!qs('side-drawer.is-open')) document.body.classList.remove('is-locked');
+      if (!qs('side-drawer.is-open')) lockScroll(false);
       if (this.trigger && document.contains(this.trigger)) this.trigger.focus({ preventScroll: true });
     }
 
@@ -246,21 +464,17 @@
       if (!this.classList.contains('hero--reveal')) return;
       this.windowEl = qs('.hero__window', this);
       this.intro = qs('.hero__intro', this);
-      this.update = this.update.bind(this);
+      this.current = 0;
+      this.job = (dt) => this.update(dt);
       this.measure = this.measure.bind(this);
-      this.onScroll = () => {
-        if (this.ticking) return;
-        this.ticking = true;
-        requestAnimationFrame(this.update);
-      };
-      window.addEventListener('scroll', this.onScroll, { passive: true });
       window.addEventListener('resize', this.measure);
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(this.measure);
       this.measure();
+      ticker.add(this.job);
     }
 
     disconnectedCallback() {
-      window.removeEventListener('scroll', this.onScroll);
+      ticker.remove(this.job);
       window.removeEventListener('resize', this.measure);
     }
 
@@ -268,15 +482,19 @@
       if (!this.windowEl || !this.intro) return;
       const top = Math.min(this.intro.offsetTop + this.intro.offsetHeight + 28, window.innerHeight * 0.62);
       this.windowEl.style.setProperty('--top', `${top}px`);
-      this.update();
+      ticker.kick();
     }
 
-    update() {
-      this.ticking = false;
+    // The progress eases towards the scroll position, so wheel steps and fast flicks still open the arch smoothly.
+    update(dt) {
       const distance = Math.max(1, (this.offsetHeight - window.innerHeight) * 0.8);
-      const progress = Math.min(1, Math.max(0, -this.getBoundingClientRect().top / distance));
-      this.style.setProperty('--p', progress.toFixed(4));
-      this.classList.toggle('is-open', progress > 0.75);
+      const target = Math.min(1, Math.max(0, -this.getBoundingClientRect().top / distance));
+      const ease = 1 - Math.pow(1 - (lenis ? 0.3 : 0.14), dt / 16.7);
+      this.current += (target - this.current) * ease;
+      if (Math.abs(target - this.current) < 0.0005) this.current = target;
+      this.style.setProperty('--p', this.current.toFixed(4));
+      this.classList.toggle('is-open', this.current > 0.75);
+      return this.current !== target;
     }
   }
   customElements.define('garden-hero', GardenHero);
@@ -317,13 +535,16 @@
           const fresh = qs('#CartContents', doc);
           const current = qs('#CartContents');
           if (fresh && current) current.replaceWith(fresh);
-          if (fresh) count = Number(fresh.dataset.itemCount);
+          if (fresh) {
+            count = Number(fresh.dataset.itemCount);
+            enhance(fresh);
+          }
         } else {
           const current = qs(`cart-items[data-section="${id}"]`);
           const page = current && current.closest('.cart-page');
           const fresh = qs('.cart-page', doc);
           if (page && fresh) page.replaceWith(fresh);
-          observeReveals(document);
+          enhance(document);
         }
       });
       if (count !== null) this.updateCount(count);
@@ -613,13 +834,13 @@
       const dialog = qs('[data-zoom-dialog]');
       if (!dialog || typeof dialog.showModal !== 'function') return;
       dialog.showModal();
-      document.body.classList.add('is-locked');
+      lockScroll(true);
       const target = qsa('.zoom__list li', dialog)[index];
       if (target) target.scrollIntoView({ block: 'start' });
       if (!dialog.dataset.bound) {
         dialog.dataset.bound = 'true';
         qs('[data-zoom-close]', dialog).addEventListener('click', () => dialog.close());
-        dialog.addEventListener('close', () => document.body.classList.remove('is-locked'));
+        dialog.addEventListener('close', () => lockScroll(false));
         dialog.addEventListener('click', (event) => {
           if (event.target.tagName === 'IMG') dialog.close();
         });
@@ -791,7 +1012,7 @@
         qsa('.facet', this).forEach((facet, index) => {
           if (openFacets[index] !== undefined) facet.open = openFacets[index];
         });
-        observeReveals(this);
+        enhance(this);
         if (push) window.history.pushState({}, '', `${window.location.pathname}${search ? `?${search}` : ''}`);
       } catch (error) {
         window.location.href = `${window.location.pathname}${search ? `?${search}` : ''}`;
@@ -855,7 +1076,7 @@
             const fresh = qs('product-recommendations', doc);
             if (fresh && fresh.innerHTML.trim()) {
               this.innerHTML = fresh.innerHTML;
-              observeReveals(this);
+              enhance(this);
             }
           } catch (error) {
             /* recommendations are optional */
@@ -884,6 +1105,11 @@
     }
 
     select(index) {
+      if (document.startViewTransition && motionAllowed()) document.startViewTransition(() => this.show(index));
+      else this.show(index);
+    }
+
+    show(index) {
       this.tabs.forEach((tab, i) => {
         const active = i === index;
         tab.setAttribute('aria-selected', String(active));
@@ -938,30 +1164,86 @@
       if (!this.track) return;
       this.track.addEventListener('scroll', () => this.progress(), { passive: true });
       this.progress();
+      if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+      this.cursor = document.createElement('span');
+      this.cursor.className = 'gallery__cursor';
+      this.cursor.setAttribute('aria-hidden', 'true');
+      this.cursor.textContent = strings.drag || 'Drag';
+      this.appendChild(this.cursor);
+
+      let pointerX = 0;
+      let pointerY = 0;
+      let cursorX = 0;
+      let cursorY = 0;
+      const follow = (dt) => {
+        const ease = 1 - Math.pow(0.78, dt / 16.7);
+        cursorX += (pointerX - cursorX) * ease;
+        cursorY += (pointerY - cursorY) * ease;
+        this.cursor.style.setProperty('--cx', `${cursorX.toFixed(1)}px`);
+        this.cursor.style.setProperty('--cy', `${cursorY.toFixed(1)}px`);
+        return Math.abs(pointerX - cursorX) > 0.3 || Math.abs(pointerY - cursorY) > 0.3;
+      };
+      this.track.addEventListener('pointerenter', (event) => {
+        pointerX = cursorX = event.clientX;
+        pointerY = cursorY = event.clientY;
+        this.classList.add('is-hovered');
+        ticker.add(follow);
+      });
+      this.track.addEventListener('pointerleave', () => {
+        this.classList.remove('is-hovered');
+        ticker.remove(follow);
+      });
 
       let startX = 0;
       let startScroll = 0;
+      let lastX = 0;
+      let lastTime = 0;
+      let velocity = 0;
       let moved = false;
+      let glide = 0;
       this.track.addEventListener('pointerdown', (event) => {
         if (event.pointerType !== 'mouse') return;
-        startX = event.clientX;
+        cancelAnimationFrame(glide);
+        startX = lastX = event.clientX;
+        lastTime = event.timeStamp;
         startScroll = this.track.scrollLeft;
+        velocity = 0;
         moved = false;
         this.dragging = true;
       });
       window.addEventListener('pointermove', (event) => {
+        if (this.classList.contains('is-hovered')) {
+          pointerX = event.clientX;
+          pointerY = event.clientY;
+          ticker.kick();
+        }
         if (!this.dragging) return;
         const delta = event.clientX - startX;
         if (Math.abs(delta) > 4) {
           moved = true;
           this.track.classList.add('is-dragging');
         }
+        const elapsed = Math.max(1, event.timeStamp - lastTime);
+        velocity = 0.8 * ((event.clientX - lastX) / elapsed) + 0.2 * velocity;
+        lastX = event.clientX;
+        lastTime = event.timeStamp;
         this.track.scrollLeft = startScroll - delta;
       });
       window.addEventListener('pointerup', () => {
         if (!this.dragging) return;
         this.dragging = false;
-        requestAnimationFrame(() => this.track.classList.remove('is-dragging'));
+        let speed = -velocity * 16;
+        const step = () => {
+          if (Math.abs(speed) < 0.35) {
+            this.track.classList.remove('is-dragging');
+            return;
+          }
+          this.track.scrollLeft += speed;
+          speed *= 0.94;
+          glide = requestAnimationFrame(step);
+        };
+        glide = requestAnimationFrame(step);
       });
       this.track.addEventListener(
         'click',
@@ -1082,7 +1364,8 @@
 
   /* ---------- Boot ---------- */
   const boot = () => {
-    observeReveals();
+    startSmoothScroll();
+    enhance();
     const gate = qs('[data-gate-dialog]');
     if (gate && qs('[data-gate-error]', gate) && gate.showModal) gate.showModal();
     const success = qs('.form-message--success');
@@ -1092,5 +1375,12 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 
-  document.addEventListener('shopify:section:load', (event) => observeReveals(event.target));
+  document.addEventListener('shopify:section:load', (event) => enhance(event.target));
+  window.EdenTheme = {
+    enhance,
+    ticker,
+    get lenis() {
+      return lenis;
+    },
+  };
 })();

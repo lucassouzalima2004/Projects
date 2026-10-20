@@ -202,7 +202,7 @@ const banner = () => {
   const note = document.createElement('div');
   note.className = 'preview-note';
   note.innerHTML =
-    '<span><strong>Preview</strong> · sample products, drawings and prices</span><button type="button" aria-label="Close">×</button>';
+    '<span><strong>Preview</strong> · sample photos (Pexels), products and prices</span><button type="button" aria-label="Close">×</button>';
   note.querySelector('button').addEventListener('click', () => {
     note.remove();
     try {

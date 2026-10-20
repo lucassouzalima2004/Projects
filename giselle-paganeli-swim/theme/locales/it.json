@@ -170,7 +170,8 @@
       "payment": "Metodi di pagamento"
     },
     "gallery": {
-      "label": "Galleria"
+      "label": "Galleria",
+      "drag": "Trascina"
     },
     "header": {
       "account": "Account",

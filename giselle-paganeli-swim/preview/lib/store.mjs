@@ -30,10 +30,27 @@ const SORT_OPTIONS = [
 
 const stripHtml = (html) => String(html || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
-export function createStore(data, { mediaBase = '/preview/products/', origin = '' } = {}) {
+export function createStore(data, { origin = '' } = {}) {
   const { shop: shopData } = data;
   let id = 7000;
   const nextId = () => ++id;
+
+  // Sample photos ship in two widths; the theme's image_tag gets both through srcset.
+  const photoBase = `${origin}/preview/photos/`;
+  const photo = (photoId, alt) => {
+    const image = {
+      id: nextId(),
+      media_type: 'image',
+      src: `${photoBase}${photoId}-1200.jpg`,
+      srcset: `${photoBase}${photoId}-640.jpg 640w, ${photoBase}${photoId}-1200.jpg 1200w`,
+      width: 1200,
+      height: 1500,
+      aspect_ratio: 0.8,
+      alt,
+    };
+    image.preview_image = image;
+    return image;
+  };
 
   /* ---------- Products ---------- */
   const products = data.products.map((raw, index) => {
@@ -52,25 +69,15 @@ export function createStore(data, { mediaBase = '/preview/products/', origin = '
       has_only_default_variant: false,
       options: ['Color', 'Size'],
       metafields: { custom: { fit: { value: raw.fit } } },
-      style: raw.style,
     };
 
     const media = [];
     const mediaByColor = {};
     raw.colors.forEach((color) => {
-      ['front', 'detail'].forEach((view) => {
-        const image = {
-          id: nextId(),
-          media_type: 'image',
-          src: `${mediaBase}${raw.handle}-${handleize(color)}-${view}.svg`,
-          width: 800,
-          height: 1000,
-          aspect_ratio: 0.8,
-          alt: `${raw.title} — ${color}${view === 'detail' ? ', detail' : ''}`,
-        };
-        image.preview_image = image;
+      raw.photos[color].forEach((photoId, index) => {
+        const image = photo(photoId, `${raw.title} — ${color}${index ? ` (${index + 1})` : ''}`);
         media.push(image);
-        if (view === 'front') mediaByColor[color] = image;
+        if (!index) mediaByColor[color] = image;
       });
     });
 
@@ -412,7 +419,7 @@ export function createStore(data, { mediaBase = '/preview/products/', origin = '
       case 'page':
         return pagesByHandle[raw] || null;
       case 'image_picker':
-        return null;
+        return String(raw).startsWith('preview:photo/') ? photo(String(raw).slice(14), '') : null;
       case 'url':
         return String(raw).replace(/^shopify:\/\/(collections|pages|products|blogs)\//, '/$1/');
       default:
@@ -435,7 +442,7 @@ export function createStore(data, { mediaBase = '/preview/products/', origin = '
       const variantId = Number(params.get('variant'));
       const selected = product.variants.find((variant) => variant.id === variantId) || null;
       const view = Object.create(product, { selected_variant: { value: selected } });
-      return { template: 'product', type: 'product', title: product.title, product: view, description: stripHtml(product.description) };
+      return { template: 'product', type: 'product', title: product.title, product: view, description: stripHtml(product.description), image: product.featured_media };
     }
     if (parts[0] === 'pages' && parts.length === 2 && pagesByHandle[parts[1]]) {
       const page = pagesByHandle[parts[1]];

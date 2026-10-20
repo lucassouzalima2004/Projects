@@ -43,6 +43,11 @@
           recommendations: {{ routes.product_recommendations_url | json }}
         },
         cartType: {{ settings.cart_type | json }},
+        motion: {
+          smoothScroll: {{ settings.smooth_scroll | json }},
+          parallax: {{ settings.parallax | json }},
+          splitHeadings: {{ settings.split_headings | json }}
+        },
         strings: {
           addToCart: {{ 'products.product.add_to_cart' | t | json }},
           soldOut: {{ 'products.product.sold_out' | t | json }},
@@ -50,13 +55,17 @@
           selectSize: {{ 'products.product.select_size' | t | json }},
           added: {{ 'products.product.added' | t | json }},
           cartError: {{ 'sections.cart.error' | t | json }},
-          searchNoResults: {{ 'templates.search.no_results_short' | t | json }}
+          searchNoResults: {{ 'templates.search.no_results_short' | t | json }},
+          drag: {{ 'sections.gallery.drag' | t | json }}
         }
       };
     </script>
 
     {{ content_for_header }}
 
+    {%- if settings.smooth_scroll -%}
+      <script src="{{ 'lenis.min.js' | asset_url }}" defer></script>
+    {%- endif %}
     <script src="{{ 'theme.js' | asset_url }}" defer></script>
   </head>
 

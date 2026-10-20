@@ -173,6 +173,25 @@
         "label": "Fade between pages",
         "info": "Uses the browser's view transitions where available.",
         "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "smooth_scroll",
+        "label": "Smooth scrolling on computers",
+        "info": "Gentle inertia on mouse and trackpad. Phones keep their native scrolling.",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "parallax",
+        "label": "Parallax on editorial images",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "split_headings",
+        "label": "Headings rise word by word",
+        "default": true
       }
     ]
   },
@@ -184,9 +203,18 @@
         "id": "card_ratio",
         "label": "Product image shape",
         "options": [
-          { "value": "portrait", "label": "Portrait 4:5" },
-          { "value": "tall", "label": "Tall 2:3" },
-          { "value": "square", "label": "Square" }
+          {
+            "value": "portrait",
+            "label": "Portrait 4:5"
+          },
+          {
+            "value": "tall",
+            "label": "Tall 2:3"
+          },
+          {
+            "value": "square",
+            "label": "Square"
+          }
         ],
         "default": "portrait"
       },
@@ -243,8 +271,14 @@
         "id": "cart_type",
         "label": "Cart type",
         "options": [
-          { "value": "drawer", "label": "Side drawer" },
-          { "value": "page", "label": "Cart page" }
+          {
+            "value": "drawer",
+            "label": "Side drawer"
+          },
+          {
+            "value": "page",
+            "label": "Cart page"
+          }
         ],
         "default": "drawer"
       },

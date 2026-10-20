@@ -56,7 +56,19 @@ export function parseSchema(source) {
   }
 }
 
-export function createEngine({ files, locale, moneyFormat, currency = 'EUR', assetBase = '/assets/', images }) {
+// Preview-only changes to JSON templates (e.g. a real photo in "Shop the look"). Objects merge;
+// a section's blocks and block_order are replaced as a whole.
+const mergeTemplate = (base, patch) => {
+  if (!patch) return base;
+  const out = { ...base };
+  for (const [key, value] of Object.entries(patch)) {
+    const replace = key === 'blocks' || key === 'block_order' || Array.isArray(value) || typeof value !== 'object' || value === null;
+    out[key] = replace ? value : mergeTemplate(base[key] || {}, value);
+  }
+  return out;
+};
+
+export function createEngine({ files, locale, moneyFormat, currency = 'EUR', assetBase = '/assets/', images, templateOverrides = {} }) {
   const imageRegistry = images || new Map();
 
   const fs = {
@@ -117,11 +129,12 @@ export function createEngine({ files, locale, moneyFormat, currency = 'EUR', ass
     const image = imageRegistry.get(src) || {};
     const attrs = {
       src,
+      srcset: image.srcset,
       alt: named.alt ?? image.alt ?? '',
       width: image.width,
       height: image.height,
       loading: named.loading,
-      sizes: named.sizes,
+      sizes: image.srcset ? named.sizes : undefined,
       class: named.class,
       fetchpriority: named.fetchpriority,
     };
@@ -352,8 +365,12 @@ export function createEngine({ files, locale, moneyFormat, currency = 'EUR', ass
       return out.join('\n');
     },
 
+    templateJson(name) {
+      return mergeTemplate(JSON.parse(files[`templates/${name}.json`]), templateOverrides[name]);
+    },
+
     async renderTemplate(name, globals) {
-      const json = JSON.parse(files[`templates/${name}.json`]);
+      const json = api.templateJson(name);
       const resolve = globals.__resolve;
       const templateId = name.replace(/[./]/g, '-');
       const out = [];
@@ -383,7 +400,7 @@ export function createEngine({ files, locale, moneyFormat, currency = 'EUR', ass
           .filter((path) => path.startsWith('templates/') && path.endsWith('.json'))
           .map((path) => path.slice(10, -5))
           .find((nameCandidate) => nameCandidate.replace(/[./]/g, '-') === match[1]);
-        const json = JSON.parse(files[`templates/${templateName}.json`]);
+        const json = api.templateJson(templateName);
         const data = json.sections[match[2]];
         return api.renderSection({ id: sectionId, type: data.type, data, resolve: globals.__resolve, globals });
       }

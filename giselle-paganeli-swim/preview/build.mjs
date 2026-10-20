@@ -6,8 +6,6 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createSite } from './lib/site.mjs';
-import { illustration } from './lib/illustrations.mjs';
-import { handleize } from './lib/engine.mjs';
 import * as catalog from './data/catalog.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -43,6 +41,7 @@ const catalogData = {
   menus: catalog.menus,
   shop: catalog.shop,
   settingsOverrides: catalog.settingsOverrides,
+  templateOverrides: catalog.templateOverrides,
   colorHex: catalog.colorHex,
 };
 
@@ -82,16 +81,10 @@ for (const file of await walk(path.join(themeDir, 'assets'))) {
   await fs.copyFile(file, path.join(out, 'assets', path.basename(file)));
 }
 
-// Product drawings.
-for (const product of catalog.products) {
-  for (const color of product.colors) {
-    for (const view of ['front', 'detail']) {
-      await write(
-        path.join(out, 'preview/products', `${product.handle}-${handleize(color)}-${view}.svg`),
-        illustration(product.style, catalog.colorHex[color], view)
-      );
-    }
-  }
+// Sample product photos (Pexels, preview only).
+await fs.mkdir(path.join(out, 'preview/photos'), { recursive: true });
+for (const file of await walk(path.join(here, 'media/photos'))) {
+  if (file.endsWith('.jpg')) await fs.copyFile(file, path.join(out, 'preview/photos', path.basename(file)));
 }
 
 // Browser runtime: the same engine renders cart, filters, search and recommendations on the client.

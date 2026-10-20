@@ -13,10 +13,10 @@ E-commerce da coleção **The Garden of Eden 2027**, feito a partir do briefing 
 
 - **Enter the Garden**: na home, a imagem de campanha fica dentro de um **arco** (arquitetura italiana, Lago di Como) que se abre até a tela cheia conforme a pessoa rola, revelando o claim *embrace your oasis*. O arco volta como assinatura visual em todo o site (imagens editoriais, menu, sacola vazia, página de pré-lançamento).
 - **Centralizado**: logo e menu centralizados, títulos e cards de produto centralizados, menu mobile em tela cheia com links grandes.
-- **Fluido**: tipografia e espaçamentos que escalam com a tela, transições entre páginas, seções que aparecem ao rolar, carrinho lateral sem recarregar a página. Quem prefere menos movimento (configuração do sistema) vê tudo estático.
+- **Fluido**: rolagem suave com inércia no computador (Lenis, licença MIT; no celular fica a rolagem nativa), o arco do hero abre com inércia mesmo com a rodinha do mouse, títulos que sobem palavra por palavra, parallax leve nas imagens editoriais, fotos que surgem suavemente ao carregar, troca de página em que a foto do produto "voa" do card para a página do produto (e o cabeçalho fica parado), painéis laterais com curva de mola, sanfonas animadas também no Safari/iPhone e galeria com arraste com inércia e cursor "Drag". Cada efeito liga/desliga em *Configurações do tema → Layout & motion*, e quem pede menos movimento no sistema vê tudo estático.
 - **Paleta do briefing**: pérola, off-white, areia, café (texto), preto, terracota (destaque) e dourado envelhecido nos detalhes. Verde e azul da água só na ambientação. Tudo editável em *Configurações do tema → Cores*.
 - **Tipografia**: Cormorant Garamond (títulos) + Jost (texto), ambas com licença SIL Open Font, servidas pelo próprio tema.
-- **Imagens provisórias**: enquanto não há fotos, o tema usa recortes de *The Garden of Eden* (Thomas Cole, 1828 — domínio público, a referência da coleção). Na prévia, os produtos aparecem como desenhos técnicos em cada cor.
+- **Imagens provisórias**: enquanto não há fotos de campanha, as seções editoriais usam recortes de *The Garden of Eden* (Thomas Cole, 1828 — domínio público, a referência da coleção). Na prévia, os produtos aparecem com **fotos reais de exemplo do Pexels** (licença de uso livre; créditos em [`preview/media/photos/CREDITS.md`](preview/media/photos/CREDITS.md)). Elas mostram peças de outras marcas: servem só para a prévia e não vão para a loja.
 
 ## Páginas (as 6 abas do briefing + apoio)
 
@@ -63,7 +63,7 @@ No GitHub, o workflow **Giselle Paganeli Swim (tema + prévia)** roda o Theme Ch
 ## O que ainda é provisório
 
 - Nomes, preços, descrições e grade dos 12 produtos (10 de praia + camisa e short de resortwear), seguindo as quantidades do briefing.
-- Desenhos dos produtos e recortes do quadro no lugar das fotos.
+- Fotos de produto (Pexels, só na prévia) e recortes do quadro no lugar das fotos de campanha.
 - Tabela de medidas (indicativa) e textos de entregas/trocas/legais.
 - Logo: o tema usa o nome em texto até chegar o arquivo final.
 

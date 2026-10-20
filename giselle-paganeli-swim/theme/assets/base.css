@@ -24,6 +24,7 @@
 
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
   --radius-pill: 999px;
   --arch: 100vmax 100vmax 0 0;
 
@@ -1051,9 +1052,10 @@ side-drawer.is-open .drawer__overlay {
   background: var(--c-pearl);
   color: var(--c-cafe);
   transform: translate3d(100%, 0, 0);
-  transition: transform 0.7s var(--ease);
+  transition: transform 0.75s var(--ease-drawer);
   overflow: hidden;
   outline: none;
+  will-change: transform;
 }
 
 .drawer--left .drawer__panel {
@@ -2181,11 +2183,16 @@ input:focus-visible + .swatch {
   gap: clamp(1rem, 0.6rem + 1.6vw, 2.2rem);
   padding: 0 var(--gutter) 0.5rem;
   overflow-x: auto;
-  scroll-snap-type: x proximity;
   scroll-padding-inline: var(--gutter);
   scrollbar-width: none;
   cursor: grab;
   outline-offset: -2px;
+}
+
+@media (hover: none) {
+  .gallery__track {
+    scroll-snap-type: x proximity;
+  }
 }
 
 .gallery__track::-webkit-scrollbar {
@@ -2486,9 +2493,19 @@ look-hotspot.is-flipped .hotspot__card {
   letter-spacing: 0.06em;
 }
 
+.lookbook--portrait .lookbook__visual {
+  max-width: 36rem;
+  width: 100%;
+  margin-inline: auto;
+}
+
 @media (min-width: 990px) {
   .lookbook__inner {
     grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  }
+
+  .lookbook--portrait .lookbook__inner {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 
   .lookbook--image-right .lookbook__visual {
@@ -2503,6 +2520,10 @@ look-hotspot.is-flipped .hotspot__card {
   .lookbook__media {
     aspect-ratio: 5 / 4;
   }
+}
+
+.lookbook--portrait .lookbook__media {
+  aspect-ratio: 4 / 5;
 }
 
 /* ---------- Newsletter ---------- */
@@ -2934,16 +2955,19 @@ faq-list {
   font-size: 0.94em;
 }
 
-.accordion::details-content {
+:is(.accordion, .facet, .menu-drawer__details, .cart-note)::details-content {
   block-size: 0;
   overflow: hidden;
+  opacity: 0;
   transition:
     block-size 0.55s var(--ease),
+    opacity 0.45s var(--ease-soft),
     content-visibility 0.55s allow-discrete;
 }
 
-.accordion[open]::details-content {
+:is(.accordion, .facet, .menu-drawer__details, .cart-note)[open]::details-content {
   block-size: auto;
+  opacity: 1;
 }
 
 /* ---------- Contact ---------- */
@@ -3988,7 +4012,8 @@ cart-items {
   gap: 1.1rem;
   padding: 1.2rem 0;
   border-bottom: 1px solid var(--line);
-  animation: fadeup 0.6s var(--ease) backwards;
+  animation: fadeup 0.7s var(--ease) backwards;
+  animation-delay: calc(var(--i, 0) * 70ms + 120ms);
 }
 
 .cart-line__media {
@@ -4835,10 +4860,193 @@ cart-items {
 }
 
 /* ---------- Page transitions ---------- */
-::view-transition-old(root),
+/* The header stays put between pages and the product photo travels from the card to the product page. */
+.section-header {
+  view-transition-name: site-header;
+}
+
+.template-product .product__media-item:first-child .product__img {
+  view-transition-name: product-hero;
+}
+
+::view-transition-group(site-header) {
+  z-index: 2;
+}
+
+::view-transition-old(root) {
+  animation: vt-out 0.42s var(--ease-soft) both;
+}
+
 ::view-transition-new(root) {
-  animation-duration: 0.45s;
-  animation-timing-function: var(--ease-soft);
+  animation: vt-in 0.75s var(--ease) both;
+}
+
+::view-transition-group(product-hero) {
+  z-index: 3;
+  animation-duration: 0.8s;
+  animation-timing-function: var(--ease);
+}
+
+::view-transition-old(product-hero),
+::view-transition-new(product-hero) {
+  height: 100%;
+  object-fit: cover;
+  animation-duration: 0.8s;
+  animation-timing-function: var(--ease);
+}
+
+@keyframes vt-out {
+  to {
+    opacity: 0;
+    transform: translate3d(0, -1.5vh, 0);
+  }
+}
+
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 2.5vh, 0);
+  }
+}
+
+/* ---------- Motion ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.lenis) {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Lenis smooth scroll (desktop) */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.lenis [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* Headings rise word by word */
+.split-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0 0.08em 0.14em;
+  margin: 0 -0.08em -0.14em;
+}
+
+.split-word > span {
+  display: inline-block;
+  transform: translate3d(0, 110%, 0);
+  transition: transform 1.25s var(--ease);
+  transition-delay: calc(var(--w, 0) * 60ms + var(--split-delay, 0ms));
+}
+
+.is-split-in .split-word > span {
+  transform: none;
+}
+
+.hero__title {
+  --split-delay: 250ms;
+}
+
+/* Images fade in once loaded instead of popping */
+.js img[data-fade]:not(.is-loaded) {
+  opacity: 0;
+}
+
+.js img[data-fade].is-loaded {
+  animation: img-in 1.1s var(--ease-soft);
+}
+
+@keyframes img-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Parallax: the image is slightly larger than its frame and drifts as the page moves */
+[data-parallax] {
+  scale: 1.14;
+  will-change: transform;
+}
+
+/* Arch and title arrive gently on the home page */
+.js body[data-animate='true'] .hero__window {
+  animation: arch-in 1.9s var(--ease) 0.1s both;
+}
+
+.js body[data-animate='true'] .hero__overline,
+.js body[data-animate='true'] .hero__scroll {
+  animation: soft-in 1.4s var(--ease) 0.35s both;
+}
+
+@keyframes arch-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 9vh, 0) scale(0.94);
+  }
+}
+
+@keyframes soft-in {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+}
+
+/* "Drag" bubble that follows the pointer over galleries */
+.gallery__cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  width: 5.6rem;
+  height: 5.6rem;
+  margin: -2.8rem 0 0 -2.8rem;
+  border-radius: 50%;
+  background: var(--c-cafe);
+  color: var(--c-pearl);
+  font-size: 0.6rem;
+  font-weight: 450;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  pointer-events: none;
+  opacity: 0;
+  scale: 0.3;
+  translate: var(--cx, -100px) var(--cy, -100px);
+  transition: opacity 0.35s var(--ease), scale 0.6s var(--ease);
+}
+
+.gallery__wrap.is-hovered .gallery__cursor {
+  opacity: 1;
+  scale: 1;
+}
+
+.gallery__wrap.is-hovered .gallery__track.is-dragging ~ .gallery__cursor {
+  scale: 0.85;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .gallery__wrap.is-hovered .gallery__track {
+    cursor: none;
+  }
+}
+
+@media (hover: none) {
+  .gallery__cursor {
+    display: none;
+  }
 }
 
 /* ---------- Reduced motion ---------- */
