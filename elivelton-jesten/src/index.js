@@ -5,6 +5,7 @@ import { JestenStore, CHUNK } from './store.js';
 import { homePage, careersPage, legalPage, notFoundPage, matchRoute, PAGES } from './pages.js';
 import { STRINGS, LANGS } from './i18n.js';
 import { defaultContent } from './content.js';
+import { siteStrings, TEXT_SECTIONS, TEXT_DEFAULTS, ROLE_DEFAULTS } from './texts.js';
 import { panelPage } from './panel.js';
 
 export { JestenStore };
@@ -378,6 +379,8 @@ async function adminApi(request, env, url) {
 
   if (path === '/stats' && method === 'GET') return json(await stub.stats(statsRange(url.searchParams.get('range'))));
   if (path === '/content' && method === 'GET') return json(await stub.getContent());
+  // Textos que o painel deixa mudar, com os de fábrica de cada língua
+  if (path === '/texts' && method === 'GET') return json({ sections: TEXT_SECTIONS, defaults: TEXT_DEFAULTS, roles: ROLE_DEFAULTS });
   if (path === '/content' && method === 'PUT') {
     let body;
     try {
@@ -462,7 +465,7 @@ async function renderPage(request, env, url, route) {
   const content = await getContent(env);
   const ctx = {
     ...route,
-    s: STRINGS[route.lang],
+    s: siteStrings(route.lang, content),
     content,
     defaults: DEFAULTS,
     origin: url.origin,
@@ -477,11 +480,12 @@ async function renderPage(request, env, url, route) {
 
 async function renderNotFound(env, url) {
   const lang = LANGS.find((l) => l !== 'pt' && url.pathname.startsWith(`/${l}/`)) || 'pt';
+  const content = await getContent(env);
   const ctx = {
     lang,
     page: 'notFound',
-    s: STRINGS[lang],
-    content: await getContent(env),
+    s: siteStrings(lang, content),
+    content,
     defaults: DEFAULTS,
     origin: url.origin,
     build: env.BUILD_ID || 'dev',

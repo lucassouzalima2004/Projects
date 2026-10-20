@@ -109,7 +109,9 @@ export class JestenStore extends DurableObject {
   }
 
   saveContent(content) {
-    const clean = sanitizeContent(content);
+    // Um painel aberto antes de uma atualização do site não conhece os campos novos (ex.: os textos): ficam os guardados
+    const current = this.kvGet('content')?.value || {};
+    const clean = sanitizeContent({ ...current, ...content });
     const updated = this.kvSet('content', clean);
     return mergeContent(clean, updated);
   }

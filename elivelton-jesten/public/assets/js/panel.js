@@ -1,4 +1,4 @@
-// Painel do cliente (Jesten Construções): visitas, fotos e vídeos, página inicial, contatos, mensagens e conta.
+// Painel do cliente (Jesten Construções): visitas, fotos e vídeos, página inicial, textos do site, contatos, mensagens e conta.
 import { MAPS } from './world-dots.js';
 
 const app = document.getElementById('app');
@@ -61,6 +61,7 @@ const ICONS = {
   inicio: '<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
   contatos: '<path d="M5.2 3.5h3.6l1.9 4.7-2.3 1.5a11.5 11.5 0 0 0 5.9 5.9l1.5-2.3 4.7 1.9v3.6a1.6 1.6 0 0 1-1.6 1.6A17.4 17.4 0 0 1 3.6 5.1a1.6 1.6 0 0 1 1.6-1.6z"/>',
   mensagens: '<path d="M3 5h18v11H8l-5 4z"/><path d="M7 9h10M7 12h6"/>',
+  textos: '<path d="M5 7V4h14v3M12 4v16M9 20h6"/>',
   conta: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
   sair: '<path d="M10 4H4v16h6M15 8l4 4-4 4M19 12H9"/>',
   out: '<path d="M7 17 17 7M9 7h8v8"/>',
@@ -170,7 +171,7 @@ function renderLogin(message = '') {
     <form class="login__card" novalidate>
       ${logoSvg()}
       <h1 class="login__title">Painel do site</h1>
-      <p class="login__text">Visitas, fotos e vídeos, contatos e mensagens do site da Jesten Construções.</p>
+      <p class="login__text">Visitas, fotos e vídeos, textos, contatos e mensagens do site da Jesten Construções.</p>
       <label class="field"><span class="field__label">Senha</span>
         <span class="pw"><input type="password" name="password" autocomplete="current-password" required autofocus>
         <button class="pw__toggle" type="button" aria-label="Mostrar senha">${icon('eye')}</button></span>
@@ -210,13 +211,15 @@ function renderLogin(message = '') {
 
 // ---------- Estrutura ----------
 
+// short: nome na barra de baixo do celular, onde as 7 abas têm de caber lado a lado
 const ROUTES = {
-  visitas: { title: 'Visitas', icon: 'visitas', render: renderVisits },
-  obras: { title: 'Fotos e vídeos', icon: 'obras', render: renderWorks },
-  inicio: { title: 'Página inicial', icon: 'inicio', render: renderHome },
-  contatos: { title: 'Contatos e redes', icon: 'contatos', render: renderContacts },
-  mensagens: { title: 'Mensagens', icon: 'mensagens', render: renderInbox },
-  conta: { title: 'Conta', icon: 'conta', render: renderAccount },
+  visitas: { title: 'Visitas', short: 'Visitas', icon: 'visitas', render: renderVisits },
+  obras: { title: 'Fotos e vídeos', short: 'Fotos', icon: 'obras', render: renderWorks },
+  inicio: { title: 'Página inicial', short: 'Início', icon: 'inicio', render: renderHome },
+  textos: { title: 'Textos do site', short: 'Textos', icon: 'textos', render: renderTexts },
+  contatos: { title: 'Contatos e redes', short: 'Contatos', icon: 'contatos', render: renderContacts },
+  mensagens: { title: 'Mensagens', short: 'Mensagens', icon: 'mensagens', render: renderInbox },
+  conta: { title: 'Conta', short: 'Conta', icon: 'conta', render: renderAccount },
 };
 
 function renderShell() {
@@ -228,7 +231,9 @@ function renderShell() {
         ${Object.entries(ROUTES)
           .map(
             ([key, r]) =>
-              `<a class="side__link" href="#/${key}" data-route="${key}">${icon(r.icon)}<span>${r.title}</span>${key === 'mensagens' ? '<b class="badge" data-unread hidden></b>' : ''}</a>`,
+              `<a class="side__link" href="#/${key}" data-route="${key}" aria-label="${r.title}">${icon(r.icon)}<span class="side__label">${r.title}</span><span class="side__short" aria-hidden="true">${r.short}</span>${
+                key === 'mensagens' ? '<b class="badge" data-unread hidden></b>' : ''
+              }</a>`,
           )
           .join('')}
       </nav>
@@ -1114,7 +1119,7 @@ async function renderHome(body) {
             : `<img src="${esc(bigOf(h))}" alt="">`
         }</div>
         <div class="fields">
-          <p class="muted">É a foto (ou o vídeo) que fica de fundo no topo do site, atrás do título "Construímos com rigor". Funciona melhor uma foto na horizontal, com boa luz. Para trocar, abra uma obra em <a href="#/obras">Fotos e vídeos</a> e toque em <b>Usar no topo do site</b>.</p>
+          <p class="muted">É a foto (ou o vídeo) que fica de fundo no topo do site, atrás do título "Construímos com rigor". Funciona melhor uma foto na horizontal, com boa luz. Para trocar, abra uma obra em <a href="#/obras">Fotos e vídeos</a> e toque em <b>Usar no topo do site</b>. O título e o texto do topo mudam-se em <a href="#/textos">Textos do site</a>.</p>
           ${warn ? `<p class="muted"><i class="warn">${esc(warn)} Para o topo, prefira uma foto na horizontal com pelo menos 1600 px.</i></p>` : ''}
           <label class="field"><span class="field__label">Legenda</span><input name="hpt" value="${esc(t.pt)}" maxlength="120"><span class="muted">Aparece no canto do topo, ao lado de "Em obra".</span></label>
           <details class="tr"><summary>Traduções (opcional)</summary>
@@ -1165,6 +1170,210 @@ async function renderHome(body) {
     try {
       await saveContent('A foto original voltou ao topo.');
       renderHome(body);
+    } catch (err) {
+      toast(errorText(err), 'error');
+    }
+  });
+}
+
+// ---------- Textos do site ----------
+
+const LANGS = ['pt', 'es', 'en', 'fr'];
+const LANG_NAMES = { es: 'Espanhol', en: 'Inglês', fr: 'Francês' };
+// No site, o que estiver entre *asteriscos* num título fica em dourado
+const titlePreview = (s) => esc(s).replace(/\*([^*]*)\*?/g, '<mark>$1</mark>');
+
+async function renderTexts(body) {
+  state.texts = state.texts || (await api('/texts'));
+  const { sections, defaults } = state.texts;
+  const saved = state.content.texts || {};
+  const value = (l, path) => saved[l]?.[path] ?? defaults[l][path];
+  let roles = structuredClone(state.content.roles || state.texts.roles);
+  const open = state.textsOpen || new Set();
+
+  const input = (f, l) => {
+    const name = `${l}|${f.path}`;
+    const v = esc(value(l, f.path));
+    return f.type === 'text' || f.type === 'lines'
+      ? `<textarea name="${name}" rows="${f.type === 'lines' ? 5 : 3}" maxlength="${f.max}">${v}</textarea>`
+      : `<input name="${name}" value="${v}" maxlength="${f.max}">`;
+  };
+  const fieldHtml = (f) => `
+    <div class="tfield" data-path="${esc(f.path)}">
+      <label class="field"><span class="field__label">${esc(f.label)}</span>${input(f, 'pt')}${
+        f.type === 'title' ? `<span class="tprev" data-prev>${titlePreview(value('pt', f.path))}</span>` : ''
+      }${f.hint ? `<span class="muted">${esc(f.hint)}</span>` : ''}</label>
+      <details class="tr"><summary>Espanhol, inglês e francês</summary>
+        <p class="tr__note">O texto em português mudou: confira também as traduções.</p>
+        ${['es', 'en', 'fr'].map((l) => `<label class="field"><span class="field__label">${LANG_NAMES[l]}</span>${input(f, l)}</label>`).join('')}
+      </details>
+      <button class="restore" type="button" data-restore>${icon('rotate')}Voltar ao texto original</button>
+    </div>`;
+  const roleHtml = (r, i) => `
+    <div class="role-ed" data-role="${i}">
+      <div class="role-ed__head"><b>${String(i + 1).padStart(2, '0')}</b><span>${esc(r.title.pt || 'Nova função')}</span>
+        <button class="ib" type="button" data-move="-1" ${i === 0 ? 'disabled' : ''} aria-label="Subir">${icon('up')}</button>
+        <button class="ib" type="button" data-move="1" ${i === roles.length - 1 ? 'disabled' : ''} aria-label="Descer">${icon('down')}</button>
+        <button class="ib" type="button" data-remove-role ${roles.length <= 1 ? 'disabled' : ''} aria-label="Tirar a função">${icon('trash')}</button>
+      </div>
+      <label class="field"><span class="field__label">Nome</span><input name="rt|pt|${i}" value="${esc(r.title.pt)}" maxlength="60"></label>
+      <label class="field"><span class="field__label">Descrição</span><textarea name="rx|pt|${i}" rows="2" maxlength="240">${esc(r.text.pt)}</textarea></label>
+      <details class="tr"><summary>Espanhol, inglês e francês</summary>
+        <p class="muted">Se ficar vazio, aparece o texto em português.</p>
+        ${['es', 'en', 'fr']
+          .map(
+            (l) => `<label class="field"><span class="field__label">Nome · ${LANG_NAMES[l]}</span><input name="rt|${l}|${i}" value="${esc(r.title[l])}" maxlength="60"></label>
+        <label class="field"><span class="field__label">Descrição · ${LANG_NAMES[l]}</span><textarea name="rx|${l}|${i}" rows="2" maxlength="240">${esc(r.text[l])}</textarea></label>`,
+          )
+          .join('')}
+      </details>
+    </div>`;
+  const rolesHtml = () => `
+    <div class="roles-ed">
+      <h3 class="roles-ed__title">Funções</h3>
+      <p class="muted">Quem se candidata escolhe numa lista com estes nomes. Ao acrescentar ou tirar funções, reveja também o texto da faixa de recrutamento, que cita algumas delas.</p>
+      <div class="roles-ed__list" data-roles>${roles.map(roleHtml).join('')}</div>
+      <button class="btn btn--ghost" type="button" data-add-role ${roles.length >= 16 ? 'disabled' : ''}>+ Acrescentar função</button>
+    </div>`;
+
+  body.innerHTML = `
+  <form class="stack" data-form novalidate>
+    <p class="muted texts-intro">Toque numa parte do site para mudar os textos. O site está em português, espanhol, inglês e francês: em cada texto, abra <b>Espanhol, inglês e francês</b> para mudar as outras línguas; o que não mudar continua como está. Nos títulos, o que ficar entre *asteriscos* aparece em dourado.</p>
+    ${sections
+      .map(
+        (sec) => `
+    <details class="card tsec" data-sec="${sec.id}"${open.has(sec.id) ? ' open' : ''}>
+      <summary><h2>${esc(sec.title)}</h2><span class="tsec__count" data-count></span>${icon('down', 'tsec__chev')}</summary>
+      <div class="tsec__body">
+        ${sec.hint ? `<p class="muted">${esc(sec.hint)}</p>` : ''}
+        ${sec.fields.map(fieldHtml).join('')}
+        ${sec.id === 'careers' ? rolesHtml() : ''}
+        ${sec.link ? `<a class="tsec__link" href="${esc(sec.link)}" target="_blank" rel="noopener">${icon('out')}Ver no site</a>` : ''}
+      </div>
+    </details>`,
+      )
+      .join('')}
+    <div class="savebar"><button class="btn btn--amber" type="submit">Salvar alterações</button></div>
+  </form>`;
+
+  const form = $('[data-form]', body);
+  const el = (l, path) => form.elements[`${l}|${path}`];
+  const initialPt = new Map($$('[data-path]', form).map((w) => [w.dataset.path, el('pt', w.dataset.path).value]));
+
+  // Marca os textos diferentes dos originais e conta-os em cada parte
+  const refresh = (wrap) => {
+    const path = wrap.dataset.path;
+    wrap.classList.toggle('is-custom', LANGS.some((l) => el(l, path).value.trim() !== defaults[l][path]));
+  };
+  const count = () => {
+    for (const sec of $$('[data-sec]', form)) {
+      const n = $$('.tfield.is-custom', sec).length;
+      $('[data-count]', sec).textContent = n ? `${n} ${n === 1 ? 'alterado' : 'alterados'}` : '';
+    }
+  };
+  $$('[data-path]', form).forEach(refresh);
+  count();
+
+  form.addEventListener('toggle', (e) => {
+    const sec = e.target.closest?.('[data-sec]');
+    if (sec === e.target) {
+      if (sec.open) open.add(sec.dataset.sec);
+      else open.delete(sec.dataset.sec);
+      state.textsOpen = open;
+    }
+  }, true);
+
+  form.addEventListener('input', (e) => {
+    const wrap = e.target.closest('[data-path]');
+    if (wrap) {
+      const path = wrap.dataset.path;
+      if (e.target.name === `pt|${path}`) {
+        const prev = $('[data-prev]', wrap);
+        if (prev) prev.innerHTML = titlePreview(e.target.value);
+        // Mudou o português: abre as traduções para lembrar de as rever
+        const changed = e.target.value.trim() !== initialPt.get(path).trim();
+        if (changed && !wrap.classList.contains('is-pt-changed')) $('details', wrap).open = true;
+        wrap.classList.toggle('is-pt-changed', changed);
+      }
+      refresh(wrap);
+      count();
+    }
+    const role = e.target.closest('[data-role]');
+    if (role && e.target.name.startsWith('rt|pt|')) $('.role-ed__head span', role).textContent = e.target.value.trim() || 'Nova função';
+  });
+
+  // Funções: lê o que está escrito antes de mexer na lista e redesenha só a lista
+  const collectRoles = () => {
+    roles = $$('[data-role]', form).map((r) => {
+      const i = r.dataset.role;
+      const get = (k, l) => form.elements[`${k}|${l}|${i}`].value.trim();
+      return { id: roles[i].id, title: Object.fromEntries(LANGS.map((l) => [l, get('rt', l)])), text: Object.fromEntries(LANGS.map((l) => [l, get('rx', l)])) };
+    });
+  };
+  const drawRoles = (focus) => {
+    $('[data-roles]', form).innerHTML = roles.map(roleHtml).join('');
+    $('[data-add-role]', form).disabled = roles.length >= 16;
+    if (focus != null) form.elements[`rt|pt|${focus}`]?.focus();
+  };
+
+  form.addEventListener('click', (e) => {
+    const restore = e.target.closest('[data-restore]');
+    if (restore) {
+      const wrap = restore.closest('[data-path]');
+      const path = wrap.dataset.path;
+      for (const l of LANGS) el(l, path).value = defaults[l][path];
+      const prev = $('[data-prev]', wrap);
+      if (prev) prev.innerHTML = titlePreview(defaults.pt[path]);
+      wrap.classList.remove('is-pt-changed');
+      refresh(wrap);
+      count();
+      return;
+    }
+    const role = e.target.closest('[data-role]');
+    if (e.target.closest('[data-add-role]')) {
+      collectRoles();
+      roles.push({ id: '', title: { pt: '', es: '', en: '', fr: '' }, text: { pt: '', es: '', en: '', fr: '' } });
+      drawRoles(roles.length - 1);
+    } else if (role && e.target.closest('[data-move]')) {
+      collectRoles();
+      const i = Number(role.dataset.role);
+      const j = i + Number(e.target.closest('[data-move]').dataset.move);
+      [roles[i], roles[j]] = [roles[j], roles[i]];
+      drawRoles();
+    } else if (role && e.target.closest('[data-remove-role]')) {
+      collectRoles();
+      const i = Number(role.dataset.role);
+      if (!confirm(`Tirar a função "${roles[i].title.pt || 'Nova função'}" da página de carreiras?`)) return;
+      roles.splice(i, 1);
+      drawRoles();
+    }
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    collectRoles();
+    const unnamed = roles.findIndex((r) => !r.title.pt);
+    if (unnamed >= 0) {
+      $('[data-sec="careers"]', form).open = true;
+      form.elements[`rt|pt|${unnamed}`].focus();
+      toast('Dê um nome em português a cada função.', 'error');
+      return;
+    }
+    const texts = {};
+    for (const l of LANGS) {
+      const o = {};
+      for (const sec of sections)
+        for (const f of sec.fields) {
+          const v = el(l, f.path).value.trim();
+          if (v && v !== defaults[l][f.path]) o[f.path] = v;
+        }
+      if (Object.keys(o).length) texts[l] = o;
+    }
+    state.content.texts = texts;
+    state.content.roles = roles;
+    try {
+      await saveContent('Textos publicados no site.');
+      renderTexts(body);
     } catch (err) {
       toast(errorText(err), 'error');
     }
@@ -1311,6 +1520,7 @@ const ROLES = {
   outro: 'Outra função',
 };
 const EXPERIENCE = { none: 'Sem experiência', lt2: 'Menos de 2 anos', '2to5': '2 a 5 anos', gt5: 'Mais de 5 anos' };
+const roleName = (id) => state.content?.roles?.find((r) => r.id === id)?.title.pt || ROLES[id] || id;
 
 function messageFields(m) {
   const d = m.data;
@@ -1330,7 +1540,7 @@ function messageFields(m) {
     ['Telefone / WhatsApp', d.phone],
     ['E-mail', d.email],
     ['Onde vive', d.location],
-    ['Função', d.role === 'outro' ? `Outra: ${d.roleOther || '—'}` : ROLES[d.role] || d.role],
+    ['Função', d.role === 'outro' ? `Outra: ${d.roleOther || '—'}` : roleName(d.role)],
     ['Experiência', EXPERIENCE[d.experience] || d.experience],
     ['Pode trabalhar em', (d.where || []).map(regionName).join(', ')],
     ['Idioma do site', LANG[d.lang] || d.lang],
@@ -1363,7 +1573,7 @@ async function renderInbox(body) {
             <span class="msg__kind">${esc(
               (m.kind === 'quote'
                 ? ['Orçamento', QUOTE_TYPES[m.data.type] || m.data.type]
-                : ['Candidatura', m.data.role === 'outro' ? m.data.roleOther || 'Outra função' : ROLES[m.data.role] || m.data.role]
+                : ['Candidatura', m.data.role === 'outro' ? m.data.roleOther || 'Outra função' : roleName(m.data.role)]
               )
                 .filter(Boolean)
                 .join(' · '),

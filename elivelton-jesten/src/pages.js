@@ -859,7 +859,7 @@ export function careersPage(ctx) {
   <div class="wrap hero__in">
     <div class="hero__content">
       <p class="pill-eyebrow"><i></i>${esc(c.kicker)}</p>
-      <h1 class="hero__title">${words(c.title.join(' '))}</h1>
+      <h1 class="hero__title">${words([].concat(c.title).join(' '))}</h1>
       <p class="hero__lead">${esc(c.lead)}</p>
       <div class="hero__actions"><a class="btn btn--primary btn--lg" href="#candidatura">${esc(f.submit)}${icon('down')}</a></div>
     </div>

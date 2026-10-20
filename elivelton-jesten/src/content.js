@@ -1,5 +1,7 @@
 // Conteúdo que o cliente edita pelo painel: obras (fotos e vídeos), destaque do topo, números,
-// contactos e redes sociais. O que está aqui é o ponto de partida; o painel guarda as alterações no banco.
+// contactos e redes sociais, e os textos alterados (ver texts.js). O que está aqui é o ponto de partida;
+// o painel guarda as alterações no banco.
+import { sanitizeTexts, sanitizeRoles } from './texts.js';
 
 export const LANGS = ['pt', 'es', 'en', 'fr'];
 export const CATEGORIES = ['estrutura', 'obra-nova', 'infraestrutura', 'reabilitacao', 'remodelacao', 'outro'];
@@ -577,6 +579,8 @@ export function mergeContent(saved, updated) {
     company: { ...base.company, ...(s.company || {}) },
     hero: s.hero && (s.hero.img || s.hero.video) ? s.hero : base.hero,
     works: Array.isArray(s.works) ? s.works : base.works,
+    texts: s.texts && typeof s.texts === 'object' ? s.texts : {},
+    roles: Array.isArray(s.roles) && s.roles.length ? s.roles : null,
     updated: updated || 0,
   };
   out.works = out.works.map((w) => ({ visible: true, place: '', date: '', status: '', focus: '', category: 'estrutura', group: '', ...w }));
@@ -704,6 +708,8 @@ export function sanitizeContent(c) {
         };
       })
       .filter(Boolean),
+    texts: sanitizeTexts(c?.texts),
+    roles: sanitizeRoles(c?.roles),
   };
 }
 

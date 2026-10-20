@@ -354,6 +354,7 @@ details.tr summary {
 
 details.tr[open] {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
 }
 
@@ -1784,6 +1785,203 @@ details.tr[open] {
   }
 }
 
+/* Nome curto das abas: só na barra de baixo do celular */
+.side__short {
+  display: none;
+}
+
+/* ---------- Textos do site ---------- */
+
+.texts-intro {
+  max-width: 62em;
+}
+
+/* Cada parte do site é um cartão que abre e fecha */
+.card.tsec {
+  padding: 0;
+}
+
+.tsec > summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px clamp(16px, 2vw, 26px);
+  list-style: none;
+  cursor: pointer;
+}
+
+.tsec > summary::-webkit-details-marker {
+  display: none;
+}
+
+.tsec > summary h2 {
+  flex: 1;
+  font: 700 1.05rem/1.3 var(--display);
+  letter-spacing: -0.01em;
+}
+
+.tsec__count {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--amber-soft);
+  color: var(--amber-ink);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tsec__count:empty {
+  display: none;
+}
+
+.tsec__chev {
+  color: var(--mute);
+  transition: transform 0.2s;
+}
+
+.tsec[open] .tsec__chev {
+  transform: rotate(180deg);
+}
+
+.card.tsec > .tsec__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+  margin-top: 0;
+  padding: 0 clamp(16px, 2vw, 26px) 22px;
+}
+
+.tfield {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+/* Prévia do título: o que está entre asteriscos fica em dourado, como no site */
+.tprev {
+  font: 700 1.1rem/1.35 var(--display);
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.tprev mark {
+  background: none;
+  color: var(--amber-ink);
+}
+
+.tr__note {
+  display: none;
+  color: var(--amber-ink);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.tfield.is-pt-changed .tr__note {
+  display: block;
+}
+
+.restore {
+  display: none;
+  justify-self: start;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--mute);
+  font: inherit;
+  font-size: 0.88rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.restore .i {
+  width: 15px;
+  height: 15px;
+}
+
+.restore:hover {
+  color: var(--ink);
+}
+
+.tfield.is-custom .restore {
+  display: inline-flex;
+}
+
+.tsec__link {
+  display: inline-flex;
+  justify-self: start;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.tsec__link .i {
+  width: 16px;
+  height: 16px;
+}
+
+.roles-ed {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.roles-ed__title {
+  font: 700 1rem/1.3 var(--display);
+}
+
+.roles-ed__list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+.roles-ed > .btn {
+  justify-self: start;
+}
+
+.role-ed {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+}
+
+.role-ed__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.role-ed__head b {
+  color: var(--amber-ink);
+  font: 700 0.9rem/1 var(--display);
+}
+
+.role-ed__head span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.role-ed details.tr {
+  background: var(--white);
+}
+
 /* ---------- Ecrãs menores ---------- */
 
 @media (max-width: 1100px) {
@@ -1838,6 +2036,14 @@ details.tr[open] {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .side__link .side__label {
+    display: none;
+  }
+
+  .side__link .side__short {
+    display: block;
   }
 
   .side__link[aria-current] {

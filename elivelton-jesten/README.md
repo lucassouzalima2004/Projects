@@ -53,6 +53,12 @@ vetor a partir do PNG do cliente.
   reordenar, apagar, e "usar no topo do site". A primeira da lista fica em destaque. Tudo publica na hora.
 - **Página inicial**: foto do topo (qualquer foto ou vídeo da galeria pode ir para o topo) e a sua legenda, os 4
   números e a faixa de recrutamento.
+- **Textos do site**: os textos de cada parte do site (topo, serviços, empresa, obras, como trabalhamos, faixa de
+  recrutamento, orçamento, carreiras, rodapé e como o site aparece no Google), em português e com as traduções em
+  espanhol, inglês e francês ao lado. Mudou o português, o painel abre as traduções para lembrar de as rever; o que
+  não mudar continua como está. Cada texto tem "Voltar ao texto original". Nos títulos, a parte entre *asteriscos*
+  fica em dourado (o painel mostra a prévia). Nas carreiras, as funções podem ser trocadas, acrescentadas, tiradas e
+  reordenadas; uma função nova sem tradução aparece em português nas outras línguas.
 - **Contatos e redes**: e-mail geral, e-mail de orçamentos e telefones de cada país, WhatsApp, Instagram, **Facebook**,
   **LinkedIn**, morada, NIF, alvará. Os telefones de Portugal e de Espanha ficam sempre em grupos de 3 (+34 642 299 685),
   como o cliente pediu, mesmo que sejam escritos de outra forma.
@@ -72,6 +78,7 @@ elivelton-jesten/
 │   ├── pages.js            HTML das páginas
 │   ├── i18n.js             todos os textos nas 4 línguas
 │   ├── content.js          conteúdo inicial (obras, números, contactos) e limpeza do que vem do painel
+│   ├── texts.js            textos que o painel deixa mudar e como as alterações entram por cima dos de i18n.js
 │   ├── store.js            banco: Durable Object com SQLite (visitas, conteúdo, fotos/vídeos, mensagens, sessões)
 │   ├── panel.js            casca HTML do painel
 │   └── icons.js            ícones
@@ -149,8 +156,8 @@ otimizados (baixa os originais do jesten.pt se a pasta `tools/originals/` estive
 ## O que ainda falta confirmar
 
 - [ ] Número do **alvará** de construção (IMPIC), se a empresa tiver: aparece no rodapé.
-- [ ] Revisar com o cliente os textos dos serviços, de "Como trabalhamos" e da página de carreiras (o que a empresa
-      oferece), e os locais das obras nas legendas (só pus local onde a foto ou o vídeo mostravam: Sant Cugat,
-      Barcelona, Catalunha).
+- [ ] Revisar com o cliente os textos dos serviços, de "Como trabalhamos" e da página de carreiras (agora ele mesmo
+      pode mudá-los no painel, em **Textos do site**) e os locais das obras nas legendas (só pus local onde a foto ou
+      o vídeo mostravam: Sant Cugat, Barcelona, Catalunha).
 - [ ] Senha do painel: cadastrar o secret `JESTEN_ADMIN_PASSWORD` antes de mostrar o painel ao cliente.
 - [ ] Mais fotos e vídeos recentes das obras (ele mesmo pode enviar pelo painel).
