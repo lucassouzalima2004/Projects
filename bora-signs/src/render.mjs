@@ -286,7 +286,8 @@ export function layout({ slug, title, description, image, imageSize, body, ld = 
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
-${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${url}">\n<meta name="robots" content="index, follow, max-image-preview:large">`}
+${noindex ? '' : `<link rel="canonical" href="${url}">`}
+<meta name="robots" content="${noindex || site.noindex ? 'noindex' : 'index, follow, max-image-preview:large'}">
 <meta name="theme-color" content="#0d0614">
 ${site.googleSiteVerification ? `<meta name="google-site-verification" content="${esc(site.googleSiteVerification)}">` : ''}
 <meta property="og:type" content="website">

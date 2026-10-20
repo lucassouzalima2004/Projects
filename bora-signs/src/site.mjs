@@ -30,8 +30,9 @@ export default {
     youtube: 'https://www.youtube.com/@BoraSigns',
   },
 
-  // Meta (Facebook/Instagram) pixel. Empty turns it off.
-  metaPixelId: '1070067669184384',
+  // Meta (Facebook/Instagram) pixel of Bora Signs. Empty turns it off.
+  // (1070067669184384 is the Bora Decor pixel, so it stays off this site.)
+  metaPixelId: '',
   // Google Search Console "HTML tag" verification code (only the content="..." value). Empty leaves it out.
   googleSiteVerification: '',
 

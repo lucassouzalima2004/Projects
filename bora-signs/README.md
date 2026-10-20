@@ -17,14 +17,14 @@ com título, descrição e dados estruturados para o Google, e os anúncios pode
 - **Orçamento** (`/contact`), **Trabalhe conosco** (`/join-us`), **todos os serviços** (`/services`) e página 404.
 - Rolagem suave, olho do camaleão que segue o mouse, textos que entram palavra por palavra. Tudo é desligado para quem
   ativou "reduzir movimento" no celular ou no computador.
-- Barra fixa de "Ligar / Orçamento" no celular, Meta Pixel instalado e prévia bonita do link (`og-image.jpg`).
+- Barra fixa de "Ligar / Orçamento" no celular e prévia bonita do link (`og-image.jpg`).
 
 ## Como editar
 
 | O quê | Onde |
 | --- | --- |
 | Telefone, e-mail, endereço, ABN, redes sociais | `src/site.mjs` |
-| Meta Pixel | `metaPixelId` em `src/site.mjs` (vazio desliga) |
+| Meta Pixel | `metaPixelId` em `src/site.mjs` (hoje vazio: o pixel `1070067669184384` é do Bora Decor) |
 | Para onde vão os formulários | `form` em `src/site.mjs` (veja abaixo) |
 | Preços da van ($500 → $7.000) e nomes dos pacotes | `wrapEstimate` em `src/site.mjs` |
 | Números da home (15+ anos etc.) e logos de clientes | `stats` e `clients` em `src/site.mjs` |
@@ -62,26 +62,33 @@ form: {
 ```
 
 (Formspree também funciona: `endpoint: 'https://formspree.io/f/xxxx'` e `fields: {}`.)
-Cada envio conta como **Lead** no Meta Pixel; cliques em telefone e e-mail contam como **Contact**.
+Quando houver um pixel da Bora Signs em `metaPixelId`, cada envio conta como **Lead** e cliques em telefone e e-mail
+contam como **Contact**.
 
 ## Publicar
 
-O workflow `.github/workflows/deploy-bora-signs.yml` monta o site e publica no Cloudflare Pages (projeto `bora-signs`)
-a cada push que mexe em `bora-signs/`. Usa os mesmos secrets do site da manicure (`CLOUDFLARE_API_TOKEN` e
-`CLOUDFLARE_ACCOUNT_ID`). Push na `main` vai para produção; nas outras branches vira uma prévia, e o endereço aparece no
-resumo da execução em **Actions**.
+O workflow `.github/workflows/deploy-bora-signs.yml` monta o site e publica no Cloudflare como **Worker** com arquivos
+estáticos (a conta já chegou ao limite de projetos do Pages, como nos outros sites do repositório), sempre no mesmo link:
+`https://bora-signs.<subdomínio da conta>.workers.dev`. O endereço exato aparece no resumo da execução em **Actions**.
+Usa o secret `CLOUDFLARE_API_TOKEN` (e `CLOUDFLARE_ACCOUNT_ID`, se existir).
+
+Enquanto o site não estiver no domínio, o link fica fora do Google (`noindex`), para não competir com o site atual no Wix.
+Quando `www.borasigns.com.au` apontar para o Worker, crie a variável `BORASIGNS_SITE_URL` = `https://www.borasigns.com.au`
+em **Settings → Secrets and variables → Actions → Variables** e rode o workflow de novo: o site passa a ser indexado,
+com o domínio no canonical, no sitemap e na prévia do link.
 
 ### Domínio e e-mails (hoje no Wix)
 
-O domínio e os e-mails (Google Workspace) continuam onde estão: só o site muda de lugar.
+Os e-mails (Google Workspace) continuam no Google: só o site muda de lugar. Um Worker só atende um domínio cujo DNS
+esteja no Cloudflare, então:
 
-1. No Cloudflare: **Workers & Pages → bora-signs → Custom domains → Set up a domain** → `www.borasigns.com.au`.
-2. No Wix: **Domains → borasigns.com.au → Manage DNS records**, e crie/edite o **CNAME** de `www` apontando para
-   `bora-signs.pages.dev` (o endereço exato aparece no Cloudflare).
-3. **Não mexa nos registros MX, TXT (SPF/DKIM) e CNAME do Google**: são eles que mantêm os e-mails funcionando.
-4. Para quem digitar `borasigns.com.au` sem `www`, ligue o redirecionamento para `https://www.borasigns.com.au` no Wix
-   (ou, se um dia o DNS for para o Cloudflare, uma regra de redirecionamento lá; antes de trocar os nameservers,
-   copie todos os registros MX e TXT do Google).
+1. No Cloudflare: **Add a domain** → `borasigns.com.au`. Ele importa os registros atuais; **confira que os MX, TXT
+   (SPF/DKIM/DMARC) e CNAME do Google vieram todos**, iguais aos do Wix. São eles que mantêm os e-mails funcionando.
+2. No Wix: trocar os nameservers do domínio pelos dois que o Cloudflare mostrar. Se o Wix não deixar trocar
+   (domínio comprado nele), transferir o registro do domínio para fora do Wix (precisa do código de transferência e da ABN).
+3. Com o domínio ativo no Cloudflare: **Workers & Pages → bora-signs → Settings → Domains & Routes → Add → Custom domain**
+   → `www.borasigns.com.au` (e `borasigns.com.au`, ou uma regra redirecionando o domínio sem `www` para o `www`).
+4. Criar a variável `BORASIGNS_SITE_URL` (veja acima) e rodar o workflow.
 
 O endereço oficial do site é `https://www.borasigns.com.au` (o mesmo do Wix). Se mudar, troque `url` em `src/site.mjs`.
 
@@ -109,7 +116,7 @@ envie `https://www.borasigns.com.au/sitemap.xml` e, se pedirem verificação por
 - [ ] Depoimentos: vieram do Wix. Confirmar que são de clientes reais (os sem nome aparecem como "Bora Signs client").
 - [ ] Horário de atendimento (o Wix não tinha; dá para incluir no `site.mjs` e nos dados do Google).
 - [ ] Formulário: configurar o Web3Forms (ou manter o envio por e-mail).
-- [ ] Meta Pixel `1070067669184384`: confirmar que é o pixel da Bora Signs.
+- [ ] Meta Pixel da Bora Signs (se houver): colocar em `metaPixelId`. O `1070067669184384` é do Bora Decor.
 - [ ] Endereço do Bora Decor, se quiser um link da página `/decor` para o site da Decor.
 
 ## Estrutura

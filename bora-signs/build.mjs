@@ -10,6 +10,11 @@ import site from './src/site.mjs';
 import { services } from './src/content.mjs';
 import { layout, home, service, servicesPage, contactPage, joinPage, notFound } from './src/render.mjs';
 
+// Previews (the workers.dev link) put their own address in canonical links and link previews, and stay out of Google:
+//   SITE_URL=https://bora-signs.example.workers.dev NOINDEX=1 node build.mjs
+if (process.env.SITE_URL) site.url = process.env.SITE_URL.replace(/\/+$/, '');
+site.noindex = process.env.NOINDEX === '1';
+
 const root = dirname(fileURLToPath(import.meta.url));
 const pub = join(root, 'public');
 const out = join(root, 'dist');
@@ -50,7 +55,7 @@ ${listed.map((p) => `  <url><loc>${site.url}${p.slug === 'index' ? '/' : `/${p.s
 `,
 );
 
-writeFileSync(join(out, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${site.url}/sitemap.xml\n`);
+writeFileSync(join(out, 'robots.txt'), `User-agent: *\n${site.noindex ? 'Disallow: /' : 'Allow: /'}\n\nSitemap: ${site.url}/sitemap.xml\n`);
 
 writeFileSync(join(out, '_redirects'), Object.entries(redirects).map(([from, to]) => `${from} ${to} 301`).join('\n') + '\n');
 

@@ -1,11 +1,16 @@
-# Publica o site da Bora Signs no Cloudflare Pages (projeto "bora-signs").
+# Publica o site da Bora Signs no Cloudflare, sempre no mesmo link:
+#   https://bora-signs.<subdomínio da conta>.workers.dev  (o endereço exato aparece no resumo da execução)
 #
-# Usa os mesmos secrets do site da manicure (Settings → Secrets and variables → Actions):
-#   CLOUDFLARE_API_TOKEN   token do Cloudflare com a permissão "Account · Cloudflare Pages · Edit"
-#   CLOUDFLARE_ACCOUNT_ID  ID da conta do Cloudflare
-# Push na main publica em produção; push em outra branch publica uma prévia com endereço próprio.
-# Enquanto os secrets não existirem, o workflow só avisa e não falha.
-name: Deploy Bora Signs (Cloudflare Pages)
+# Vai como Worker com arquivos estáticos (como a Punto Pizza e a Giselle), porque a conta já chegou ao limite de
+# projetos do Cloudflare Pages. Usa os mesmos secrets dos outros sites (Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN   token do Cloudflare que pode publicar Workers (obrigatório)
+#   CLOUDFLARE_ACCOUNT_ID  ID da conta (opcional: sem ele, o workflow descobre a conta pelo token)
+#
+# Enquanto o site não estiver no domínio, a prévia fica fora do Google (noindex) e usa o próprio link no canonical e na
+# prévia do WhatsApp. Quando www.borasigns.com.au apontar para este Worker, crie a variável BORASIGNS_SITE_URL com
+# https://www.borasigns.com.au (Settings → Secrets and variables → Actions → Variables): o site passa a ser indexado.
+# Enquanto o token não existir, o workflow só avisa e não falha.
+name: Deploy Bora Signs (Cloudflare)
 
 on:
   push:
@@ -19,11 +24,11 @@ permissions:
   contents: read
 
 concurrency:
-  group: bora-signs-${{ github.ref }}
+  group: bora-signs-deploy
   cancel-in-progress: false
 
 env:
-  PROJECT: bora-signs
+  WORKER: bora-signs
 
 jobs:
   check:
@@ -31,17 +36,16 @@ jobs:
     outputs:
       ready: ${{ steps.creds.outputs.ready }}
     steps:
-      - name: Conferir os secrets do Cloudflare
+      - name: Conferir o token do Cloudflare
         id: creds
         env:
           TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          if [ -n "$TOKEN" ] && [ -n "$ACCOUNT" ]; then
+          if [ -n "$TOKEN" ]; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::warning title=Cloudflare sem credenciais::Adicione CLOUDFLARE_API_TOKEN e CLOUDFLARE_ACCOUNT_ID em Settings → Secrets and variables → Actions e rode este workflow de novo (Actions → Deploy Bora Signs → Run workflow)."
+            echo "::warning title=Cloudflare sem credenciais::Falta o secret CLOUDFLARE_API_TOKEN. Cadastre em Settings → Secrets and variables → Actions e rode de novo."
           fi
 
   deploy:
@@ -50,7 +54,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ACCOUNT_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID }}
+      LIVE_URL: ${{ vars.BORASIGNS_SITE_URL }}
     steps:
       - uses: actions/checkout@v4
 
@@ -58,28 +63,81 @@ jobs:
         with:
           node-version: 22
 
-      - name: Montar o site
-        run: node bora-signs/build.mjs
-
-      - name: Instalar o wrangler
-        run: npm install --no-save --no-audit --no-fund --include=optional wrangler@4
-
-      - name: Criar o projeto no Cloudflare Pages (só na primeira vez)
+      - name: Conta do Cloudflare
         run: |
-          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects"
+          id="$ACCOUNT_SECRET"
+          if [ -z "$id" ]; then
+            # Sem o secret, descobre a conta pelo próprio token
+            auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+            id=$(curl -sS -H "$auth" "https://api.cloudflare.com/client/v4/accounts?per_page=50" | jq -r '.result[]?.id')
+            if [ -z "$id" ]; then
+              id=$(curl -sS -H "$auth" "https://api.cloudflare.com/client/v4/memberships?per_page=50" | jq -r '.result[]?.account.id')
+            fi
+            count=$(printf '%s\n' "$id" | grep -c . || true)
+            if [ "$count" != "1" ]; then
+              echo "::error title=Conta do Cloudflare::O token dá acesso a $count contas. Cadastre o secret CLOUDFLARE_ACCOUNT_ID com o ID da conta certa."
+              exit 1
+            fi
+            echo "::add-mask::$id"
+          fi
+          echo "CLOUDFLARE_ACCOUNT_ID=$id" >> "$GITHUB_ENV"
+
+      - name: Endereço da prévia e conferência do nome
+        run: |
+          acc="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID"
           auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
-          if ! curl -fsS -o /dev/null -H "$auth" "$api/$PROJECT"; then
-            curl -sS --fail-with-body -X POST -H "$auth" -H "Content-Type: application/json" \
-              --data "{\"name\":\"$PROJECT\",\"production_branch\":\"${{ github.event.repository.default_branch }}\"}" "$api"
+          sub=$(curl -sS -H "$auth" "$acc/workers/subdomain" | jq -r '.result.subdomain // empty')
+          if [ -z "$sub" ]; then
+            echo "::error title=workers.dev::A conta não tem subdomínio workers.dev. Crie em Cloudflare → Workers & Pages → Subdomain e rode de novo."
+            exit 1
+          fi
+          url="https://$WORKER.$sub.workers.dev"
+          echo "PREVIEW_URL=$url" >> "$GITHUB_ENV"
+          # Não sobrescreve um Worker com o mesmo nome que não seja este site
+          if curl -sS -H "$auth" "$acc/workers/scripts/$WORKER/settings" | jq -e '.success' > /dev/null; then
+            if curl -fsS --max-time 20 "$url/" | grep -q "Bora Signs"; then
+              echo "O Worker $WORKER já é este site: vai ser atualizado."
+            else
+              echo "::error title=Nome em uso::Já existe um Worker chamado $WORKER nesta conta que não é este site. Troque WORKER no topo deste workflow."
+              exit 1
+            fi
+          else
+            echo "Primeira publicação: o Worker $WORKER vai ser criado."
           fi
 
-      - name: Publicar
+      - name: Montar o site
         run: |
-          npx wrangler pages deploy bora-signs/dist --project-name="$PROJECT" --branch="${{ github.ref_name }}" --commit-dirty=true | tee deploy.log
-
-      - name: Endereço do site
-        run: |
+          if [ -n "$LIVE_URL" ]; then
+            SITE_URL="$LIVE_URL" node bora-signs/build.mjs
+          else
+            SITE_URL="$PREVIEW_URL" NOINDEX=1 node bora-signs/build.mjs
+          fi
+          cat > wrangler.jsonc <<EOF
           {
-            echo "### Bora Signs publicado"
-            grep -oE 'https://[a-z0-9.-]+\.pages\.dev' deploy.log | sort -u | sed 's/^/- /'
-          } >> "$GITHUB_STEP_SUMMARY"
+            "name": "$WORKER",
+            "compatibility_date": "2025-10-01",
+            "workers_dev": true,
+            "preview_urls": false,
+            "assets": {
+              "directory": "./bora-signs/dist",
+              "not_found_handling": "404-page",
+              "html_handling": "auto-trailing-slash"
+            }
+          }
+          EOF
+
+      - name: Publicar
+        run: npx --yes wrangler@4 deploy --config wrangler.jsonc
+
+      - name: Conferir o site no ar
+        run: |
+          for i in 1 2 3 4 5 6; do
+            if curl -fsS --max-time 20 "$PREVIEW_URL/vehicle-signage" | grep -q "Drag to"; then
+              echo "Site no ar: $PREVIEW_URL"
+              echo "### Bora Signs no ar: $PREVIEW_URL" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::warning title=Site ainda carregando::A publicação terminou, mas $PREVIEW_URL ainda não respondeu. Abra de novo em alguns minutos."
+          echo "### Publicado em: $PREVIEW_URL (ainda carregando)" >> "$GITHUB_STEP_SUMMARY"
