@@ -1,5 +1,5 @@
-/* Comportamento do site: rolagem suave, animações, vídeo do topo, antes/depois, perguntas,
-   pedido de orçamento pelo WhatsApp e o camaleão que olha para o cursor. */
+/* Comportamento do site: rolagem suave, animações, vídeo do topo, projetos (antes/depois), perguntas,
+   pedido de orçamento por e-mail (com fotos) e o camaleão que olha para o cursor. */
 (function () {
   'use strict';
 
@@ -14,13 +14,9 @@
   if (!hasGsap) doc.classList.add('no-gsap');
   if (hasGsap) gsap.registerPlugin(ScrollTrigger);
 
-  const WA = cfg.whatsapp || '61482530280';
-  const waLink = text => `https://wa.me/${WA}${text ? `?text=${encodeURIComponent(text)}` : ''}`;
-
   // ---------- Contatos vindos do config.js ----------
   $$('[data-tel]').forEach(a => { if (cfg.phoneIntl) a.href = `tel:${cfg.phoneIntl}`; });
   $$('[data-mail]').forEach(a => { if (cfg.email) a.href = `mailto:${cfg.email}`; });
-  $$('[data-wa]').forEach(a => { a.href = waLink("Hi Bora Decor! I'd like a quote to wrap my kitchen."); a.target = '_blank'; a.rel = 'noopener'; });
   $$('[data-year]').forEach(n => { n.textContent = new Date().getFullYear(); });
   const social = $('[data-social]');
   if (social) {
@@ -38,10 +34,8 @@
     window.fbq('track', 'PageView');
   }
   document.addEventListener('click', e => {
-    const a = e.target.closest('a[href^="tel:"]');
+    const a = e.target.closest('a[href^="tel:"], a[href^="mailto:"]');
     if (a) track('Contact');
-    const w = e.target.closest('a[href*="wa.me"]');
-    if (w) track('Lead', { content_name: 'WhatsApp' });
   });
 
   // ---------- Rolagem suave ----------
@@ -146,7 +140,7 @@
   }
 
   // Link ativo no menu
-  const navLinks = $$('.nav a');
+  const navLinks = $$('.nav a[href^="#"]');
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver(entries => {
       entries.forEach(en => {
@@ -377,6 +371,7 @@
 
   // ---------- Antes e depois ----------
   const ba = $('.ba__frame');
+  let baDemo = null;
   if (ba) {
     const range = $('.ba__range', ba);
     let touched = false, dragging = false;
@@ -396,37 +391,92 @@
     ba.addEventListener('pointercancel', stop);
     ba.style.cursor = 'ew-resize';
 
-    // Mostra sozinho uma vez como funciona
+    // Mostra sozinho como funciona (na primeira vez que aparece e a cada projeto escolhido)
+    baDemo = (delay) => {
+      touched = false;
+      set(50);
+      if (reduce) return;
+      const keys = [[0, 50], [900, 82], [1900, 16], [2700, 50]];
+      let t0;
+      const step = now => {
+        if (touched) return;
+        if (!t0) t0 = now + delay;
+        const t = now - t0;
+        if (t < 0) return requestAnimationFrame(step);
+        let k = 1; while (k < keys.length - 1 && t > keys[k][0]) k++;
+        const [ta, va] = keys[k - 1], [tb, vb] = keys[k];
+        const p = Math.min(1, Math.max(0, (t - ta) / (tb - ta)));
+        const ez = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+        set(va + (vb - va) * ez);
+        if (t < keys[keys.length - 1][0]) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
     if (!reduce && 'IntersectionObserver' in window) {
       const io = new IntersectionObserver(([e]) => {
         if (!e.isIntersecting) return;
         io.disconnect();
-        const keys = [[0, 50], [900, 82], [1900, 16], [2700, 50]];
-        let t0;
-        const step = now => {
-          if (touched) return;
-          if (!t0) t0 = now + 1300;
-          const t = now - t0;
-          if (t < 0) return requestAnimationFrame(step);
-          let k = 1; while (k < keys.length - 1 && t > keys[k][0]) k++;
-          const [ta, va] = keys[k - 1], [tb, vb] = keys[k];
-          const p = Math.min(1, Math.max(0, (t - ta) / (tb - ta)));
-          const ez = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
-          set(va + (vb - va) * ez);
-          if (t < keys[keys.length - 1][0]) requestAnimationFrame(step);
-        };
-        requestAnimationFrame(step);
+        baDemo(1300);
       }, { threshold: .55 });
       io.observe(ba);
     }
   }
 
+  // ---------- Projetos: lista em assets/js/projects.js ----------
+  const projects = (window.BORA_PROJECTS || []).filter(p => p && p.before && p.after);
+  if (ba && projects.length) {
+    const imgB = $('.ba__img--before', ba), imgA = $('.ba__img--after', ba);
+    const caption = $('[data-project-caption]'), text = $('[data-project-text]');
+    const list = $('[data-project-list]'), filters = $('[data-project-filters]');
+    let current = -1;
+    const show = (i, demo) => {
+      const p = projects[i];
+      if (!p || i === current) return;
+      current = i;
+      if (!imgB.src.endsWith(p.before)) imgB.src = p.before;
+      if (!imgA.src.endsWith(p.after)) imgA.src = p.after;
+      imgB.alt = `Before: ${p.title}`;
+      imgA.alt = `After: ${p.title}`;
+      if (caption) caption.textContent = p.illustrative ? 'Illustrative transformation.' : [p.title, p.suburb, p.finish].filter(Boolean).join(' · ');
+      if (text && p.text) text.textContent = p.text;
+      if (list) $$('.project', list).forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.i === i)));
+      if (demo && baDemo) baDemo(250);
+    };
+    show(0, false);
+    if (projects.length > 1 && list) {
+      list.hidden = false;
+      list.innerHTML = projects.map((p, i) => `<li><button type="button" class="project" data-i="${i}" data-cat="${p.category || ''}" aria-pressed="${i === 0}">
+        <img src="${p.after}" alt="" loading="lazy" decoding="async"><span><b>${p.title}</b><small>${[p.category, p.suburb].filter(Boolean).join(' · ')}</small></span></button></li>`).join('');
+      list.addEventListener('click', e => { const b = e.target.closest('.project'); if (b) show(+b.dataset.i, true); });
+      const cats = [...new Set(projects.map(p => p.category).filter(Boolean))];
+      if (cats.length > 1 && filters) {
+        filters.hidden = false;
+        filters.innerHTML = ['All', ...cats].map((c, i) => `<button type="button" class="chip${i ? '' : ' is-active'}" data-cat="${c}" aria-pressed="${!i}">${c}</button>`).join('');
+        filters.addEventListener('click', e => {
+          const b = e.target.closest('[data-cat]');
+          if (!b) return;
+          $$('[data-cat]', filters).forEach(x => { const on = x === b; x.classList.toggle('is-active', on); x.setAttribute('aria-pressed', String(on)); });
+          const cat = b.dataset.cat;
+          let first = -1;
+          $$('.project', list).forEach(x => { const ok = cat === 'All' || x.dataset.cat === cat; x.parentElement.hidden = !ok; if (ok && first < 0) first = +x.dataset.i; });
+          if (first >= 0) show(first, true);
+        });
+      }
+    }
+  }
+
   // ---------- Texturas dos cartões e do mostruário (desenhadas quando chegam perto da tela) ----------
-  const texEls = $$('[data-tex]');
+  const texEls = $$('[data-tex], [data-old]');
   if (texEls.length && window.BoraTextures) {
+    const T = window.BoraTextures;
     const paint = el => {
+      if (el.dataset.old) {
+        $('.swap__old', el).style.backgroundImage = `url(${T.texture(el.dataset.old, 384)})`;
+        $('.swap__new', el).style.backgroundImage = `url(${T.texture(el.dataset.new, 384)})`;
+        return;
+      }
       const tex = $('.family__tex, .tile__tex', el) || el;
-      if (!tex.style.backgroundImage) tex.style.backgroundImage = `url(${window.BoraTextures.texture(el.dataset.tex, 384)})`;
+      if (!tex.style.backgroundImage) tex.style.backgroundImage = `url(${T.texture(el.dataset.tex, 384)})`;
     };
     if ('IntersectionObserver' in window) {
       const io = new IntersectionObserver(entries => entries.forEach(e => {
@@ -435,6 +485,9 @@
       texEls.forEach(el => io.observe(el));
     } else texEls.forEach(paint);
   }
+  // Toque num bloco "antes → depois" mostra o antes (no computador é ao passar o mouse)
+  $$('.swap').forEach(t => t.addEventListener('click', () => { if (!finePointer) t.classList.toggle('is-before'); }));
+
   $$('[data-goto-filter]').forEach(b => b.addEventListener('click', () => {
     document.dispatchEvent(new CustomEvent('bora:filter', { detail: { filter: b.dataset.gotoFilter } }));
     goTo('#studio');
@@ -459,61 +512,212 @@
     });
   });
 
-  // ---------- Pedido de orçamento ----------
-  // A mensagem é montada a partir dos campos com data-label (na ordem em que aparecem no formulário),
-  // entre o data-intro e o data-outro do <form>.
+  // ---------- Pedido de orçamento: vai por e-mail (com as fotos) pelo /api/quote do Worker ----------
+  // Os campos com data-label entram no e-mail, na ordem do formulário.
+  // Se o envio falhar, aparece um plano B: o e-mail já escrito para a pessoa mandar do próprio aplicativo.
   const form = $('[data-quote-form]');
   if (form) {
+    const box = form.parentElement;
     const err = $('.form__error', form);
+    const done = $('[data-form-done]', box), fail = $('[data-form-fail]', box);
+    const submitBtn = $('button[type="submit"]', form), submitLabel = $('[data-submit-label]', form);
+    const submitText = submitLabel.textContent;
     const look = $('[data-look-field]', form);
+    const photoInput = $('[data-photos]', form), thumbs = $('[data-thumbs]', form), drop = $('[data-drop]', form);
+    const MAX_PHOTOS = 6;
+    const EMAIL_RE = /^[^\s@<>()",;:]+@[^\s@<>()",;:]+\.[^\s@<>()",;:]{2,}$/;
+    let photos = [];
+    let sending = false;
+
     document.addEventListener('bora:look', e => { if (look && !look.dataset.edited) look.value = e.detail.text; });
     if (look) look.addEventListener('input', () => { look.dataset.edited = '1'; });
-    const required = $$('[required]', form);
 
-    const compose = () => {
+    // Fotos: diminui no próprio navegador (1600 px, JPEG) para enviar rápido mesmo no 4G
+    const loadImage = file => new Promise((res, rej) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => res({ img, url });
+      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('decode')); };
+      img.src = url;
+    });
+    async function prepPhoto(file) {
+      try {
+        let src, w, h, cleanup = () => {};
+        if (window.createImageBitmap) {
+          src = await createImageBitmap(file, { imageOrientation: 'from-image' });
+          w = src.width; h = src.height; cleanup = () => src.close && src.close();
+        } else {
+          const { img, url } = await loadImage(file);
+          src = img; w = img.naturalWidth; h = img.naturalHeight; cleanup = () => URL.revokeObjectURL(url);
+        }
+        const k = Math.min(1, 1600 / Math.max(w, h));
+        const cv = document.createElement('canvas');
+        cv.width = Math.round(w * k); cv.height = Math.round(h * k);
+        cv.getContext('2d').drawImage(src, 0, 0, cv.width, cv.height);
+        cleanup();
+        const blob = await new Promise(r => cv.toBlob(r, 'image/jpeg', 0.82));
+        if (!blob) throw new Error('encode');
+        return { blob, type: 'image/jpeg', name: `${file.name.replace(/\.[^.]*$/, '') || 'photo'}.jpg` };
+      } catch (e) {
+        // Formato que o navegador não abre (ex.: HEIC no Chrome): manda o arquivo original se não for enorme
+        if (file.size > 6 * 1024 * 1024) throw new Error('too-big');
+        return { blob: file, type: file.type || 'application/octet-stream', name: file.name || 'photo' };
+      }
+    }
+    const toB64 = blob => new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => res(String(r.result).split(',')[1] || '');
+      r.onerror = () => rej(r.error);
+      r.readAsDataURL(blob);
+    });
+
+    function renderThumbs() {
+      thumbs.innerHTML = '';
+      photos.forEach((p, i) => {
+        const li = document.createElement('li');
+        li.className = 'thumb';
+        li.innerHTML = `${p.preview ? `<img src="${p.preview}" alt="">` : '<span class="thumb__file"><svg class="icon"><use href="#i-camera"/></svg></span>'}<button type="button" aria-label="Remove photo ${i + 1}"><svg class="icon"><use href="#i-x"/></svg></button>`;
+        $('button', li).addEventListener('click', () => {
+          if (p.preview) URL.revokeObjectURL(p.preview);
+          photos.splice(i, 1);
+          renderThumbs();
+        });
+        thumbs.appendChild(li);
+      });
+      drop.classList.toggle('is-full', photos.length >= MAX_PHOTOS);
+      $('b', drop).textContent = photos.length ? (photos.length >= MAX_PHOTOS ? '6 photos added' : 'Add more photos') : 'Add photos';
+    }
+    function addFiles(files) {
+      const list = Array.from(files || []).filter(f => /^image\//.test(f.type) || /\.(heic|heif)$/i.test(f.name));
+      for (const file of list) {
+        if (photos.length >= MAX_PHOTOS) break;
+        const preview = /^image\/(jpeg|png|webp|gif)$/.test(file.type) ? URL.createObjectURL(file) : null;
+        const item = { file, preview, prepared: prepPhoto(file) };
+        item.prepared.catch(() => {});
+        photos.push(item);
+      }
+      renderThumbs();
+    }
+    if (photoInput) {
+      photoInput.addEventListener('change', () => { addFiles(photoInput.files); photoInput.value = ''; });
+      ['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('is-over'); }));
+      ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('is-over'); }));
+      drop.addEventListener('drop', e => addFiles(e.dataTransfer && e.dataTransfer.files));
+    }
+
+    const value = n => (form.elements[n] ? form.elements[n].value.trim() : '');
+    const fields = () => {
       const fd = new FormData(form);
-      const seen = new Set();
-      const lines = [form.dataset.intro || 'Hi Bora Decor!', ''];
+      const seen = new Set(), out = [];
       Array.from(form.elements).forEach(el => {
         if (!el.name || seen.has(el.name)) return;
         seen.add(el.name);
         const holder = el.closest('[data-label]');
         if (!holder) return;
         const val = fd.getAll(el.name).map(x => x.toString().trim()).filter(Boolean).join(', ');
-        if (val) lines.push(`${holder.dataset.label}: ${val}`);
+        if (val) out.push([holder.dataset.label, val]);
       });
-      if (form.dataset.outro) lines.push('', form.dataset.outro);
-      return lines.join('\n');
+      return out;
     };
-    const valid = () => {
-      const bad = required.filter(f => !f.value.trim());
-      required.forEach(f => f.classList.toggle('is-invalid', bad.includes(f)));
-      err.hidden = !bad.length;
-      if (bad.length) bad[0].focus();
+    function valid() {
+      const checks = [
+        ['name', v => v.length > 0],
+        ['phone', v => v.replace(/\D/g, '').length >= 8],
+        ['email', v => EMAIL_RE.test(v)],
+        ['suburb', v => v.length > 0]
+      ].filter(([n]) => form.elements[n]);
+      const bad = checks.filter(([n, ok]) => !ok(value(n))).map(([n]) => n);
+      checks.forEach(([n]) => form.elements[n].classList.toggle('is-invalid', bad.includes(n)));
+      if (bad.length) {
+        const names = { name: 'your name', phone: 'a phone number', email: 'a valid email', suburb: 'your suburb' };
+        const list = bad.map(n => names[n]);
+        err.textContent = `Please add ${list.length > 1 ? `${list.slice(0, -1).join(', ')} and ${list[list.length - 1]}` : list[0]}.`;
+        err.hidden = false;
+        form.elements[bad[0]].focus();
+      } else err.hidden = true;
       return !bad.length;
+    }
+    ['name', 'phone', 'email', 'suburb'].forEach(n => form.elements[n] && form.elements[n].addEventListener('input', () => form.elements[n].classList.remove('is-invalid')));
+
+    const post = (payload, onProgress) => new Promise(resolve => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', '/api/quote');
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.timeout = 120000;
+      xhr.upload.onprogress = e => { if (e.lengthComputable) onProgress(e.loaded / e.total); };
+      xhr.onload = () => { let data = {}; try { data = JSON.parse(xhr.responseText); } catch (e) { /* resposta sem JSON */ } resolve({ status: xhr.status, data }); };
+      xhr.onerror = () => resolve({ status: 0, data: {} });
+      xhr.ontimeout = () => resolve({ status: 0, data: { error: 'timeout' } });
+      xhr.send(JSON.stringify(payload));
+    });
+    const busy = (on, text) => {
+      sending = on;
+      submitBtn.disabled = on;
+      submitBtn.classList.toggle('is-loading', on);
+      submitLabel.textContent = on ? text : submitText;
     };
-    form.addEventListener('submit', e => {
+    const showPanel = panel => {
+      form.hidden = true;
+      [done, fail].forEach(p => { if (p) p.hidden = p !== panel; });
+      panel.focus({ preventScroll: true });
+      goTo(box.closest('section') || box);
+    };
+    function mailtoFallback() {
+      const lines = [form.dataset.intro || "Hi Bora Decor! I'd like a free quote.", '', ...fields().map(([k, v]) => `${k}: ${v}`), '', photos.length ? `(I'll attach ${photos.length} photo${photos.length > 1 ? 's' : ''} to this email.)` : ''];
+      const subject = `${form.dataset.subject || 'Quote request'}: ${value('name')}, ${value('suburb')}`;
+      return `mailto:${cfg.email || 'sales@borasigns.com.au'}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`;
+    }
+
+    form.addEventListener('submit', async e => {
       e.preventDefault();
-      if (!valid()) return;
-      track('Lead', { content_name: form.dataset.lead || 'Quote form' });
-      const url = waLink(compose());
-      // Sem "noopener" aqui: com ele o navegador devolve null e a página atual também iria para o WhatsApp
-      const w = window.open(url, '_blank');
-      if (w) w.opener = null; else location.href = url;
+      if (sending || !valid()) return;
+      busy(true, photos.length ? 'Preparing photos…' : 'Sending…');
+      const files = [];
+      for (const p of photos) {
+        try {
+          const ready = await p.prepared;
+          files.push({ name: ready.name, type: ready.type, data: await toB64(ready.blob) });
+        } catch (er) { /* foto que não deu para ler fica de fora */ }
+      }
+      busy(true, 'Sending…');
+      const payload = {
+        page: form.dataset.page || 'Website',
+        name: value('name'), phone: value('phone'), email: value('email'), suburb: value('suburb'),
+        fields: fields(), photos: files, website: value('website')
+      };
+      const res = await post(payload, k => { submitLabel.textContent = k < 1 ? `Sending… ${Math.round(k * 100)}%` : 'Almost there…'; });
+      busy(false);
+      if (res.status === 200 && res.data.ok) {
+        track('Lead', { content_name: form.dataset.lead || 'Quote form' });
+        const nameEl = $('[data-done-name]', done);
+        if (nameEl) nameEl.textContent = value('name') ? `, ${value('name').split(' ')[0]}` : '';
+        showPanel(done);
+        return;
+      }
+      const code = res.data && res.data.error;
+      if (code === 'missing-fields') { valid(); err.textContent = 'Please check your name, phone, email and suburb.'; err.hidden = false; return; }
+      if (code === 'too-large') { err.textContent = 'Those photos are too large to send together. Please remove one or two and try again.'; err.hidden = false; return; }
+      if (code === 'bad-photo') { err.textContent = 'One of the photos couldn’t be read. Please remove it and try again.'; err.hidden = false; return; }
+      // Sem e-mail configurado, sem internet ou erro no servidor: plano B
+      const mail = $('[data-fail-mail]', fail);
+      if (mail) mail.href = mailtoFallback();
+      showPanel(fail);
     });
-    required.forEach(f => f.addEventListener('input', () => {
-      f.classList.remove('is-invalid');
-      if (required.every(x => x.value.trim())) err.hidden = true;
-    }));
-    const mail = $('[data-form-email]', form);
-    if (mail) mail.addEventListener('click', e => {
-      e.preventDefault();
-      if (!valid()) return;
-      track('Lead', { content_name: `${form.dataset.lead || 'Quote form'} (email)` });
-      const where = form.elements.suburb ? form.elements.suburb.value.trim() : '';
-      const subject = `${form.dataset.subject || 'Quote request'}${where ? `: ${where}` : ''}`;
-      location.href = `mailto:${cfg.email || 'sales@borasigns.com.au'}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(compose())}`;
-    });
+
+    const reopen = (reset) => {
+      if (reset) {
+        form.reset();
+        photos.forEach(p => p.preview && URL.revokeObjectURL(p.preview));
+        photos = [];
+        renderThumbs();
+        if (look) delete look.dataset.edited;
+      }
+      [done, fail].forEach(p => { if (p) p.hidden = true; });
+      form.hidden = false;
+    };
+    const again = $('[data-form-again]', box), retry = $('[data-form-retry]', box);
+    if (again) again.addEventListener('click', () => reopen(true));
+    if (retry) retry.addEventListener('click', () => reopen(false));
   }
 
   // ---------- Botões "magnéticos" ----------

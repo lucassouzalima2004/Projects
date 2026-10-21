@@ -1,17 +1,21 @@
-# Publica o site da Bora Decor no Cloudflare, sempre no mesmo link:
-#   https://boradecor.<subdomínio da conta>.workers.dev  (o endereço exato aparece no resumo da execução)
-# Cada push que mexe em bora-decor/ (no main ou no branch claude/amazing-goodall-z4s27u) atualiza esse link.
+# Publica o site da Bora Decor no Cloudflare (Worker "boradecor"), que responde em https://boradecor.com.au
+# (domínio ligado no painel do Cloudflare) e em https://boradecor.<subdomínio da conta>.workers.dev.
+# Cada push que mexe em bora-decor/ (no main ou no branch claude/amazing-goodall-z4s27u) atualiza o site.
 #
-# Vai como Worker com arquivos estáticos (Workers Static Assets), como a Black Rock Floors e a Punto Pizza,
-# porque a conta já chegou ao limite de projetos do Cloudflare Pages.
+# O Worker serve os arquivos do site e também recebe os pedidos de orçamento (/api/quote, código em
+# bora-decor/worker/), que manda por e-mail, com as fotos, pelo SMTP da Hostinger.
 #
-# Usa os mesmos secrets dos outros sites do repositório (Settings → Secrets and variables → Actions):
-#   CLOUDFLARE_API_TOKEN   token do Cloudflare que pode publicar Workers (obrigatório)
-#   CLOUDFLARE_ACCOUNT_ID  ID da conta (opcional: sem ele, o workflow descobre a conta pelo token)
-# E uma variável opcional (mesma tela, aba Variables):
-#   BORADECOR_SITE_URL     o endereço final, quando o domínio do Roni estiver ligado ao site
-#                          (ex.: https://www.boradecor.com.au). Sem ela, o canonical, o sitemap
-#                          e a prévia do link usam o endereço .workers.dev.
+# Secrets (Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN     token do Cloudflare que pode publicar Workers (obrigatório)
+#   CLOUDFLARE_ACCOUNT_ID    ID da conta (opcional: sem ele, o workflow descobre a conta pelo token)
+#   BORADECOR_SMTP_PASS      senha da caixa que envia os pedidos (BORADECOR_SMTP_USER, padrão info@boradecor.com.au).
+#                            Sem ela o site funciona, mas o formulário mostra o plano B (e-mail escrito para a pessoa mandar).
+# Variáveis opcionais (mesma tela, aba Variables):
+#   BORADECOR_SITE_URL       endereço oficial (padrão https://boradecor.com.au): canonical, sitemap e prévia do link
+#   BORADECOR_SMTP_USER      caixa que envia os pedidos (padrão info@boradecor.com.au)
+#   BORADECOR_QUOTE_TO       quem recebe os pedidos (padrão sales@borasigns.com.au; vários: separe por vírgula)
+#
+# O domínio NÃO é declarado no wrangler.jsonc de propósito: assim o deploy não mexe nos domínios ligados no painel.
 # Enquanto o token não existir, o workflow só avisa e não falha.
 name: Deploy Bora Decor (Cloudflare)
 
@@ -58,7 +62,10 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       ACCOUNT_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID }}
-      SITE_VAR: ${{ vars.BORADECOR_SITE_URL }}
+      SITE_VAR: ${{ vars.BORADECOR_SITE_URL || 'https://boradecor.com.au' }}
+      SMTP_PASS: ${{ secrets.BORADECOR_SMTP_PASS }}
+      SMTP_USER: ${{ vars.BORADECOR_SMTP_USER || 'info@boradecor.com.au' }}
+      QUOTE_TO: ${{ vars.BORADECOR_QUOTE_TO || 'sales@borasigns.com.au' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -115,7 +122,7 @@ jobs:
           mkdir -p _site
           cp -R bora-decor/. _site/
           # Anotações internas e os scripts das imagens/vídeo não vão para o ar
-          rm -rf _site/README.md _site/tools _site/.gitignore
+          rm -rf _site/README.md _site/tools _site/worker _site/.gitignore
           today=$(date -u +%F)
           : > pages.txt
           # Em cada página: endereço completo no og:image (o WhatsApp exige), canonical, og:url e dados para o Google
@@ -140,29 +147,58 @@ jobs:
           cat > wrangler.jsonc <<EOF
           {
             "name": "$WORKER",
+            "main": "bora-decor/worker/index.js",
             "compatibility_date": "2025-10-01",
             "workers_dev": true,
             "preview_urls": false,
             "assets": {
               "directory": "./_site",
+              "binding": "ASSETS",
               "not_found_handling": "404-page",
               "html_handling": "auto-trailing-slash"
-            }
+            },
+            "vars": {
+              "SMTP_HOST": "smtp.hostinger.com",
+              "SMTP_PORT": "465",
+              "SMTP_USER": "$SMTP_USER",
+              "QUOTE_TO": "$QUOTE_TO",
+              "QUOTE_FROM_NAME": "Bora Decor website"
+            },
+            "observability": { "enabled": true }
           }
           EOF
 
       - name: Publicar
         run: npx wrangler deploy --config wrangler.jsonc
 
+      - name: Senha do e-mail dos orçamentos
+        run: |
+          if [ -n "$SMTP_PASS" ]; then
+            printf '%s' "$SMTP_PASS" | npx wrangler secret put SMTP_PASS --config wrangler.jsonc
+          else
+            acc="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID"
+            if curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "$acc/workers/scripts/$WORKER/secrets" | jq -e '.result[]? | select(.name == "SMTP_PASS")' > /dev/null; then
+              echo "A senha (SMTP_PASS) já está no Worker."
+            else
+              echo "::warning title=Formulário sem e-mail::Cadastre o secret BORADECOR_SMTP_PASS (senha de $SMTP_USER) e rode de novo. Até lá o formulário mostra o plano B (a pessoa manda o e-mail do próprio aplicativo)."
+            fi
+          fi
+
       - name: Conferir o site no ar
         run: |
           for i in 1 2 3 4 5 6; do
             if curl -fsS --max-time 20 "$WORKERS_URL/" | grep -q "a new look"; then
               echo "Site no ar: $WORKERS_URL"
-              echo "### Site no ar: $WORKERS_URL" >> "$GITHUB_STEP_SUMMARY"
-              if [ "$SITE_URL" != "$WORKERS_URL" ]; then
-                echo "Endereço oficial (canonical e sitemap): $SITE_URL" >> "$GITHUB_STEP_SUMMARY"
-              fi
+              echo "### Site no ar: $SITE_URL" >> "$GITHUB_STEP_SUMMARY"
+              echo "Também em: $WORKERS_URL" >> "$GITHUB_STEP_SUMMARY"
+              # Formulário: um pedido vazio responde 422 (e-mail configurado) ou 503 (falta a senha)
+              code=$(curl -sS -o /dev/null -w '%{http_code}' -X POST -H 'content-type: application/json' --data '{}' "$WORKERS_URL/api/quote" || true)
+              case "$code" in
+                422) echo "Formulário de orçamento: pronto (e-mail configurado, pedidos vão para $QUOTE_TO)." >> "$GITHUB_STEP_SUMMARY" ;;
+                503) echo "::warning title=Formulário sem e-mail::Falta a senha SMTP_PASS no Worker (secret BORADECOR_SMTP_PASS)."
+                     echo "Formulário de orçamento: **falta a senha do e-mail** (secret BORADECOR_SMTP_PASS)." >> "$GITHUB_STEP_SUMMARY" ;;
+                *)   echo "Formulário de orçamento: resposta inesperada ($code)." >> "$GITHUB_STEP_SUMMARY" ;;
+              esac
               exit 0
             fi
             sleep 10

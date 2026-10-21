@@ -12,12 +12,11 @@
 #     swatch   leque de cores sendo aberto                  Mixkit  https://mixkit.co/free-stock-video/architect-choosing-a-color-from-the-color-plate-21219/
 #     marble   mármore branco bem de perto                  Mixkit  https://mixkit.co/free-stock-video/detailed-texture-of-a-smooth-marble-surface-34488/
 #     bright   cozinha clara com bancada de pedra           Mixkit  https://mixkit.co/free-stock-video/interior-view-of-a-spacious-modern-kitchen-43033/
-#   Commercial
-#     dining   restaurante vazio com luz baixa              Mixkit  https://mixkit.co/free-stock-video/empty-restaurant-with-nice-lighting-29050/
-#     hallway  corredor de hotel                            Mixkit  https://mixkit.co/free-stock-video/corridor-of-an-elegant-hotel-34613/
-#     lift     elevador subindo num átrio dourado           Mixkit  https://mixkit.co/free-stock-video/elevator-inside-a-building-20827/
-#     lobby    lobby com escada                             Mixkit  https://mixkit.co/free-stock-video/stairs-heading-up-through-a-large-hotel-29526/
+#   Commercial (discreto: pequenos negócios e as texturas, sem hotel/elevador)
 #     office   escritório de vidro com mesa de madeira      Mixkit  https://mixkit.co/free-stock-video/modern-living-room-with-wooden-furniture-3090/
+#     timber   veios de madeira bem de perto                Mixkit  https://mixkit.co/free-stock-video/detailed-tour-of-the-surface-of-a-wooden-board-34496/
+#     dining   restaurante vazio com luz baixa              Mixkit  https://mixkit.co/free-stock-video/empty-restaurant-with-nice-lighting-29050/
+#     marble   mármore branco bem de perto                  Mixkit  https://mixkit.co/free-stock-video/detailed-texture-of-a-smooth-marble-surface-34488/
 #
 # Para usar vídeos da Bora Decor: grave clipes deitados (1920x1080 ou maior), coloque em tools/clips/
 # e troque a lista do vídeo (CLIPS_HOME ou CLIPS_COMMERCIAL) abaixo. Cada linha é:
@@ -40,11 +39,10 @@ CLIPS_HOME=(
   "bright|https://assets.mixkit.co/videos/43033/43033-1080.mp4|1.0|5.0|0.40"
 )
 CLIPS_COMMERCIAL=(
-  "dining|https://assets.mixkit.co/videos/29050/29050-720.mp4|1.0|4.2|0.45"
-  "hallway|https://assets.mixkit.co/videos/34613/34613-720.mp4|0.3|4.0|0.50"
-  "lift|https://assets.mixkit.co/videos/20827/20827-720.mp4|2.0|4.2|0.62"
-  "lobby|https://assets.mixkit.co/videos/29526/29526-720.mp4|2.0|4.2|0.42"
-  "office|https://assets.mixkit.co/videos/3090/3090-1080.mp4|1.0|4.4|0.45"
+  "office|https://assets.mixkit.co/videos/3090/3090-1080.mp4|1.0|4.6|0.45"
+  "timber|https://assets.mixkit.co/videos/34496/34496-1080.mp4|3.6|4.0|0.50"
+  "dining|https://assets.mixkit.co/videos/29050/29050-720.mp4|1.0|4.4|0.45"
+  "marble|https://assets.mixkit.co/videos/34488/34488-1080.mp4|5.5|4.2|0.50"
 )
 
 if [[ ${1:-} == commercial ]]; then

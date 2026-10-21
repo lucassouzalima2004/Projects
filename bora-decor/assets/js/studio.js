@@ -227,7 +227,7 @@
     const s = patSize(id);
     layer.pat.setAttribute('width', s);
     layer.pat.setAttribute('height', s);
-    layer.pat.setAttribute('patternTransform', z === zones.bench && T.byId[id].type === 'wood' ? 'rotate(90)' : '');
+    layer.pat.setAttribute('patternTransform', z === zones.bench && ['wood', 'ribbed'].includes(T.byId[id].type) ? 'rotate(90)' : '');
     layer.img.setAttribute('width', s);
     layer.img.setAttribute('height', s);
     layer.img.setAttribute('href', T.texture(id, 384));
@@ -424,9 +424,7 @@
   }
 
   function updateQuoteLink() {
-    const cfg = window.BORA || {};
-    const msg = `Hi Bora Decor! I tried the colour studio and I like: ${lookText()}. Could I get a quote? I'll send photos of my kitchen.`;
-    quoteBtn.href = `https://wa.me/${cfg.whatsapp || '61482530280'}?text=${encodeURIComponent(msg)}`;
+    quoteBtn.href = '#quote';
     quoteBtn.dataset.look = lookText();
   }
 

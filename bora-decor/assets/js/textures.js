@@ -32,6 +32,14 @@
     { id: 'concrete',     name: 'Concrete',       group: 'stone',  type: 'concrete', color: '#8F8C87', seed: 29 },
     { id: 'travertine',   name: 'Travertine',     group: 'stone',  type: 'travertine', color: '#D8C8AE', dark: '#B9A584', seed: 31 },
 
+    { id: 'brushed-bronze', name: 'Brushed Bronze', group: 'metal', type: 'metal', color: '#9C7A50', light: '#D2B27F', seed: 43 },
+    { id: 'brushed-steel',  name: 'Brushed Steel',  group: 'metal', type: 'metal', color: '#9A9EA2', light: '#DADDDF', seed: 47 },
+    { id: 'gunmetal',       name: 'Gunmetal',       group: 'metal', type: 'metal', color: '#3F4144', light: '#77797D', seed: 59 },
+
+    { id: 'linen',          name: 'Linen',          group: 'textured', type: 'linen', color: '#D3C7B3', seed: 67 },
+    { id: 'charcoal-linen', name: 'Charcoal Linen', group: 'textured', type: 'linen', color: '#4A4743', seed: 73 },
+    { id: 'oak-ribbed',     name: 'Ribbed Oak',     group: 'textured', type: 'ribbed', color: '#C7A47A', dark: '#9E7B53', seed: 79 },
+
     // "Antes" do simulador: a cozinha datada que todo mundo conhece
     { id: 'honey-oak',    name: 'Original honey timber', hidden: true, type: 'wood', color: '#B7773D', dark: '#8C5426', seed: 61, rings: 6 },
     { id: 'laminate',     name: 'Original speckled laminate', hidden: true, type: 'speckle', color: '#CDBFA8', seed: 71 }
@@ -151,6 +159,40 @@
         const pit = N.noise(u * 70, v * 160, 70, 160) > 0.5 ? 0.35 : 0;
         const k = Math.max(0, Math.min(1, band * 0.45 + fine + pit));
         return [mix(a[0], b[0], k), mix(a[1], b[1], k), mix(a[2], b[2], k)];
+      };
+    },
+    metal(f, N) {
+      // Metal escovado: riscos finos na horizontal e um brilho largo que varia de leve
+      const a = hex(f.color), b = hex(f.light);
+      return (u, v) => {
+        const streak = N.fbm(u * 3, v * 260, 3, 260, 3);
+        const fine = N.noise(u * 9, v * 900, 9, 900);
+        const sheen = 0.5 + 0.5 * Math.sin((u * 2 + N.fbm(u * 2, v * 2, 2, 2, 2) * 0.6) * TAU);
+        const k = Math.max(0, Math.min(1, 0.3 + sheen * 0.45 + streak * 0.35 + fine * 0.12));
+        return [mix(a[0], b[0], k), mix(a[1], b[1], k), mix(a[2], b[2], k)];
+      };
+    },
+    linen(f, N) {
+      // Trama de tecido: fios na vertical e na horizontal, com falhas e pequenos nós
+      const c = hex(f.color);
+      const light = (c[0] + c[1] + c[2]) / 3 > 128;
+      return (u, v) => {
+        const warp = Math.sin(u * TAU * 110 + N.noise(u * 20, v * 4, 20, 4) * 1.5);
+        const weft = Math.sin(v * TAU * 110 + N.noise(u * 4, v * 20, 4, 20) * 1.5);
+        const slub = N.fbm(u * 6, v * 60, 6, 60, 2) * 0.6 + N.fbm(u * 60, v * 6, 60, 6, 2) * 0.6;
+        const n = (warp * 0.5 + weft * 0.5) * 9 + slub * 16 + N.fbm(u * 3, v * 3, 3, 3, 2) * 8;
+        const d = light ? n : n * 0.8;
+        return [c[0] + d, c[1] + d, c[2] + d * 0.95];
+      };
+    },
+    ribbed(f, N) {
+      // Ripado: madeira com sulcos verticais (luz de um lado, sombra do outro)
+      const wood = painters.wood(Object.assign({}, f, { rings: 9 }), N);
+      return (u, v) => {
+        const c = wood(u, v);
+        const t = (u * 24) % 1;
+        const shade = t < 0.1 ? -42 : t < 0.18 ? 22 : t > 0.92 ? -16 : 0;
+        return [c[0] + shade, c[1] + shade, c[2] + shade];
       };
     },
     speckle(f, N) {

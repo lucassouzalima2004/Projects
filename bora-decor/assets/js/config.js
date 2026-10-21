@@ -1,11 +1,11 @@
-/* Dados da Bora Decor usados pelo site (links do WhatsApp, telefone, e-mail, preço, garantia e anúncios).
-   Os mesmos dados também estão escritos no index.html (para o Google e para quem está sem JavaScript):
-   se trocar algo aqui, procure o valor antigo no index.html e troque lá também. */
+/* Dados da Bora Decor usados pelo site (telefone, e-mail, preço, garantia e anúncios).
+   Os mesmos dados também estão escritos no index.html e no commercial/index.html (para o Google e para quem está
+   sem JavaScript): se trocar algo aqui, procure o valor antigo nas páginas e troque lá também.
+   Os pedidos de orçamento NÃO saem daqui: vão por e-mail pelo Worker (ver README, "Pedidos de orçamento por e-mail"). */
 window.BORA = {
-  // WhatsApp que recebe os pedidos: só dígitos, com 61 na frente e sem o 0 do celular (0482 530 280 → 61482530280)
-  whatsapp: '61482530280',
   phone: '0482 530 280',
   phoneIntl: '+61482530280',
+  // E-mail mostrado no site e usado no plano B (quando o envio automático falha)
   email: 'sales@borasigns.com.au',
 
   // Faixa de preço mostrada no site (dólares australianos)
