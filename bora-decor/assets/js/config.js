@@ -6,7 +6,7 @@ window.BORA = {
   phone: '0482 530 280',
   phoneIntl: '+61482530280',
   // E-mail mostrado no site e usado no plano B (quando o envio automático falha)
-  email: 'sales@borasigns.com.au',
+  email: 'info@boradecor.com.au',
 
   // Faixa de preço mostrada no site (dólares australianos)
   priceFrom: 3000,
@@ -18,7 +18,7 @@ window.BORA = {
 
   // Meta (Facebook/Instagram) Pixel: cole só o número do pixel (ex.: '123456789012345').
   // Com ele, o site avisa o Meta a cada pedido de orçamento (evento "Lead") e os anúncios aprendem quem converte.
-  metaPixelId: '',
+  metaPixelId: '1070067669184384',
 
   // Redes sociais da Bora Decor (vazio esconde o link)
   instagram: '',

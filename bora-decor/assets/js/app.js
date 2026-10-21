@@ -665,7 +665,7 @@
     function mailtoFallback() {
       const lines = [form.dataset.intro || "Hi Bora Decor! I'd like a free quote.", '', ...fields().map(([k, v]) => `${k}: ${v}`), '', photos.length ? `(I'll attach ${photos.length} photo${photos.length > 1 ? 's' : ''} to this email.)` : ''];
       const subject = `${form.dataset.subject || 'Quote request'}: ${value('name')}, ${value('suburb')}`;
-      return `mailto:${cfg.email || 'sales@borasigns.com.au'}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`;
+      return `mailto:${cfg.email || 'info@boradecor.com.au'}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`;
     }
 
     form.addEventListener('submit', async e => {

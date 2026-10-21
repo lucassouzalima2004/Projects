@@ -13,7 +13,7 @@
 # Variáveis opcionais (mesma tela, aba Variables):
 #   BORADECOR_SITE_URL       endereço oficial (padrão https://boradecor.com.au): canonical, sitemap e prévia do link
 #   BORADECOR_SMTP_USER      caixa que envia os pedidos (padrão info@boradecor.com.au)
-#   BORADECOR_QUOTE_TO       quem recebe os pedidos (padrão sales@borasigns.com.au; vários: separe por vírgula)
+#   BORADECOR_QUOTE_TO       quem recebe os pedidos (padrão info@boradecor.com.au; vários: separe por vírgula)
 #
 # O domínio NÃO é declarado no wrangler.jsonc de propósito: assim o deploy não mexe nos domínios ligados no painel.
 # Enquanto o token não existir, o workflow só avisa e não falha.
@@ -65,7 +65,7 @@ jobs:
       SITE_VAR: ${{ vars.BORADECOR_SITE_URL || 'https://boradecor.com.au' }}
       SMTP_PASS: ${{ secrets.BORADECOR_SMTP_PASS }}
       SMTP_USER: ${{ vars.BORADECOR_SMTP_USER || 'info@boradecor.com.au' }}
-      QUOTE_TO: ${{ vars.BORADECOR_QUOTE_TO || 'sales@borasigns.com.au' }}
+      QUOTE_TO: ${{ vars.BORADECOR_QUOTE_TO || 'info@boradecor.com.au' }}
     steps:
       - uses: actions/checkout@v4
 

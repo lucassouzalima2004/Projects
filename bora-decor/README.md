@@ -52,8 +52,10 @@ Os formulários das duas páginas pedem **nome, telefone, e-mail, bairro, fotos 
 Ao enviar:
 
 1. o navegador diminui as fotos (1600 px, JPEG) para o envio ser rápido no celular;
-2. o Worker (`worker/index.js`) recebe em `/api/quote` e manda um e-mail para **sales@borasigns.com.au** com tudo
-   organizado e as fotos anexadas. O "Responder" do e-mail vai direto para o cliente;
+2. o Worker (`worker/index.js`) recebe em `/api/quote` e manda um e-mail para **info@boradecor.com.au** com tudo
+   organizado e as fotos anexadas. O "Responder" do e-mail vai direto para o cliente.
+   Para mandar para outra caixa (ex.: install@boradecor.com.au, ou as duas separadas por vírgula), crie a variável
+   `BORADECOR_QUOTE_TO` no GitHub (Settings → Secrets and variables → Actions → aba Variables) e rode o workflow;
 3. a pessoa vê "Thanks! Your request is on its way" e o Meta Pixel (se configurado) registra um "Lead".
 
 O e-mail sai pela caixa **info@boradecor.com.au** da Hostinger (SMTP `smtp.hostinger.com`, porta 465).
@@ -95,7 +97,7 @@ Use só fotos de trabalhos da Bora Decor (ou com autorização por escrito do do
 | O quê | Onde |
 | --- | --- |
 | Telefone e e-mail mostrados | `assets/js/config.js` e o texto nas duas páginas (procure e troque) |
-| Quem recebe os pedidos | variável `BORADECOR_QUOTE_TO` no GitHub (padrão sales@borasigns.com.au) |
+| Quem recebe os pedidos | variável `BORADECOR_QUOTE_TO` no GitHub (padrão info@boradecor.com.au) |
 | Faixa de preço e garantia | textos no `index.html` (procure `3,000` e `10-year`) |
 | Meta Pixel (anúncios) | `metaPixelId` em `assets/js/config.js`: cada pedido enviado vira um evento "Lead" |
 | Instagram / Facebook | `instagram` e `facebook` em `assets/js/config.js` (vazio esconde) |
@@ -129,7 +131,7 @@ mude nas duas.
 ## Antes de mostrar para o cliente
 
 - [ ] Cadastrar a senha do info@boradecor.com.au (`BORADECOR_SMTP_PASS`) e mandar um pedido de teste com fotos
-- [ ] ID do Meta Pixel da conta de anúncios
+- [x] ID do Meta Pixel da conta de anúncios (1070067669184384)
 - [ ] Fotos de trabalhos reais para `assets/js/projects.js` (cozinhas, laundries, cabinetry)
 - [ ] Garantia: 10 anos no filme + 2 anos na instalação
 - [ ] Faixa de preço AUD $3,000–$6,000 e a comparação "$15,000+" de uma cozinha nova
