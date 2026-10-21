@@ -41,7 +41,7 @@ const sprite = `<svg class="sprite" aria-hidden="true" focusable="false">
 </svg>`;
 
 let eyeIds = 0;
-// The chameleon mark. `eye` gives it a pupil that site.js can move.
+// The chameleon mark. Its pupil (.pupil) follows the pointer, see site.js.
 export function markSvg(cls = 'mark') {
   const id = `eye-${++eyeIds}`;
   const { eye, pupil } = mark;
@@ -58,10 +58,10 @@ function logo(cls = 'logo') {
   return `<svg class="${cls}" viewBox="0 0 3025 214" role="img" aria-label="${esc(site.name)}">
     <g class="logo__mark" transform="translate(0 2) scale(.5066)">
       <path d="${mark.body}"/>
-      <mask id="${id}"><rect width="756" height="414" fill="#fff"/><circle class="pupil" cx="${pupil.cx}" cy="${pupil.cy}" r="${pupil.r}" fill="#000"/></mask>
+      <mask id="${id}"><rect width="756" height="414" fill="#fff"/><circle cx="${pupil.cx}" cy="${pupil.cy}" r="${pupil.r}" fill="#000"/></mask>
       <circle cx="${eye.cx}" cy="${eye.cy}" r="${eye.r}" mask="url(#${id})"/>
     </g>
-    <g transform="translate(467 0)"><path class="logo__bora" d="${word.bora}"/><path class="logo__signs" d="${word.signs}"/></g>
+    <g transform="translate(467 0)" fill-rule="evenodd"><path class="logo__bora" d="${word.bora}"/><path class="logo__signs" d="${word.signs}"/></g>
   </svg>`;
 }
 
@@ -412,36 +412,23 @@ export function home() {
   const tasks = ['Payroll', 'Staff', 'Customers', 'Emails', 'Stock', 'Scheduling', 'Opening date'];
 
   const body = `
-<section class="hero" data-hero>
-  <div class="hero__media" data-hero-media>
-    <picture class="hero__poster">
-      <source media="(max-aspect-ratio: 4/5)" type="image/webp" srcset="/assets/video/hero-poster-mobile.webp">
-      <source media="(max-aspect-ratio: 4/5)" srcset="/assets/video/hero-poster-mobile.jpg">
-      <source type="image/webp" srcset="/assets/video/hero-poster.webp">
-      <img src="/assets/video/hero-poster.jpg" alt="" width="1600" height="900" fetchpriority="high">
-    </picture>
-    <video class="hero__video" muted playsinline loop preload="none" aria-hidden="true" tabindex="-1"
-      data-src="/assets/video/hero.mp4" data-src-portrait="/assets/video/hero-mobile.mp4"></video>
-  </div>
-  <div class="hero__shade"></div>
-  <div class="hero__glow" aria-hidden="true"></div>
-  <div class="hero__content container center">
-    <h1 class="hero__title">
+<section class="phero phero--home">
+  <div class="container center">
+    <h1 class="phero__title">
       <span class="eyebrow" data-hero-in>${icon('spark', 'i')} Adelaide signwriters</span>
-      <span class="hero__lines"><span class="line"><span>Signage that makes</span></span> <span class="line"><span>your business</span></span> <span class="line"><span class="hl">hard to miss.</span></span></span>
+      <span class="phero__h" data-split data-split-now>Signage that makes your business <em>hard to miss.</em></span>
     </h1>
-    <p class="hero__lead" data-hero-in>Vehicle wraps, shopfront signage, window graphics and complete business signage, designed, produced and installed by one Adelaide team.</p>
+    <p class="lead phero__lead" data-hero-in>Vehicle wraps, shopfront signage and window graphics, designed, produced and installed by one Adelaide team.</p>
     <div class="cta-row" data-hero-in>
       ${btn('Start your project', '/contact', { size: 'lg' })}
-      ${btn(site.phone, tel, { kind: 'glass', size: 'lg', ico: 'phone' })}
+      ${btn(site.phone, tel, { kind: 'ghost', size: 'lg', ico: 'phone' })}
     </div>
-    <ul class="hero__trust" data-hero-in>
-      <li>${icon('check')}Design to installation</li>
-      <li>${icon('check')}Adelaide-based team</li>
-      <li>${icon('check')}Quality materials</li>
-    </ul>
   </div>
-  <a class="hero__scroll" href="#intro" aria-label="Scroll to learn more"><span></span></a>
+  <div class="container">
+    <div class="phero__media" data-parallax>
+      ${picture('install-van-wrap', 'Bora Signs installer applying a printed wrap to a work van with a heat gun', { sizes: '(min-width: 1280px) 1200px, 100vw', eager: true })}
+    </div>
+  </div>
 </section>
 
 <div class="ticker" aria-hidden="true">
@@ -563,8 +550,6 @@ ${ctaFinal()}`;
       'Adelaide sign company with 15+ years of experience: vehicle wraps, shopfront signage, window graphics and office signs, designed and installed by one local team.',
     image: '/assets/img/og-image.jpg',
     bodyClass: 'is-home',
-    head: `<link rel="preload" as="image" href="/assets/video/hero-poster.webp" type="image/webp" media="(min-aspect-ratio: 4/5)" fetchpriority="high">
-<link rel="preload" as="image" href="/assets/video/hero-poster-mobile.webp" type="image/webp" media="(max-aspect-ratio: 4/5)" fetchpriority="high">`,
     ld: [faqLd(homeFaq)],
     body,
   };

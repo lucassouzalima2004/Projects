@@ -141,7 +141,7 @@
       e.target.classList.add('is-in');
       io.unobserve(e.target);
     });
-  }, { rootMargin: '0px 0px -10% 0px', threshold: 0.12 });
+  }, { rootMargin: '0px 0px -4% 0px', threshold: 0.04 });
 
   $$('[data-split]').forEach((el) => {
     if (!reduce) split(el);
@@ -178,40 +178,6 @@
     });
   }, { threshold: 0.6 });
   $$('[data-count]').forEach((el) => countIO.observe(el));
-
-  /* ---------- hero video ---------- */
-
-  const hero = $('[data-hero]');
-  if (hero) {
-    const video = $('.hero__video', hero);
-    const media = $('[data-hero-media]', hero);
-    const content = $('.hero__content', hero);
-    const conn = navigator.connection || {};
-    const lowData = conn.saveData || /(^|-)2g$/.test(conn.effectiveType || '');
-    if (video && !reduce && !lowData) {
-      const start = () => {
-        const portrait = matchMedia('(max-aspect-ratio: 4/5)').matches;
-        video.src = portrait ? video.dataset.srcPortrait : video.dataset.src;
-        video.addEventListener('playing', () => video.classList.add('is-playing'), { once: true });
-        video.play().catch(() => {});
-      };
-      if (d.readyState === 'complete') setTimeout(start, 150);
-      else addEventListener('load', () => setTimeout(start, 150), { once: true });
-      new IntersectionObserver(([e]) => {
-        if (!video.src) return;
-        if (e.isIntersecting) video.play().catch(() => {}); else video.pause();
-      }).observe(hero);
-    }
-    if (!reduce) {
-      onScroll.add((y) => {
-        if (y > innerHeight * 1.2) return;
-        const p = y / innerHeight;
-        media.style.setProperty('--hero-scale', 1.04 + p * 0.12);
-        content.style.setProperty('--hero-y', `${y * 0.32}px`);
-        content.style.setProperty('--hero-o', clamp(1 - p * 1.25, 0, 1));
-      });
-    }
-  }
 
   /* ---------- page hero image parallax ---------- */
 

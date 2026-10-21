@@ -6,7 +6,7 @@ com título, descrição e dados estruturados para o Google, e os anúncios pode
 
 ## O que tem no site
 
-- **Home**: vídeo de fundo com fotos reais de instalação, título animado, faixa de serviços que acelera com a rolagem,
+- **Home**: título centralizado com uma foto grande de instalação logo abaixo, faixa de serviços que acelera com a rolagem,
   números, serviços, seção "One less thing" (o camaleão no meio das tarefas do dono do negócio), processo em 4 passos,
   trabalhos recentes em rolagem horizontal, clientes, depoimentos, dúvidas e chamada final.
 - **Uma página por serviço** (13), com os mesmos endereços do Wix: `/vehicle-signage`, `/shopfront-signage`, `/window-graphics`,
@@ -37,9 +37,7 @@ com título, descrição e dados estruturados para o Google, e os anúncios pode
 Fotos novas: coloque em `public/assets/img/work/` como `<nome>-800` e `<nome>-1600`, em `.avif` e `.webp`
 (mais um `.jpg` de 1200 px para a prévia do link), e registre largura e altura em `src/images.mjs`.
 
-O vídeo do topo (`public/assets/video/hero.mp4` deitado e `hero-mobile.mp4` em pé) foi montado com as fotos de instalação
-do site atual. Se a Bora tiver um vídeo próprio, é só trocar os arquivos mantendo os nomes (e os pôsteres `hero-poster*`,
-que são o primeiro quadro).
+A foto do topo da home é `install-van-wrap` (em `home()`, no `src/render.mjs`).
 
 ## Ver no computador
 
@@ -71,8 +69,6 @@ O workflow `.github/workflows/deploy-bora-signs.yml` monta o site e publica no C
 estáticos (a conta já chegou ao limite de projetos do Pages, como nos outros sites do repositório), sempre no mesmo link:
 `https://bora-signs.<subdomínio da conta>.workers.dev`. O endereço exato aparece no resumo da execução em **Actions**.
 Usa o secret `CLOUDFLARE_API_TOKEN` (e `CLOUDFLARE_ACCOUNT_ID`, se existir).
-O `worker.js` só entra em dois casos: nos vídeos, para entregar o pedaço do arquivo que o navegador pede (sem isso o
-iPhone não toca o vídeo do topo), e em endereços que não existem (página 404 sem cache).
 
 Enquanto o site não estiver no domínio, o link fica fora do Google (`noindex`), para não competir com o site atual no Wix.
 Quando `www.borasigns.com.au` apontar para o Worker, crie a variável `BORASIGNS_SITE_URL` = `https://www.borasigns.com.au`
@@ -105,7 +101,7 @@ Para adicionar outros, edite `redirects` em `build.mjs`.
 - Título e descrição únicos por página, com a palavra-chave e "Adelaide"; um `h1` por página.
 - Dados estruturados: `LocalBusiness` (endereço, telefone, ABN, redes), `Service` em cada serviço, `BreadcrumbList` e `FAQPage`.
 - `sitemap.xml` e `robots.txt` gerados no build; links canônicos e prévias (Open Graph) em todas as páginas.
-- Imagens em AVIF/WebP com tamanho certo para cada tela, fonte hospedada no próprio site, vídeo carregado só depois da página.
+- Imagens em AVIF/WebP com tamanho certo para cada tela e fonte hospedada no próprio site.
 - Lighthouse (celular): Desempenho 92, Acessibilidade 100, SEO 100 na home.
 
 Depois de publicar no domínio: cadastre o site no [Google Search Console](https://search.google.com/search-console),
@@ -126,7 +122,6 @@ envie `https://www.borasigns.com.au/sitemap.xml` e, se pedirem verificação por
 ```
 bora-signs/
 ├── build.mjs               gera dist/: páginas, sitemap, robots.txt e _redirects
-├── worker.js               vídeos por pedaço (iPhone) e 404 no Cloudflare
 ├── src/
 │   ├── site.mjs            dados da empresa e configurações
 │   ├── content.mjs         textos de todas as páginas
@@ -136,7 +131,7 @@ bora-signs/
 │   └── images.mjs          tamanhos das fotos
 └── public/                 copiado como está para dist/
     ├── _headers            cache e cabeçalhos de segurança do Cloudflare
-    └── assets/             css, js, fontes (Archivo, licença OFL), imagens e vídeos
+    └── assets/             css, js, fontes (Archivo, licença OFL) e imagens
 ```
 
 `lenis.min.js` (rolagem suave) é a biblioteca [Lenis](https://github.com/darkroomengineering/lenis), licença MIT.

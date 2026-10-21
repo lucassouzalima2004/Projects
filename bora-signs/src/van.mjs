@@ -64,7 +64,7 @@ export function van() {
       <path d="M40 372C300 352 560 286 1000 132L1000 236C600 356 330 404 40 420Z" fill="url(#van-pink)"/>
       <path d="M40 334C310 314 560 252 1000 96L1000 118C560 270 312 334 40 352Z" fill="#8b3dff"/>
       <g transform="translate(108 146) scale(.2)">
-        <path d="${word.bora}" fill="#fff"/><path d="${word.signs}" fill="#ff5fa9"/>
+        <path d="${word.bora}" fill="#fff" fill-rule="evenodd"/><path d="${word.signs}" fill="#ff5fa9" fill-rule="evenodd"/>
       </g>
       <text x="110" y="222" fill="#fff" font-size="23" font-weight="600" letter-spacing=".5">Signage without the stress.</text>
       <text x="108" y="104" fill="#ff5fa9" font-size="15" font-weight="700" letter-spacing="3">VEHICLE WRAPS · SHOPFRONTS · WINDOWS · OFFICES</text>
