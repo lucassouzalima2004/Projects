@@ -1,11 +1,14 @@
 // Worker do site da Bora Decor.
-// - /api/quote: recebe o pedido de orçamento (dados + fotos) e manda por e-mail para QUOTE_TO.
+// - /api/quote: recebe o pedido de orçamento (dados + fotos) e manda por e-mail para QUOTE_TO, pelo Resend.
 // - todo o resto: arquivos do site (pasta publicada), servidos pelo Cloudflare.
 //
+// O envio não usa o SMTP da Hostinger: os servidores dela ficam na rede do Cloudflare, e o Worker não pode
+// se conectar a ela. Por isso o e-mail sai pela API do Resend (resend.com), por HTTPS.
+//
 // Configuração (ver README, seção "Pedidos de orçamento por e-mail"):
-//   vars:    SMTP_HOST, SMTP_PORT, SMTP_USER (caixa que envia), QUOTE_TO (quem recebe), QUOTE_FROM_NAME
-//   secret:  SMTP_PASS (senha da caixa SMTP_USER)
-import { sendMail, b64, wrap76, encodeHeader } from './smtp.js';
+//   vars:    QUOTE_TO (quem recebe; vários separados por vírgula), QUOTE_FROM (remetente, do domínio verificado
+//            no Resend), QUOTE_FROM_NAME
+//   secret:  RESEND_API_KEY (chave da API do Resend)
 
 const MAX_BODY = 16 * 1024 * 1024;        // limite do pedido inteiro
 const MAX_PHOTOS = 6;
@@ -33,7 +36,7 @@ export default {
 };
 
 async function handleQuote(request, env) {
-  if (!env.SMTP_PASS || !env.SMTP_USER || !env.SMTP_HOST || !env.QUOTE_TO) {
+  if (!env.RESEND_API_KEY || !env.QUOTE_FROM || !env.QUOTE_TO) {
     return json({ ok: false, error: 'not-configured' }, 503);
   }
   const length = Number(request.headers.get('content-length') || 0);
@@ -69,41 +72,37 @@ async function handleQuote(request, env) {
     if (total > MAX_PHOTOS_B64) return json({ ok: false, error: 'too-large' }, 413);
     const ext = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/heic': 'heic', 'image/heif': 'heif' }[type] || 'bin';
     const base = oneLine(p.name, 60).replace(/\.[^.]*$/, '').replace(/[^\w-]+/g, '-').replace(/^-+|-+$/g, '') || 'photo';
-    // Só base64 puro, numa linha: nenhuma quebra de linha do visitante chega ao servidor de e-mail
-    // (impede injetar comandos SMTP no meio da foto). As linhas de 76 são feitas aqui.
     if (!/^[A-Za-z0-9+/=]+$/.test(p.data)) return json({ ok: false, error: 'bad-photo' }, 400);
-    photos.push({ filename: `${String(i + 1).padStart(2, '0')}-${base}.${ext}`, type, body: wrap76(p.data) });
+    photos.push({ filename: `${String(i + 1).padStart(2, '0')}-${base}.${ext}`, content: p.data });
   }
 
-  const message = buildMessage({ env, page, name, email, phone, suburb, fields, photos });
-  try {
-    await sendMail({
-      host: env.SMTP_HOST,
-      port: env.SMTP_PORT || 465,
-      secure: env.SMTP_SECURE !== 'off',
-      user: env.SMTP_USER,
-      pass: env.SMTP_PASS,
-      from: env.SMTP_USER,
+  const { subject, text, html } = buildMessage({ page, name, email, phone, suburb, fields, photos });
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      authorization: `Bearer ${env.RESEND_API_KEY}`,
+      'content-type': 'application/json',
+      'idempotency-key': crypto.randomUUID()
+    },
+    body: JSON.stringify({
+      from: `${(env.QUOTE_FROM_NAME || 'Bora Decor website').replace(/[<>"]/g, '')} <${env.QUOTE_FROM}>`,
       to: String(env.QUOTE_TO).split(',').map(s => s.trim()).filter(Boolean),
-      helo: env.SMTP_HELO || 'boradecor.com.au',
-      message
-    });
-  } catch (e) {
-    console.error('quote email failed', e && e.message);
+      reply_to: email,
+      subject,
+      text,
+      html,
+      attachments: photos
+    })
+  }).catch(e => ({ ok: false, status: 0, text: async () => String(e && e.message) }));
+  if (!res.ok) {
+    console.error('quote email failed', res.status, (await res.text()).slice(0, 500));
     return json({ ok: false, error: 'send-failed' }, 502);
   }
   return json({ ok: true, photos: photos.length });
 }
 
-function buildMessage({ env, page, name, email, phone, suburb, fields, photos }) {
-  const fromName = env.QUOTE_FROM_NAME || 'Bora Decor website';
+function buildMessage({ page, name, email, phone, suburb, fields, photos }) {
   const subject = `Quote request (${page}): ${name}, ${suburb}`;
-  const date = new Date().toUTCString().replace('GMT', '+0000');
-  const id = `${crypto.randomUUID()}@${(env.SMTP_USER.split('@')[1] || 'boradecor.com.au')}`;
-  const mix = `mix_${crypto.randomUUID().replace(/-/g, '')}`;
-  const alt = `alt_${crypto.randomUUID().replace(/-/g, '')}`;
-  const safeName = name.replace(/["\\]/g, '');
-
   const rows = [['Name', name], ['Phone', phone], ['Email', email], ['Suburb', suburb]]
     .concat(fields.filter(([label]) => !['Name', 'Phone', 'Email', 'Suburb'].includes(label)));
   const photoLine = photos.length ? `${photos.length} photo${photos.length > 1 ? 's' : ''} attached` : 'No photos attached';
@@ -116,7 +115,7 @@ function buildMessage({ env, page, name, email, phone, suburb, fields, photos })
     photoLine,
     '',
     `Reply to this email to answer ${name} directly.`
-  ].join('\r\n');
+  ].join('\n');
 
   const tel = phone.replace(/[^\d+]/g, '');
   const html = `<!doctype html><html><body style="margin:0;background:#f2ece4;font-family:Arial,Helvetica,sans-serif;color:#1e1d1b">
@@ -137,42 +136,5 @@ ${rows.map(([k, v]) => {
 <p style="margin:18px 0 0;font-size:14px;color:#6b645b">${esc(photoLine)}. Reply to this email to answer ${esc(name)} directly.</p>
 </td></tr></table></td></tr></table></body></html>`;
 
-  const head = [
-    `From: ${encodeHeader(fromName)} <${env.SMTP_USER}>`,
-    `To: ${String(env.QUOTE_TO).split(',').map(s => `<${s.trim()}>`).join(', ')}`,
-    `Reply-To: ${encodeHeader(safeName)} <${email}>`,
-    `Subject: ${encodeHeader(subject)}`,
-    `Date: ${date}`,
-    `Message-ID: <${id}>`,
-    'MIME-Version: 1.0',
-    `Content-Type: multipart/mixed; boundary="${mix}"`
-  ];
-  const parts = [
-    `--${mix}`,
-    `Content-Type: multipart/alternative; boundary="${alt}"`,
-    '',
-    `--${alt}`,
-    'Content-Type: text/plain; charset=UTF-8',
-    'Content-Transfer-Encoding: base64',
-    '',
-    wrap76(b64(text)),
-    `--${alt}`,
-    'Content-Type: text/html; charset=UTF-8',
-    'Content-Transfer-Encoding: base64',
-    '',
-    wrap76(b64(html)),
-    `--${alt}--`
-  ];
-  for (const p of photos) {
-    parts.push(
-      `--${mix}`,
-      `Content-Type: ${p.type}; name="${p.filename}"`,
-      `Content-Disposition: attachment; filename="${p.filename}"`,
-      'Content-Transfer-Encoding: base64',
-      '',
-      p.body
-    );
-  }
-  parts.push(`--${mix}--`);
-  return `${head.join('\r\n')}\r\n\r\n${parts.join('\r\n')}`;
+  return { subject, text, html };
 }

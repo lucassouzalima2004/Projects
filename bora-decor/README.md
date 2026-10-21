@@ -58,26 +58,49 @@ Ao enviar:
    `BORADECOR_QUOTE_TO` no GitHub (Settings → Secrets and variables → Actions → aba Variables) e rode o workflow;
 3. a pessoa vê "Thanks! Your request is on its way" e o Meta Pixel (se configurado) registra um "Lead".
 
-O e-mail sai pela caixa **info@boradecor.com.au** da Hostinger (SMTP `smtp.hostinger.com`, porta 465).
-**Para funcionar, falta só a senha dessa caixa.** Cadastre uma vez, de um destes jeitos:
+O e-mail sai pelo **Resend** (resend.com, grátis até 100 e-mails por dia e 3.000 por mês), com remetente
+"Bora Decor website <info@boradecor.com.au>". Não dá para usar o SMTP da Hostinger: os servidores de e-mail dela
+ficam na rede do Cloudflare, e o Cloudflare não deixa o Worker se conectar à própria rede.
 
-- **GitHub** (recomendado): Settings → Secrets and variables → Actions → New repository secret →
-  nome `BORADECOR_SMTP_PASS`, valor = senha do info@. Depois rode o workflow de novo (Actions →
-  Deploy Bora Decor → Run workflow) ou faça qualquer push em `bora-decor/`.
-- **Cloudflare**: Workers & Pages → boradecor → Settings → Variables and Secrets → Add → tipo *Secret*,
-  nome `SMTP_PASS`, valor = senha do info@.
+**Configurar (uma vez):**
 
-O resumo da execução no GitHub (Actions) mostra "Formulário de orçamento: pronto" quando está tudo certo.
-Se alguém trocar a senha do info@, troque o secret também.
+1. Crie a conta em https://resend.com (pode ser com o info@ ou o e-mail de vocês).
+2. **Domains → Add domain** → `boradecor.com.au`. Use o botão de configurar pelo Cloudflare (ou crie à mão, no DNS
+   do Cloudflare, os registros que o Resend mostrar: ficam em `send.boradecor.com.au` e `resend._domainkey`, não
+   mexem no e-mail da Hostinger). Espere aparecer **Verified**.
+3. **API Keys → Create API key** (permissão *Sending access*, domínio boradecor.com.au) e copie a chave (`re_...`).
+4. No GitHub: Settings → Secrets and variables → Actions → New repository secret → nome `BORADECOR_RESEND_KEY`,
+   valor = a chave. Depois rode o workflow de novo (Actions → Deploy Bora Decor → Run workflow).
 
-Enquanto a senha não estiver lá (ou se o e-mail falhar), o site não perde o cliente: mostra um aviso e um botão
+O resumo da execução no GitHub (Actions) mostra "Formulário de orçamento: pronto" quando a chave está no Worker.
+Os envios (e erros) aparecem em resend.com → Emails.
+
+Enquanto a chave não estiver lá (ou se o envio falhar), o site não perde o cliente: mostra um aviso e um botão
 "Open my email app" com o e-mail já escrito para a pessoa mandar (e anexar as fotos) do próprio celular.
 
-Trocar quem recebe ou a caixa que envia: variáveis `BORADECOR_QUOTE_TO` (pode ter vários e-mails separados por
-vírgula) e `BORADECOR_SMTP_USER`, em Settings → Secrets and variables → Actions → Variables.
+Trocar quem recebe ou o remetente: variáveis `BORADECOR_QUOTE_TO` (pode ter vários e-mails separados por vírgula) e
+`BORADECOR_QUOTE_FROM` (precisa ser do domínio verificado no Resend), em Settings → Secrets and variables → Actions →
+Variables.
+
+### E-mail do domínio (Hostinger)
+
+As caixas info@ e install@ são da Hostinger, mas o DNS do domínio está no Cloudflare. Para elas receberem e-mail,
+o DNS do Cloudflare (boradecor.com.au → DNS → Records) precisa ter:
+
+| Tipo | Nome | Conteúdo | Prioridade |
+|---|---|---|---|
+| MX | @ | mx1.hostinger.com | 5 |
+| MX | @ | mx2.hostinger.com | 10 |
+| TXT | @ | `v=spf1 include:_spf.mail.hostinger.com ~all` | |
+| CNAME (nuvem cinza) | hostingermail-a._domainkey | hostingermail-a.dkim.mail.hostinger.com | |
+| CNAME (nuvem cinza) | hostingermail-b._domainkey | hostingermail-b.dkim.mail.hostinger.com | |
+| CNAME (nuvem cinza) | hostingermail-c._domainkey | hostingermail-c.dkim.mail.hostinger.com | |
+| TXT | _dmarc | `v=DMARC1; p=none` | |
+
+Só pode existir **um** TXT `v=spf1` em `@`. Se o Resend pedir SPF, ele fica em `send`, não em `@`.
 
 Proteções: campo escondido contra robôs, validação dos campos, limite de 6 fotos e ~9 MB, e as fotos só passam se
-forem base64 puro (ninguém consegue injetar comandos no e-mail pelo formulário).
+forem base64 puro.
 
 O WhatsApp saiu do site: na Austrália quase ninguém usa, e o Roni quer todos os pedidos centralizados no e-mail.
 
@@ -130,7 +153,8 @@ mude nas duas.
 
 ## Antes de mostrar para o cliente
 
-- [ ] Cadastrar a senha do info@boradecor.com.au (`BORADECOR_SMTP_PASS`) e mandar um pedido de teste com fotos
+- [ ] Registros de e-mail da Hostinger no DNS do Cloudflare (tabela acima)
+- [ ] Conta no Resend, domínio verificado, chave em `BORADECOR_RESEND_KEY` e um pedido de teste com fotos
 - [x] ID do Meta Pixel da conta de anúncios (1070067669184384)
 - [ ] Fotos de trabalhos reais para `assets/js/projects.js` (cozinhas, laundries, cabinetry)
 - [ ] Garantia: 10 anos no filme + 2 anos na instalação
@@ -164,13 +188,13 @@ python3 -m http.server 8000
 ```
 
 Com o Worker (formulário de verdade): `npx wrangler dev` com um `wrangler.jsonc` igual ao que o workflow gera e um
-arquivo `.dev.vars` com `SMTP_PASS=...`.
+arquivo `.dev.vars` com `RESEND_API_KEY=...`.
 
 ## Publicar
 
 O workflow `.github/workflows/deploy-bora-decor.yml` publica a cada push que mexe em `bora-decor/` (no `main` ou no
 branch `claude/amazing-goodall-z4s27u`). Ele gera o `wrangler.jsonc` com o Worker, os arquivos do site e as variáveis
-do e-mail, cadastra a senha (`BORADECOR_SMTP_PASS`) e confere o site e o formulário no ar.
+do e-mail, cadastra a chave do Resend (`BORADECOR_RESEND_KEY`) e confere o site e o formulário no ar.
 
 O domínio boradecor.com.au foi ligado no painel do Cloudflare (Workers & Pages → boradecor → Domains & Routes) e
 **não** aparece no `wrangler.jsonc` de propósito: assim o deploy não mexe nos domínios. O canonical, o sitemap e a
@@ -185,7 +209,6 @@ bora-decor/
 ├── 404.html                   página de "não encontrado"
 ├── _headers                   cabeçalhos do Cloudflare (cache, noindex no .workers.dev)
 ├── worker/index.js            Worker: serve o site e manda os pedidos de orçamento por e-mail
-├── worker/smtp.js             envio de e-mail (SMTP) a partir do Worker
 ├── assets/css/styles.css      visual (cores e fontes no topo)
 ├── assets/js/config.js        telefone, e-mail, Meta Pixel, redes
 ├── assets/js/projects.js      projetos (antes e depois)

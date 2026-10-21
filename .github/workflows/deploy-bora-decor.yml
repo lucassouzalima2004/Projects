@@ -3,16 +3,16 @@
 # Cada push que mexe em bora-decor/ (no main ou no branch claude/amazing-goodall-z4s27u) atualiza o site.
 #
 # O Worker serve os arquivos do site e também recebe os pedidos de orçamento (/api/quote, código em
-# bora-decor/worker/), que manda por e-mail, com as fotos, pelo SMTP da Hostinger.
+# bora-decor/worker/), que manda por e-mail, com as fotos, pela API do Resend.
 #
 # Secrets (Settings → Secrets and variables → Actions):
 #   CLOUDFLARE_API_TOKEN     token do Cloudflare que pode publicar Workers (obrigatório)
 #   CLOUDFLARE_ACCOUNT_ID    ID da conta (opcional: sem ele, o workflow descobre a conta pelo token)
-#   BORADECOR_SMTP_PASS      senha da caixa que envia os pedidos (BORADECOR_SMTP_USER, padrão info@boradecor.com.au).
+#   BORADECOR_RESEND_KEY     chave da API do Resend (resend.com), que manda os pedidos de orçamento por e-mail.
 #                            Sem ela o site funciona, mas o formulário mostra o plano B (e-mail escrito para a pessoa mandar).
 # Variáveis opcionais (mesma tela, aba Variables):
 #   BORADECOR_SITE_URL       endereço oficial (padrão https://boradecor.com.au): canonical, sitemap e prévia do link
-#   BORADECOR_SMTP_USER      caixa que envia os pedidos (padrão info@boradecor.com.au)
+#   BORADECOR_QUOTE_FROM     remetente dos pedidos (padrão info@boradecor.com.au; o domínio precisa estar verificado no Resend)
 #   BORADECOR_QUOTE_TO       quem recebe os pedidos (padrão info@boradecor.com.au; vários: separe por vírgula)
 #
 # O domínio NÃO é declarado no wrangler.jsonc de propósito: assim o deploy não mexe nos domínios ligados no painel.
@@ -63,8 +63,8 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       ACCOUNT_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID }}
       SITE_VAR: ${{ vars.BORADECOR_SITE_URL || 'https://boradecor.com.au' }}
-      SMTP_PASS: ${{ secrets.BORADECOR_SMTP_PASS }}
-      SMTP_USER: ${{ vars.BORADECOR_SMTP_USER || 'info@boradecor.com.au' }}
+      RESEND_KEY: ${{ secrets.BORADECOR_RESEND_KEY }}
+      QUOTE_FROM: ${{ vars.BORADECOR_QUOTE_FROM || 'info@boradecor.com.au' }}
       QUOTE_TO: ${{ vars.BORADECOR_QUOTE_TO || 'info@boradecor.com.au' }}
     steps:
       - uses: actions/checkout@v4
@@ -158,10 +158,8 @@ jobs:
               "html_handling": "auto-trailing-slash"
             },
             "vars": {
-              "SMTP_HOST": "smtp.hostinger.com",
-              "SMTP_PORT": "465",
-              "SMTP_USER": "$SMTP_USER",
               "QUOTE_TO": "$QUOTE_TO",
+              "QUOTE_FROM": "$QUOTE_FROM",
               "QUOTE_FROM_NAME": "Bora Decor website"
             },
             "observability": { "enabled": true }
@@ -171,16 +169,16 @@ jobs:
       - name: Publicar
         run: npx wrangler deploy --config wrangler.jsonc
 
-      - name: Senha do e-mail dos orçamentos
+      - name: Chave do Resend (e-mail dos orçamentos)
         run: |
-          if [ -n "$SMTP_PASS" ]; then
-            printf '%s' "$SMTP_PASS" | npx wrangler secret put SMTP_PASS --config wrangler.jsonc
+          if [ -n "$RESEND_KEY" ]; then
+            printf '%s' "$RESEND_KEY" | npx wrangler secret put RESEND_API_KEY --config wrangler.jsonc
           else
             acc="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID"
-            if curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "$acc/workers/scripts/$WORKER/secrets" | jq -e '.result[]? | select(.name == "SMTP_PASS")' > /dev/null; then
-              echo "A senha (SMTP_PASS) já está no Worker."
+            if curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "$acc/workers/scripts/$WORKER/secrets" | jq -e '.result[]? | select(.name == "RESEND_API_KEY")' > /dev/null; then
+              echo "A chave do Resend (RESEND_API_KEY) já está no Worker."
             else
-              echo "::warning title=Formulário sem e-mail::Cadastre o secret BORADECOR_SMTP_PASS (senha de $SMTP_USER) e rode de novo. Até lá o formulário mostra o plano B (a pessoa manda o e-mail do próprio aplicativo)."
+              echo "::warning title=Formulário sem e-mail::Cadastre o secret BORADECOR_RESEND_KEY (chave da API do Resend) e rode de novo. Até lá o formulário mostra o plano B (a pessoa manda o e-mail do próprio aplicativo)."
             fi
           fi
 
@@ -195,8 +193,8 @@ jobs:
               code=$(curl -sS -o /dev/null -w '%{http_code}' -X POST -H 'content-type: application/json' --data '{}' "$WORKERS_URL/api/quote" || true)
               case "$code" in
                 422) echo "Formulário de orçamento: pronto (e-mail configurado, pedidos vão para $QUOTE_TO)." >> "$GITHUB_STEP_SUMMARY" ;;
-                503) echo "::warning title=Formulário sem e-mail::Falta a senha SMTP_PASS no Worker (secret BORADECOR_SMTP_PASS)."
-                     echo "Formulário de orçamento: **falta a senha do e-mail** (secret BORADECOR_SMTP_PASS)." >> "$GITHUB_STEP_SUMMARY" ;;
+                503) echo "::warning title=Formulário sem e-mail::Falta a chave do Resend no Worker (secret BORADECOR_RESEND_KEY)."
+                     echo "Formulário de orçamento: **falta a chave do Resend** (secret BORADECOR_RESEND_KEY)." >> "$GITHUB_STEP_SUMMARY" ;;
                 *)   echo "Formulário de orçamento: resposta inesperada ($code)." >> "$GITHUB_STEP_SUMMARY" ;;
               esac
               exit 0
