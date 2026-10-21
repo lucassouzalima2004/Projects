@@ -99,6 +99,9 @@ o DNS do Cloudflare (boradecor.com.au → DNS → Records) precisa ter:
 
 Só pode existir **um** TXT `v=spf1` em `@`. Se o Resend pedir SPF, ele fica em `send`, não em `@`.
 
+O workflow **Bora Decor e-mail DNS (Hostinger)** (`.github/workflows/bora-decor-email-dns.yml`) cria esses registros
+sozinho pelo token do Cloudflare (precisa da permissão Zone → DNS → Edit). Ele só cria o que falta e não mexe no resto.
+
 Proteções: campo escondido contra robôs, validação dos campos, limite de 6 fotos e ~9 MB, e as fotos só passam se
 forem base64 puro.
 

@@ -1,0 +1,91 @@
+# Cria no DNS do Cloudflare os registros do e-mail da Hostinger (caixas info@ e install@ de boradecor.com.au).
+# Só cria o que falta: não apaga nem altera registros que já existem. Pode rodar de novo quando quiser.
+# Usa o mesmo CLOUDFLARE_API_TOKEN do deploy, que precisa da permissão Zone → DNS → Edit em boradecor.com.au.
+name: Bora Decor e-mail DNS (Hostinger)
+
+on:
+  push:
+    branches: [main, claude/amazing-goodall-z4s27u]
+    paths: ['.github/workflows/bora-decor-email-dns.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dns:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      ZONE_NAME: boradecor.com.au
+    steps:
+      - name: Registros do e-mail da Hostinger
+        run: |
+          api=https://api.cloudflare.com/client/v4
+          auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+          perm="O token CLOUDFLARE_API_TOKEN precisa da permissão Zone → DNS → Edit em $ZONE_NAME (Cloudflare → My Profile → API Tokens → editar o token). Ou crie os registros à mão (tabela no README do bora-decor)."
+          zone=$(curl -sS -H "$auth" "$api/zones?name=$ZONE_NAME" | jq -r '.result[0].id // empty')
+          if [ -z "$zone" ]; then
+            echo "::error title=Sem acesso à zona $ZONE_NAME::$perm"
+            exit 1
+          fi
+          # Registros de um tipo e nome (falha se o token não puder ler o DNS)
+          list() {
+            r=$(curl -sS -H "$auth" "$api/zones/$zone/dns_records?type=$1&name=$2&per_page=100")
+            if ! echo "$r" | jq -e '.success' > /dev/null; then
+              echo "::error title=Sem acesso ao DNS::$perm $(echo "$r" | jq -c '.errors')" >&2
+              exit 1
+            fi
+            echo "$r" | jq -r '.result[].content'
+          }
+          fail=0
+          # Cria um registro: tipo nome conteúdo [prioridade]
+          add() {
+            body=$(jq -n --arg t "$1" --arg n "$2" --arg c "$3" --arg p "${4:-}" \
+              '{type: $t, name: $n, content: $c, ttl: 1}
+               + (if $p != "" then {priority: ($p | tonumber)} else {} end)
+               + (if $t == "CNAME" then {proxied: false} else {} end)')
+            r=$(curl -sS -X POST -H "$auth" -H 'content-type: application/json' "$api/zones/$zone/dns_records" --data "$body")
+            if echo "$r" | jq -e '.success' > /dev/null; then
+              echo "Criado: $1 $2 → $3" | tee -a "$GITHUB_STEP_SUMMARY"
+            else
+              echo "::error title=Não criou $1 $2::$perm $(echo "$r" | jq -c '.errors')"
+              fail=1
+            fi
+          }
+          ok() { echo "Já existe: $*" | tee -a "$GITHUB_STEP_SUMMARY"; }
+          echo "### E-mail da Hostinger no DNS de $ZONE_NAME" >> "$GITHUB_STEP_SUMMARY"
+
+          # MX: só cria se não houver MX de outro serviço (misturar mandaria parte dos e-mails para outro lugar)
+          mx=$(list MX "$ZONE_NAME")
+          if echo "$mx" | grep -v '^$' | grep -qv 'hostinger.com$'; then
+            echo "::warning title=MX de outro serviço::Já existe MX que não é da Hostinger ($(echo $mx)). Não mexi; confira no painel."
+          else
+            for pair in "mx1.hostinger.com 5" "mx2.hostinger.com 10"; do
+              set -- $pair
+              if echo "$mx" | grep -qx "$1"; then ok "MX $1"; else add MX "$ZONE_NAME" "$1" "$2"; fi
+            done
+          fi
+
+          # SPF: só pode haver um v=spf1 na raiz
+          spf=$(list TXT "$ZONE_NAME" | grep 'v=spf1' || true)
+          if [ -z "$spf" ]; then
+            add TXT "$ZONE_NAME" '"v=spf1 include:_spf.mail.hostinger.com ~all"'
+          elif echo "$spf" | grep -q '_spf.mail.hostinger.com'; then
+            ok "SPF"
+          else
+            echo "::warning title=SPF diferente::Já existe um SPF na raiz ($spf) sem a Hostinger. Junte include:_spf.mail.hostinger.com nele à mão (não pode haver dois)."
+          fi
+
+          # DKIM da Hostinger (CNAME sem o proxy do Cloudflare)
+          for s in a b c; do
+            name="hostingermail-$s._domainkey.$ZONE_NAME"
+            if [ -n "$(list CNAME "$name")$(list TXT "$name")" ]; then ok "DKIM hostingermail-$s"
+            else add CNAME "$name" "hostingermail-$s.dkim.mail.hostinger.com"; fi
+          done
+
+          # DMARC
+          if list TXT "_dmarc.$ZONE_NAME" | grep -q 'v=DMARC1'; then ok "DMARC"
+          else add TXT "_dmarc.$ZONE_NAME" '"v=DMARC1; p=none"'; fi
+
+          exit $fail
