@@ -1,12 +1,13 @@
-# Publica o site da Jesten Construções (cliente: Elivelton Phillips) como Worker do Cloudflare, com o painel em /painel:
-# https://elivelton-jesten.<subdomínio da conta>.workers.dev
+# Publica o site da Jesten Construções (cliente: Elivelton Phillips) como Worker do Cloudflare, com o painel em /painel.
+# O site mora na conta do Cloudflare do cliente: https://elivelton-jesten.jesten.workers.dev
 #
-# Usa os secrets dos outros sites (Settings → Secrets and variables → Actions):
-#   CLOUDFLARE_API_TOKEN   token do Cloudflare com permissão de editar Workers (obrigatório)
-#   CLOUDFLARE_ACCOUNT_ID  ID da conta do Cloudflare. Pode ficar em Secrets ou em Variables; se não existir,
-#                          o workflow tenta descobrir pelo próprio token (funciona quando o token vê uma conta só)
-# E um secret só deste site:
-#   JESTEN_ADMIN_PASSWORD  senha inicial do painel. Sem ele o site sobe normalmente, mas o painel avisa que está sem senha.
+# Secrets (Settings → Secrets and variables → Actions):
+#   JESTEN_CLOUDFLARE_API_TOKEN   token da conta do cliente com permissão de editar Workers. Com ele, publica lá.
+#   JESTEN_CLOUDFLARE_ACCOUNT_ID  ID dessa conta (opcional: sem ele, o workflow descobre pelo próprio token)
+#   JESTEN_ADMIN_PASSWORD         senha do painel (opcional). Quando existe, é posta no Worker a cada deploy e serve para
+#                                 recuperar o acesso; sem ela, vale a senha guardada no Cloudflare (ADMIN_PASSWORD).
+# Sem JESTEN_CLOUDFLARE_API_TOKEN, usa os secrets dos outros sites (CLOUDFLARE_API_TOKEN e CLOUDFLARE_ACCOUNT_ID) e
+# publica na conta onde o site começou, como uma cópia que só redireciona para o endereço do cliente (MOVED_TO).
 # O banco (visitas, fotos e vídeos enviados pelo painel, mensagens) é um Durable Object com SQLite, criado no primeiro deploy.
 # Sem o token, o workflow só avisa e não falha.
 name: Deploy Jesten Construções (Cloudflare)
@@ -35,7 +36,7 @@ jobs:
       - name: Conferir o token do Cloudflare
         id: creds
         env:
-          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TOKEN: ${{ secrets.JESTEN_CLOUDFLARE_API_TOKEN || secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           if [ -n "$TOKEN" ]; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
@@ -52,8 +53,10 @@ jobs:
       run:
         working-directory: elivelton-jesten
     env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      ACCOUNT_SETTING: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID }}
+      # A conta do cliente tem prioridade; sem o token dela, publica na conta antiga só com o redirecionamento
+      CLOUDFLARE_API_TOKEN: ${{ secrets.JESTEN_CLOUDFLARE_API_TOKEN || secrets.CLOUDFLARE_API_TOKEN }}
+      ACCOUNT_SETTING: ${{ secrets.JESTEN_CLOUDFLARE_API_TOKEN == '' && (secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID) || (secrets.JESTEN_CLOUDFLARE_ACCOUNT_ID || vars.JESTEN_CLOUDFLARE_ACCOUNT_ID || '') }}
+      MOVED_TO: ${{ secrets.JESTEN_CLOUDFLARE_API_TOKEN == '' && 'https://elivelton-jesten.jesten.workers.dev' || '' }}
       ADMIN_PASSWORD: ${{ secrets.JESTEN_ADMIN_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
@@ -81,7 +84,7 @@ jobs:
         run: |
           set -o pipefail
           # O commit vai no fim dos endereços do CSS e do JS, para os navegadores buscarem a versão nova
-          npx wrangler deploy --var "BUILD_ID:${GITHUB_SHA::8}" | tee deploy.log
+          npx wrangler deploy --var "BUILD_ID:${GITHUB_SHA::8}" ${MOVED_TO:+--var "MOVED_TO:$MOVED_TO"} | tee deploy.log
           url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | head -n 1 || true)
           echo "URL=$url" >> "$GITHUB_ENV"
 
@@ -91,11 +94,15 @@ jobs:
 
       - name: Endereço do site
         run: |
+          if [ -n "$MOVED_TO" ]; then
+            echo "Cópia na conta antiga (${URL:-veja o passo Publicar}): redireciona tudo para $MOVED_TO. Para publicar na conta do cliente, crie o secret JESTEN_CLOUDFLARE_API_TOKEN." | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           {
             echo "Site no ar: ${URL:-veja o endereço no passo Publicar}"
             echo ""
             echo "Painel do cliente: ${URL:+$URL/painel}"
           } | tee -a "$GITHUB_STEP_SUMMARY"
-          if [ -z "$ADMIN_PASSWORD" ]; then
-            echo "::warning title=Painel sem senha::Crie o secret JESTEN_ADMIN_PASSWORD (Settings → Secrets and variables → Actions) com a senha inicial do painel e rode este workflow de novo."
+          if ! npx wrangler secret list 2>/dev/null | grep -q '"ADMIN_PASSWORD"'; then
+            echo "::warning title=Painel sem senha::Crie a senha do painel: secret JESTEN_ADMIN_PASSWORD no GitHub (e rode este workflow de novo) ou, no Cloudflare, Workers & Pages → elivelton-jesten → Settings → Variables and Secrets → ADMIN_PASSWORD (tipo Secret)."
           fi

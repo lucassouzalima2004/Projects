@@ -102,34 +102,46 @@ construtora isto sobra; o espaço usado aparece no painel em **Conta**.
 
 ## Publicar
 
+O site mora na conta do Cloudflare do cliente (Eliveltonjesten@gmail.com):
+**https://elivelton-jesten.jesten.workers.dev**, com o painel em `/painel`. Enquanto estiver no `.workers.dev`, o site
+pede ao Google para **não** indexar (é prévia); no domínio definitivo passa a indexar sozinho.
+
 O workflow `.github/workflows/deploy-elivelton-jesten.yml` publica a cada push que mexe em `elivelton-jesten/`.
-Usa os mesmos secrets dos outros sites (`CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID`) e mais um:
+Secrets (Settings → Secrets and variables → Actions → New repository secret):
 
 | Secret | O que é |
 | --- | --- |
-| `JESTEN_ADMIN_PASSWORD` | Senha inicial do painel. Cadastre em **Settings → Secrets and variables → Actions → New repository secret** e rode o workflow de novo (Actions → Deploy Jesten Construções → Run workflow). |
+| `JESTEN_CLOUDFLARE_API_TOKEN` | Token da conta do cliente com permissão de editar Workers. Com ele, cada push publica na conta do cliente. |
+| `JESTEN_CLOUDFLARE_ACCOUNT_ID` | Opcional: ID da conta do cliente. Sem ele, o workflow descobre pelo próprio token. |
+| `JESTEN_ADMIN_PASSWORD` | Opcional: senha do painel. Quando existe, vai para o Worker a cada deploy (e serve para recuperar o acesso). |
 
-O site fica em `https://elivelton-jesten.<subdomínio da conta>.workers.dev` (o endereço exato aparece no resumo da
-execução, em Actions) e o painel no mesmo endereço com `/painel`. Enquanto estiver no `.workers.dev`, o site pede ao
-Google para **não** indexar (é prévia); no domínio definitivo passa a indexar sozinho.
+Sem `JESTEN_CLOUDFLARE_API_TOKEN`, o workflow usa os secrets dos outros sites e publica na conta onde o site começou
+(`elivelton-jesten.lucassouzalima10.workers.dev`), como uma cópia que só redireciona tudo para o endereço do cliente
+(variável `MOVED_TO`): quem ainda tiver o link antigo cai no site certo e os pedidos de orçamento chegam ao painel dele.
 
-**Senha do painel**: o cliente pode trocá-la em **Conta**. Se ele esquecer, mude o secret `JESTEN_ADMIN_PASSWORD` e
-rode o workflow: a senha nova do Cloudflare passa a valer e a que ele tinha criado no painel é descartada.
+Para publicar à mão na conta do cliente, de dentro de `elivelton-jesten/`:
+
+```bash
+CLOUDFLARE_API_TOKEN=<token do cliente> npx wrangler deploy --var "BUILD_ID:$(git rev-parse HEAD | cut -c1-8)"
+```
+
+**Senha do painel**: fica no Worker como secret `ADMIN_PASSWORD` (Cloudflare → Workers & Pages → elivelton-jesten →
+Settings → Variables and Secrets → Add, tipo Secret) ou vem do secret `JESTEN_ADMIN_PASSWORD` do GitHub. O cliente pode
+trocá-la em **Conta**. Se ele esquecer, mude o `ADMIN_PASSWORD`: a senha nova passa a valer e a que ele tinha criado no
+painel é descartada.
 
 ### Levar para o domínio jesten.pt
 
 Hoje o jesten.pt está na Netlify (conta que o cliente recebeu do programador anterior). Para o site novo responder
 em jesten.pt:
 
-1. No Cloudflare, **Add a domain** → `jesten.pt` (plano Free) e troque os nameservers do domínio no registrador
-   (onde o .pt foi registado) pelos que o Cloudflare indicar.
+1. Na conta do Cloudflare do cliente, **Add a domain** → `jesten.pt` (plano Free). Antes de continuar, confira na lista
+   de DNS que o Cloudflare importou os registos de e-mail (**MX**, e os TXT de SPF/DKIM): os e-mails @jesten.pt
+   (comercial, ofitec, geral) dependem deles. Depois troque os nameservers do domínio no registrador (onde o .pt foi
+   registado) pelos que o Cloudflare indicar.
 2. Em **Workers & Pages → elivelton-jesten → Settings → Domains & Routes → Add → Custom domain**, adicione
    `jesten.pt` e `www.jesten.pt`.
 3. Depois de o site novo abrir no domínio, o site antigo da Netlify pode ser apagado.
-
-Se o cliente quiser tudo na conta dele, crie um Cloudflare em nome dele e troque os secrets do GitHub pelos dessa conta;
-o workflow publica igual. (O banco começa vazio na conta nova: as fotos do site vão no código, as enviadas pelo painel
-teriam de ser enviadas de novo.)
 
 ## Ver no computador
 
@@ -159,5 +171,7 @@ otimizados (baixa os originais do jesten.pt se a pasta `tools/originals/` estive
 - [ ] Revisar com o cliente os textos dos serviços, de "Como trabalhamos" e da página de carreiras (agora ele mesmo
       pode mudá-los no painel, em **Textos do site**) e os locais das obras nas legendas (só pus local onde a foto ou
       o vídeo mostravam: Sant Cugat, Barcelona, Catalunha).
-- [ ] Senha do painel: cadastrar o secret `JESTEN_ADMIN_PASSWORD` antes de mostrar o painel ao cliente.
+- [ ] Senha do painel na conta do cliente (secret `ADMIN_PASSWORD` no Worker, ou `JESTEN_ADMIN_PASSWORD` no GitHub)
+      antes de mostrar o painel a ele.
+- [ ] Secret `JESTEN_CLOUDFLARE_API_TOKEN` no GitHub, para os próximos pushes publicarem direto na conta do cliente.
 - [ ] Mais fotos e vídeos recentes das obras (ele mesmo pode enviar pelo painel).

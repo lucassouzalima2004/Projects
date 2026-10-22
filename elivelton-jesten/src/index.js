@@ -520,6 +520,12 @@ export default {
     const url = new URL(request.url);
     const { pathname } = url;
     const method = request.method;
+    // Cópia num endereço antigo (o site mudou de conta do Cloudflare): manda tudo para o endereço novo, no mesmo caminho.
+    // Envios de formulário seguem com 308, que mantém o POST e o que foi preenchido.
+    if (env.MOVED_TO) {
+      const to = new URL(pathname + url.search, env.MOVED_TO);
+      if (to.origin !== url.origin) return Response.redirect(to.href, method === 'GET' || method === 'HEAD' ? 301 : 308);
+    }
     try {
       if (pathname === '/api/v' && method === 'POST') return await beacon(request, env, ctx, url);
       if (pathname === '/api/quote' && method === 'POST') return await submitForm(request, env, url, 'quote');
