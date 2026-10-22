@@ -12,37 +12,43 @@
 -%}
 <style>
   @font-face {
-    font-family: 'Cormorant Garamond';
-    src: url('{{ 'cormorant-garamond.woff2' | asset_url }}') format('woff2');
-    font-weight: 300 700;
+    font-family: 'Lato';
+    src: url('{{ 'lato-300.woff2' | asset_url }}') format('woff2');
+    font-weight: 300;
     font-style: normal;
     font-display: swap;
   }
   @font-face {
-    font-family: 'Cormorant Garamond';
-    src: url('{{ 'cormorant-garamond-italic.woff2' | asset_url }}') format('woff2');
-    font-weight: 300 700;
+    font-family: 'Lato';
+    src: url('{{ 'lato-300-italic.woff2' | asset_url }}') format('woff2');
+    font-weight: 300;
     font-style: italic;
     font-display: swap;
   }
   @font-face {
-    font-family: 'Jost';
-    src: url('{{ 'jost.woff2' | asset_url }}') format('woff2');
-    font-weight: 100 900;
+    font-family: 'Lato';
+    src: url('{{ 'lato-400.woff2' | asset_url }}') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Lato';
+    src: url('{{ 'lato-700.woff2' | asset_url }}') format('woff2');
+    font-weight: 700;
     font-style: normal;
     font-display: swap;
   }
 
   :root {
-    --c-pearl: {{ settings.color_background }};
-    --c-ivory: {{ settings.color_surface }};
-    --c-sand: {{ settings.color_sand }};
-    --c-cafe: {{ settings.color_text }};
-    --c-nero: {{ settings.color_nero }};
-    --c-terracotta: {{ settings.color_accent }};
-    --c-gold: {{ settings.color_gold }};
-    --c-garden: {{ settings.color_garden }};
-    --c-water: {{ settings.color_water }};
+    --c-paper: {{ settings.color_background }};
+    --c-surface: {{ settings.color_surface }};
+    --c-grey: {{ settings.color_sand }};
+    --c-ink: {{ settings.color_text }};
+    --c-black: {{ settings.color_nero }};
+    --c-accent: {{ settings.color_accent }};
+    --c-detail: {{ settings.color_gold }};
+    --c-charcoal: {{ settings.color_garden }};
 
     --heading-scale: {{ heading_scale }};
     --body-scale: {{ body_scale }};

@@ -109,7 +109,7 @@
                     </ul>
                     {%- if section.settings.mega_heading != blank -%}
                       <a href="{{ section.settings.mega_link | default: routes.all_products_collection_url }}" class="mega__feature">
-                        <span class="mega__media arch">
+                        <span class="mega__media">
                           {%- render 'media',
                             image: section.settings.mega_image,
                             artwork: section.settings.mega_artwork,

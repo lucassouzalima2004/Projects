@@ -1,5 +1,6 @@
 {%- comment -%}
-  "Enter the garden": the campaign image sits inside an arch and opens to full screen as the visitor scrolls.
+  "Enter the garden": the campaign image sits inside a window that opens to full screen as the visitor scrolls.
+  The slogan sits on the image, split between the left and right edges of the window.
 {%- endcomment -%}
 <garden-hero
   class="hero scheme-{{ section.settings.color_scheme }}{% if section.settings.reveal %} hero--reveal{% endif %}"
@@ -33,6 +34,12 @@
         </div>
       </div>
       <div class="hero__veil"></div>
+      {%- if section.settings.slogan_left != blank or section.settings.slogan_right != blank -%}
+        <p class="hero__slogan">
+          <span>{{ section.settings.slogan_left }}</span>
+          <span>{{ section.settings.slogan_right }}</span>
+        </p>
+      {%- endif -%}
       <div class="hero__inside">
         {%- if section.settings.claim != blank -%}
           <p class="hero__claim">{{ section.settings.claim }}</p>
@@ -108,7 +115,7 @@
     {
       "type": "checkbox",
       "id": "reveal",
-      "label": "Open the arch on scroll",
+      "label": "Open the image on scroll",
       "info": "Visitors who prefer reduced motion see the full image.",
       "default": true
     },
@@ -123,6 +130,18 @@
       "id": "heading",
       "label": "Heading",
       "default": "Enter the Garden"
+    },
+    {
+      "type": "text",
+      "id": "slogan_left",
+      "label": "Slogan, left side",
+      "default": "Born in Milan"
+    },
+    {
+      "type": "text",
+      "id": "slogan_right",
+      "label": "Slogan, right side",
+      "default": "Made in Brazil"
     },
     {
       "type": "text",
@@ -144,13 +163,13 @@
     {
       "type": "select",
       "id": "color_scheme",
-      "label": "Colors around the arch",
+      "label": "Colors around the image",
       "options": [
-        { "value": "pearl", "label": "Pearl" },
-        { "value": "ivory", "label": "Off-white" },
-        { "value": "sand", "label": "Sand" },
-        { "value": "cafe", "label": "Café" },
-        { "value": "garden", "label": "Garden green" },
+        { "value": "pearl", "label": "White" },
+        { "value": "ivory", "label": "Light grey" },
+        { "value": "sand", "label": "Grey" },
+        { "value": "cafe", "label": "Ink" },
+        { "value": "garden", "label": "Charcoal" },
         { "value": "nero", "label": "Black" }
       ],
       "default": "pearl"

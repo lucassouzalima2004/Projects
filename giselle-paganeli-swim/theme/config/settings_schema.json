@@ -14,7 +14,7 @@
         "type": "image_picker",
         "id": "logo",
         "label": "Logo",
-        "info": "Horizontal version, SVG or PNG with transparent background. While empty, the text wordmark below is used."
+        "info": "Optional. Upload a file to replace the signature. SVG or PNG with transparent background."
       },
       {
         "type": "range",
@@ -27,21 +27,38 @@
         "default": 190
       },
       {
+        "type": "select",
+        "id": "logo_style",
+        "label": "Logo without an uploaded file",
+        "options": [
+          {
+            "value": "signature",
+            "label": "Giselle Paganeli signature"
+          },
+          {
+            "value": "text",
+            "label": "Text wordmark"
+          }
+        ],
+        "default": "signature"
+      },
+      {
         "type": "text",
         "id": "wordmark_name",
-        "label": "Wordmark",
-        "default": "Giselle Paganeli"
+        "label": "Brand name",
+        "default": "Giselle Paganeli",
+        "info": "Read by screen readers and used by the text wordmark."
       },
       {
         "type": "text",
         "id": "wordmark_sub",
-        "label": "Wordmark line 2",
+        "label": "Line under the logo",
         "default": "Swim"
       },
       {
         "type": "text",
         "id": "signature",
-        "label": "Origin signature",
+        "label": "Slogan",
         "default": "Born in Milan · Made in Brazil"
       },
       {
@@ -57,65 +74,55 @@
     "settings": [
       {
         "type": "header",
-        "content": "Brand palette"
+        "content": "Black & white palette"
       },
       {
         "type": "color",
         "id": "color_background",
-        "label": "Pearl (page background)",
-        "default": "#f3efe7"
+        "label": "Background",
+        "default": "#ffffff"
       },
       {
         "type": "color",
         "id": "color_surface",
-        "label": "Off-white (cards and panels)",
-        "default": "#faf8f3"
+        "label": "Light grey (panels)",
+        "default": "#f5f5f5"
       },
       {
         "type": "color",
         "id": "color_sand",
-        "label": "Sand",
-        "default": "#d6c5ae"
+        "label": "Grey (image backgrounds, lines)",
+        "default": "#e8e8e8"
       },
       {
         "type": "color",
         "id": "color_text",
-        "label": "Café (text)",
-        "default": "#382821"
+        "label": "Text",
+        "default": "#111111"
       },
       {
         "type": "color",
         "id": "color_nero",
         "label": "Black",
-        "default": "#111111"
+        "default": "#000000"
       },
       {
         "type": "color",
         "id": "color_accent",
-        "label": "Terracotta (accent)",
-        "default": "#ad634d"
+        "label": "Accent (sale prices, errors)",
+        "default": "#111111"
       },
       {
         "type": "color",
         "id": "color_gold",
-        "label": "Aged gold (details)",
-        "default": "#a8895b"
-      },
-      {
-        "type": "header",
-        "content": "Editorial"
+        "label": "Brand mark",
+        "default": "#111111"
       },
       {
         "type": "color",
         "id": "color_garden",
-        "label": "Deep garden green",
-        "default": "#2f3a2b"
-      },
-      {
-        "type": "color",
-        "id": "color_water",
-        "label": "Lake blue",
-        "default": "#7d97a0"
+        "label": "Charcoal (dark sections)",
+        "default": "#1c1c1c"
       }
     ]
   },
@@ -124,7 +131,7 @@
     "settings": [
       {
         "type": "paragraph",
-        "content": "Headings use Cormorant Garamond and text uses Jost, both under the SIL Open Font License and served from the theme files."
+        "content": "All text uses Lato (SIL Open Font License), served from the theme files."
       },
       {
         "type": "range",

@@ -6,6 +6,8 @@
         "artwork": "garden",
         "overline": "The Garden of Eden 2027",
         "heading": "Enter the Garden",
+        "slogan_left": "Born in Milan",
+        "slogan_right": "Made in Brazil",
         "claim": "embrace your oasis",
         "button_label": "Discover the collection",
         "button_link": "shopify://collections/all",
@@ -29,7 +31,7 @@
       "type": "editorial-split",
       "settings": {
         "artwork": "lake",
-        "shape": "arch",
+        "shape": "square",
         "artwork_2": "flowers",
         "caption": "After Thomas Cole, The Garden of Eden, 1828",
         "layout": "image-left",
@@ -119,7 +121,7 @@
           "type": "image",
           "settings": {
             "artwork": "lake",
-            "shape": "arch",
+            "shape": "square",
             "caption": "Lake and mountain"
           }
         },

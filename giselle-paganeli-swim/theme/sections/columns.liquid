@@ -14,7 +14,7 @@
       {%- for block in section.blocks -%}
         <li class="columns__item" data-reveal style="--i: {{ forloop.index0 }};" {{ block.shopify_attributes }}>
           {%- if block.settings.image != blank or block.settings.artwork != 'none' -%}
-            <div class="columns__media arch">
+            <div class="columns__media">
               {%- render 'media',
                 image: block.settings.image,
                 artwork: block.settings.artwork,
@@ -70,23 +70,23 @@
       "options": [
         {
           "value": "pearl",
-          "label": "Pearl"
+          "label": "White"
         },
         {
           "value": "ivory",
-          "label": "Off-white"
+          "label": "Light grey"
         },
         {
           "value": "sand",
-          "label": "Sand"
+          "label": "Grey"
         },
         {
           "value": "cafe",
-          "label": "Café"
+          "label": "Ink"
         },
         {
           "value": "garden",
-          "label": "Garden green"
+          "label": "Charcoal"
         },
         {
           "value": "nero",

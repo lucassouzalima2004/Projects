@@ -13,9 +13,10 @@
     <script src="{{ 'vendor/qrcode.js' | shopify_asset_url }}" defer></script>
   </head>
   <body class="template-gift-card">
+    {% render 'brand-sprite' %}
     <main class="gift-card page-width page-width--narrow">
       <div class="gift-card__logo">{% render 'wordmark' %}</div>
-      {%- render 'icon', name: 'clover' -%}
+      {%- render 'icon', name: 'mark' -%}
       <h1 class="page-hero__title">{{ 'gift_cards.issued.subtext' | t }}</h1>
       <p class="gift-card__value">{{ gift_card.initial_value | money }}</p>
       {%- if gift_card.enabled == false or gift_card.expired -%}

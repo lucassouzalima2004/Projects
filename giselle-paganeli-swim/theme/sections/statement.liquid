@@ -1,7 +1,7 @@
 <section class="statement scheme-{{ section.settings.color_scheme }} statement--{{ section.settings.size }}">
   <div class="statement__inner page-width" data-reveal>
     {%- if section.settings.show_ornament -%}
-      {%- render 'icon', name: 'clover' -%}
+      {%- render 'icon', name: 'mark' -%}
     {%- endif -%}
     {%- if section.settings.overline != blank -%}
       <p class="overline">{{ section.settings.overline }}</p>
@@ -82,23 +82,23 @@
       "options": [
         {
           "value": "pearl",
-          "label": "Pearl"
+          "label": "White"
         },
         {
           "value": "ivory",
-          "label": "Off-white"
+          "label": "Light grey"
         },
         {
           "value": "sand",
-          "label": "Sand"
+          "label": "Grey"
         },
         {
           "value": "cafe",
-          "label": "Café"
+          "label": "Ink"
         },
         {
           "value": "garden",
-          "label": "Garden green"
+          "label": "Charcoal"
         },
         {
           "value": "nero",

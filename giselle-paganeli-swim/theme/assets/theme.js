@@ -457,7 +457,7 @@
   }
   customElements.define('announcement-bar', AnnouncementBar);
 
-  /* ---------- Hero: the arch opens as you scroll ---------- */
+  /* ---------- Hero: the image window opens as you scroll ---------- */
   class GardenHero extends HTMLElement {
     connectedCallback() {
       if (reduceMotion.matches) this.classList.remove('hero--reveal');
@@ -485,7 +485,7 @@
       ticker.kick();
     }
 
-    // The progress eases towards the scroll position, so wheel steps and fast flicks still open the arch smoothly.
+    // The progress eases towards the scroll position, so wheel steps and fast flicks still open the window smoothly.
     update(dt) {
       const distance = Math.max(1, (this.offsetHeight - window.innerHeight) * 0.8);
       const target = Math.min(1, Math.max(0, -this.getBoundingClientRect().top / distance));

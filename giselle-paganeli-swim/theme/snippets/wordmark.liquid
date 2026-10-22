@@ -1,7 +1,10 @@
 {%- comment -%}
-  Brand logo: uploaded image, or the text wordmark from theme settings.
-  Accepts: tone ('light' to force the light version on dark backgrounds — only affects the text wordmark)
+  Brand logo: uploaded image, the Giselle Paganeli signature (drawn from snippets/brand-sprite) or the text wordmark.
+  Accepts:
+  - tone ('light' to force the light version on dark backgrounds — only affects the text wordmark)
+  - full (true adds the swash and the slogan under the signature, as in the brand logo)
 {%- endcomment -%}
+{%- assign brand_name = settings.wordmark_name | default: shop.name -%}
 {%- if settings.logo != blank -%}
   {%- assign logo_width_2x = settings.logo_width | times: 2 -%}
   {{
@@ -14,9 +17,24 @@
       alt: shop.name,
       loading: 'eager'
   }}
+{%- elsif settings.logo_style == 'signature' -%}
+  <span class="wordmark wordmark--signature{% if full %} wordmark--full{% endif %}">
+    <svg class="wordmark__signature" viewBox="0 0 1030 258.7" role="img" aria-label="{{ brand_name | escape }}">
+      <use href="#gp-signature"></use>
+    </svg>
+    {%- if full -%}
+      <svg class="wordmark__swash" viewBox="0 0 186.9 21.9" aria-hidden="true" focusable="false"><use href="#gp-swash"></use></svg>
+    {%- endif -%}
+    {%- if settings.wordmark_sub != blank -%}
+      <span class="wordmark__sub">{{ settings.wordmark_sub }}</span>
+    {%- endif -%}
+    {%- if full and settings.signature != blank -%}
+      <span class="wordmark__tagline">{{ settings.signature }}</span>
+    {%- endif -%}
+  </span>
 {%- else -%}
   <span class="wordmark{% if tone == 'light' %} wordmark--light{% endif %}">
-    <span class="wordmark__name">{{ settings.wordmark_name | default: shop.name }}</span>
+    <span class="wordmark__name">{{ brand_name }}</span>
     {%- if settings.wordmark_sub != blank -%}
       <span class="wordmark__sub">{{ settings.wordmark_sub }}</span>
     {%- endif -%}

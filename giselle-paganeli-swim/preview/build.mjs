@@ -42,6 +42,7 @@ const catalogData = {
   shop: catalog.shop,
   settingsOverrides: catalog.settingsOverrides,
   templateOverrides: catalog.templateOverrides,
+  campaignPhotos: catalog.campaignPhotos,
   colorHex: catalog.colorHex,
 };
 

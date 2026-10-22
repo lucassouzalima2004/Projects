@@ -307,8 +307,43 @@ export const colorHex = {
   Terracotta: '#ad634d',
 };
 
-// Preview only: the "Shop the look" block on The Garden of Eden page uses a real photo with points on each piece.
+// Campaign-style crops used by the editorial sections of the preview (Pexels, preview only).
+// Product photos are 4:5 at 640/1200 px; these list their own size.
+export const campaignPhotos = {
+  'campaign-18037479': { width: 2400, height: 1350, widths: [1200, 2400] },
+  'campaign-18037479-m': { width: 1200, height: 1800, widths: [640, 1200] },
+  'wide-8369989': { width: 1600, height: 1067, widths: [800, 1600] },
+  'wide-6339291': { width: 1600, height: 1067, widths: [800, 1600] },
+};
+
+const galleryImage = (photo, shape, caption) => ({ type: 'image', settings: { image: `preview:photo/${photo}`, shape, caption } });
+
+// Preview only: sample photos stand in for the campaign Giselle will shoot, and the "Shop the look"
+// block on The Garden of Eden page uses a real photo with points on each piece.
 export const templateOverrides = {
+  index: {
+    sections: {
+      hero: {
+        settings: { image: 'preview:photo/campaign-18037479', image_mobile: 'preview:photo/campaign-18037479-m', focal_x: 50, focal_y: 40 },
+      },
+      intro: {
+        settings: { image: 'preview:photo/12184162', image_2: 'preview:photo/5980148', caption: '' },
+      },
+      story: {
+        settings: { image_left: 'preview:photo/4827962', image_right: 'preview:photo/7261223' },
+      },
+      gallery: {
+        blocks: {
+          'image-1': galleryImage('28390584', 'portrait', 'Shoreline'),
+          'image-2': galleryImage('wide-8369989', 'landscape', 'Salt and wind'),
+          'image-3': galleryImage('3769133', 'square', 'Poolside'),
+          'image-4': galleryImage('18892579', 'portrait', 'Golden hour'),
+          'image-5': galleryImage('wide-6339291', 'landscape', 'Turquoise'),
+        },
+        block_order: ['image-1', 'image-2', 'image-3', 'image-4', 'image-5'],
+      },
+    },
+  },
   'page.garden': {
     sections: {
       look: {

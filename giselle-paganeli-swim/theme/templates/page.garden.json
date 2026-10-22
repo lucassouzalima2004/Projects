@@ -87,7 +87,7 @@
           "type": "image",
           "settings": {
             "artwork": "flowers",
-            "shape": "arch",
+            "shape": "square",
             "caption": "Flowers"
           }
         },

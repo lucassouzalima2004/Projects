@@ -21,7 +21,7 @@
       {%- for block in section.blocks -%}
         <li class="gallery__item gallery__item--{{ block.settings.shape }}" {{ block.shopify_attributes }}>
           {%- if block.settings.link != blank -%}<a href="{{ block.settings.link }}" class="gallery__link" draggable="false">{%- endif -%}
-          <div class="gallery__media{% if block.settings.shape == 'arch' %} arch{% endif %}">
+          <div class="gallery__media">
             {%- render 'media',
               image: block.settings.image,
               artwork: block.settings.artwork,
@@ -86,23 +86,23 @@
       "options": [
         {
           "value": "pearl",
-          "label": "Pearl"
+          "label": "White"
         },
         {
           "value": "ivory",
-          "label": "Off-white"
+          "label": "Light grey"
         },
         {
           "value": "sand",
-          "label": "Sand"
+          "label": "Grey"
         },
         {
           "value": "cafe",
-          "label": "Café"
+          "label": "Ink"
         },
         {
           "value": "garden",
-          "label": "Garden green"
+          "label": "Charcoal"
         },
         {
           "value": "nero",
@@ -180,8 +180,8 @@
               "label": "Landscape"
             },
             {
-              "value": "arch",
-              "label": "Arch"
+              "value": "square",
+              "label": "Square"
             }
           ],
           "default": "portrait"
@@ -221,7 +221,7 @@
           "type": "image",
           "settings": {
             "artwork": "lake",
-            "shape": "arch"
+            "shape": "square"
           }
         },
         {

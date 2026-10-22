@@ -257,7 +257,7 @@
 
             {%- when 'origin' -%}
               <div class="product__origin" {{ block.shopify_attributes }}>
-                {%- render 'icon', name: 'clover' -%}
+                {%- render 'icon', name: 'mark' -%}
                 <span>{{ product.metafields.custom.origin.value | default: settings.origin_label }}</span>
               </div>
           {%- endcase -%}
@@ -459,9 +459,9 @@
       "id": "color_scheme",
       "label": "Colors",
       "options": [
-        { "value": "pearl", "label": "Pearl" },
-        { "value": "ivory", "label": "Off-white" },
-        { "value": "sand", "label": "Sand" }
+        { "value": "pearl", "label": "White" },
+        { "value": "ivory", "label": "Light grey" },
+        { "value": "sand", "label": "Grey" }
       ],
       "default": "pearl"
     }

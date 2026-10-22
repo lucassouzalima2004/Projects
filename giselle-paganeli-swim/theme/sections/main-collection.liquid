@@ -128,7 +128,7 @@
         {%- paginate collection.products by section.settings.per_page -%}
           {%- if collection.products.size == 0 -%}
             <div class="collection__empty">
-              {%- render 'icon', name: 'clover' -%}
+              {%- render 'icon', name: 'mark' -%}
               <p>{{ 'templates.collection.empty' | t }}</p>
               {%- if active_count > 0 -%}
                 <a href="{{ collection.url }}" class="button" data-facet-link>{{ 'templates.collection.clear_all' | t }}</a>
@@ -344,9 +344,9 @@
       "id": "color_scheme",
       "label": "Colors",
       "options": [
-        { "value": "pearl", "label": "Pearl" },
-        { "value": "ivory", "label": "Off-white" },
-        { "value": "sand", "label": "Sand" }
+        { "value": "pearl", "label": "White" },
+        { "value": "ivory", "label": "Light grey" },
+        { "value": "sand", "label": "Grey" }
       ],
       "default": "pearl"
     }

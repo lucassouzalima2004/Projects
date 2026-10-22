@@ -36,16 +36,19 @@ export function createStore(data, { origin = '' } = {}) {
   const nextId = () => ++id;
 
   // Sample photos ship in two widths; the theme's image_tag gets both through srcset.
+  // Product photos are 4:5 (640/1200 px); campaign crops list their own size in the catalog.
   const photoBase = `${origin}/preview/photos/`;
+  const productFormat = { width: 1200, height: 1500, widths: [640, 1200] };
   const photo = (photoId, alt) => {
+    const { width, height, widths } = (data.campaignPhotos || {})[photoId] || productFormat;
     const image = {
       id: nextId(),
       media_type: 'image',
-      src: `${photoBase}${photoId}-1200.jpg`,
-      srcset: `${photoBase}${photoId}-640.jpg 640w, ${photoBase}${photoId}-1200.jpg 1200w`,
-      width: 1200,
-      height: 1500,
-      aspect_ratio: 0.8,
+      src: `${photoBase}${photoId}-${widths[widths.length - 1]}.jpg`,
+      srcset: widths.map((w) => `${photoBase}${photoId}-${w}.jpg ${w}w`).join(', '),
+      width,
+      height,
+      aspect_ratio: width / height,
       alt,
     };
     image.preview_image = image;

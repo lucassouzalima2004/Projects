@@ -1,7 +1,7 @@
 <section class="duo scheme-{{ section.settings.color_scheme }}">
   <div class="duo__inner page-width">
     <figure class="duo__item duo__item--left" data-reveal>
-      <div class="duo__media arch">
+      <div class="duo__media">
         {%- render 'media',
           image: section.settings.image_left,
           artwork: section.settings.artwork_left,
@@ -16,7 +16,7 @@
     </figure>
 
     <div class="duo__center" data-reveal>
-      {%- render 'icon', name: 'clover' -%}
+      {%- render 'icon', name: 'mark' -%}
       {%- if section.settings.overline != blank -%}
         <p class="overline">{{ section.settings.overline }}</p>
       {%- endif -%}
@@ -35,7 +35,7 @@
     </div>
 
     <figure class="duo__item duo__item--right" data-reveal>
-      <div class="duo__media arch">
+      <div class="duo__media">
         {%- render 'media',
           image: section.settings.image_right,
           artwork: section.settings.artwork_right,
@@ -203,23 +203,23 @@
       "options": [
         {
           "value": "pearl",
-          "label": "Pearl"
+          "label": "White"
         },
         {
           "value": "ivory",
-          "label": "Off-white"
+          "label": "Light grey"
         },
         {
           "value": "sand",
-          "label": "Sand"
+          "label": "Grey"
         },
         {
           "value": "cafe",
-          "label": "Café"
+          "label": "Ink"
         },
         {
           "value": "garden",
-          "label": "Garden green"
+          "label": "Charcoal"
         },
         {
           "value": "nero",

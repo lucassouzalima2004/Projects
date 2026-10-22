@@ -11,18 +11,22 @@ E-commerce da coleção **The Garden of Eden 2027**, feito a partir do briefing 
 
 ## O conceito
 
-- **Enter the Garden**: na home, a imagem de campanha fica dentro de um **arco** (arquitetura italiana, Lago di Como) que se abre até a tela cheia conforme a pessoa rola, revelando o claim *embrace your oasis*. O arco volta como assinatura visual em todo o site (imagens editoriais, menu, sacola vazia, página de pré-lançamento).
-- **Centralizado**: logo e menu centralizados, títulos e cards de produto centralizados, menu mobile em tela cheia com links grandes.
-- **Fluido**: rolagem suave com inércia no computador (Lenis, licença MIT; no celular fica a rolagem nativa), o arco do hero abre com inércia mesmo com a rodinha do mouse, títulos que sobem palavra por palavra, parallax leve nas imagens editoriais, fotos que surgem suavemente ao carregar, troca de página em que a foto do produto "voa" do card para a página do produto (e o cabeçalho fica parado), painéis laterais com curva de mola, sanfonas animadas também no Safari/iPhone e galeria com arraste com inércia e cursor "Drag". Cada efeito liga/desliga em *Configurações do tema → Layout & motion*, e quem pede menos movimento no sistema vê tudo estático.
-- **Paleta do briefing**: pérola, off-white, areia, café (texto), preto, terracota (destaque) e dourado envelhecido nos detalhes. Verde e azul da água só na ambientação. Tudo editável em *Configurações do tema → Cores*.
-- **Tipografia**: Cormorant Garamond (títulos) + Jost (texto), ambas com licença SIL Open Font, servidas pelo próprio tema.
-- **Imagens provisórias**: enquanto não há fotos de campanha, as seções editoriais usam recortes de *The Garden of Eden* (Thomas Cole, 1828 — domínio público, a referência da coleção). Na prévia, os produtos aparecem com **fotos reais de exemplo do Pexels** (licença de uso livre; créditos em [`preview/media/photos/CREDITS.md`](preview/media/photos/CREDITS.md)). Elas mostram peças de outras marcas: servem só para a prévia e não vão para a loja.
+Segunda prévia, com o retorno da Giselle (21/10): site **em preto e branco** ("dá mais ideia de e-commerce de luxo"), **a fonte do site da August**, **formas quadradas/geométricas** no lugar dos arcos e círculos, **o logo dela** e o **slogan dividido sobre a foto**, como no exemplo "FOR ALL · MOVES".
+
+- **Enter the Garden**: na home, a foto de campanha fica numa **janela retangular** que se abre até a tela cheia conforme a pessoa rola. Sobre a foto, o slogan **BORN IN MILAN** (à esquerda) e **MADE IN BRAZIL** (à direita) acompanha as bordas da janela enquanto ela abre; no fim aparecem o claim *embrace your oasis* e o botão da coleção. Os dois lados do slogan são editáveis na seção.
+- **Logo**: a assinatura "Giselle Paganeli" foi vetorizada a partir do logo enviado (SVG em `snippets/brand-sprite.liquid`) e usa a cor do texto: preta no fundo branco, branca sobre foto ou no rodapé escuro. No cabeçalho vai assinatura + SWIM; no rodapé e na página de pré-lançamento, o logo completo (assinatura, traço, SWIM e slogan), mais a assinatura grande e clara no fim da página. Se um dia ela mandar o arquivo original, dá para subir em *Configurações do tema → Logo*.
+- **Preto e branco**: fundo branco, texto preto, cinzas claros para painéis e fundos de imagem; botões pretos retangulares que invertem no hover. A cor fica nas fotos. Tudo editável em *Configurações do tema → Cores*.
+- **Tipografia**: **Lato**, a mesma do menu do site da August (o corpo do site deles usa Montserrat), com licença SIL Open Font, servida pelo próprio tema. Títulos, menu e nomes de produto em caixa alta com espaçamento largo.
+- **Geométrico**: cantos retos em tudo (botões, tamanhos P/M/G, cores, selos, pontos do "shop the look", sacola, cursor "Drag"), o trevo virou um **símbolo quadrado** e as imagens podem ser retrato, quadradas ou paisagem.
+- **Centralizado**: logo e menu centralizados, títulos e cards de produto centralizados, menu mobile em tela cheia.
+- **Fluido**: rolagem suave com inércia no computador (Lenis, licença MIT; no celular fica a rolagem nativa), a janela do hero abre com inércia mesmo com a rodinha do mouse, títulos que sobem palavra por palavra, parallax leve nas imagens editoriais, fotos que surgem suavemente ao carregar, troca de página em que a foto do produto "voa" do card para a página do produto (e o cabeçalho fica parado), painéis laterais com curva de mola, sanfonas animadas também no Safari/iPhone e galeria com arraste com inércia e cursor "Drag". Cada efeito liga/desliga em *Configurações do tema → Layout & motion*, e quem pede menos movimento no sistema vê tudo estático.
+- **Imagens provisórias**: a Giselle vai fotografar a campanha no fim do mês. Até lá, no tema, as seções editoriais usam recortes de *The Garden of Eden* (Thomas Cole, 1828 — domínio público, a referência da coleção). Na prévia, produtos, hero, introdução, história e galeria da home aparecem com **fotos reais de exemplo do Pexels** (licença de uso livre; créditos em [`preview/media/photos/CREDITS.md`](preview/media/photos/CREDITS.md)). Elas mostram peças de outras marcas: servem só para a prévia e não vão para a loja.
 
 ## Páginas (as 6 abas do briefing + apoio)
 
 | Aba | Modelo | Conteúdo |
 | --- | --- | --- |
-| Home | `index` | Campanha com arco, frase da marca, introdução da coleção, seleção de produtos com abas (Bikinis / Swimsuits / Resortwear), história resumida (Milão ↔ Brasil), lookbook arrastável, newsletter |
+| Home | `index` | Campanha com janela que abre e slogan dividido, frase da marca, introdução da coleção, seleção de produtos com abas (Bikinis / Swimsuits / Resortwear), história resumida (Milão ↔ Brasil), lookbook arrastável, newsletter |
 | Shop | `collection` | Categorias, filtros (tamanho, cor, categoria, disponibilidade, preço), ordenação, grade 2/4 colunas, bloco editorial no meio da grade, compra rápida por tamanho |
 | The Garden of Eden | `page.garden` | Conceito, quadro de Thomas Cole, "shop the look" com pontos clicáveis na imagem, galeria, coleção completa |
 | The Story | `page.story` | Fundadora, citação, Born in Milan · Made in Brazil, valores |
@@ -56,23 +60,24 @@ No GitHub, o workflow **Giselle Paganeli Swim (tema + prévia)** roda o Theme Ch
 6. **Metacampos de produto** (*Configurações → Dados personalizados → Produtos*), todos texto: `custom.fit` (modelagem), `custom.model_info` (altura e tamanho da modelo), `custom.composition`, `custom.lining` (forro e bojo), `custom.care`, `custom.origin` (padrão: Made in Brazil). Linhas vazias simplesmente não aparecem — nada de composição inventada.
 7. **Filtros**: no app *Search & Discovery* (gratuito, da Shopify) ative Disponibilidade, Tipo de produto, Cor, Tamanho e Preço.
 8. **Idiomas e moedas**: o tema já traz os textos da interface em inglês, italiano e português. Ative os idiomas e mercados em *Configurações → Mercados* e traduza o conteúdo com o app *Translate & Adapt*. O seletor de país/idioma aparece sozinho quando há mais de um.
-9. **Configurações do tema**: logo (ou o texto GISELLE PAGANELI / SWIM), e-mail de atendimento, WhatsApp, Instagram, frete grátis a partir de (opcional), botões de pagamento expresso.
+9. **Configurações do tema**: logo (já vem a assinatura vetorizada; dá para trocar por arquivo), slogan, e-mail de atendimento, WhatsApp, Instagram, frete grátis a partir de (opcional), botões de pagamento expresso.
 10. **Pré-lançamento**: para mostrar a campanha sem vender, ative *Configurações do tema → Pre-launch* (o produto mostra lista de espera no lugar de "Add to bag") ou a página com senha em *Preferências* (data da contagem regressiva na seção "Pre-launch" do modelo password). Os e-mails entram como clientes com as tags `prelaunch` / `newsletter`.
 11. **Antes de publicar** (checklist do briefing): compra de teste, e-mails de confirmação, banner de cookies da Shopify (*Configurações → Privacidade do cliente*), textos legais e revisão no celular e no desktop.
 
 ## O que ainda é provisório
 
 - Nomes, preços, descrições e grade dos 12 produtos (10 de praia + camisa e short de resortwear), seguindo as quantidades do briefing.
-- Fotos de produto (Pexels, só na prévia) e recortes do quadro no lugar das fotos de campanha.
+- Fotos de produto e de campanha (Pexels, só na prévia) e recortes do quadro no tema, até chegarem as fotos da Giselle.
 - Tabela de medidas (indicativa) e textos de entregas/trocas/legais.
-- Logo: o tema usa o nome em texto até chegar o arquivo final.
+- Logo: assinatura vetorizada a partir da imagem enviada no WhatsApp. Fica muito fiel, mas o arquivo original (SVG, AI ou PDF) é o ideal para a versão final.
 
 ## Para alinhar com a Giselle
 
-- O link "Fonte: AUGUST": é o site da August como referência ou a tipografia? A fonte do tema troca em um arquivo (`assets/base.css` + `snippets/theme-styles.liquid`), desde que a licença permita uso na web.
+- Slogan: no logo está **"Born in Italy, made in Brazil"**, mas na mensagem e no briefing é **"Born in Milan, made in Brasil"**. A prévia usa *Born in Milan / Made in Brazil* (em inglês, como o site); é só trocar o texto se ela preferir a outra versão.
+- Arquivo original do logo (SVG, AI ou PDF), se existir.
 - Mix final, venda de biquíni em conjunto (é como está) ou top e calcinha separados.
 - Mercado inicial, país de expedição, idiomas e moedas contratados, meios de pagamento e frete.
-- Fotos, logo e símbolo definitivos (trevo/monograma GP).
+- Fotos da campanha (ela fotografa no fim do mês) e se quer um símbolo/monograma GP no lugar do quadrado.
 - Data de lançamento e se começa com página de pré-lançamento.
 
 Opcionais citados no briefing que **não** estão incluídos: lista de desejos, aviso de reposição, recuperação de carrinho (é nativa da Shopify, só ativar), "Create Your Eden" (mix & match) e área de lojistas.

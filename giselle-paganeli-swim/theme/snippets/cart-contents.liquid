@@ -68,7 +68,7 @@
     </div>
   {%- else -%}
     <div class="cart-empty">
-      <div class="cart-empty__arch">{%- render 'icon', name: 'clover' -%}</div>
+      <div class="cart-empty__frame">{%- render 'icon', name: 'mark' -%}</div>
       <p class="cart-empty__title">{{ 'sections.cart.empty' | t }}</p>
       <p class="cart-empty__text">{{ 'sections.cart.empty_text' | t }}</p>
       <a href="{{ routes.all_products_collection_url }}" class="button">{{ 'sections.cart.continue' | t }}</a>

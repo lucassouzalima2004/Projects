@@ -7,7 +7,7 @@
 <section class="split scheme-{{ section.settings.color_scheme }} split--{{ section.settings.layout }} split--{{ section.settings.shape }}">
   <div class="split__inner page-width">
     <div class="split__visual" data-reveal>
-      <div class="split__media{% if section.settings.shape == 'arch' %} arch{% endif %}">
+      <div class="split__media">
         {%- render 'media',
           image: section.settings.image,
           artwork: section.settings.artwork,
@@ -114,19 +114,19 @@
       "label": "Image shape",
       "options": [
         {
-          "value": "arch",
-          "label": "Arch"
-        },
-        {
           "value": "portrait",
           "label": "Portrait"
+        },
+        {
+          "value": "square",
+          "label": "Square"
         },
         {
           "value": "landscape",
           "label": "Landscape"
         }
       ],
-      "default": "arch"
+      "default": "portrait"
     },
     {
       "type": "image_picker",
@@ -246,23 +246,23 @@
       "options": [
         {
           "value": "pearl",
-          "label": "Pearl"
+          "label": "White"
         },
         {
           "value": "ivory",
-          "label": "Off-white"
+          "label": "Light grey"
         },
         {
           "value": "sand",
-          "label": "Sand"
+          "label": "Grey"
         },
         {
           "value": "cafe",
-          "label": "Café"
+          "label": "Ink"
         },
         {
           "value": "garden",
-          "label": "Garden green"
+          "label": "Charcoal"
         },
         {
           "value": "nero",

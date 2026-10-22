@@ -1,6 +1,7 @@
 # Fotos da prévia
 
 Fotos do [Pexels](https://www.pexels.com/license/) (uso gratuito, inclusive comercial, sem atribuição obrigatória), recortadas em 4:5 e salvas em 640 e 1200 px.
+Na home da prévia, algumas delas também aparecem como imagens de campanha: `campaign-18037479` (hero, 16:9 no computador e vertical no celular) e `wide-8369989` / `wide-6339291` (galeria, 3:2).
 Servem **só para a prévia**: mostram peças de outras marcas, então não devem ir para a loja de verdade. Na Shopify, cada produto recebe as fotos da coleção da Giselle.
 
 | Arquivo | Produto na prévia | Fonte |

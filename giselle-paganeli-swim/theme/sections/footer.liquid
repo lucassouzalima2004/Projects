@@ -1,7 +1,7 @@
 <footer class="footer scheme-{{ section.settings.color_scheme }}">
   {%- if section.settings.show_newsletter -%}
     <div class="footer__newsletter page-width" data-reveal>
-      {%- render 'icon', name: 'clover' -%}
+      {%- render 'icon', name: 'mark' -%}
       {%- if section.settings.newsletter_heading != blank -%}
         <h2 class="footer__newsletter-title">{{ section.settings.newsletter_heading }}</h2>
       {%- endif -%}
@@ -17,7 +17,7 @@
       {%- case block.type -%}
         {%- when 'brand' -%}
           <div class="footer__col footer__col--brand" {{ block.shopify_attributes }}>
-            <a href="{{ routes.root_url }}" class="logo logo--footer">{%- render 'wordmark', tone: 'light' -%}</a>
+            <a href="{{ routes.root_url }}" class="logo logo--footer">{%- render 'wordmark', tone: 'light', full: true -%}</a>
             {%- if block.settings.text != blank -%}
               <div class="footer__text rte">{{ block.settings.text }}</div>
             {%- endif -%}
@@ -75,7 +75,11 @@
 
   {%- if section.settings.show_big_wordmark -%}
     <div class="footer__giant" aria-hidden="true">
-      <span>{{ settings.wordmark_name | default: shop.name }}</span>
+      {%- if settings.logo == blank and settings.logo_style == 'signature' -%}
+        <svg class="footer__giant-signature" viewBox="0 0 1030 258.7" focusable="false"><use href="#gp-signature"></use></svg>
+      {%- else -%}
+        <span>{{ settings.wordmark_name | default: shop.name }}</span>
+      {%- endif -%}
     </div>
   {%- endif -%}
 </footer>
@@ -94,11 +98,11 @@
       "id": "color_scheme",
       "label": "Colors",
       "options": [
-        { "value": "pearl", "label": "Pearl" },
-        { "value": "ivory", "label": "Off-white" },
-        { "value": "sand", "label": "Sand" },
-        { "value": "cafe", "label": "Café" },
-        { "value": "garden", "label": "Garden green" },
+        { "value": "pearl", "label": "White" },
+        { "value": "ivory", "label": "Light grey" },
+        { "value": "sand", "label": "Grey" },
+        { "value": "cafe", "label": "Ink" },
+        { "value": "garden", "label": "Charcoal" },
         { "value": "nero", "label": "Black" }
       ],
       "default": "cafe"

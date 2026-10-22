@@ -1,7 +1,7 @@
 <section class="list-collections scheme-{{ section.settings.color_scheme }}">
   <div class="page-width">
     <header class="section-head" data-reveal>
-      {%- render 'icon', name: 'clover' -%}
+      {%- render 'icon', name: 'mark' -%}
       <h1 class="page-hero__title">{{ section.settings.heading }}</h1>
     </header>
     <ul class="list-collections__grid" role="list">
@@ -9,7 +9,7 @@
         {%- if collection.handle != 'all' and collection.products_count > 0 -%}
           <li data-reveal style="--i: {{ forloop.index0 | modulo: 3 }};">
             <a href="{{ collection.url }}" class="collection-card">
-              <span class="collection-card__media arch">
+              <span class="collection-card__media">
                 {%- if collection.featured_image -%}
                   {{ collection.featured_image | image_url: width: 900 | image_tag: loading: 'lazy', sizes: '(min-width: 990px) 30vw, 90vw', widths: '360, 540, 720, 900', alt: collection.title }}
                 {%- elsif collection.products.first.featured_media -%}
@@ -47,15 +47,15 @@
       "options": [
         {
           "value": "pearl",
-          "label": "Pearl"
+          "label": "White"
         },
         {
           "value": "ivory",
-          "label": "Off-white"
+          "label": "Light grey"
         },
         {
           "value": "sand",
-          "label": "Sand"
+          "label": "Grey"
         }
       ],
       "default": "pearl"

@@ -1,6 +1,6 @@
 <section class="search-page scheme-{{ section.settings.color_scheme }}">
   <header class="search-page__head page-width" data-reveal>
-    {%- render 'icon', name: 'clover' -%}
+    {%- render 'icon', name: 'mark' -%}
     <h1 class="search-page__title">
       {%- if search.performed -%}
         {{ 'templates.search.results_for' | t: terms: search.terms }}
@@ -76,15 +76,15 @@
       "options": [
         {
           "value": "pearl",
-          "label": "Pearl"
+          "label": "White"
         },
         {
           "value": "ivory",
-          "label": "Off-white"
+          "label": "Light grey"
         },
         {
           "value": "sand",
-          "label": "Sand"
+          "label": "Grey"
         }
       ],
       "default": "pearl"
