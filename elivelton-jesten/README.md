@@ -171,7 +171,7 @@ otimizados (baixa os originais do jesten.pt se a pasta `tools/originals/` estive
 - [ ] Revisar com o cliente os textos dos serviços, de "Como trabalhamos" e da página de carreiras (agora ele mesmo
       pode mudá-los no painel, em **Textos do site**) e os locais das obras nas legendas (só pus local onde a foto ou
       o vídeo mostravam: Sant Cugat, Barcelona, Catalunha).
-- [ ] Senha do painel na conta do cliente (secret `ADMIN_PASSWORD` no Worker, ou `JESTEN_ADMIN_PASSWORD` no GitHub)
-      antes de mostrar o painel a ele.
+- [x] Senha do painel na conta do cliente: secret `ADMIN_PASSWORD` no Worker (24/10/2026). O cliente deve trocá-la em
+      **Conta** no primeiro acesso.
 - [ ] Secret `JESTEN_CLOUDFLARE_API_TOKEN` no GitHub, para os próximos pushes publicarem direto na conta do cliente.
 - [ ] Mais fotos e vídeos recentes das obras (ele mesmo pode enviar pelo painel).
