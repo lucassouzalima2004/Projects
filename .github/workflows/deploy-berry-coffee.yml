@@ -2,6 +2,12 @@
 #   https://theberrycoffee.lucassouzalima10.workers.dev
 # Cada push que mexe em berry-coffee/ (no main ou no branch claude/keen-tesla-fjkq02) atualiza esse link.
 #
+# SITE_ONLINE (em env, logo abaixo) liga e desliga o site:
+#   'true'  publica a versão do repositório no link.
+#   'false' tira o site do ar: o link para de responder e os pushes não publicam nada.
+#           O Worker continua na conta do Cloudflare; nada é apagado.
+# Para trocar, mude o valor e faça push (mexer neste arquivo também roda o workflow).
+#
 # O site vai como Worker com arquivos estáticos (Workers Static Assets), e não como projeto do
 # Cloudflare Pages: a conta já tem 100 projetos no Pages, o limite do Cloudflare (erro 8000027).
 #
@@ -28,6 +34,8 @@ concurrency:
 
 env:
   WORKER: theberrycoffee
+  # Fora do ar desde 26/10/2026, a pedido do Lucas. 'true' publica de novo.
+  SITE_ONLINE: 'false'
 
 jobs:
   check:
@@ -58,6 +66,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Instalar o wrangler
+        if: env.SITE_ONLINE == 'true'
         run: npm install --no-save --no-audit --no-fund --include=optional wrangler@4
 
       - name: Conta do Cloudflare
@@ -91,19 +100,31 @@ jobs:
           fi
           url="https://$WORKER.$sub.workers.dev"
           echo "SITE_URL=$url" >> "$GITHUB_ENV"
-          # Não sobrescreve um Worker com o mesmo nome que não seja este site
+          # Não mexe em um Worker com o mesmo nome que não seja este site
           if curl -sS -H "$auth" "$acc/workers/scripts/$WORKER/settings" | jq -e '.success' > /dev/null; then
-            if curl -fsS --max-time 20 "$url/sitemap.xml" | grep -q "theberrycoffee.ie"; then
-              echo "O Worker $WORKER já é este site: vai ser atualizado."
+            echo "WORKER_EXISTS=true" >> "$GITHUB_ENV"
+            link=$(curl -sS -H "$auth" "$acc/workers/scripts/$WORKER/subdomain")
+            if ! printf '%s' "$link" | jq -e '.success' > /dev/null; then
+              echo "::error title=workers.dev::Não consegui ler se o link do Worker $WORKER está ligado."
+              exit 1
+            fi
+            if [ "$(printf '%s' "$link" | jq -r '.result.enabled')" != "true" ]; then
+              # Com o link desligado não dá para conferir pelo sitemap. O Worker é este site,
+              # tirado do ar com SITE_ONLINE: 'false' (o nome continua ocupado por ele).
+              echo "O Worker $WORKER é este site, com o link desligado."
+            elif curl -fsS --max-time 20 "$url/sitemap.xml" | grep -q "theberrycoffee.ie"; then
+              echo "O Worker $WORKER já é este site."
             else
               echo "::error title=Nome em uso::Já existe um Worker chamado $WORKER nesta conta que não é este site. Apague ou renomeie esse Worker, ou troque WORKER no topo deste workflow."
               exit 1
             fi
           else
-            echo "Primeira publicação: o Worker $WORKER vai ser criado."
+            echo "WORKER_EXISTS=false" >> "$GITHUB_ENV"
+            echo "O Worker $WORKER ainda não existe nesta conta."
           fi
 
       - name: Montar o site
+        if: env.SITE_ONLINE == 'true'
         run: |
           mkdir -p _site
           cp -R berry-coffee/. _site/
@@ -126,9 +147,11 @@ jobs:
           EOF
 
       - name: Publicar
+        if: env.SITE_ONLINE == 'true'
         run: npx wrangler deploy --config wrangler.jsonc
 
       - name: Conferir o site no ar
+        if: env.SITE_ONLINE == 'true'
         run: |
           for i in 1 2 3 4 5 6; do
             if curl -fsS --max-time 20 "$SITE_URL/" | grep -q "Good food"; then
@@ -140,3 +163,36 @@ jobs:
           done
           echo "::warning title=Site ainda não respondeu::A publicação terminou, mas $SITE_URL ainda não respondeu. Tente abrir de novo em alguns minutos."
           echo "### Publicado em: $SITE_URL (ainda carregando)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Tirar o site do ar
+        if: env.SITE_ONLINE != 'true'
+        run: |
+          if [ "$WORKER_EXISTS" != "true" ]; then
+            echo "O Worker $WORKER não existe: não há nada no ar."
+            exit 0
+          fi
+          # Desliga o link workers.dev e as prévias, como o wrangler faz com "workers_dev": false.
+          # O Worker e os arquivos continuam na conta; com SITE_ONLINE: 'true' o deploy liga de novo.
+          curl -sS -X POST "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/$WORKER/subdomain" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            -H "Cloudflare-Workers-Script-Api-Date: 2025-08-01" \
+            --data '{"enabled":false,"previews_enabled":false}' \
+            | jq -e '.success and .result.enabled == false' > /dev/null
+          echo "Link desligado: $SITE_URL"
+
+      - name: Conferir que o site saiu do ar
+        if: env.SITE_ONLINE != 'true'
+        run: |
+          for i in $(seq 1 12); do
+            rm -f page.html
+            code=$(curl -sS -o page.html -w '%{http_code}' --max-time 20 "$SITE_URL/") || true
+            if ! grep -q "Good food" page.html 2>/dev/null; then
+              echo "Fora do ar: $SITE_URL responde $code, sem o site."
+              echo "### Site fora do ar: $SITE_URL" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error title=Site ainda no ar::O link foi desligado, mas $SITE_URL ainda mostra o site depois de 2 minutos."
+          exit 1

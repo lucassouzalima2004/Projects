@@ -126,6 +126,10 @@ python3 -m http.server 8000
 
 ### Link do site: <https://theberrycoffee.lucassouzalima10.workers.dev>
 
+> **Fora do ar desde 26/10/2026**, a pedido do Lucas. O link está desligado, mas nada foi apagado: o Worker continua na conta do Cloudflare.
+>
+> **Para voltar ao ar**, troque `SITE_ONLINE: 'false'` por `SITE_ONLINE: 'true'` no topo de `.github/workflows/deploy-berry-coffee.yml` e faça push. Em cerca de um minuto o site volta no mesmo link, já com a versão mais nova do repositório.
+
 O workflow `.github/workflows/deploy-berry-coffee.yml` publica a pasta `berry-coffee/` sempre nesse mesmo link. Ele roda a cada push que mexe nela, no `main` ou no branch `claude/keen-tesla-fjkq02`. O endereço exato aparece no resumo de cada execução, em Actions.
 
 O site vai como **Worker com arquivos estáticos**, e não como projeto do Cloudflare Pages. A conta já tem 100 projetos no Pages, que é o limite do Cloudflare (erro 8000027). Os Workers têm limite separado.
@@ -133,6 +137,7 @@ O site vai como **Worker com arquivos estáticos**, e não como projeto do Cloud
 - Antes de publicar, o workflow confere se já existe um Worker `theberrycoffee` que não seja este site. Se existir, ele para e não sobrescreve nada.
 - O workflow troca o `og:image` pelo endereço completo, que é o que o WhatsApp exige para mostrar a imagem, e não publica este README.
 - Depois de publicar, ele abre o site para conferir que está no ar.
+- Com `SITE_ONLINE: 'false'`, o workflow não publica nada: só desliga o link `workers.dev` e confere que o site saiu do ar. Os pushes seguintes também não publicam, até a chave voltar para `'true'`.
 - Enquanto o site estiver só no `.workers.dev`, o Google não indexa a prévia (arquivo `_headers`). Com o domínio `theberrycoffee.ie` ligado, ele fica indexável normalmente.
 
 ### Credenciais
