@@ -1,19 +1,58 @@
 {
   "sections": {
-    "hero": {
-      "type": "hero-garden",
+    "slideshow": {
+      "type": "slideshow",
+      "blocks": {
+        "slide-1": {
+          "type": "slide",
+          "settings": {
+            "artwork": "garden",
+            "focal_x": 50,
+            "focal_y": 40,
+            "text_left": "Born in Milan",
+            "text_right": "Made in Brazil",
+            "heading": "Embrace your oasis",
+            "button_label": "Discover the collection",
+            "link": "shopify://collections/all"
+          }
+        },
+        "slide-2": {
+          "type": "slide",
+          "settings": {
+            "artwork": "lake",
+            "focal_x": 50,
+            "focal_y": 40,
+            "text_left": "The Garden of Eden",
+            "text_right": "Collection 2027",
+            "heading": "",
+            "button_label": "",
+            "link": "shopify://pages/the-garden-of-eden"
+          }
+        },
+        "slide-3": {
+          "type": "slide",
+          "settings": {
+            "artwork": "stream",
+            "focal_x": 50,
+            "focal_y": 40,
+            "text_left": "New in",
+            "text_right": "Swim & resort",
+            "heading": "",
+            "button_label": "",
+            "link": "shopify://collections/new-in"
+          }
+        }
+      },
+      "block_order": [
+        "slide-1",
+        "slide-2",
+        "slide-3"
+      ],
       "settings": {
-        "artwork": "garden",
-        "overline": "The Garden of Eden 2027",
-        "heading": "Enter the Garden",
-        "slogan_left": "Born in Milan",
-        "slogan_right": "Made in Brazil",
-        "claim": "embrace your oasis",
-        "button_label": "Discover the collection",
-        "button_link": "shopify://collections/all",
-        "reveal": true,
-        "focal_x": 50,
-        "focal_y": 45
+        "autoplay": true,
+        "interval": 6,
+        "height": "full",
+        "veil": 15
       }
     },
     "statement": {
@@ -22,148 +61,101 @@
         "show_ornament": true,
         "overline": "Giselle Paganeli Swim",
         "text": "Italian elegance, <em>Brazilian sensuality</em>.",
-        "caption": "Born in Milan · Made in Brazil",
+        "caption": "",
         "size": "large",
         "color_scheme": "pearl"
       }
     },
-    "intro": {
-      "type": "editorial-split",
-      "settings": {
-        "artwork": "lake",
-        "shape": "square",
-        "artwork_2": "flowers",
-        "caption": "After Thomas Cole, The Garden of Eden, 1828",
-        "layout": "image-left",
-        "overline": "The collection",
-        "heading": "The Garden of Eden 2027",
-        "text": "<p>Water, gardens, stone and skin. A summer that moves between the stillness of Lake Como and the warmth of Brazil — swimwear and resortwear designed as a refuge of beauty and calm.</p>",
-        "link_label": "Explore the collection",
-        "link": "shopify://pages/the-garden-of-eden",
-        "color_scheme": "ivory"
-      }
-    },
-    "collection": {
-      "type": "featured-collection",
+    "categories": {
+      "type": "collection-tiles",
       "blocks": {
-        "tab-1": {
-          "type": "tab",
+        "bikinis": {
+          "type": "tile",
           "settings": {
+            "collection": "bikinis",
             "label": "Bikinis",
-            "handle": "bikinis"
-          }
-        },
-        "tab-2": {
-          "type": "tab",
-          "settings": {
-            "label": "Swimsuits",
-            "handle": "swimsuits"
-          }
-        },
-        "tab-3": {
-          "type": "tab",
-          "settings": {
-            "label": "Resortwear",
-            "handle": "resortwear"
-          }
-        }
-      },
-      "block_order": [
-        "tab-1",
-        "tab-2",
-        "tab-3"
-      ],
-      "settings": {
-        "overline": "Shop",
-        "heading": "The Collection",
-        "limit": 8,
-        "columns": 4,
-        "mobile_layout": "carousel",
-        "show_view_all": true,
-        "color_scheme": "pearl"
-      }
-    },
-    "story": {
-      "type": "story-duo",
-      "settings": {
-        "artwork_left": "canopy",
-        "label_left": "Born in Milan",
-        "artwork_right": "palm",
-        "label_right": "Made in Brazil",
-        "overline": "The Story",
-        "heading": "Two places, one oasis",
-        "text": "<p>A house of swimwear conceived in Milan and crafted in Brazil, for women who travel to resorts, spas and quiet shores.</p>",
-        "link_label": "Read the story",
-        "link": "shopify://pages/the-story",
-        "color_scheme": "ivory"
-      }
-    },
-    "gallery": {
-      "type": "editorial-gallery",
-      "blocks": {
-        "image-1": {
-          "type": "image",
-          "settings": {
-            "artwork": "flowers",
-            "shape": "portrait",
-            "caption": "Flowers of the garden"
-          }
-        },
-        "image-2": {
-          "type": "image",
-          "settings": {
-            "artwork": "stream",
-            "shape": "landscape",
-            "caption": "The spring"
-          }
-        },
-        "image-3": {
-          "type": "image",
-          "settings": {
-            "artwork": "lake",
-            "shape": "square",
-            "caption": "Lake and mountain"
-          }
-        },
-        "image-4": {
-          "type": "image",
-          "settings": {
             "artwork": "canopy",
-            "shape": "portrait",
-            "caption": "Vines and grapes"
+            "link": ""
           }
         },
-        "image-5": {
-          "type": "image",
+        "swimsuits": {
+          "type": "tile",
           "settings": {
+            "collection": "swimsuits",
+            "label": "Swimsuits",
+            "artwork": "flowers",
+            "link": ""
+          }
+        },
+        "resortwear": {
+          "type": "tile",
+          "settings": {
+            "collection": "resortwear",
+            "label": "Resortwear",
+            "artwork": "palm",
+            "link": ""
+          }
+        },
+        "new-in": {
+          "type": "tile",
+          "settings": {
+            "collection": "new-in",
+            "label": "New in",
             "artwork": "bloom",
-            "shape": "landscape",
-            "caption": "Bloom"
+            "link": ""
           }
         }
       },
       "block_order": [
-        "image-1",
-        "image-2",
-        "image-3",
-        "image-4",
-        "image-5"
+        "bikinis",
+        "swimsuits",
+        "resortwear",
+        "new-in"
       ],
       "settings": {
-        "overline": "Lookbook",
-        "heading": "Water, stone and light",
-        "link_label": "Enter the Garden",
-        "link": "shopify://pages/the-garden-of-eden",
+        "overline": "",
+        "heading": "",
+        "ratio": "tall",
+        "full_width": true,
         "color_scheme": "pearl"
+      }
+    },
+    "concept": {
+      "type": "image-words",
+      "settings": {
+        "artwork": "palm",
+        "black_and_white": true,
+        "ratio": "portrait",
+        "width": "medium",
+        "text_left": "Born in Milan",
+        "text_right": "Made in Brazil",
+        "link": "shopify://pages/the-story",
+        "color_scheme": "pearl"
+      }
+    },
+    "shipping": {
+      "type": "image-banner",
+      "settings": {
+        "artwork": "valley",
+        "height": "medium",
+        "position": "center",
+        "veil": 40,
+        "priority": false,
+        "overline": "",
+        "heading": "Free shipping over €200",
+        "heading_as_title": false,
+        "text": "",
+        "button_label": "Shop now",
+        "button_link": "shopify://collections/all",
+        "caption": ""
       }
     }
   },
   "order": [
-    "hero",
+    "slideshow",
     "statement",
-    "intro",
-    "collection",
-    "story",
-    "gallery"
+    "categories",
+    "concept",
+    "shipping"
   ]
 }

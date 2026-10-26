@@ -153,6 +153,14 @@ document.addEventListener(
     const action = new URL(form.action, window.location.href).pathname;
     const submitter = event.submitter;
     let message = null;
+    const popup = form.querySelector('welcome-popup') || form.closest('welcome-popup');
+    if (popup && action === '/contact') {
+      // On Shopify the page reloads with the code; here the welcome popup shows it in place.
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      popup.showSuccess();
+      return;
+    }
     if (action === '/cart' && submitter && submitter.name === 'checkout') {
       message = 'Preview — checkout opens on Shopify once the store is live.';
     } else if (action === '/contact') {
@@ -238,7 +246,11 @@ const boot = async () => {
   }
   if (route === '/cart') swap('template--cart__main', await s.renderSection('template--cart__main', '/cart', params, cart));
   if (searching) swap('template--search__main', await s.renderSection('template--search__main', '/search', params, cart));
-  if (listing) swap('template--collection__main', await s.renderSection('template--collection__main', route, params, cart));
+  if (listing) {
+    const section = document.querySelector('[id^="shopify-section-template--collection"][id$="__main"]');
+    const sectionId = section ? section.id.replace('shopify-section-', '') : 'template--collection__main';
+    swap(sectionId, await s.renderSection(sectionId, route, params, cart));
+  }
 };
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);

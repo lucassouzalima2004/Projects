@@ -38,21 +38,6 @@
         "color_scheme": "sand"
       }
     },
-    "duo": {
-      "type": "story-duo",
-      "settings": {
-        "artwork_left": "lake",
-        "label_left": "Milano",
-        "artwork_right": "bloom",
-        "label_right": "Brasil",
-        "overline": "Two origins",
-        "heading": "Between the lake and the sea",
-        "text": "<p>Designed with Italian restraint, made in Brazil with the know-how of its swimwear tradition.</p>",
-        "link_label": "Discover the collection",
-        "link": "shopify://collections/all",
-        "color_scheme": "ivory"
-      }
-    },
     "values": {
       "type": "columns",
       "blocks": {
@@ -100,7 +85,6 @@
     "banner",
     "founder",
     "quote",
-    "duo",
     "values"
   ]
 }

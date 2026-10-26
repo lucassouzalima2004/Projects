@@ -15,6 +15,7 @@
   assign facet_form_id = 'FacetForm-' | append: section.id
 -%}
 <section class="collection scheme-{{ section.settings.color_scheme }}">
+  {%- if section.settings.show_header -%}
   <header class="collection__head page-width" data-reveal>
     {%- if section.settings.overline != blank -%}
       <p class="overline">{{ section.settings.overline }}</p>
@@ -53,6 +54,7 @@
       </nav>
     {%- endif -%}
   </header>
+  {%- endif -%}
 
   <facet-filters class="collection__body" data-section="{{ section.id }}">
     <div class="toolbar">
@@ -299,6 +301,13 @@
   "tag": "div",
   "class": "section-collection",
   "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_header",
+      "label": "Show title and categories",
+      "info": "Turn off when an image banner above already shows the title.",
+      "default": true
+    },
     {
       "type": "text",
       "id": "overline",

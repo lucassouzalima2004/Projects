@@ -18,40 +18,65 @@
             "menu": "footer"
           }
         },
+        "menu-explore": {
+          "type": "menu",
+          "settings": {
+            "heading": "Explore",
+            "menu": "explore"
+          }
+        },
+        "account": {
+          "type": "account",
+          "settings": {
+            "heading": "My account",
+            "track_link": ""
+          }
+        },
         "contact": {
           "type": "contact",
           "settings": {
             "heading": "Contact",
-            "text": "<p>Boutiques, resorts and spas: <a href=\"/pages/contact\">wholesale enquiries</a></p>"
-          }
-        },
-        "menu-care": {
-          "type": "menu",
-          "settings": {
-            "heading": "Client care",
-            "menu": "customer-care"
+            "contact_page": "contact",
+            "text": ""
           }
         }
       },
       "block_order": [
         "brand",
         "menu-shop",
-        "menu-care",
+        "menu-explore",
+        "account",
         "contact"
       ],
       "settings": {
-        "color_scheme": "cafe",
+        "color_scheme": "pearl",
         "show_newsletter": true,
         "newsletter_heading": "Join the Garden",
-        "newsletter_text": "<p>Private previews, travel notes and the first look at every new chapter.</p>",
+        "newsletter_text": "<p>New pieces, private previews and offers, first.</p>",
         "show_localization": true,
         "show_payment_icons": true,
-        "show_big_wordmark": true,
+        "show_big_wordmark": false,
         "legal_menu": "legal"
+      }
+    },
+    "welcome-popup": {
+      "type": "welcome-popup",
+      "settings": {
+        "enabled": true,
+        "delay": 5,
+        "days": 30,
+        "overline": "Welcome",
+        "heading": "10% off your first order",
+        "text": "<p>Join the garden and be the first to see new pieces and private previews.</p>",
+        "button_label": "Subscribe",
+        "success_heading": "Welcome to the garden",
+        "success_text": "<p>Your code for the first order:</p>",
+        "code": "WELCOME10"
       }
     }
   },
   "order": [
-    "footer"
+    "footer",
+    "welcome-popup"
   ]
 }

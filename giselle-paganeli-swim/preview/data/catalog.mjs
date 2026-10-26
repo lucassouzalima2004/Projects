@@ -47,6 +47,7 @@ export const products = [
     type: 'Bikini',
     collections: ['bikinis'],
     price: 19000,
+    compareAt: 23500,
     photos: { Terracotta: ['17995823'] },
     soldOut: [['Terracotta', 'XL']],
     description:
@@ -105,6 +106,7 @@ export const products = [
     type: 'Swimsuit',
     collections: ['swimsuits'],
     price: 27500,
+    compareAt: 34500,
     photos: { Terracotta: ['7788703', '29462470'] },
     description:
       '<p>Terracotta against the sea: a one-piece with long lines and a high leg, in the spirit of Brazilian summers.</p>',
@@ -128,6 +130,7 @@ export const products = [
     collections: ['resortwear'],
     price: 24000,
     photos: { Pearl: ['18791718', '10899208'] },
+    tags: ['new'],
     description:
       '<p>A relaxed white shirt to wear open over swimwear or knotted at the waist, from the beach to lunch.</p>',
     fit: 'Relaxed fit, long sleeves to roll up.',
@@ -138,12 +141,30 @@ export const products = [
     type: 'Resortwear',
     collections: ['resortwear'],
     price: 16000,
+    compareAt: 20000,
     photos: { Terracotta: ['10756859'] },
     description:
       '<p>Easy shorts with an elastic waist, made to pair with a white shirt from the beach to the village.</p>',
     fit: 'Relaxed fit, elastic waist.',
   },
 ].map((product) => ({ sizes: SIZES, tags: [], soldOut: [], ...product, colors: Object.keys(product.photos) }));
+
+// Collections filled by rules, as automated collections do on Shopify (product type, tag, compare-at price, title).
+// Sale prices are samples for the preview only; the import CSV has none.
+const BESTSELLERS = ['eva-triangle-bikini', 'bellagio-bikini', 'eden-one-piece', 'como-one-piece', 'riva-resort-shirt', 'palma-bikini'];
+products.forEach((product) => {
+  const rules = {
+    swimwear: product.type === 'Bikini' || product.type === 'Swimsuit',
+    'new-in': product.tags.includes('new'),
+    bestsellers: BESTSELLERS.includes(product.handle),
+    sale: Boolean(product.compareAt),
+    shirts: /shirt/i.test(product.title),
+    shorts: /shorts/i.test(product.title),
+  };
+  Object.entries(rules).forEach(([handle, matches]) => {
+    if (matches && !product.collections.includes(handle)) product.collections.push(handle);
+  });
+});
 
 export const collections = [
   {
@@ -165,6 +186,37 @@ export const collections = [
     handle: 'resortwear',
     title: 'Resortwear',
     description: '<p>From the water to the terrace.</p>',
+  },
+  {
+    handle: 'swimwear',
+    title: 'Swimwear',
+    description: '<p>Bikinis and swimsuits from The Garden of Eden 2027.</p>',
+  },
+  {
+    handle: 'new-in',
+    title: 'New in',
+    description: '<p>The latest pieces of the collection.</p>',
+  },
+  {
+    handle: 'bestsellers',
+    title: 'Bestsellers',
+    description: '<p>The most-loved pieces of the collection.</p>',
+  },
+  {
+    handle: 'sale',
+    title: 'Sale',
+    template: 'sale',
+    description: '<p>Selected pieces at special prices.</p>',
+  },
+  {
+    handle: 'shirts',
+    title: 'Shirts',
+    description: '<p>Shirts to wear over swimwear, from the beach to lunch.</p>',
+  },
+  {
+    handle: 'shorts',
+    title: 'Shorts',
+    description: '<p>Easy shorts for the beach and the village.</p>',
   },
 ];
 
@@ -219,16 +271,37 @@ export const menus = {
     title: 'Main menu',
     links: [
       {
-        title: 'Shop',
-        url: '/collections/all',
+        title: 'Collections',
+        url: '/collections',
         links: [
-          { title: 'Bikinis', url: '/collections/bikinis' },
-          { title: 'Swimsuits', url: '/collections/swimsuits' },
-          { title: 'Resortwear', url: '/collections/resortwear' },
+          { title: 'The Garden of Eden 2027', url: '/pages/the-garden-of-eden' },
+          { title: 'New in', url: '/collections/new-in' },
           { title: 'All pieces', url: '/collections/all' },
         ],
       },
-      { title: 'The Garden of Eden', url: '/pages/the-garden-of-eden' },
+      {
+        title: 'Swimwear',
+        url: '/collections/swimwear',
+        links: [
+          { title: 'Bikinis', url: '/collections/bikinis' },
+          { title: 'Swimsuits', url: '/collections/swimsuits' },
+        ],
+      },
+      {
+        title: 'Resortwear',
+        url: '/collections/resortwear',
+        links: [
+          { title: 'Shirts', url: '/collections/shirts' },
+          { title: 'Shorts', url: '/collections/shorts' },
+        ],
+      },
+      { title: 'Bestsellers', url: '/collections/bestsellers' },
+      { title: 'Sale', url: '/collections/sale' },
+    ],
+  },
+  more: {
+    title: 'More',
+    links: [
       { title: 'The Story', url: '/pages/the-story' },
       { title: 'Client care', url: '/pages/help' },
       { title: 'Contact', url: '/pages/contact' },
@@ -237,11 +310,21 @@ export const menus = {
   footer: {
     title: 'Shop',
     links: [
-      { title: 'Bikinis', url: '/collections/bikinis' },
-      { title: 'Swimsuits', url: '/collections/swimsuits' },
+      { title: 'Collections', url: '/collections' },
+      { title: 'New in', url: '/collections/new-in' },
+      { title: 'Swimwear', url: '/collections/swimwear' },
       { title: 'Resortwear', url: '/collections/resortwear' },
-      { title: 'The Garden of Eden', url: '/pages/the-garden-of-eden' },
+      { title: 'Sale', url: '/collections/sale' },
+    ],
+  },
+  explore: {
+    title: 'Explore',
+    links: [
       { title: 'The Story', url: '/pages/the-story' },
+      { title: 'The Garden of Eden', url: '/pages/the-garden-of-eden' },
+      { title: 'Client care', url: '/pages/help' },
+      { title: 'Privacy policy', url: '/pages/privacy' },
+      { title: 'Terms of sale', url: '/pages/terms' },
     ],
   },
   'customer-care': {
@@ -266,8 +349,8 @@ export const menus = {
     links: [
       { title: 'Bikinis', url: '/collections/bikinis' },
       { title: 'Swimsuits', url: '/collections/swimsuits' },
-      { title: 'Resortwear', url: '/collections/resortwear' },
-      { title: 'The Garden of Eden', url: '/pages/the-garden-of-eden' },
+      { title: 'New in', url: '/collections/new-in' },
+      { title: 'Sale', url: '/collections/sale' },
     ],
   },
 };
@@ -297,6 +380,7 @@ export const settingsOverrides = {
   shipping_page: 'shipping-returns',
   search_menu: 'search-suggestions',
   social_instagram: 'https://www.instagram.com/',
+  free_shipping_threshold: 200,
 };
 
 export const colorHex = {
@@ -312,42 +396,57 @@ export const colorHex = {
 export const campaignPhotos = {
   'campaign-18037479': { width: 2400, height: 1350, widths: [1200, 2400] },
   'campaign-18037479-m': { width: 1200, height: 1800, widths: [640, 1200] },
-  'wide-8369989': { width: 1600, height: 1067, widths: [800, 1600] },
-  'wide-6339291': { width: 1600, height: 1067, widths: [800, 1600] },
+  'campaign-7732170': { width: 2400, height: 1350, widths: [1200, 2400] },
+  'campaign-7732170-m': { width: 1200, height: 1800, widths: [640, 1200] },
+  'campaign-18892579': { width: 2400, height: 1350, widths: [1200, 2400] },
+  'campaign-18892579-m': { width: 1200, height: 1800, widths: [640, 1200] },
+  'campaign-4497794': { width: 2400, height: 1350, widths: [1200, 2400] },
+  'wide-8093145': { width: 2400, height: 1080, widths: [1200, 2400] },
 };
 
-const galleryImage = (photo, shape, caption) => ({ type: 'image', settings: { image: `preview:photo/${photo}`, shape, caption } });
+const photo = (id) => `preview:photo/${id}`;
+const slide = (id, focalY = 40) => ({ settings: { image: photo(`campaign-${id}`), image_mobile: photo(`campaign-${id}-m`), focal_y: focalY } });
+const tile = (id) => ({ settings: { image: photo(id) } });
 
-// Preview only: sample photos stand in for the campaign Giselle will shoot, and the "Shop the look"
-// block on The Garden of Eden page uses a real photo with points on each piece.
+// Preview only: sample photos stand in for the campaign Giselle will shoot (the theme falls back to the
+// painting until her photos are chosen), and the "Shop the look" block on The Garden of Eden page uses a
+// real photo with points on each piece.
 export const templateOverrides = {
   index: {
     sections: {
-      hero: {
-        settings: { image: 'preview:photo/campaign-18037479', image_mobile: 'preview:photo/campaign-18037479-m', focal_x: 50, focal_y: 40 },
-      },
-      intro: {
-        settings: { image: 'preview:photo/12184162', image_2: 'preview:photo/5980148', caption: '' },
-      },
-      story: {
-        settings: { image_left: 'preview:photo/4827962', image_right: 'preview:photo/7261223' },
-      },
-      gallery: {
+      slideshow: {
         blocks: {
-          'image-1': galleryImage('28390584', 'portrait', 'Shoreline'),
-          'image-2': galleryImage('wide-8369989', 'landscape', 'Salt and wind'),
-          'image-3': galleryImage('3769133', 'square', 'Poolside'),
-          'image-4': galleryImage('18892579', 'portrait', 'Golden hour'),
-          'image-5': galleryImage('wide-6339291', 'landscape', 'Turquoise'),
+          'slide-1': slide('18037479'),
+          'slide-2': slide('7732170', 30),
+          'slide-3': slide('18892579', 30),
         },
-        block_order: ['image-1', 'image-2', 'image-3', 'image-4', 'image-5'],
       },
+      categories: {
+        blocks: {
+          bikinis: tile('28390584'),
+          swimsuits: tile('6339291'),
+          resortwear: tile('10899208'),
+          'new-in': tile('8369995'),
+        },
+      },
+      concept: { settings: { image: photo('12184162') } },
+      shipping: { settings: { image: photo('wide-8093145') } },
+    },
+  },
+  'collection.sale': {
+    sections: {
+      banner: { settings: { image: photo('campaign-4497794') } },
+    },
+  },
+  'footer-group': {
+    sections: {
+      'welcome-popup': { settings: { image: photo('5282577') } },
     },
   },
   'page.garden': {
     sections: {
       look: {
-        settings: { image: 'preview:photo/4497012', image_ratio: 'portrait', overline: 'Shop the look', heading: 'Under the palms' },
+        settings: { image: photo('4497012'), image_ratio: 'portrait', overline: 'Shop the look', heading: 'Under the palms' },
         blocks: {
           shirt: { type: 'hotspot', settings: { product: 'riva-resort-shirt', x: 38, y: 58 } },
           bikini: { type: 'hotspot', settings: { product: 'palma-bikini', x: 62, y: 77 } },
@@ -357,4 +456,3 @@ export const templateOverrides = {
     },
   },
 };
-

@@ -58,11 +58,12 @@ export function parseSchema(source) {
 
 // Preview-only changes to JSON templates (e.g. a real photo in "Shop the look"). Objects merge;
 // a section's blocks and block_order are replaced as a whole.
+// Deep-merges preview overrides into a template or section group; blocks merge by id, lists are replaced.
 const mergeTemplate = (base, patch) => {
   if (!patch) return base;
   const out = { ...base };
   for (const [key, value] of Object.entries(patch)) {
-    const replace = key === 'blocks' || key === 'block_order' || Array.isArray(value) || typeof value !== 'object' || value === null;
+    const replace = Array.isArray(value) || typeof value !== 'object' || value === null;
     out[key] = replace ? value : mergeTemplate(base[key] || {}, value);
   }
   return out;
@@ -347,7 +348,7 @@ export function createEngine({ files, locale, moneyFormat, currency = 'EUR', ass
     },
 
     async renderGroup(name, globals) {
-      const group = JSON.parse(files[`sections/${name}.json`]);
+      const group = mergeTemplate(JSON.parse(files[`sections/${name}.json`]), templateOverrides[name]);
       const resolve = globals.__resolve;
       const out = [];
       for (const key of group.order) {

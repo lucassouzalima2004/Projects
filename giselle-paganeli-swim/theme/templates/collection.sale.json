@@ -1,0 +1,66 @@
+{
+  "sections": {
+    "banner": {
+      "type": "image-banner",
+      "settings": {
+        "artwork": "bloom",
+        "height": "medium",
+        "position": "center",
+        "veil": 30,
+        "priority": true,
+        "overline": "Selected pieces",
+        "heading": "Sale",
+        "heading_as_title": true,
+        "text": "<p>Pieces from the collection at special prices, while sizes last.</p>",
+        "button_label": "",
+        "button_link": "",
+        "caption": ""
+      }
+    },
+    "main": {
+      "type": "main-collection",
+      "blocks": {
+        "category-1": {
+          "type": "category",
+          "settings": {
+            "label": "Bikinis",
+            "handle": "bikinis"
+          }
+        },
+        "category-2": {
+          "type": "category",
+          "settings": {
+            "label": "Swimsuits",
+            "handle": "swimsuits"
+          }
+        },
+        "category-3": {
+          "type": "category",
+          "settings": {
+            "label": "Resortwear",
+            "handle": "resortwear"
+          }
+        }
+      },
+      "block_order": [
+        "category-1",
+        "category-2",
+        "category-3"
+      ],
+      "settings": {
+        "overline": "The Garden of Eden 2027",
+        "show_description": true,
+        "show_all_link": true,
+        "per_page": 24,
+        "show_filters": true,
+        "show_sort": true,
+        "color_scheme": "pearl",
+        "show_header": false
+      }
+    }
+  },
+  "order": [
+    "banner",
+    "main"
+  ]
+}

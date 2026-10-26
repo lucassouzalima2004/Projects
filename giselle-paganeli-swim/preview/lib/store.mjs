@@ -96,7 +96,7 @@ export function createStore(data, { origin = '' } = {}) {
           option2: size,
           options: [color, size],
           price: raw.price,
-          compare_at_price: null,
+          compare_at_price: raw.compareAt || null,
           available: !soldOut,
           sku: `${handleize(raw.title).toUpperCase()}-${color.slice(0, 3).toUpperCase()}-${size}`,
           url: `/products/${raw.handle}?variant=${variantId}`,
@@ -119,7 +119,7 @@ export function createStore(data, { origin = '' } = {}) {
       price_min: raw.price,
       price_max: raw.price,
       price_varies: false,
-      compare_at_price: null,
+      compare_at_price: raw.compareAt || null,
       available: variants.some((variant) => variant.available),
       first_available_variant: variants.find((variant) => variant.available),
       selected_variant: null,
@@ -152,6 +152,7 @@ export function createStore(data, { origin = '' } = {}) {
       title: raw.title,
       description: raw.description,
       url: `/collections/${raw.handle}`,
+      template_suffix: raw.template || null,
       products: items,
       all_products_count: items.length,
       products_count: items.length,
@@ -321,7 +322,8 @@ export function createStore(data, { origin = '' } = {}) {
           url: link.url,
           links: children,
           current,
-          active: current || (link.url !== '/' && path.startsWith(link.url) && !link.url.includes('/all')),
+          // Like Shopify: the link's own page, or a page inside it (a product in a collection, a sub-page).
+          active: current || (link.url.split('/').filter(Boolean).length > 1 && path.startsWith(`${link.url}/`)),
           child_active: childActive,
           child_current: children.some((child) => child.current),
         };
@@ -438,7 +440,10 @@ export function createStore(data, { origin = '' } = {}) {
     if (path === '/collections') return { template: 'list-collections', type: 'list-collections', title: 'Collections' };
     if (parts[0] === 'collections' && parts.length === 2) {
       const collection = collectionFor(parts[1], params);
-      if (collection) return { template: 'collection', type: 'collection', title: collection.title, collection, description: stripHtml(collection.description) };
+      if (collection) {
+        const template = collection.template_suffix ? `collection.${collection.template_suffix}` : 'collection';
+        return { template, type: 'collection', title: collection.title, collection, description: stripHtml(collection.description) };
+      }
     }
     if (parts[0] === 'products' && parts.length === 2 && productsByHandle[parts[1]]) {
       const product = productsByHandle[parts[1]];

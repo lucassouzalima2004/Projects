@@ -90,41 +90,20 @@
                   {{- link.title -}}
                 </button>
                 <div id="MegaMenu-{{ forloop.index }}" class="mega" data-mega>
-                  <div class="mega__inner">
-                    <ul class="mega__links" role="list">
-                      {%- for child in link.links -%}
-                        <li style="--i: {{ forloop.index }}">
-                          <a href="{{ child.url }}" class="mega__link"{% if child.current %} aria-current="page"{% endif %}>
-                            {{- child.title -}}
-                          </a>
-                          {%- if child.links != blank -%}
-                            <ul class="mega__sublinks" role="list">
-                              {%- for grandchild in child.links -%}
-                                <li><a href="{{ grandchild.url }}">{{ grandchild.title }}</a></li>
-                              {%- endfor -%}
-                            </ul>
-                          {%- endif -%}
-                        </li>
-                      {%- endfor -%}
-                    </ul>
-                    {%- if section.settings.mega_heading != blank -%}
-                      <a href="{{ section.settings.mega_link | default: routes.all_products_collection_url }}" class="mega__feature">
-                        <span class="mega__media">
-                          {%- render 'media',
-                            image: section.settings.mega_image,
-                            artwork: section.settings.mega_artwork,
-                            sizes: '320px',
-                            widths: '320, 480, 640',
-                            alt: section.settings.mega_heading
-                          -%}
-                        </span>
-                        <span class="mega__caption">
-                          <span class="overline">{{ section.settings.mega_overline }}</span>
-                          <span class="mega__title">{{ section.settings.mega_heading }}</span>
-                        </span>
-                      </a>
+                  <ul class="mega__links" role="list">
+                    {%- for child in link.links -%}
+                      <li style="--i: {{ forloop.index }}">
+                        <a href="{{ child.url }}" class="mega__link"{% if child.current %} aria-current="page"{% endif %}>
+                          {{- child.title -}}
+                        </a>
+                      </li>
+                    {%- endfor -%}
+                    {%- if link.url != blank and link.url != '#' -%}
+                      <li style="--i: {{ link.links.size | plus: 1 }}">
+                        <a href="{{ link.url }}" class="mega__link mega__link--all">{{ 'sections.header.view_all' | t }}</a>
+                      </li>
                     {%- endif -%}
-                  </div>
+                  </ul>
                 </div>
               {%- else -%}
                 <a
@@ -168,6 +147,9 @@
                   {%- for child in link.links -%}
                     <li><a href="{{ child.url }}"{% if child.current %} aria-current="page"{% endif %}>{{ child.title }}</a></li>
                   {%- endfor -%}
+                  {%- if link.url != blank and link.url != '#' -%}
+                    <li><a href="{{ link.url }}">{{ 'sections.header.view_all' | t }}</a></li>
+                  {%- endif -%}
                 </ul>
               </details>
             {%- else -%}
@@ -176,6 +158,15 @@
           </li>
         {%- endfor -%}
       </ul>
+      {%- if section.settings.drawer_menu.links.size > 0 -%}
+        <ul class="menu-drawer__extra" role="list">
+          {%- for link in section.settings.drawer_menu.links -%}
+            <li style="--i: {{ menu.links.size | plus: forloop.index }}">
+              <a href="{{ link.url }}"{% if link.current %} aria-current="page"{% endif %}>{{ link.title }}</a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
     </nav>
     <div class="menu-drawer__footer">
       {%- if shop.customer_accounts_enabled -%}
@@ -232,47 +223,10 @@
       "default": true
     },
     {
-      "type": "header",
-      "content": "Dropdown feature"
-    },
-    {
-      "type": "image_picker",
-      "id": "mega_image",
-      "label": "Image"
-    },
-    {
-      "type": "select",
-      "id": "mega_artwork",
-      "label": "Artwork until an image is chosen",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "garden", "label": "The Garden" },
-        { "value": "lake", "label": "Lake and mountain" },
-        { "value": "canopy", "label": "Vines" },
-        { "value": "palm", "label": "Palms" },
-        { "value": "valley", "label": "Valley" },
-        { "value": "flowers", "label": "Flowers" },
-        { "value": "stream", "label": "Stream" },
-        { "value": "bloom", "label": "Bloom" }
-      ],
-      "default": "lake"
-    },
-    {
-      "type": "text",
-      "id": "mega_overline",
-      "label": "Small heading",
-      "default": "New collection"
-    },
-    {
-      "type": "text",
-      "id": "mega_heading",
-      "label": "Heading",
-      "default": "The Garden of Eden 2027"
-    },
-    {
-      "type": "url",
-      "id": "mega_link",
-      "label": "Link"
+      "type": "link_list",
+      "id": "drawer_menu",
+      "label": "Extra links in the mobile menu",
+      "info": "Smaller links under the main menu on phones, e.g. The Story, Client care, Contact."
     }
   ]
 }

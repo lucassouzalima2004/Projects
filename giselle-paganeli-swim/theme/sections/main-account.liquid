@@ -4,7 +4,7 @@
     <a href="{{ routes.account_logout_url }}" class="link link--small">{{ 'customer.account.logout' | t }}</a>
   </header>
   <div class="account__grid">
-    <div>
+    <div id="orders">
       <h2 class="h4">{{ 'customer.account.orders' | t }}</h2>
       {%- paginate customer.orders by 20 -%}
         {%- if customer.orders.size > 0 -%}

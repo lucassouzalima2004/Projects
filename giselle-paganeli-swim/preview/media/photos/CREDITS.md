@@ -1,7 +1,7 @@
 # Fotos da prévia
 
 Fotos do [Pexels](https://www.pexels.com/license/) (uso gratuito, inclusive comercial, sem atribuição obrigatória), recortadas em 4:5 e salvas em 640 e 1200 px.
-Na home da prévia, algumas delas também aparecem como imagens de campanha: `campaign-18037479` (hero, 16:9 no computador e vertical no celular) e `wide-8369989` / `wide-6339291` (galeria, 3:2).
+Na prévia, algumas delas também aparecem como imagens de campanha: `campaign-18037479`, `campaign-7732170` e `campaign-18892579` (slideshow da home, 16:9 no computador e vertical no celular), `campaign-4497794` (faixa da página Sale) e `wide-8093145` (faixa de frete grátis, foto abaixo).
 Servem **só para a prévia**: mostram peças de outras marcas, então não devem ir para a loja de verdade. Na Shopify, cada produto recebe as fotos da coleção da Giselle.
 
 | Arquivo | Produto na prévia | Fonte |
@@ -27,3 +27,4 @@ Servem **só para a prévia**: mostram peças de outras marcas, então não deve
 | 18791718 | Riva Resort Shirt · Pearl | [Andrea Musto](https://www.pexels.com/photo/woman-in-beige-one-piece-swimsuit-walking-barefoot-on-a-road-18791718/) |
 | 10899208 | Riva Resort Shirt · Pearl | [Pexels](https://www.pexels.com/photo/back-view-of-woman-in-white-shirt-on-beach-10899208/) |
 | 10756859 | Lido Resort Shorts · Terracotta | [Pexels](https://www.pexels.com/photo/woman-in-white-long-sleeve-shirt-standing-on-the-beach-10756859/) |
+| 8093145 | Faixa de frete grátis (home) | [Pexels](https://www.pexels.com/photo/brown-sun-hat-on-beach-8093145/) |

@@ -347,6 +347,12 @@
       },
       {
         "type": "text",
+        "id": "contact_phone",
+        "label": "Phone numbers",
+        "info": "Shown in the footer. Separate several numbers with commas."
+      },
+      {
+        "type": "text",
         "id": "whatsapp_number",
         "label": "WhatsApp number",
         "info": "International format, digits only, e.g. 393331234567."

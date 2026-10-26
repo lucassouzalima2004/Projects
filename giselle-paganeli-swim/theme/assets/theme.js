@@ -188,7 +188,7 @@
 
   // Headings rise word by word when they enter the screen.
   const SPLIT =
-    '.hero__title, .statement__text, .section-head .h2, .page-hero__title, .collection__title, .banner__title, .split__title, .duo__title, .footer__newsletter-title, .search-page__title, .gate__title, .product__title, .page__title';
+    '.statement__text, .section-head .h2, .page-hero__title, .collection__title, .banner__title, .split__title, .duo__title, .footer__newsletter-title, .search-page__title, .gate__title, .product__title, .page__title';
   const splitObserver =
     'IntersectionObserver' in window
       ? new IntersectionObserver(
@@ -441,6 +441,10 @@
 
   class AnnouncementBar extends HTMLElement {
     connectedCallback() {
+      // Full-screen sections subtract the bar's height so they end at the bottom of the screen.
+      const measure = () => document.documentElement.style.setProperty('--announcement-h', `${this.offsetHeight}px`);
+      measure();
+      if ('ResizeObserver' in window) new ResizeObserver(measure).observe(this);
       const items = qsa('.announcement__item', this);
       if (items.length < 2 || reduceMotion.matches) return;
       let index = 0;
@@ -457,47 +461,233 @@
   }
   customElements.define('announcement-bar', AnnouncementBar);
 
-  /* ---------- Hero: the image window opens as you scroll ---------- */
-  class GardenHero extends HTMLElement {
+  /* ---------- Slideshow: full-screen campaign images that change on their own ---------- */
+  class SlideShow extends HTMLElement {
     connectedCallback() {
-      if (reduceMotion.matches) this.classList.remove('hero--reveal');
-      if (!this.classList.contains('hero--reveal')) return;
-      this.windowEl = qs('.hero__window', this);
-      this.intro = qs('.hero__intro', this);
-      this.current = 0;
-      this.job = (dt) => this.update(dt);
-      this.measure = this.measure.bind(this);
-      window.addEventListener('resize', this.measure);
-      if (document.fonts && document.fonts.ready) document.fonts.ready.then(this.measure);
-      this.measure();
-      ticker.add(this.job);
+      this.slides = qsa('[data-slide]', this);
+      this.dots = qsa('[data-go]', this);
+      this.toggle = qs('[data-toggle]', this);
+      this.index = 0;
+      if (this.slides.length < 2) return;
+      this.interval = (Number(this.dataset.interval) || 6) * 1000;
+      this.held = false;
+      this.setPlaying(this.dataset.autoplay === 'true' && !reduceMotion.matches);
+
+      this.dots.forEach((dot) => {
+        dot.addEventListener('click', () => this.go(Number(dot.dataset.go)));
+        dot.addEventListener('keydown', (event) => {
+          if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+          event.preventDefault();
+          this.go(this.index + (event.key === 'ArrowRight' ? 1 : -1));
+          this.dots[this.index].focus();
+        });
+      });
+      if (this.toggle) this.toggle.addEventListener('click', () => this.setPlaying(!this.playing));
+
+      // Pause while the visitor points at the slideshow or moves through it with the keyboard.
+      const canHover = window.matchMedia('(hover: hover)');
+      this.addEventListener('mouseenter', () => canHover.matches && this.hold(true));
+      this.addEventListener('mouseleave', () => canHover.matches && this.hold(false));
+      this.addEventListener('focusin', () => this.hold(true));
+      this.addEventListener('focusout', (event) => {
+        if (!this.contains(event.relatedTarget)) this.hold(false);
+      });
+      this.onVisibility = () => this.hold(this.held, true);
+      document.addEventListener('visibilitychange', this.onVisibility);
+
+      // Swipe on touch screens; a swipe never opens the slide's link.
+      let start = null;
+      let swiped = false;
+      this.addEventListener('pointerdown', (event) => {
+        if (event.pointerType === 'mouse') return;
+        start = { x: event.clientX, y: event.clientY };
+        swiped = false;
+      });
+      this.addEventListener('pointerup', (event) => {
+        if (!start) return;
+        const dx = event.clientX - start.x;
+        const dy = event.clientY - start.y;
+        start = null;
+        if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy)) return;
+        swiped = true;
+        this.go(this.index + (dx < 0 ? 1 : -1));
+      });
+      this.addEventListener('pointercancel', () => (start = null));
+      this.addEventListener(
+        'click',
+        (event) => {
+          if (!swiped) return;
+          swiped = false;
+          event.preventDefault();
+        },
+        true
+      );
     }
 
     disconnectedCallback() {
-      ticker.remove(this.job);
-      window.removeEventListener('resize', this.measure);
+      clearTimeout(this.timer);
+      if (this.onVisibility) document.removeEventListener('visibilitychange', this.onVisibility);
     }
 
-    measure() {
-      if (!this.windowEl || !this.intro) return;
-      const top = Math.min(this.intro.offsetTop + this.intro.offsetHeight + 28, window.innerHeight * 0.62);
-      this.windowEl.style.setProperty('--top', `${top}px`);
-      ticker.kick();
+    go(target) {
+      const count = this.slides.length;
+      const next = ((target % count) + count) % count;
+      if (next !== this.index) {
+        this.slides.forEach((slide, i) => {
+          const active = i === next;
+          slide.classList.toggle('is-active', active);
+          slide.toggleAttribute('inert', !active);
+        });
+        this.dots.forEach((dot, i) => {
+          if (i === next) dot.setAttribute('aria-current', 'true');
+          else dot.removeAttribute('aria-current');
+        });
+        this.index = next;
+        // Start loading the slide after this one so it is ready when its turn comes.
+        const upcoming = qs('img[loading="lazy"]', this.slides[(next + 1) % count]);
+        if (upcoming) upcoming.loading = 'eager';
+      } else {
+        // Same slide again: restart its progress line together with the timer.
+        const dot = this.dots[next];
+        dot.removeAttribute('aria-current');
+        void dot.offsetWidth;
+        dot.setAttribute('aria-current', 'true');
+      }
+      this.restart();
     }
 
-    // The progress eases towards the scroll position, so wheel steps and fast flicks still open the window smoothly.
-    update(dt) {
-      const distance = Math.max(1, (this.offsetHeight - window.innerHeight) * 0.8);
-      const target = Math.min(1, Math.max(0, -this.getBoundingClientRect().top / distance));
-      const ease = 1 - Math.pow(1 - (lenis ? 0.3 : 0.14), dt / 16.7);
-      this.current += (target - this.current) * ease;
-      if (Math.abs(target - this.current) < 0.0005) this.current = target;
-      this.style.setProperty('--p', this.current.toFixed(4));
-      this.classList.toggle('is-open', this.current > 0.75);
-      return this.current !== target;
+    setPlaying(playing) {
+      this.playing = playing;
+      this.toggleAttribute('data-playing', playing);
+      if (this.toggle) {
+        this.toggle.setAttribute('aria-label', playing ? this.toggle.dataset.labelPause : this.toggle.dataset.labelPlay);
+        this.toggle.classList.toggle('is-paused', !playing);
+      }
+      this.restart();
+    }
+
+    // The timer and the progress line on the active dot run together; holding pauses both.
+    hold(held, fromVisibility = false) {
+      if (!fromVisibility) this.held = held;
+      const paused = this.held || document.hidden;
+      this.classList.toggle('is-held', paused);
+      if (!this.playing) return;
+      if (paused) {
+        clearTimeout(this.timer);
+        if (this.startedAt) this.remaining = Math.max(0, this.remaining - (performance.now() - this.startedAt));
+        this.startedAt = null;
+      } else if (!this.startedAt) {
+        this.schedule(this.remaining);
+      }
+    }
+
+    restart() {
+      clearTimeout(this.timer);
+      this.startedAt = null;
+      this.remaining = this.interval;
+      if (this.playing && !this.held && !document.hidden) this.schedule(this.interval);
+    }
+
+    schedule(delay) {
+      this.startedAt = performance.now();
+      this.remaining = delay;
+      this.timer = setTimeout(() => this.go(this.index + 1), delay);
     }
   }
-  customElements.define('garden-hero', GardenHero);
+  customElements.define('slide-show', SlideShow);
+
+  /* ---------- Welcome popup ---------- */
+  class WelcomePopup extends HTMLElement {
+    connectedCallback() {
+      this.dialog = qs('dialog', this);
+      this.key = 'eden-welcome-popup';
+      qsa('[data-popup-close]', this).forEach((el) => el.addEventListener('click', () => this.close()));
+      this.dialog.addEventListener('cancel', (event) => {
+        event.preventDefault();
+        this.close();
+      });
+      this.dialog.addEventListener('click', (event) => {
+        if (event.target === this.dialog) this.close();
+      });
+      const copy = qs('[data-popup-copy]', this);
+      if (copy) copy.addEventListener('click', () => this.copyCode(copy));
+
+      if (this.hasAttribute('data-success')) {
+        // Back from signing up: show the code without jumping to the bottom of the page.
+        if (window.location.hash === '#WelcomePopupForm') {
+          window.history.replaceState(null, '', window.location.pathname + window.location.search);
+          window.scrollTo(0, 0);
+        }
+        this.open();
+        return;
+      }
+      if (window.Shopify && window.Shopify.designMode) {
+        const section = this.closest('.shopify-section');
+        document.addEventListener('shopify:section:select', (event) => event.target === section && this.open());
+        document.addEventListener('shopify:section:deselect', (event) => event.target === section && this.close(false));
+        return;
+      }
+      const shownAt = Number(storage.get(this.key));
+      const days = Number(this.dataset.days) || 30;
+      if (shownAt && Date.now() - shownAt < days * 864e5) return;
+      this.timer = setTimeout(() => this.openWhenFree(), (Number(this.dataset.delay) || 5) * 1000);
+    }
+
+    disconnectedCallback() {
+      clearTimeout(this.timer);
+    }
+
+    // Wait while a drawer or another window is open.
+    openWhenFree() {
+      if (document.body.classList.contains('is-locked') || qs('dialog[open]')) {
+        this.timer = setTimeout(() => this.openWhenFree(), 4000);
+        return;
+      }
+      this.open();
+    }
+
+    open() {
+      if (this.dialog.open) return;
+      this.dialog.showModal();
+      lockScroll(true);
+    }
+
+    close(remember = true) {
+      if (!this.dialog.open) return;
+      if (remember) storage.set(this.key, String(Date.now()));
+      this.dialog.classList.add('is-closing');
+      const done = () => {
+        this.dialog.classList.remove('is-closing');
+        this.dialog.close();
+        lockScroll(false);
+      };
+      if (reduceMotion.matches) done();
+      else setTimeout(done, 350);
+    }
+
+    showSuccess() {
+      this.setAttribute('data-success', '');
+      qsa('[data-popup-step]', this).forEach((step) => {
+        step.hidden = step.dataset.popupStep !== 'success';
+      });
+      storage.set(this.key, String(Date.now()));
+    }
+
+    async copyCode(button) {
+      const code = qs('[data-popup-code]', this);
+      if (!code) return;
+      try {
+        await navigator.clipboard.writeText(code.textContent.trim());
+        button.textContent = button.dataset.copied;
+      } catch (error) {
+        const range = document.createRange();
+        range.selectNodeContents(code);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+      }
+    }
+  }
+  customElements.define('welcome-popup', WelcomePopup);
 
   /* ---------- Cart ---------- */
   const Cart = {

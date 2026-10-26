@@ -167,7 +167,11 @@
       "view_all": "View all {{ title }}"
     },
     "footer": {
-      "payment": "Payment methods"
+      "account": "My account",
+      "orders": "My orders",
+      "payment": "Payment methods",
+      "track": "Track my order",
+      "write": "Write to us"
     },
     "gallery": {
       "label": "Gallery",
@@ -177,10 +181,8 @@
       "account": "Account",
       "cart": "Bag",
       "cart_count": "Items in bag:",
-      "menu": "Menu"
-    },
-    "hero": {
-      "scroll": "Scroll"
+      "menu": "Menu",
+      "view_all": "View all"
     },
     "lookbook": {
       "shop": "Discover"
@@ -193,6 +195,19 @@
       "minutes": "Minutes",
       "owner": "Enter with password",
       "seconds": "Seconds"
+    },
+    "popup": {
+      "copied": "Code copied",
+      "copy": "Copy code",
+      "later": "Not now",
+      "shop": "Start shopping"
+    },
+    "slideshow": {
+      "go_to": "Show slide {{ index }}",
+      "label": "Campaign",
+      "pause": "Pause the slideshow",
+      "play": "Play the slideshow",
+      "slide": "Slide {{ index }} of {{ count }}"
     }
   },
   "templates": {

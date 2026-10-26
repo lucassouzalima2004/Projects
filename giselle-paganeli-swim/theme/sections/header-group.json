@@ -20,7 +20,10 @@
           }
         }
       },
-      "block_order": ["message-1", "message-2"],
+      "block_order": [
+        "message-1",
+        "message-2"
+      ],
       "settings": {
         "color_scheme": "cafe",
         "interval": 5
@@ -33,12 +36,12 @@
         "sticky": "scroll-up",
         "transparent_home": true,
         "show_localization": true,
-        "mega_artwork": "lake",
-        "mega_overline": "New collection",
-        "mega_heading": "The Garden of Eden 2027",
-        "mega_link": "shopify://collections/all"
+        "drawer_menu": "more"
       }
     }
   },
-  "order": ["announcement-bar", "header"]
+  "order": [
+    "announcement-bar",
+    "header"
+  ]
 }

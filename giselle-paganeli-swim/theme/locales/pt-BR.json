@@ -167,7 +167,11 @@
       "view_all": "Ver tudo: {{ title }}"
     },
     "footer": {
-      "payment": "Formas de pagamento"
+      "account": "Minha conta",
+      "orders": "Meus pedidos",
+      "payment": "Formas de pagamento",
+      "track": "Rastrear meu pedido",
+      "write": "Fale conosco"
     },
     "gallery": {
       "label": "Galeria",
@@ -177,10 +181,8 @@
       "account": "Conta",
       "cart": "Sacola",
       "cart_count": "Itens na sacola:",
-      "menu": "Menu"
-    },
-    "hero": {
-      "scroll": "Role"
+      "menu": "Menu",
+      "view_all": "Ver tudo"
     },
     "lookbook": {
       "shop": "Descobrir"
@@ -193,6 +195,19 @@
       "minutes": "Minutos",
       "owner": "Entrar com senha",
       "seconds": "Segundos"
+    },
+    "popup": {
+      "copied": "Código copiado",
+      "copy": "Copiar código",
+      "later": "Agora não",
+      "shop": "Começar a comprar"
+    },
+    "slideshow": {
+      "go_to": "Mostrar imagem {{ index }}",
+      "label": "Campanha",
+      "pause": "Pausar o carrossel",
+      "play": "Reproduzir o carrossel",
+      "slide": "Imagem {{ index }} de {{ count }}"
     }
   },
   "templates": {
