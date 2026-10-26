@@ -34,8 +34,8 @@ concurrency:
 
 env:
   WORKER: theberrycoffee
-  # Fora do ar desde 26/10/2026, a pedido do Lucas. 'true' publica de novo.
-  SITE_ONLINE: 'false'
+  # 'true' = no ar; 'false' = fora do ar (veja o topo deste arquivo)
+  SITE_ONLINE: 'true'
 
 jobs:
   check:

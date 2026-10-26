@@ -126,9 +126,7 @@ python3 -m http.server 8000
 
 ### Link do site: <https://theberrycoffee.lucassouzalima10.workers.dev>
 
-> **Fora do ar desde 26/10/2026**, a pedido do Lucas. O link está desligado, mas nada foi apagado: o Worker continua na conta do Cloudflare.
->
-> **Para voltar ao ar**, troque `SITE_ONLINE: 'false'` por `SITE_ONLINE: 'true'` no topo de `.github/workflows/deploy-berry-coffee.yml` e faça push. Em cerca de um minuto o site volta no mesmo link, já com a versão mais nova do repositório.
+Para tirar o site do ar sem apagar nada, troque `SITE_ONLINE: 'true'` por `'false'` no topo de `.github/workflows/deploy-berry-coffee.yml` e faça push. Para voltar, `'true'` de novo: o site volta no mesmo link, já com a versão mais nova do repositório.
 
 O workflow `.github/workflows/deploy-berry-coffee.yml` publica a pasta `berry-coffee/` sempre nesse mesmo link. Ele roda a cada push que mexe nela, no `main` ou no branch `claude/keen-tesla-fjkq02`. O endereço exato aparece no resumo de cada execução, em Actions.
 
