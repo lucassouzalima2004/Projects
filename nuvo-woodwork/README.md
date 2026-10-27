@@ -78,6 +78,21 @@ Detalhes:
 - Para tirar um vídeo do ar: apague os dois arquivos do trecho em `assets/video/` e rode
   `tools/make-videos.sh --manifest`.
 
+## Diagnóstico do filme
+
+Abra o site com `?debug` no fim do endereço (ex.: `https://nuvo-woodwork.lucassouzalima10.workers.dev/?debug`) e role
+pelo filme: um painel no canto mostra, a cada segundo, como o filme está rodando naquele aparelho:
+
+- **Modo:** canvas (decodificador) ou `<video>`, e por quê.
+- **Tela:** a frequência dela (60 Hz, 120 Hz...).
+- **Rolando:** quadros por segundo enquanto a página anda.
+- **Pinturas:** quantas mostraram o quadro exato.
+- **Decodificador:** quadros por segundo e atraso.
+- **Baixado:** quanto de cada vídeo já chegou.
+
+Para comparar os dois modos no mesmo aparelho: `?film=video` força o `<video>` e `?film=canvas` força o canvas
+(dá para juntar: `?debug&film=video`).
+
 ## Como editar
 
 | O quê | Onde |

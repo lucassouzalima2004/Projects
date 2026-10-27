@@ -425,9 +425,11 @@ body.menu-open { overflow: hidden; }
 /* Modo canvas (film-decoder.js): o filme inteiro é desenhado no canvas, as camadas só guardam as fotos */
 .film__canvas {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  height: 100lvh; /* não muda quando a barra do navegador do celular some: o canvas não é refeito no meio do scroll */
 }
 .film.is-canvas .film__scene { display: none; }
 .film__scene.is-painted .film__still {

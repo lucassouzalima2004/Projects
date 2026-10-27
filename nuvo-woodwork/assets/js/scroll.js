@@ -7,23 +7,57 @@
    com o dedo), e com "reduzir movimento" ligado também.
    Os links internos (#rooms, #contact...) deslizam até a seção, descontando o
    cabeçalho. Pelo teclado, o link funciona do jeito normal do navegador.
+
+   Também é o relógio da página (NUVO_FRAME): a cada pintura de tela, primeiro
+   a rolagem suave anda e logo depois o filme desenha a posição nova, no mesmo
+   quadro. Com dois relógios separados, de vez em quando o filme ficava um
+   quadro atrás e depois pulava dois (as "travadinhas").
    ========================================================================== */
 (function () {
   'use strict';
 
-  if (!window.Lenis) return;
-
-  const LERP = 0.085; // quanto da distância anda a cada quadro: menor = desliza mais longe e mais macio
+  const LERP = 0.11; // quanto da distância anda a cada quadro: menor = desliza mais longe e mais macio
   const fine = window.matchMedia('(hover: hover) and (pointer: fine)'); // mouse ou trackpad
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
   const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
+  /* ------------------------------------------------------------ relógio da página */
+  const jobs = [];
+  let raf = 0;
+  let running = false;
   let lenis = null;
 
+  function loop(t) {
+    raf = 0;
+    if (lenis) {
+      // Primeira pintura depois de parado: a rolagem suave conta só um quadro, não o tempo parado
+      // (senão ela pularia direto para o fim em vez de deslizar)
+      if (!running) lenis.time = t - 1000 / 60;
+      lenis.raf(t);
+    }
+    running = true;
+    let more = !!(lenis && lenis.isScrolling === 'smooth');
+    for (let i = 0; i < jobs.length; i++) if (jobs[i](t)) more = true;
+    if (more) request();
+    else running = false;
+  }
+  function request() {
+    if (!raf) raf = requestAnimationFrame(loop);
+  }
+  // add(fn): fn(t) roda a cada pintura em que o relógio está ligado e devolve true se quer a próxima
+  window.NUVO_FRAME = {
+    add(fn) {
+      jobs.push(fn);
+      request();
+    },
+    request,
+  };
+
+  /* ------------------------------------------------------------ rolagem suave */
   function update() {
-    const want = fine.matches && !reduce.matches;
+    const want = !!window.Lenis && fine.matches && !reduce.matches;
     if (want && !lenis) {
-      lenis = new window.Lenis({ lerp: LERP, smoothWheel: true, syncTouch: false, autoRaf: true });
+      lenis = new window.Lenis({ lerp: LERP, smoothWheel: true, syncTouch: false, autoRaf: false });
     } else if (!want && lenis) {
       lenis.destroy();
       lenis = null;
@@ -32,11 +66,17 @@
   }
   update();
   [fine, reduce].forEach((m) => (m.addEventListener ? m.addEventListener('change', update) : m.addListener(update)));
+  // A roda e o trackpad põem a rolagem suave para andar: o relógio liga até ela parar
+  window.addEventListener('wheel', request, { passive: true });
 
   // Desliza até a posição y da página; sem a rolagem suave, usa a do navegador
   window.NUVO_SCROLL_TO = (y) => {
-    if (lenis) lenis.scrollTo(y, { duration: 1.6, easing: easeInOut });
-    else window.scrollTo({ top: Math.round(y), behavior: reduce.matches ? 'auto' : 'smooth' });
+    if (lenis) {
+      lenis.scrollTo(y, { duration: 1.6, easing: easeInOut });
+      request();
+    } else {
+      window.scrollTo({ top: Math.round(y), behavior: reduce.matches ? 'auto' : 'smooth' });
+    }
   };
 
   // Links internos com o mouse: deslizam até a seção. O Lenis já desconta o cabeçalho fixo
@@ -50,6 +90,7 @@
     if (!el) return;
     e.preventDefault();
     lenis.scrollTo(el, { duration: 1.6, easing: easeInOut });
+    request();
     if (history.pushState) history.pushState(null, '', '#' + id);
   });
 })();

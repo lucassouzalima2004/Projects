@@ -58,7 +58,7 @@ window.NUVO = {
       id: 'living', // 01-living.mp4: da porta fechada até a sala pronta
       label: 'Living',
       lead: 0.3,
-      hold: 1,
+      hold: 0.6,
       stills: ['keys/door.webp', 'keys/living.webp'],
       beats: [
         {
@@ -76,14 +76,14 @@ window.NUVO = {
     {
       id: 'kitchen', // 02-kitchen.mp4: da sala até a cozinha pronta
       label: 'Kitchen',
-      hold: 1,
+      hold: 0.6,
       stills: ['keys/living.webp', 'keys/kitchen.webp'],
       beats: [{ time: [4.2], eyebrow: 'Kitchens', title: 'Cut on CNC.\nFinished\nby hand.' }],
     },
     {
       id: 'closet', // 03-closet.mp4: da cozinha, escada acima, até o closet pronto
       label: 'Closet',
-      hold: 1,
+      hold: 0.6,
       stills: ['keys/kitchen.webp', 'keys/closet.webp'],
       beats: [{ time: [6.1], eyebrow: 'Closets', title: 'A room made\nfor getting\nready.' }],
     },

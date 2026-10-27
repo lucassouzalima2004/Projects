@@ -234,7 +234,13 @@
   let snap = 0; // 0 → 1 depois que o scroll para: a fusão termina num quadro inteiro
   let restAt = 0;
   let heading = 1; // sentido do scroll
-  const stats = { paints: 0, exact: 0, near: 0, stills: 0 };
+  const stats = { paints: 0, exact: 0, near: 0, stills: 0, gap: 0, moving: 0, movingMs: 0, long: 0 };
+  // ?debug no endereço mostra o painel de diagnóstico; ?film=video ou ?film=canvas força um modo
+  const params = new URLSearchParams(window.location.search);
+  const DEBUG = params.has('debug');
+  const FORCE = params.get('film');
+  let why = 'decidindo';
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
   // Aparelho que não dá conta do canvas: o tempo entre uma pintura de tela e outra, durante o
   // scroll, comparado com o ritmo normal da tela dele (base). Muito acima disso, volta para o <video>.
   const perf = { base: 0, n: 0, slow: 0 };
@@ -267,7 +273,12 @@
   // Usa o canvas se o navegador decodifica o vídeo do primeiro trecho (e não foi lento nesta visita)
   function chooseMode() {
     const first = scenes.find((s) => s.video);
-    const check = D && first && remembered() !== 'video' ? D.supported(infoFor(first)) : Promise.resolve(false);
+    let check = Promise.resolve(false);
+    if (FORCE === 'video') why = 'forçado por ?film=video';
+    else if (!D) why = 'navegador sem WebCodecs';
+    else if (!first) why = 'sem vídeo no manifest';
+    else if (remembered() === 'video' && FORCE !== 'canvas') why = 'aparelho lento nesta visita';
+    else check = D.supported(infoFor(first)).then((ok) => ok || ((why = 'navegador não decodifica este vídeo'), false));
     return check
       .then((ok) => ok && useCanvas(), () => {})
       .then(() => {
@@ -285,6 +296,7 @@
     canvas.className = 'film__canvas';
     media.appendChild(canvas);
     mode = 'canvas';
+    why = '';
     film.classList.add('is-canvas');
     fitCanvas();
     dirty = true;
@@ -292,9 +304,10 @@
   }
 
   // O decodificador falhou de vez (ou o aparelho ficou lento): volta para o <video>
-  function useVideo() {
+  function useVideo(reason) {
     if (mode !== 'canvas') return;
-    remember('video');
+    why = typeof reason === 'string' ? reason : 'o decodificador falhou';
+    if (FORCE !== 'canvas') remember('video');
     mode = 'video';
     film.classList.remove('is-canvas');
     canvas.remove();
@@ -315,8 +328,8 @@
   function fitCanvas() {
     if (!canvas) return;
     let r = Math.min(window.devicePixelRatio || 1, 3);
-    const cw = stage.clientWidth;
-    const ch = stage.clientHeight;
+    const cw = canvas.clientWidth || stage.clientWidth;
+    const ch = canvas.clientHeight || stage.clientHeight;
     if (cw * ch * r * r > 8.3e6) r = Math.sqrt(8.3e6 / (cw * ch)); // telas enormes: até ~4K
     const w = Math.max(1, Math.round(cw * r));
     const h = Math.max(1, Math.round(ch * r));
@@ -348,26 +361,36 @@
   function paintScene(s, x, a) {
     const t = s.track;
     if (t) {
-      const i = Math.floor(x);
-      const f = x - i;
-      const A = t.get(i);
+      // Os quadros prontos de antes e de depois de x, fundidos na proporção certa. Com todos os
+      // quadros prontos são os dois vizinhos; se faltar algum no meio, a imagem passa de um para o
+      // outro aos poucos em vez de travar e pular.
+      const r = t.around(x);
+      let A = r.a;
+      let B = r.ia === r.ib ? null : r.b;
+      let f = 0;
+      if (A && B) {
+        const gap = r.ib - r.ia;
+        if (gap > 8) {
+          if (x - r.ia > r.ib - x) A = B; // longe demais para fundir: o mais perto
+          B = null;
+        } else {
+          f = (x - r.ia) / gap;
+        }
+      } else if (!A) {
+        A = B;
+        B = null;
+      }
       if (A) {
         ctx.globalAlpha = a;
         cover(A, s);
-        const B = f > 0.004 ? t.get(i + 1) : null;
-        if (B) {
-          // a fusão dos dois quadros vizinhos: o movimento fica contínuo entre um quadro e outro
+        if (B && f > 0.004) {
           ctx.globalAlpha = a * f;
           cover(B, s);
         }
-        stats.exact++;
-        return true;
-      }
-      const N = t.nearest(x); // o certo ainda está decodificando: o mais perto que já está pronto
-      if (N) {
-        ctx.globalAlpha = a;
-        cover(N, s);
-        stats.near++;
+        const d = Math.min(r.a ? x - r.ia : Infinity, r.b ? r.ib - x : Infinity);
+        if (d < 1) stats.exact++;
+        else stats.near++;
+        stats.gap += Math.min(d, 30);
         return true;
       }
     }
@@ -693,7 +716,11 @@
     }
   }
 
+  let seenY = -1;
+  let want = false;
+
   function readScroll() {
+    seenY = window.scrollY;
     target = clamp((window.scrollY - metrics.top) / metrics.dist);
     // Salto grande de uma vez (página recarregada no meio, tecla End): vai direto, sem passar pelo filme todo
     if (Math.abs(target - cur) * total > 150) {
@@ -702,11 +729,19 @@
     }
   }
 
+  // Pede uma pintura. Com o relógio único da página (scroll.js), o filme desenha no mesmo quadro em
+  // que a rolagem suave andou: os dois nunca ficam um quadro fora de passo.
   function kick() {
-    if (!raf) raf = requestAnimationFrame(tick);
+    if (window.NUVO_FRAME) {
+      want = true;
+      window.NUVO_FRAME.request();
+    } else if (!raf) {
+      raf = requestAnimationFrame(tick);
+    }
   }
 
-  // O filme segue o scroll com um pouco de inércia: desliza em vez de pular de um quadro a outro
+  // O filme acompanha o scroll direto: no computador a rolagem suave já desliza e no celular a do
+  // próprio aparelho. Só com mouse e sem a rolagem suave (se ela não carregar) o filme põe inércia.
   function tick(t) {
     raf = 0;
     readScroll(); // a posição desta pintura (com a rolagem suave, ela muda a cada quadro)
@@ -714,27 +749,30 @@
     const dt = last ? Math.min(64, t - last) : 16;
     const prev = cur;
     last = t;
-    if (reduce.matches) {
+    if (reduce.matches || window.NUVO_SCROLL || !finePointer.matches) {
       cur = target;
     } else {
-      // Com a rolagem suave do computador a página já desliza: o filme só a acompanha de perto.
-      // Sem ela (celular), o filme mesmo dá a inércia.
-      const tau = window.NUVO_SCROLL ? 30 : 120;
-      cur += (target - cur) * (1 - Math.exp(-dt / tau));
+      cur += (target - cur) * (1 - Math.exp(-dt / 100));
       if (Math.abs(target - cur) * total < 0.02) cur = target;
     }
-    if (cur !== prev) heading = cur > prev ? 1 : -1;
-    if (cur !== prev || dirty) {
+    const moved = cur !== prev;
+    if (moved) heading = cur > prev ? 1 : -1;
+    if (moved || dirty) {
       dirty = false;
       draw();
     }
     let more = cur !== target;
+    if (moved && had) {
+      stats.moving++;
+      stats.movingMs += t - had;
+      if (perf.base && t - had > perf.base * 1.5) stats.long++;
+    }
     if (mode === 'canvas') {
-      if (more && perf.base && had) watch(t - had);
+      if (moved && perf.base && had) watch(t - had);
       // Quando o scroll para, a fusão termina no quadro inteiro mais perto (imagem nítida parada)
-      if (more) restAt = 0;
+      if (moved) restAt = 0;
       else if (!restAt) restAt = t;
-      const sn = restAt ? clamp((t - restAt) / 220) : 0;
+      const sn = restAt ? clamp((t - restAt) / 160) : 0;
       if (sn !== snap) {
         snap = sn;
         repaint = true;
@@ -772,8 +810,17 @@
     perf.n++;
     if (dt > perf.base * 2.5) perf.slow++;
     if (perf.n < 90) return;
-    if (perf.slow / perf.n > 0.3) useVideo();
+    if (perf.slow / perf.n > 0.3) useVideo('aparelho lento (menos de 24 quadros/s)');
     perf.n = perf.slow = 0;
+  }
+
+  if (window.NUVO_FRAME) {
+    window.NUVO_FRAME.add((t) => {
+      if (!want && window.scrollY === seenY) return false; // nada mudou
+      want = false;
+      tick(t);
+      return want;
+    });
   }
 
   let wasPortrait = portrait();
@@ -834,6 +881,53 @@
   if (document.readyState === 'complete') setTimeout(probe, 300);
   else window.addEventListener('load', () => setTimeout(probe, 300), { once: true });
 
+  // Painel de diagnóstico (?debug no fim do endereço): o que o filme está fazendo neste aparelho,
+  // atualizado a cada segundo. Os números de scroll contam só enquanto a página está andando.
+  function debugPanel() {
+    const box = document.createElement('pre');
+    box.setAttribute('aria-hidden', 'true');
+    box.style.cssText =
+      'position:fixed;left:8px;bottom:8px;z-index:9999;margin:0;padding:8px 10px;max-width:calc(100vw - 16px);' +
+      'font:11px/1.45 ui-monospace,Menlo,Consolas,monospace;color:#d6ffcc;background:rgba(0,0,0,.8);' +
+      'border-radius:6px;pointer-events:none;white-space:pre-wrap';
+    document.body.appendChild(box);
+    let a = Object.assign({}, stats);
+    let b = D ? Object.assign({}, D.stats) : null;
+    let t0 = performance.now();
+    const pct = (x, n) => (n ? Math.round((x / n) * 100) + '%' : '-');
+    setInterval(() => {
+      const now = performance.now();
+      const sec = (now - t0) / 1000;
+      const st = stats;
+      const dm = st.moving - a.moving;
+      const fps = st.movingMs > a.movingMs ? Math.round((dm * 1000) / (st.movingMs - a.movingMs)) : '-';
+      const painted = st.exact - a.exact + st.near - a.near + st.stills - a.stills;
+      const lines = [
+        'NUVO film · ' + (mode === 'canvas' ? 'CANVAS (decodificador)' : 'VIDEO (<video>)') + (why ? ' · ' + why : ''),
+        'rolagem suave: ' + (window.NUVO_SCROLL ? 'sim' : 'não') + ' · tela ' + (perf.base ? Math.round(1000 / perf.base) + ' Hz' : '?') +
+          ' · dpr ' + (window.devicePixelRatio || 1) + (canvas ? ' · canvas ' + canvas.width + '×' + canvas.height : ''),
+        'rolando: ' + fps + ' quadros/s · lentos ' + pct(st.long - a.long, dm) + ' (' + (st.long - a.long) + ')',
+        'pinturas: certas ' + pct(st.exact - a.exact, painted) + ' · perto ' + pct(st.near - a.near, painted) +
+          ' · fotos ' + pct(st.stills - a.stills, painted) + ' · distância média ' + (painted ? ((st.gap - a.gap) / painted).toFixed(2) : '-'),
+      ];
+      if (D) {
+        const ds = D.stats;
+        const n = ds.latN - b.latN;
+        lines.push(
+          'decodificador: ' + Math.round((ds.out - b.out) / sec) + ' quadros/s · ' + (n ? ((ds.lat - b.lat) / n).toFixed(1) + ' ms' : '-') +
+            ' · guarda como ' + D.keepAs() + ' · flush ' + ds.flushes + ' · erros ' + ds.errors
+        );
+        b = Object.assign({}, ds);
+      }
+      lines.push('baixado: ' + scenes.map((x) => (x.track ? Math.round((x.track.have / x.track.buf.length) * 100) + '%' : x.live ? 'ok' : '-')).join(' / '));
+      lines.push(navigator.userAgent.replace(/^Mozilla\/5\.0 /, '').slice(0, 140));
+      box.textContent = lines.join('\n');
+      a = Object.assign({}, st);
+      t0 = now;
+    }, 1000);
+  }
+  if (DEBUG) debugPanel();
+
   window.NUVO_FILM = {
     goTo,
     goToScene(id) {
@@ -849,6 +943,10 @@
     info() {
       return {
         mode,
+        why,
+        y: seenY, // a posição de scroll que o filme desenhou por último
+        x: view ? +view.x.toFixed(3) : null, // o quadro (com fração) na tela, no modo canvas
+        scene: view ? view.i : null,
         base: perf.base,
         stats: Object.assign({}, stats),
         cached: scenes.map((s) => (s.track ? s.track.cache.size : 0)),
