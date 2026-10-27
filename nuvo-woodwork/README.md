@@ -13,6 +13,9 @@ O site é em inglês (o público é americano).
 - **O filme da casa** (topo, preso na tela durante o scroll), no formato do site de referência que o Guilherme mandou:
   um voo de drone contínuo, da porta fechada até a casa inteira acesa, passando pela sala, cozinha e closet, que se
   montam na frente da câmera. São 4 vídeos de 10 s encadeados (o último quadro de um é o primeiro do próximo).
+  - No computador a rolagem da página inteira é suave (Lenis): cada giro da roda ou gesto do trackpad vira um
+    deslizamento que freia aos poucos, e o filme, os títulos e as seções deslizam juntos. No celular fica a
+    rolagem do próprio aparelho. Para deslizar mais ou menos, mude `LERP` no `assets/js/scroll.js`.
   - O vídeo anda com o scroll e com um pouco de inércia, para deslizar em vez de pular. O navegador decodifica os
     quadros um pouco adiante do scroll e o filme é desenhado num canvas, fundindo dois quadros vizinhos: o movimento
     é contínuo mesmo rolando bem devagar, e a imagem para nítida num quadro inteiro quando o scroll para.
@@ -151,6 +154,8 @@ nuvo-woodwork/
 ├── assets/js/content.js     trechos do filme (títulos, tempos, fotos) e contato
 ├── assets/js/film.js        o filme: scroll, títulos, canvas, carregamento (e o <video> de reserva)
 ├── assets/js/film-decoder.js decodifica os quadros dos vídeos direto no navegador (WebCodecs)
+├── assets/js/scroll.js      rolagem suave no computador e links internos
+├── assets/js/vendor/        Lenis 1.3.26 (rolagem suave, licença MIT)
 ├── assets/js/app.js         menu, índice de ambientes, formulário
 ├── assets/video/            vídeos do filme + manifest.js (gerados pelo script)
 ├── assets/img/              fotos, favicon, ícone do iPhone e prévia do link

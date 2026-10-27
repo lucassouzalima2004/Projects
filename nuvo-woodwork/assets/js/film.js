@@ -709,6 +709,7 @@
   // O filme segue o scroll com um pouco de inércia: desliza em vez de pular de um quadro a outro
   function tick(t) {
     raf = 0;
+    readScroll(); // a posição desta pintura (com a rolagem suave, ela muda a cada quadro)
     const had = last; // havia uma pintura logo antes (o intervalo é real)
     const dt = last ? Math.min(64, t - last) : 16;
     const prev = cur;
@@ -716,7 +717,10 @@
     if (reduce.matches) {
       cur = target;
     } else {
-      cur += (target - cur) * (1 - Math.exp(-dt / 120));
+      // Com a rolagem suave do computador a página já desliza: o filme só a acompanha de perto.
+      // Sem ela (celular), o filme mesmo dá a inércia.
+      const tau = window.NUVO_SCROLL ? 30 : 120;
+      cur += (target - cur) * (1 - Math.exp(-dt / tau));
       if (Math.abs(target - cur) * total < 0.02) cur = target;
     }
     if (cur !== prev) heading = cur > prev ? 1 : -1;
@@ -794,7 +798,8 @@
     if (!s) return;
     const q = Math.max(0, s.qb - 0.002);
     const y = metrics.top + ((s.start + s.len * q) / total) * metrics.dist;
-    window.scrollTo({ top: Math.round(y), behavior: reduce.matches ? 'auto' : 'smooth' });
+    if (window.NUVO_SCROLL_TO) window.NUVO_SCROLL_TO(Math.round(y));
+    else window.scrollTo({ top: Math.round(y), behavior: reduce.matches ? 'auto' : 'smooth' });
   }
 
   window.addEventListener('scroll', () => {

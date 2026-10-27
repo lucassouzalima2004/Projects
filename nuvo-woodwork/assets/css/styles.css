@@ -105,6 +105,13 @@ html {
   scroll-padding-top: var(--header-h);
 }
 
+/* Rolagem suave no computador (scroll.js, com o Lenis) */
+html.lenis,
+html.lenis body { height: auto; }
+.lenis:not(.lenis-autoToggle).lenis-stopped { overflow: clip; }
+.lenis [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-smooth iframe { pointer-events: none; }
+
 body {
   margin: 0;
   background: var(--ebony);

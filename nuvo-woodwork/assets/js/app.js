@@ -46,6 +46,8 @@
     menuLabel.textContent = open ? 'Close menu' : 'Open menu';
     menuBtn.querySelector('use').setAttribute('href', open ? '#i-close' : '#i-menu');
     document.body.classList.toggle('menu-open', open);
+    // Com o menu aberto, a rolagem suave para (a página por trás não anda)
+    if (window.NUVO_SCROLL) window.NUVO_SCROLL[open ? 'stop' : 'start']();
     header.classList.toggle('is-solid', open || window.scrollY > Math.max(24, filmEnd - 8));
   }
   menuBtn.addEventListener('click', () => setMenu(!menu.classList.contains('is-open')));
