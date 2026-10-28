@@ -28,7 +28,8 @@ FONTS = pathlib.Path(__file__).resolve().parent / "fonts"
 MILK = (251, 247, 243)
 INK = (36, 22, 38)
 INK2 = (94, 76, 97)
-HOLO = [(249, 195, 216), (228, 210, 248), (196, 227, 247), (205, 241, 226), (251, 224, 198)]
+HOLO = [(245, 157, 194), (205, 176, 246), (159, 207, 244), (168, 230, 207), (248, 205, 164)]
+BLUE = [(158, 216, 248), (79, 134, 236), (108, 78, 216)]  # coração e borboleta do logo dela
 
 
 def catalog():
@@ -53,13 +54,13 @@ def font(name, size, wght=None, opsz=None):
     return f
 
 
-def holo_gradient(w, h):
+def holo_gradient(w, h, stops=HOLO):
     g = Image.new("RGB", (w, 1))
     for x in range(w):
-        t = x / max(1, w - 1) * (len(HOLO) - 1)
-        i = min(int(t), len(HOLO) - 2)
+        t = x / max(1, w - 1) * (len(stops) - 1)
+        i = min(int(t), len(stops) - 2)
         f = t - i
-        g.putpixel((x, 0), tuple(round(HOLO[i][c] * (1 - f) + HOLO[i + 1][c] * f) for c in range(3)))
+        g.putpixel((x, 0), tuple(round(stops[i][c] * (1 - f) + stops[i + 1][c] * f) for c in range(3)))
     return g.resize((w, h))
 
 
@@ -126,10 +127,20 @@ def logo(canvas, x, y, size, center=False):
     d = ImageDraw.Draw(canvas)
     f = font("Allura.ttf", size)
     by = font("Jost.ttf", max(12, size // 4), wght=500)
-    text = "Art with Love"
-    w = d.textlength(text, font=f)
+    # "Art with L" + coração azul no lugar do "o" + "ve", como nas cartelas dela
+    left, right = "Art with L", "ve"
+    hw = size * 0.46
+    w = d.textlength(left, font=f) + hw + d.textlength(right, font=f)
     x0 = x - w / 2 if center else x
-    d.text((x0, y), text, font=f, fill=INK)
+    d.text((x0, y), left, font=f, fill=(20, 16, 20))
+    hx = x0 + d.textlength(left, font=f)
+    big = int(hw * 4)
+    mask = Image.new("L", (big, big), 0)
+    heart(ImageDraw.Draw(mask), big / 2, big / 2, big / 36, 255)
+    grad = holo_gradient(big, big, BLUE).rotate(-35, resample=Image.BICUBIC)
+    hs = int(hw)
+    canvas.paste(grad.resize((hs, hs), Image.LANCZOS), (int(hx), int(y + size * 0.5)), mask.resize((hs, hs), Image.LANCZOS))
+    d.text((hx + hw, y), right, font=f, fill=(20, 16, 20))
     sub = "BY LULU  ·  LONDON"
     spacing = size // 14
     sw = sum(d.textlength(c, font=by) + spacing for c in sub) - spacing
@@ -211,10 +222,10 @@ def square(photo, out):
 def icons():
     for size, name in [(180, "apple-touch-icon.png"), (512, "icon-512.png"), (192, "icon-192.png")]:
         big = size * 4
-        im = Image.new("RGB", (big, big), INK)
+        im = Image.new("RGB", (big, big), (255, 255, 255))
         mask = Image.new("L", (big, big), 0)
         heart(ImageDraw.Draw(mask), big / 2, big / 2 + big * 0.02, big / 46, 255)
-        grad = holo_gradient(big, big).rotate(-35, resample=Image.BICUBIC, expand=False)
+        grad = holo_gradient(big, big, BLUE).rotate(-35, resample=Image.BICUBIC, expand=False)
         im.paste(grad, (0, 0), mask)
         im.resize((size, size), Image.LANCZOS).save(IMG / name, optimize=True)
 

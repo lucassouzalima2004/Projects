@@ -372,7 +372,7 @@ function renderBag(force) {
     ${checkoutMode === 'stripe' ? `
       <button class="btn btn--primary btn--block" type="button" id="checkout">${icon('lock')} Checkout · ${money(sub)}</button>
       <p class="bag__secure">${icon('lock')} Secure payment by Stripe</p>
-      <div class="pay-row" aria-label="Accepted payments"><span>VISA</span><span>MASTERCARD</span><span>AMEX</span><span>APPLE PAY</span><span>G PAY</span></div>
+      <div class="pay-row" aria-label="Accepted payments"><span>VISA</span><span>MASTERCARD</span><span>AMEX</span><span>PAYPAL</span><span>APPLE PAY</span><span>G PAY</span></div>
     ` : whatsappCheckout(lines)}
     <div id="bag-msg"></div>`;
 }

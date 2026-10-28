@@ -100,6 +100,12 @@ function candleArt() {
 }
 
 /* ------------------------------------------------------------------ home --- */
+// Strass espalhados no topo: [x %, y %, tamanho px, aparece no celular]
+const STRASS = [
+  [6, 12, 15, 1], [16, 38, 10, 0], [3, 55, 12, 1], [25, 7, 9, 0], [89, 10, 16, 1], [94, 34, 11, 1],
+  [81, 44, 12, 0], [71, 5, 9, 0], [31, 28, 8, 0], [67, 31, 9, 0], [97, 58, 13, 0], [12, 70, 9, 1],
+];
+
 export function home() {
   const picks = ['lollipop-bow', 'teddy-bow', 'mermaid-doll-bow', 'flamingo-pompom-bow', 'red-velvet-bow-pair']
     .map((id) => productById.get(id))
@@ -125,6 +131,7 @@ export function home() {
     description: `Luxury handmade hair bows, baby headbands and cold porcelain keepsakes, made one at a time in London. Free UK delivery over ${freeOver}.`,
     html: `
       <section class="hero" aria-labelledby="hero-title">
+        <div class="strass" aria-hidden="true">${STRASS.map(([x, y, sz, m], i) => `<i style="--x:${x}%;--y:${y}%;--s:${sz}px;--d:${(i * 0.83) % 5}s"${m ? '' : " data-m='0'"}><b></b></i>`).join('')}</div>
         <div class="wrap">
           <p class="eyebrow eyebrow--spark hero__eyebrow">Handmade in London</p>
           <h1 class="hero__title" id="hero-title">${title}</h1>
@@ -224,7 +231,7 @@ export function home() {
             <h2 id="mto-title">Birthday candles, <em>sculpted by hand</em></h2>
             <p class="lead">Themed candles with cold porcelain characters, plus matching bows for the birthday girl. Tell Lulu the theme, the colours and the date, and she will make it just for you.</p>
             <div class="mto__ctas">
-              <a class="btn btn--holo" href="/made-to-order">Start a commission ${icon('arrow', 'btn__arrow')}</a>
+              <a class="btn btn--holo" href="/made-to-order">Order a custom piece ${icon('arrow', 'btn__arrow')}</a>
               <a class="btn btn--outline-light" href="/made-to-order#how">How it works</a>
             </div>
           </div>
@@ -440,7 +447,7 @@ export function product(id, url) {
             <ul class="perks">
               <li>${icon('hand')} Handmade in London, one at a time</li>
               <li>${icon('truck')} Dispatched within ${esc(shipping.dispatch)} · ${esc(shipLine)}</li>
-              <li>${icon('lock')} Secure checkout with card, Apple Pay or Google Pay</li>
+              <li>${icon('lock')} Secure checkout with card, PayPal, Apple Pay or Google Pay</li>
             </ul>
 
             <div>
@@ -450,7 +457,7 @@ export function product(id, url) {
               </details>
               <details class="acc">
                 <summary>Size ${icon('plus')}</summary>
-                <div class="acc__body"><p>Every photo shows this piece next to a ruler marked in centimetres and inches, so you can see its real size at a glance. Tap a photo to see it larger.</p></div>
+                <div class="acc__body"><p>Every photo shows this piece next to a ruler in centimetres, so you can see its real size at a glance. Tap a photo to see it larger.</p></div>
               </details>
               <details class="acc">
                 <summary>Delivery &amp; returns ${icon('plus')}</summary>
@@ -618,7 +625,7 @@ export function madeToOrder() {
       ${gallery.length ? `
       <section class="section" aria-labelledby="past-title">
         <div class="wrap">
-          ${sectionHead({ eyebrow: 'Past commissions', title: '<span id="past-title">Made with <em>love</em></span>', lead: 'A few pieces Lulu has made before. Each one is unique, so yours will be made just for you.' })}
+          ${sectionHead({ eyebrow: 'Past custom orders', title: '<span id="past-title">Made with <em>love</em></span>', lead: 'A few pieces Lulu has made before. Each one is unique, so yours will be made just for you.' })}
           <ul class="portfolio">${gallery.map((g) => `<li data-reveal><img src="/${esc(g.src.replace(/^\//, ''))}" alt="${esc(g.alt)}" loading="lazy"></li>`).join('')}</ul>
         </div>
       </section>` : ''}
@@ -637,7 +644,7 @@ export function madeToOrder() {
 
       <section class="section" aria-labelledby="form-title">
         <div class="wrap wrap--narrow">
-          ${sectionHead({ eyebrow: 'Start a commission', title: '<span id="form-title">Tell Lulu <em>your idea</em></span>', lead: 'Your request opens in WhatsApp, ready to send. No commitment, just a chat.' })}
+          ${sectionHead({ eyebrow: 'Custom orders', title: '<span id="form-title">Tell Lulu <em>your idea</em></span>', lead: 'Your request opens in WhatsApp, ready to send. No commitment, just a chat.' })}
           <form class="form" id="mto-form" novalidate data-reveal>
             <fieldset class="field">
               <legend>What would you like?</legend>
@@ -785,10 +792,10 @@ export function help() {
         </ul>
 
         <h2 id="payments">Payments</h2>
-        <p>Checkout is handled securely by Stripe. You can pay with Visa, Mastercard, American Express, Apple Pay or Google Pay. We never see or store your card details. Prices are in pounds sterling (GBP).</p>
+        <p>Checkout is handled securely by Stripe. You can pay with Visa, Mastercard, American Express, PayPal, Apple Pay or Google Pay. We never see or store your card details. Prices are in pounds sterling (GBP).</p>
 
         <h2 id="contact">Contact</h2>
-        <p>Questions about a bow, an order or a commission? Lulu is happy to help.</p>
+        <p>Questions about a bow, an order or a custom piece? Lulu is happy to help.</p>
         <ul>${contact}</ul>
       </section>`,
   };

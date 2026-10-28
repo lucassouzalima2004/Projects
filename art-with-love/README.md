@@ -1,7 +1,7 @@
 # Art with Love by Lulu · loja
 
 Loja virtual da Luciene (Lulu), que faz laços de cabelo de luxo e velas de aniversário em biscuit em Londres.
-Site todo em inglês britânico, preços em libras, entrega pelo Royal Mail e pagamento com cartão, Apple Pay e Google Pay pelo Stripe.
+Site todo em inglês britânico, preços em libras, entrega pelo Royal Mail e pagamento com cartão, PayPal, Apple Pay e Google Pay pelo Stripe.
 
 **No ar:** <https://artwithlove-by-lulu.lucassouzalima10.workers.dev>
 
@@ -32,12 +32,15 @@ direto e as funções pequenas em `functions/` cuidam do checkout, das prévias 
 O conteúdo foi montado a partir das conversas do WhatsApp. Confirme e troque em `public/assets/js/catalog.js`:
 
 - [ ] **Preços** de todos os produtos (os atuais são de exemplo, entre £9 e £16)
-- [ ] **Frete**: valores do Royal Mail e o mínimo para frete grátis (hoje £3.50 / £4.95, grátis acima de £35)
+- [ ] **Frete**: ela vai mandar por e-mail as regras novas de entrega (hoje: Royal Mail £3.50 / £4.95, grátis acima
+      de £35, só Reino Unido). Muda em `shipping` no `catalog.js` e no texto de `help` em `views.js`
+- [ ] **Logo**: o do site imita o das cartelas (script preto, borboleta e coração azuis). Quando chegar o arquivo
+      original, ele substitui o `logo__script` no `index.html`
 - [ ] Nomes e descrições dos produtos (escritos a partir das legendas que ela mandou)
 - [ ] Estoque: peças únicas ganham `stock: 1`; esgotadas, `stock: 0`
 - [ ] Prazo das encomendas (`madeToOrder.leadTime`, hoje "2–3 weeks")
 - [ ] Fotos das velas que ela já fez: ela perguntou se pode mostrar as já vendidas. Pode: entram em
-      `madeToOrder.gallery` como "Past commissions"
+      `madeToOrder.gallery` como "Past custom orders"
 - [ ] E-mail da loja (`email`), se ela tiver um
 - [ ] Textos de "Our story" (`about` em `views.js`): falam da técnica brasileira do biscuit
 - [ ] Política de devolução e privacidade (`help` e `legal` em `views.js`): seguem as regras do Reino Unido para
@@ -98,6 +101,9 @@ Na hora o botão da sacola vira **Checkout** (não precisa publicar de novo).
 Ela vê os pedidos, endereços e recados de presente no app do Stripe no celular. Em **Settings → Notifications**
 dá para receber um e-mail a cada venda, e em **Settings → Customer emails** ligar o recibo automático para a
 cliente. Cupons de desconto são criados em **Product catalogue → Coupons** e aparecem no checkout.
+
+**PayPal**: no painel do Stripe, em **Settings → Payment methods**, ligue o **PayPal** (pede para conectar a conta
+PayPal dela). Depois disso ele aparece sozinho no checkout, sem mexer no site.
 
 Apple Pay e Google Pay já vêm ligados no checkout do Stripe. Se não aparecerem, confira em
 **Settings → Payment methods**.
@@ -166,4 +172,6 @@ art-with-love/
 ```
 
 Fontes do site: Bodoni Moda (títulos), Jost (textos) e Allura (logo), do Google Fonts.
-As cores holográficas vêm das cartelas dela, e o fundo escuro com brilho combina com o glitter das fotos.
+As cores holográficas vêm das cartelas dela, o azul do logo vem da borboleta e do coração impressos nelas, e o fundo
+escuro com brilho combina com o glitter das fotos. No topo da página inicial há alguns strass espalhados que
+brilham de vez em quando (`STRASS` em `views.js`).
