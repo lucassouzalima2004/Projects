@@ -1,0 +1,12 @@
+# Cabeçalhos do Cloudflare Pages
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  X-Frame-Options: SAMEORIGIN
+
+# Fotos: o navegador guarda por 7 dias. Para trocar uma foto já publicada, use outro nome de arquivo.
+/assets/products/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+/assets/og/*
+  Cache-Control: public, max-age=604800

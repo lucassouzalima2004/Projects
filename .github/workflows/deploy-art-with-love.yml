@@ -1,0 +1,103 @@
+# Publica a loja Art with Love no Cloudflare Pages (https://artwithlove-by-lulu.pages.dev).
+#
+# Secrets no GitHub (Settings → Secrets and variables → Actions → New repository secret):
+#   CLOUDFLARE_API_TOKEN   token do Cloudflare com a permissão "Account · Cloudflare Pages · Edit"
+#   CLOUDFLARE_ACCOUNT_ID  ID da conta do Cloudflare
+#   STRIPE_SECRET_KEY      opcional: chave secreta do Stripe. Sem ela, a sacola fecha o pedido pelo WhatsApp.
+# Enquanto os secrets do Cloudflare não existirem, o workflow só avisa e não falha.
+name: Deploy Art with Love (Cloudflare Pages)
+
+on:
+  push:
+    branches: [main, claude/modest-wright-jq1dqx]
+    paths:
+      - 'art-with-love/**'
+      - '.github/workflows/deploy-art-with-love.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: art-with-love-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PROJECT: artwithlove-by-lulu
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.creds.outputs.ready }}
+    steps:
+      - name: Conferir os secrets do Cloudflare
+        id: creds
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n "$TOKEN" ] && [ -n "$ACCOUNT" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=Cloudflare sem credenciais::Adicione CLOUDFLARE_API_TOKEN e CLOUDFLARE_ACCOUNT_ID em Settings → Secrets and variables → Actions e rode este workflow de novo (Actions → Deploy Art with Love → Run workflow)."
+          fi
+
+  deploy:
+    needs: check
+    if: needs.check.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: art-with-love
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar o wrangler
+        run: npm install --no-save --no-audit --no-fund --include=optional wrangler@4
+
+      - name: Criar o projeto no Cloudflare Pages (só na primeira vez)
+        run: |
+          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects"
+          auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+          if ! curl -fsS -o /dev/null -H "$auth" "$api/$PROJECT"; then
+            body=$(jq -n --arg name "$PROJECT" --arg branch "${{ github.event.repository.default_branch }}" \
+              '{name: $name, production_branch: $branch, deployment_configs: {production: {compatibility_date: "2026-10-01"}, preview: {compatibility_date: "2026-10-01"}}}')
+            curl -sS --fail-with-body -X POST -H "$auth" -H "Content-Type: application/json" --data "$body" "$api"
+          fi
+          domain=$(curl -fsS -H "$auth" "$api/$PROJECT" | jq -r '.result.subdomain')
+          echo "DOMAIN=$domain" >> "$GITHUB_ENV"
+
+      - name: Guardar a chave do Stripe no Cloudflare
+        env:
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+        run: |
+          if [ -z "$STRIPE_SECRET_KEY" ]; then
+            echo "::notice title=Stripe desligado::Sem STRIPE_SECRET_KEY, a sacola fecha o pedido pelo WhatsApp."
+            exit 0
+          fi
+          body=$(jq -n --arg key "$STRIPE_SECRET_KEY" \
+            '{deployment_configs: {production: {env_vars: {STRIPE_SECRET_KEY: {type: "secret_text", value: $key}}}, preview: {env_vars: {STRIPE_SECRET_KEY: {type: "secret_text", value: $key}}}}}')
+          curl -sS --fail-with-body -o /dev/null -X PATCH \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" \
+            --data "$body" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PROJECT"
+
+      - name: Publicar
+        id: deploy
+        run: |
+          set -o pipefail
+          npx wrangler pages deploy public --project-name="$PROJECT" --branch="${{ github.ref_name }}" --commit-dirty=true | tee deploy.log
+          url=$(grep -oE 'https://[a-z0-9.-]+\.pages\.dev' deploy.log | tail -1)
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Endereço da loja
+        run: |
+          {
+            echo "### Art with Love no ar"
+            echo "- Esta publicação: ${{ steps.deploy.outputs.url }}"
+            echo "- Endereço principal (branch ${{ github.event.repository.default_branch }}): https://$DOMAIN"
+          } >> "$GITHUB_STEP_SUMMARY"
