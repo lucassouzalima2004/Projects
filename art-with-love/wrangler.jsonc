@@ -1,0 +1,15 @@
+// Configuração do Cloudflare Worker da loja (npx wrangler deploy / npx wrangler dev)
+{
+  "name": "artwithlove-by-lulu",
+  "main": "worker.js",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    // /shop, /product/... sem arquivo próprio recebem o index.html
+    "not_found_handling": "single-page-application",
+    // fotos, CSS e JS saem direto, sem passar pelo código (mais rápido e não gasta cota)
+    "run_worker_first": ["/*", "!/assets/*", "!/site.webmanifest"]
+  },
+  "observability": { "enabled": true }
+}

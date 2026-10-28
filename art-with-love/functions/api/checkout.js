@@ -6,7 +6,7 @@
  * Os preços NUNCA vêm do navegador: cada item é conferido com o catálogo
  * (public/assets/js/catalog.js) aqui no servidor.
  *
- * Variáveis no Cloudflare Pages (Settings → Variables and Secrets):
+ * Variáveis do Worker (npx wrangler secret put, ou Settings → Variables and Secrets no Cloudflare):
  *   STRIPE_SECRET_KEY  chave secreta do Stripe (sk_live_… ou sk_test_… para testar)
  *   SITE_URL           opcional: endereço final, ex. https://artwithlovebylulu.co.uk
  */

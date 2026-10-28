@@ -3,7 +3,10 @@
 Loja virtual da Luciene (Lulu), que faz laços de cabelo de luxo e velas de aniversário em biscuit em Londres.
 Site todo em inglês britânico, preços em libras, entrega pelo Royal Mail e pagamento com cartão, Apple Pay e Google Pay pelo Stripe.
 
-HTML, CSS e JavaScript puros, sem build. O servidor é o Cloudflare Pages (de graça), com três funções pequenas em `functions/`.
+**No ar:** <https://artwithlove-by-lulu.lucassouzalima10.workers.dev>
+
+HTML, CSS e JavaScript puros, sem build. Roda num Cloudflare Worker (plano grátis): os arquivos de `public/` saem
+direto e as funções pequenas em `functions/` cuidam do checkout, das prévias de link e do sitemap.
 
 ## O que tem na loja
 
@@ -87,8 +90,10 @@ Precisa de Python com Pillow (`pip install pillow`) e do Node.
 1. Crie a conta em <https://dashboard.stripe.com/register> com os dados dela (país: United Kingdom).
 2. Em **Developers → API keys**, copie a **Secret key** (`sk_live_…`). Para testar antes, use a `sk_test_…`
    e o cartão `4242 4242 4242 4242`.
-3. No GitHub: **Settings → Secrets and variables → Actions → New repository secret**, nome `STRIPE_SECRET_KEY`.
-4. Rode o workflow (**Actions → Deploy Art with Love → Run workflow**). Ele guarda a chave no Cloudflare e publica.
+3. Na pasta `art-with-love`, rode `npx wrangler secret put STRIPE_SECRET_KEY` e cole a chave. Ou cadastre no
+   GitHub (**Settings → Secrets and variables → Actions**, nome `STRIPE_SECRET_KEY`) e o workflow guarda sozinho.
+
+Na hora o botão da sacola vira **Checkout** (não precisa publicar de novo).
 
 Ela vê os pedidos, endereços e recados de presente no app do Stripe no celular. Em **Settings → Notifications**
 dá para receber um e-mail a cada venda, e em **Settings → Customer emails** ligar o recibo automático para a
@@ -99,17 +104,24 @@ Apple Pay e Google Pay já vêm ligados no checkout do Stripe. Se não aparecere
 
 ## Publicar
 
-O workflow `.github/workflows/deploy-art-with-love.yml` publica a cada push que mexe em `art-with-love/`.
-Na primeira vez ele cria o projeto `artwithlove-by-lulu`, e a loja fica em <https://artwithlove-by-lulu.pages.dev>
-(se o nome estiver em uso, o Cloudflare acrescenta um sufixo; o endereço certo aparece no resumo da execução).
+A loja é o Worker `artwithlove-by-lulu` na conta do Cloudflare (configuração em `wrangler.jsonc`).
+Virou Worker, e não Pages, porque a conta já está no limite de projetos do Pages.
 
-Precisa dos mesmos secrets do site da manicure: `CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID`
-(veja `nail-studio/README.md`). Sem eles, o workflow só avisa e não publica.
+Para publicar uma mudança, na pasta `art-with-love`:
+
+```bash
+npx wrangler deploy
+```
+
+Ou automático: o workflow `.github/workflows/deploy-art-with-love.yml` publica a cada push que mexe em
+`art-with-love/`, quando o GitHub tiver os secrets `CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID`
+(`412bed087d02be29e49cf72c79e778a5`). Sem eles, o workflow só avisa e não publica.
 
 ### Domínio .co.uk
 
 1. Compre o domínio (ex.: `artwithlovebylulu.co.uk`) em qualquer registrador. Custa poucas libras por ano.
-2. No Cloudflare: **Workers & Pages → artwithlove-by-lulu → Custom domains → Set up a domain**.
+2. Coloque o domínio no Cloudflare (**Add a domain**) e depois, em **Workers & Pages → artwithlove-by-lulu →
+   Settings → Domains & Routes → Add → Custom domain**, ligue o domínio à loja.
 3. Ponha o endereço em `siteUrl` no `catalog.js`, para os links de prévia e o Google usarem o domínio certo.
 
 Hospedagem e funções ficam no plano grátis do Cloudflare. O único custo fixo é o domínio. O Stripe cobra por venda.
@@ -119,7 +131,7 @@ Hospedagem e funções ficam no plano grátis do Cloudflare. O único custo fixo
 As rotas (`/shop`, `/product/...`) e o checkout precisam do servidor do Cloudflare. Na pasta `art-with-love`:
 
 ```bash
-npx wrangler pages dev public
+npx wrangler dev
 ```
 
 Abra o endereço que aparecer (normalmente <http://localhost:8788>). Para testar o Stripe localmente, crie um arquivo
@@ -129,6 +141,8 @@ Abra o endereço que aparecer (normalmente <http://localhost:8788>). Para testar
 
 ```
 art-with-love/
+├── worker.js                    entrada do Worker: liga os endereços às funções
+├── wrangler.jsonc               configuração do Cloudflare (nome, pasta do site, rotas)
 ├── public/                      o site
 │   ├── index.html               estrutura fixa (topo, rodapé, sacola, busca)
 │   ├── assets/js/catalog.js     catálogo: produtos, preços, frete, contato
@@ -138,7 +152,7 @@ art-with-love/
 │   ├── assets/css/shop.css      visual (cores e fontes no topo)
 │   ├── assets/products/         fotos dos produtos (WebP) e miniaturas do checkout
 │   ├── assets/og/               prévias de link de cada produto
-│   ├── _headers, _routes.json   cache e segurança no Cloudflare
+│   ├── _headers                 cache e segurança no Cloudflare
 │   └── site.webmanifest         ícone ao salvar no celular
 ├── functions/
 │   ├── api/checkout.js          confere a sacola e abre o pagamento no Stripe

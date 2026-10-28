@@ -1,11 +1,12 @@
-# Publica a loja Art with Love no Cloudflare Pages (https://artwithlove-by-lulu.pages.dev).
+# Publica a loja Art with Love como Cloudflare Worker
+# (https://artwithlove-by-lulu.lucassouzalima10.workers.dev). Configuração em art-with-love/wrangler.jsonc.
 #
 # Secrets no GitHub (Settings → Secrets and variables → Actions → New repository secret):
-#   CLOUDFLARE_API_TOKEN   token do Cloudflare com a permissão "Account · Cloudflare Pages · Edit"
+#   CLOUDFLARE_API_TOKEN   token do Cloudflare com permissão para editar Workers
 #   CLOUDFLARE_ACCOUNT_ID  ID da conta do Cloudflare
 #   STRIPE_SECRET_KEY      opcional: chave secreta do Stripe. Sem ela, a sacola fecha o pedido pelo WhatsApp.
 # Enquanto os secrets do Cloudflare não existirem, o workflow só avisa e não falha.
-name: Deploy Art with Love (Cloudflare Pages)
+name: Deploy Art with Love (Cloudflare Workers)
 
 on:
   push:
@@ -19,11 +20,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: art-with-love-${{ github.ref }}
+  group: art-with-love
   cancel-in-progress: false
-
-env:
-  PROJECT: artwithlove-by-lulu
 
 jobs:
   check:
@@ -60,17 +58,13 @@ jobs:
       - name: Instalar o wrangler
         run: npm install --no-save --no-audit --no-fund --include=optional wrangler@4
 
-      - name: Criar o projeto no Cloudflare Pages (só na primeira vez)
+      - name: Publicar
+        id: deploy
         run: |
-          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects"
-          auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
-          if ! curl -fsS -o /dev/null -H "$auth" "$api/$PROJECT"; then
-            body=$(jq -n --arg name "$PROJECT" --arg branch "${{ github.event.repository.default_branch }}" \
-              '{name: $name, production_branch: $branch, deployment_configs: {production: {compatibility_date: "2026-10-01"}, preview: {compatibility_date: "2026-10-01"}}}')
-            curl -sS --fail-with-body -X POST -H "$auth" -H "Content-Type: application/json" --data "$body" "$api"
-          fi
-          domain=$(curl -fsS -H "$auth" "$api/$PROJECT" | jq -r '.result.subdomain')
-          echo "DOMAIN=$domain" >> "$GITHUB_ENV"
+          set -o pipefail
+          npx wrangler deploy | tee deploy.log
+          url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | tail -1)
+          echo "url=$url" >> "$GITHUB_OUTPUT"
 
       - name: Guardar a chave do Stripe no Cloudflare
         env:
@@ -80,24 +74,7 @@ jobs:
             echo "::notice title=Stripe desligado::Sem STRIPE_SECRET_KEY, a sacola fecha o pedido pelo WhatsApp."
             exit 0
           fi
-          body=$(jq -n --arg key "$STRIPE_SECRET_KEY" \
-            '{deployment_configs: {production: {env_vars: {STRIPE_SECRET_KEY: {type: "secret_text", value: $key}}}, preview: {env_vars: {STRIPE_SECRET_KEY: {type: "secret_text", value: $key}}}}}')
-          curl -sS --fail-with-body -o /dev/null -X PATCH \
-            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" \
-            --data "$body" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PROJECT"
-
-      - name: Publicar
-        id: deploy
-        run: |
-          set -o pipefail
-          npx wrangler pages deploy public --project-name="$PROJECT" --branch="${{ github.ref_name }}" --commit-dirty=true | tee deploy.log
-          url=$(grep -oE 'https://[a-z0-9.-]+\.pages\.dev' deploy.log | tail -1)
-          echo "url=$url" >> "$GITHUB_OUTPUT"
+          printf '%s' "$STRIPE_SECRET_KEY" | npx wrangler secret put STRIPE_SECRET_KEY
 
       - name: Endereço da loja
-        run: |
-          {
-            echo "### Art with Love no ar"
-            echo "- Esta publicação: ${{ steps.deploy.outputs.url }}"
-            echo "- Endereço principal (branch ${{ github.event.repository.default_branch }}): https://$DOMAIN"
-          } >> "$GITHUB_STEP_SUMMARY"
+        run: echo "### Art with Love no ar: ${{ steps.deploy.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
