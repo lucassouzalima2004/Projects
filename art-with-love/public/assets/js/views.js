@@ -35,12 +35,14 @@ export function card(p, i = 0) {
       : `<button class="card__add" type="button" data-add="${p.id}" aria-label="Add ${esc(p.name)} to bag">${icon('plus')}<span>Add</span></button>`;
   return `
     <article class="card${isSoldOut(p) ? ' is-out' : ''}" style="--i:${i}">
-      <a class="card__media foil" href="${url}" tabindex="-1" aria-hidden="true">
-        <img src="${photo(p, v, 1)}" alt="" loading="lazy" decoding="async" width="480" height="640">
-        ${n > 1 ? `<img class="card__alt" src="${photo(p, v, 2)}" alt="" loading="lazy" decoding="async" width="480" height="640">` : ''}
-        <span class="card__badges">${badges(p)}</span>
-      </a>
-      ${add}
+      <div class="card__frame">
+        <a class="card__media foil" href="${url}" tabindex="-1" aria-hidden="true">
+          <img src="${photo(p, v, 1)}" alt="" loading="lazy" decoding="async" width="480" height="640">
+          ${n > 1 ? `<img class="card__alt" src="${photo(p, v, 2)}" alt="" loading="lazy" decoding="async" width="480" height="640">` : ''}
+          <span class="card__badges">${badges(p)}</span>
+        </a>
+        ${add}
+      </div>
       <div class="card__body">
         <div class="card__top">
           <h3 class="card__name"><a href="${url}">${esc(p.name)}</a></h3>
@@ -138,7 +140,7 @@ export function home() {
             <a class="hang" href="${productUrl(p)}" data-n="${i}" style="--i:${i};--sway:${5 + (i % 3) * 1.4}s;--r0:${i % 2 ? -10 : 10}deg">
               <span class="hang__peg" aria-hidden="true"></span>
               <span class="hang__card foil"><img src="${photo(p, p.variants?.[0], 1)}" alt="${esc(altText(p, p.variants?.[0]))}" width="480" height="640" ${i === 2 ? 'fetchpriority="high"' : 'loading="lazy"'}></span>
-              <span class="hang__tag">${esc(p.name)} <b>${money(p.price)}</b></span>
+              <span class="hang__tag"><span class="hang__name">${esc(p.name)}</span> <b>${money(p.price)}</b></span>
             </a>`).join('')}
         </div>
       </section>
@@ -155,7 +157,7 @@ export function home() {
               const cover = productById.get(c.cover) || productsIn(c)[0];
               return `
               <a class="range foil" href="/shop/${c.id}" data-reveal style="--d:${i * 0.08}s">
-                <img src="${photo(cover, cover.variants?.[0], 1, 'l')}" alt="" loading="lazy" decoding="async" width="960" height="1280">
+                <img src="${photo(cover, cover.variants?.[0], 1, 'l')}" srcset="${photo(cover, cover.variants?.[0], 1, 's')} 480w, ${photo(cover, cover.variants?.[0], 1, 'l')} 960w" sizes="(max-width: 760px) 78vw, 33vw" alt="" loading="lazy" decoding="async" width="960" height="1280">
                 <span class="range__body">
                   <h3>${esc(c.name)}</h3>
                   <p>${plural(productsIn(c).length, 'piece')}</p>
@@ -179,7 +181,7 @@ export function home() {
         <div class="wrap split">
           <div class="split__media" data-reveal>
             <div class="ruler-shot">
-              <div class="ruler-shot__img"><img src="${photo(rulerProduct, null, 1, 'l')}" alt="${esc(altText(rulerProduct))}" loading="lazy" width="960" height="1280"></div>
+              <div class="ruler-shot__img"><img src="${photo(rulerProduct, null, 1, 'l')}" srcset="${photo(rulerProduct, null, 1, 's')} 480w, ${photo(rulerProduct, null, 1, 'l')} 960w" sizes="(max-width: 860px) 90vw, 460px" alt="${esc(altText(rulerProduct))}" loading="lazy" width="960" height="1280"></div>
               <p class="ruler-shot__note">${icon('ruler')}<span>See the true size in every photo</span></p>
             </div>
           </div>

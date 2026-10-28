@@ -10,7 +10,7 @@
   --mist: #F1ECF6;
   --ink: #241626;
   --ink-2: #5E4C61;
-  --ink-3: #8D7E90;
+  --ink-3: #74657A;
   --line: rgba(36, 22, 38, .12);
   --line-2: rgba(36, 22, 38, .2);
   --night: #151017;
@@ -159,8 +159,8 @@ p { margin: 0; }
 .btn--light:hover { background: var(--paper); }
 .btn--outline-light { border-color: rgba(255,255,255,.35); color: #fff; }
 .btn--outline-light:hover { border-color: #fff; background: rgba(255,255,255,.08); }
-.btn--wa { background: #1F9E5A; color: #fff; }
-.btn--wa:hover { background: #17864B; }
+.btn--wa { background: #167A45; color: #fff; }
+.btn--wa:hover { background: #0F6337; }
 .btn--block { width: 100%; }
 .btn--sm { --h: 42px; padding: 0 1.2em; font-size: .88rem; }
 .btn[aria-busy='true'] { pointer-events: none; color: transparent !important; }
@@ -409,7 +409,8 @@ p { margin: 0; }
   .line { height: 330px; }
   .hang { --w: 132px; }
   .hang[data-n='0'], .hang[data-n='4'] { display: none; }
-  .hang__tag { font-size: .7rem; padding: 5px 10px; }
+  .hang__tag { font-size: .74rem; padding: 5px 11px; }
+  .hang__name { display: none; }
 }
 
 /* Holograma que segue o ponteiro (cartões de produto e cartelas) */
@@ -487,6 +488,7 @@ p { margin: 0; }
 @media (max-width: 760px) { .grid { grid-template-columns: repeat(2, 1fr); gap: 28px 12px; } }
 
 .card { position: relative; display: flex; flex-direction: column; gap: 14px; }
+.card__frame { position: relative; }
 .card__media {
   position: relative;
   display: block;
