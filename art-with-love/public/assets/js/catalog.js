@@ -79,7 +79,7 @@ export default {
       blurb: 'Matching pairs and mix-and-match clip sets for bunches, plaits and fringes.',
     },
     {
-      id: 'baby-headbands', kind: 'range', cover: 'headband-duo-sky-coral',
+      id: 'baby-headbands', kind: 'range', cover: 'headband-duo',
       name: 'Baby Headbands',
       blurb: 'Soft, stretchy nylon bands that stay put without pinching. Made for tiny heads.',
     },

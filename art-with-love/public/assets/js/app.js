@@ -1,7 +1,7 @@
 /* Loja Art with Love: rotas, sacola, checkout, busca e detalhes de interação. */
 import {
   SHOP, esc, money, plural, products, productById, collections, photo, productUrl, bag,
-  freeLeft, shipping, waLink, igLink, track, pixelData, maxQty,
+  freeLeft, shipping, waLink, igLink, track, pixelData, MAX_QTY,
 } from './lib.js';
 import * as views from './views.js';
 
@@ -51,29 +51,52 @@ addEventListener('scroll', () => {
   });
 }, { passive: true });
 
-function scrollToHash(hash, smooth) {
-  const el = hash && document.getElementById(decodeURIComponent(hash.slice(1)));
-  if (el) el.scrollIntoView({ behavior: smooth && !reduced.matches ? 'smooth' : 'auto' });
-  return Boolean(el);
+function scrollToHash(hash, { smooth = false, focus = false } = {}) {
+  let id = '';
+  try { id = decodeURIComponent((hash || '').slice(1)); } catch { id = (hash || '').slice(1); }
+  const el = id && document.getElementById(id);
+  if (!el) return false;
+  el.scrollIntoView({ behavior: smooth && !reduced.matches ? 'smooth' : 'auto' });
+  if (focus) { // leva o foco junto (link "Skip to content", índices das páginas de ajuda)
+    if (!el.matches('a[href], button, input, select, textarea, [tabindex]')) el.tabIndex = -1;
+    el.focus({ preventScroll: true });
+  }
+  return true;
+}
+
+function safeResolve(url) {
+  try {
+    return resolve(url);
+  } catch (err) {
+    console.error(err); // erro no catálogo: mostra a 404 em vez de travar a loja
+    return views.notFound();
+  }
 }
 
 function render(url, { pop = false } = {}) {
-  const page = resolve(url);
+  const page = safeResolve(url);
   const swap = () => {
     if (cleanup) cleanup();
     cleanup = null;
+    revealer?.disconnect();
     view.innerHTML = page.html;
     setMeta(page, url);
     markNav(url);
-    const c = page.mount?.(view, api);
-    if (typeof c === 'function') cleanup = c;
+    try {
+      const c = page.mount?.(view, api);
+      if (typeof c === 'function') cleanup = c;
+    } catch (err) {
+      console.error(err);
+    }
     reveal(view);
     if (pop && scrollMemory.has(history.state?.key)) scrollTo(0, scrollMemory.get(history.state.key));
     else if (!scrollToHash(url.hash)) scrollTo(0, 0);
   };
 
   if (booted && document.startViewTransition && !reduced.matches) {
-    document.startViewTransition(swap);
+    const t = document.startViewTransition(swap);
+    // ao navegar muito rápido a transição anterior é pulada; não é erro
+    [t.ready, t.finished, t.updateCallbackDone].forEach((pr) => pr.catch(() => {}));
   } else {
     swap();
     if (booted) {
@@ -114,7 +137,7 @@ document.addEventListener('click', (e) => {
   closeAll();
   if (url.pathname === location.pathname && url.search === location.search) {
     if (url.hash) {
-      scrollToHash(url.hash, true);
+      scrollToHash(url.hash, { smooth: true, focus: true });
       history.replaceState(history.state, '', url.hash);
     } else scrollTo({ top: 0, behavior: reduced.matches ? 'auto' : 'smooth' });
     return;
@@ -171,6 +194,7 @@ function openPanel(id, opener) {
   const el = document.getElementById(id);
   if (!el || opened.includes(el)) return;
   closeAll();
+  clearTimeout(el._hideTimer);
   el.hidden = false;
   el._opener = opener || document.activeElement;
   $('#toast').classList.remove('is-on');
@@ -188,13 +212,16 @@ function openPanel(id, opener) {
 function closePanel(el) {
   if (!el || el.hidden) return;
   el.classList.remove('is-open');
-  opened.splice(opened.indexOf(el), 1);
+  if (opened.includes(el)) opened.splice(opened.indexOf(el), 1);
   if (!opened.length) document.body.classList.remove('is-locked');
   if (el.id === 'menu') $('.header__menu').setAttribute('aria-expanded', 'false');
-  const done = () => { if (!el.classList.contains('is-open')) el.hidden = true; };
+  const done = () => { if (!opened.includes(el)) el.hidden = true; };
   if (reduced.matches) done();
-  else setTimeout(done, 450);
-  el._opener?.focus?.({ preventScroll: true });
+  else el._hideTimer = setTimeout(done, 450);
+  const back = el._opener;
+  const visible = back?.isConnected && back.getClientRects().length && getComputedStyle(back).visibility !== 'hidden';
+  const fallback = { bag: '#bag-btn', menu: '.header__menu', search: '[data-open="search"]' }[el.id];
+  (visible ? back : fallback ? $(fallback) : view).focus({ preventScroll: true });
 }
 
 function closeAll() {
@@ -274,7 +301,6 @@ function freeBar(sub) {
 }
 
 function lineItem(l) {
-  const max = maxQty(l.product);
   return `
     <div class="line-item" data-key="${lineKey(l)}">
       <a href="${productUrl(l.product, l.variant)}"><img src="${photo(l.product, l.variant, 1)}" alt="" width="76" height="101"></a>
@@ -285,7 +311,7 @@ function lineItem(l) {
           <div class="qty qty--sm" role="group" aria-label="Quantity of ${esc(l.product.name)}">
             <button type="button" data-line-qty="-1" aria-label="One fewer">${icon('minus')}</button>
             <output aria-live="polite">${l.qty}</output>
-            <button type="button" data-line-qty="1" aria-label="One more" ${l.qty >= max ? 'disabled' : ''}>${icon('plus')}</button>
+            <button type="button" data-line-qty="1" aria-label="One more" ${bag.room(l.id, l.variantId) <= 0 ? 'disabled' : ''}>${icon('plus')}</button>
           </div>
           <button class="line-item__remove" type="button" data-line-remove>Remove</button>
         </div>
@@ -328,7 +354,7 @@ function renderBag(force) {
       if (!row) return;
       row.querySelector('output').textContent = l.qty;
       row.querySelector('[data-line-total]').textContent = money(l.total);
-      row.querySelector('[data-line-qty="1"]').disabled = l.qty >= maxQty(l.product);
+      row.querySelector('[data-line-qty="1"]').disabled = bag.room(l.id, l.variantId) <= 0;
     });
     $('#bag-free').outerHTML = freeBar(sub);
   } else {
@@ -381,8 +407,17 @@ $('#bag').addEventListener('click', (e) => {
 });
 
 function removeLine(row, id, variant) {
+  const index = [...row.parentNode.querySelectorAll('.line-item')].indexOf(row);
+  const hadFocus = row.contains(document.activeElement);
   row.classList.add('is-leaving');
-  setTimeout(() => bag.remove(id, variant || null), reduced.matches ? 0 : 320);
+  setTimeout(() => {
+    bag.remove(id, variant || null);
+    if (!hadFocus) return;
+    // mantém o foco dentro da sacola: próxima linha, ou o botão de fechar
+    const rows = $('#bag-body').querySelectorAll('.line-item');
+    const next = rows[Math.min(index, rows.length - 1)];
+    (next?.querySelector('[data-line-remove]') || $('#bag [data-close]')).focus();
+  }, reduced.matches ? 0 : 320);
 }
 
 async function checkout(btn) {
@@ -468,7 +503,10 @@ function addToBag(id, variant, qty, img) {
   const v = p.variants ? p.variants.find((x) => x.id === variant) || p.variants[0] : null;
   const added = bag.add(id, v ? v.id : null, qty);
   if (!added) {
-    toast(`<div class="toast__card"><img src="${photo(p, v, 1)}" alt=""><p><b>That is all we have</b><span>You already have every ${esc(p.name)} in stock in your bag.</span></p><button class="btn btn--light btn--sm" type="button" data-open="bag">View bag</button></div>`);
+    const why = typeof p.stock === 'number'
+      ? `<b>That is all we have</b><span>All ${p.stock} of the ${esc(p.name)} are already in your bag.</span>`
+      : `<b>Your bag is full of these</b><span>You can order up to ${MAX_QTY} online. For more, message Lulu.</span>`;
+    toast(`<div class="toast__card"><img src="${photo(p, v, 1)}" alt=""><p>${why}</p><button class="btn btn--light btn--sm" type="button" data-open="bag">View bag</button></div>`);
     return;
   }
   fly(img);
@@ -505,12 +543,11 @@ const index = products.map((p) => ({
 const SUGGEST = ['Porcelain', 'Headband', 'Pompom', 'Velvet', 'Rainbow', 'Pair', 'Flamingo'];
 
 function highlight(text, terms) {
-  let out = esc(text);
-  terms.forEach((t) => {
-    if (t.length < 2) return;
-    out = out.replace(new RegExp(`(${t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'ig'), '<mark>$1</mark>');
-  });
-  return out;
+  const words = terms.filter((t) => t.length > 1).sort((a, b) => b.length - a.length)
+    .map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  if (!words.length) return esc(text);
+  // split com grupo de captura: posições ímpares são os trechos encontrados
+  return text.split(new RegExp(`(${words.join('|')})`, 'i')).map((part, i) => (i % 2 ? `<mark>${esc(part)}</mark>` : esc(part))).join('');
 }
 
 function runSearch(q) {

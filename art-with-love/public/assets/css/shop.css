@@ -930,10 +930,11 @@ p { margin: 0; }
   position: fixed; z-index: 230; left: 50%; bottom: 24px;
   width: min(420px, calc(100% - 24px));
   transform: translate(-50%, 140%);
-  transition: transform .55s var(--ease);
+  visibility: hidden;
+  transition: transform .55s var(--ease), visibility 0s .55s;
   pointer-events: none;
 }
-.toast.is-on { transform: translate(-50%, 0); pointer-events: auto; }
+.toast.is-on { transform: translate(-50%, 0); visibility: visible; transition: transform .55s var(--ease); pointer-events: auto; }
 .toast__card { display: grid; grid-template-columns: 48px 1fr auto; gap: 12px; align-items: center; padding: 10px 10px 10px 10px; border-radius: 20px; background: var(--ink); color: var(--milk); box-shadow: var(--shadow-lg); }
 .toast__card img { width: 48px; height: 64px; border-radius: 10px; object-fit: cover; }
 .toast__card p { font-size: .9rem; line-height: 1.35; }

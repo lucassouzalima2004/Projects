@@ -50,7 +50,7 @@ function metaFor(url, origin) {
       '@context': 'https://schema.org',
       '@type': 'Product',
       name: p.name,
-      description: p.summary,
+      description: p.summary || p.name,
       image: Array.from({ length: (v ? v.photos : p.photos) || 1 }, (_, i) => `${origin}/assets/products/${base}-${i + 1}-l.webp`),
       brand: { '@type': 'Brand', name: SHOP.brand.name },
       sku: v ? `${p.id}-${v.id}` : p.id,
@@ -65,7 +65,7 @@ function metaFor(url, origin) {
     };
     return {
       title: `${p.name}${v && v !== p.variants[0] ? ` · ${v.name}` : ''} · ${BRAND}`,
-      description: `${p.summary} ${money(p.price)}, handmade in London.`,
+      description: `${p.summary ? `${p.summary} ` : ''}${money(p.price)}, handmade in London.`,
       image: `/assets/og/${base}.jpg`,
       type: 'product',
       ld,

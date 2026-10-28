@@ -81,7 +81,7 @@ export async function onRequestPost({ request, env }) {
     form.set(`${k}[price_data][currency]`, currency);
     form.set(`${k}[price_data][unit_amount]`, pence(p.price));
     form.set(`${k}[price_data][product_data][name]`, v ? `${p.name} (${v.name})` : p.name);
-    form.set(`${k}[price_data][product_data][description]`, p.summary);
+    if (p.summary) form.set(`${k}[price_data][product_data][description]`, p.summary);
     form.set(`${k}[price_data][product_data][metadata][product_id]`, p.id);
     if (v) form.set(`${k}[price_data][product_data][metadata][colour]`, v.id);
     if (origin.startsWith('https://')) {

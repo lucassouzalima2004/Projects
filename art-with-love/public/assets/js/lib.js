@@ -63,12 +63,16 @@ function read() {
 // Descarta produtos que saíram do catálogo e respeita o estoque.
 function sanitize(list) {
   const out = [];
+  const used = new Map(); // peças por produto, somando as cores
   for (const l of list) {
     const p = productById.get(l?.id);
     if (!p || isSoldOut(p)) continue;
     const v = p.variants ? p.variants.find((x) => x.id === l.variant) : null;
     if (p.variants && !v) continue;
-    const qty = Math.max(1, Math.min(maxQty(p), Math.floor(Number(l.qty) || 1)));
+    const left = maxQty(p) - (used.get(p.id) || 0);
+    const qty = Math.min(left, Math.max(1, Math.floor(Number(l.qty) || 1)));
+    if (qty < 1) continue;
+    used.set(p.id, (used.get(p.id) || 0) + qty);
     out.push({ id: p.id, variant: v ? v.id : null, qty });
   }
   return out;
@@ -98,12 +102,20 @@ export const bag = {
   get count() { return lines.reduce((n, l) => n + l.qty, 0); },
   get subtotal() { return lines.reduce((n, l) => n + productById.get(l.id).price * l.qty, 0); },
   qtyOf(id, variant) { return lines.find((l) => same(l, id, variant))?.qty || 0; },
+  // Quantas peças ainda cabem nesta linha. O estoque e o limite valem por produto, somando as cores.
+  room(id, variant) {
+    const p = productById.get(id);
+    if (!p) return 0;
+    const others = lines.filter((l) => l.id === id && !same(l, id, variant)).reduce((n, l) => n + l.qty, 0);
+    return maxQty(p) - others - this.qtyOf(id, variant);
+  },
   add(id, variant, qty = 1) {
     const p = productById.get(id);
     if (!p || isSoldOut(p)) return 0;
     const line = lines.find((l) => same(l, id, variant));
     const before = line ? line.qty : 0;
-    const after = Math.min(maxQty(p), before + qty);
+    const after = before + Math.max(0, Math.min(qty, this.room(id, variant)));
+    if (after === 0) return 0;
     if (line) line.qty = after;
     else lines.push({ id, variant: variant || null, qty: after });
     save();
@@ -114,7 +126,7 @@ export const bag = {
     const line = lines.find((l) => same(l, id, variant));
     if (!line) return;
     if (qty <= 0) lines = lines.filter((l) => l !== line);
-    else line.qty = Math.min(maxQty(p), qty);
+    else line.qty = Math.min(line.qty + this.room(id, variant), qty);
     save();
   },
   remove(id, variant) {

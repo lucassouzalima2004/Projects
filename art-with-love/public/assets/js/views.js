@@ -153,7 +153,7 @@ export function home() {
         <div class="wrap">
           ${sectionHead({ eyebrow: 'The collection', title: '<span id="ranges-title">Something for <em>every</em> little head</span>' })}
           <div class="ranges">
-            ${ranges.map((c, i) => {
+            ${ranges.filter((c) => productById.get(c.cover) || productsIn(c).length).map((c, i) => {
               const cover = productById.get(c.cover) || productsIn(c)[0];
               return `
               <a class="range foil" href="/shop/${c.id}" data-reveal style="--d:${i * 0.08}s">
@@ -200,9 +200,9 @@ export function home() {
 
       <section class="section" style="padding-top:0" aria-label="Edits">
         <div class="wrap edits">
-          ${edits.map((c, i) => {
+          ${edits.filter((c) => productsIn(c).length).map((c, i) => {
             const list = productsIn(c);
-            const two = [productById.get(c.cover) || list[0], list.find((p) => p.id !== c.cover) || list[0]];
+            const two = [productById.get(c.cover) || list[0], list.find((p) => p.id !== c.cover) || list[1]].filter(Boolean);
             return `
             <a class="edit" href="/shop/${c.id}" data-reveal style="--d:${i * 0.08}s">
               <span class="edit__copy">
@@ -288,6 +288,8 @@ const SORTS = {
   name: { label: 'Name, A to Z', fn: (a, b) => a.name.localeCompare(b.name) },
 };
 
+const EMPTY_SHOP = '<div class="empty"><p>Nothing here just yet. New pieces are on their way.</p><a class="btn btn--ghost" href="/shop">See everything</a></div>';
+
 function shopList(c, sort) {
   const list = (c ? productsIn(c) : products.slice()).sort(SORTS[sort]?.fn || SORTS.featured.fn);
   // Esgotados por último
@@ -324,7 +326,7 @@ export function shop(id, url) {
         </div>
       </div>
       <section class="wrap" aria-labelledby="shop-title">
-        <div id="shop-grid">${list.length ? grid(list) : '<div class="empty"><p>Nothing here just yet. New pieces are on their way.</p><a class="btn btn--ghost" href="/shop">See everything</a></div>'}</div>
+        <div id="shop-grid">${list.length ? grid(list) : EMPTY_SHOP}</div>
       </section>`,
     mount(root, { navigate }) {
       let current = c;
@@ -332,7 +334,7 @@ export function shop(id, url) {
       const gridEl = root.querySelector('#shop-grid');
       const update = (push) => {
         const l = shopList(current, currentSort);
-        gridEl.innerHTML = grid(l);
+        gridEl.innerHTML = l.length ? grid(l) : EMPTY_SHOP;
         gridEl.firstElementChild.classList.add('is-filtering');
         root.querySelector('#shop-count').textContent = plural(l.length, 'piece');
         root.querySelector('#shop-title').innerHTML = current ? esc(current.name) : 'Shop <em>all</em>';
@@ -453,7 +455,7 @@ export function product(id, url) {
               <details class="acc">
                 <summary>Delivery &amp; returns ${icon('plus')}</summary>
                 <div class="acc__body">
-                  <ul>${shipping.options.map((o) => `<li>${esc(o.name)}: ${money(o.price)} (${o.days[0]}–${o.days[1]} working days)</li>`).join('')}<li>Free ${esc(shipping.options[0].name)} on orders over ${freeOver}</li></ul>
+                  <ul>${shipping.options.map((o) => `<li>${esc(o.name)}: ${money(o.price)}${o.days ? ` (${o.days[0]}–${o.days[1]} working days)` : ''}</li>`).join('')}<li>Free ${esc(shipping.options[0].name)} on orders over ${freeOver}</li></ul>
                   <p>Changed your mind? You have 14 days to return unused pieces. <a href="/help#returns">Returns policy</a></p>
                 </div>
               </details>
@@ -763,7 +765,7 @@ export function help() {
         <h2 id="delivery">Delivery</h2>
         <p>We post to addresses in the United Kingdom with Royal Mail. Orders are dispatched within ${esc(shipping.dispatch)}, and every piece is packed with care so it arrives in perfect shape.</p>
         <ul>
-          ${shipping.options.map((o) => `<li><strong>${esc(o.name)}</strong>: ${money(o.price)}, usually ${o.days[0]}–${o.days[1]} working days after dispatch</li>`).join('')}
+          ${shipping.options.map((o) => `<li><strong>${esc(o.name)}</strong>: ${money(o.price)}${o.days ? `, usually ${o.days[0]}–${o.days[1]} working days after dispatch` : ''}</li>`).join('')}
           <li><strong>Free ${esc(shipping.options[0].name)}</strong> on orders over ${freeOver}</li>
         </ul>
         <p>Made-to-order pieces are posted as soon as they are ready. We will agree a date with you before we start.</p>
