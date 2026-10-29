@@ -99,11 +99,33 @@ function candleArt() {
     </svg>`;
 }
 
+/* ------------------------------------------------- lançamento da semana --- */
+// A foto que ela monta (rostinho com o laço da semana). Some enquanto launch.image estiver vazio.
+function launchSection() {
+  const l = SHOP.launch || {};
+  const p = productById.get(l.product);
+  if (!l.image) return '';
+  return `
+    <section class="section launch" aria-labelledby="launch-title">
+      <div class="wrap split">
+        <div class="split__media launch__media" data-reveal>
+          <img src="/${esc(l.image.replace(/^\//, ''))}" alt="${esc(l.alt || (p ? `${p.name} worn in the hair` : 'This week’s new bow'))}" loading="lazy">
+        </div>
+        <div class="split__copy" data-reveal style="--d:.1s">
+          <p class="eyebrow eyebrow--spark">${esc(l.eyebrow || 'New this week')}</p>
+          <h2 id="launch-title">${esc(l.title || 'The new bow')}</h2>
+          ${l.text ? `<p class="lead">${esc(l.text)}</p>` : ''}
+          ${p ? `<p class="launch__product"><strong>${esc(p.name)}</strong> ${priceTag(p)}</p>
+          <a class="btn btn--primary" href="${productUrl(p)}">Shop this bow ${icon('arrow', 'btn__arrow')}</a>` : ''}
+        </div>
+      </div>
+    </section>`;
+}
+
 /* ------------------------------------------------------------------ home --- */
-// Strass espalhados no topo: [x %, y %, tamanho px, aparece no celular]
-const STRASS = [
-  [6, 12, 15, 1], [16, 38, 10, 0], [3, 55, 12, 1], [25, 7, 9, 0], [89, 10, 16, 1], [94, 34, 11, 1],
-  [81, 44, 12, 0], [71, 5, 9, 0], [31, 28, 8, 0], [67, 31, 9, 0], [97, 58, 13, 0], [12, 70, 9, 1],
+// Brilhos sobre os strass da foto de fitas: [x %, y %, tamanho px, aparece no celular]
+const GLINTS = [
+  [12, 30, 12, 1], [29, 72, 10, 0], [46, 18, 11, 0], [63, 64, 12, 1], [81, 26, 10, 1], [92, 70, 11, 0],
 ];
 
 export function home() {
@@ -130,8 +152,19 @@ export function home() {
     title: 'Luxury handmade hair bows, London',
     description: `Luxury handmade hair bows, baby headbands and cold porcelain keepsakes, made one at a time in London. Free UK delivery over ${freeOver}.`,
     html: `
+      <section class="ribbons" aria-label="Art with Love by Lulu">
+        <img class="ribbons__bg" src="/assets/img/ribbons-1200.webp" srcset="/assets/img/ribbons-1200.webp 1200w, /assets/img/ribbons-2400.webp 2400w" sizes="100vw" alt="" width="2400" height="1103" fetchpriority="high">
+        <div class="strass strass--glints" aria-hidden="true">${GLINTS.map(([x, y, sz, m], i) => `<i style="--x:${x}%;--y:${y}%;--s:${sz}px;--d:${(i * 0.9) % 5}s"${m ? '' : " data-m='0'"}></i>`).join('')}</div>
+        <div class="ribbons__tag" id="brand-tag">
+          <span class="ribbons__hole" aria-hidden="true"></span>
+          <img class="ribbons__logo" src="/assets/img/logo.webp" alt="Art with Love" width="640" height="144">
+          <span class="ribbons__by">by Lulu · London</span>
+        </div>
+      </section>
+
+      ${launchSection()}
+
       <section class="hero" aria-labelledby="hero-title">
-        <div class="strass" aria-hidden="true">${STRASS.map(([x, y, sz, m], i) => `<i style="--x:${x}%;--y:${y}%;--s:${sz}px;--d:${(i * 0.83) % 5}s"${m ? '' : " data-m='0'"}><b></b></i>`).join('')}</div>
         <div class="wrap">
           <p class="eyebrow eyebrow--spark hero__eyebrow">Handmade in London</p>
           <h1 class="hero__title" id="hero-title">${title}</h1>
@@ -261,8 +294,12 @@ export function home() {
       </section>` : ''}
     `,
     mount(root) {
+      // No início, o logo grande da faixa substitui o do topo; o do topo volta ao rolar a página
+      const tag = root.querySelector('#brand-tag');
+      const logoIo = new IntersectionObserver(([en]) => document.body.classList.toggle('brand-in-view', en.isIntersecting), { rootMargin: '-60px 0px 0px 0px' });
+      if (tag) logoIo.observe(tag);
       const line = root.querySelector('#line');
-      if (!line) return;
+      if (!line) return () => { logoIo.disconnect(); document.body.classList.remove('brand-in-view'); };
       // Pendura as cartelas na curva da fita: y = 30 + 120·t·(1−t) no desenho de 110 de altura.
       const place = () => {
         const visible = [...line.querySelectorAll('.hang')].filter((h) => getComputedStyle(h).display !== 'none');
@@ -282,7 +319,11 @@ export function home() {
       place();
       const ro = new ResizeObserver(place);
       ro.observe(line);
-      return () => ro.disconnect();
+      return () => {
+        ro.disconnect();
+        logoIo.disconnect();
+        document.body.classList.remove('brand-in-view');
+      };
     },
   };
 }

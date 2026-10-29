@@ -243,6 +243,21 @@ export default {
   ],
 
   /* ---------------------------------------------------------------------------
+     LANÇAMENTO DA SEMANA (página inicial, logo abaixo da faixa de fitas)
+     -------------------------------------------------------------------------
+     image ..... foto que ela monta, com o laço da semana no cabelo
+                 (ex.: 'assets/img/launch/winter-2026.webp'). Vazio = a seção some.
+     product ... id do produto do laço (o botão "Shop this bow" leva até ele)
+     ------------------------------------------------------------------------- */
+  launch: {
+    image: '',
+    product: '',
+    eyebrow: 'New this week',
+    title: 'Winter launch',
+    text: '',
+  },
+
+  /* ---------------------------------------------------------------------------
      5. ENCOMENDAS (velas de aniversário em biscuit e laços sob medida)
      -------------------------------------------------------------------------
      gallery: fotos de trabalhos já feitos (mesmo os vendidos) para inspirar.

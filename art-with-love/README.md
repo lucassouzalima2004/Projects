@@ -50,6 +50,15 @@ O conteúdo foi montado a partir das conversas do WhatsApp. Confirme e troque em
 Observação: o tema "Lion King" virou **The Savannah Edit** (Warthog, Lion Cub e Monkey Branch Bow) para não usar
 a marca da Disney na loja. A foto do caderno com a senha do Instagram ficou fora do repositório.
 
+## Topo e lançamento da semana
+
+- **Faixa de fitas**: a foto que ela escolheu (`public/assets/img/ribbons-1200.webp` e `ribbons-2400.webp`) com o logo
+  numa cartela por cima. Ela mandou um print do celular (940 px), que foi ampliado com IA para ficar nítido. Se tiver
+  o arquivo original, troque esses dois arquivos.
+- **Lançamento da semana**: ela monta uma foto com o laço da semana no cabelo (rostinho de menina). Converta para WebP
+  em `public/assets/img/launch/` e preencha `launch` no `catalog.js` com a foto, o título ("Winter launch",
+  "Summer launch"…) e o `product` do laço. A seção aparece logo abaixo da faixa; com `image` vazio ela some.
+
 ## Como editar
 
 Quase tudo fica em **`public/assets/js/catalog.js`**:
