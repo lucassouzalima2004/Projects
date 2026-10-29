@@ -59,7 +59,10 @@ site não aparece no Google. Para gerar localmente: `npm run build` e `npm run s
 - **Vídeo da mulher na capa** (quando estiver pronto): em *Capa térmica → Vídeo da mulher*, escolha o vídeo
   16:9 (computador) e o 9:16 (celular), com fundo preto e sem texto. Ele entra no lugar da animação 3D e toca
   uma vez antes dos banners. Marque o segundo em que ela borrifa e o segundo em que termina de gelar: o
-  termômetro e a palavra calor → frescor acompanham esses tempos.
+  termômetro e a palavra calor → frescor acompanham esses tempos. Os vídeos atuais (`preview/static/videos/`)
+  saíram do Flow e foram convertidos para imagem de câmera térmica com
+  `python3 preview/tools/termico.py entrada.mp4 saida.mp4 --rosto 0.42` (0.36 no vertical), que também gera
+  a capa `.jpg`. Faça o mesmo com um vídeo novo antes de subir.
 - **Vídeos de prova**: na seção *Vídeo e provas reais*, cada bloco *Vídeo de prova* aceita um link do YouTube,
   um vídeo enviado para a Shopify (bom para vídeos baixados do Instagram) ou o link de um reel. Já vêm os
   vídeos de depoimentos e de TV que estão nas páginas da loja.

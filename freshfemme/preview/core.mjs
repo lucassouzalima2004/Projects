@@ -54,7 +54,9 @@ function previewVideo(value) {
   if (!m) return null;
   const url = `/preview/videos/${m[1]}`;
   const format = m[1].split('.').pop().toLowerCase();
-  return { media_type: 'video', alt: '', preview_image: null, sources: [{ url, mime_type: `video/${format}`, format }], toString: () => url };
+  // capa do vídeo: um .jpg com o mesmo nome ao lado (na Shopify é a preview_image gerada no upload)
+  const poster = makeImage(url.replace(/\.[^.]+$/, '.jpg'), { alt: '' });
+  return { media_type: 'video', alt: '', preview_image: poster, sources: [{ url, mime_type: `video/${format}`, format }], toString: () => url };
 }
 
 function moneyFmt(c, opts = {}) {
@@ -330,6 +332,7 @@ export function createPreview({ Liquid, Tag, files, data, site = {} }) {
       const attrs = ['autoplay', 'loop', 'muted', 'playsinline', 'controls']
         .filter((k) => p[k] === true)
         .concat(['class', 'preload'].filter((k) => p[k]).map((k) => `${k}="${p[k]}"`));
+      if (p.image_size && video.preview_image) attrs.push(`poster="${video.preview_image.src}"`);
       const sources = video.sources.map((src) => `<source src="${src.url}" type="${src.mime_type}">`).join('');
       return `<video ${attrs.join(' ')}>${sources}</video>`;
     });

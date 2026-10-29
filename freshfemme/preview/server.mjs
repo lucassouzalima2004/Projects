@@ -37,7 +37,8 @@ http.createServer(async (req, res) => {
     if (url.pathname.startsWith('/preview/videos/')) {
       const file = path.join(path.dirname(fileURLToPath(import.meta.url)), 'static/videos', path.basename(url.pathname));
       if (!fs.existsSync(file)) return send(res, 404, 'not found', 'text/plain');
-      return send(res, 200, fs.readFileSync(file), file.endsWith('.webm') ? 'video/webm' : 'video/mp4');
+      const type = { '.webm': 'video/webm', '.jpg': 'image/jpeg' }[path.extname(file)] || 'video/mp4';
+      return send(res, 200, fs.readFileSync(file), type);
     }
     if (url.pathname.startsWith('/assets/')) {
       const file = path.join(THEME, 'assets', path.basename(url.pathname));

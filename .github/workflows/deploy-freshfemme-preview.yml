@@ -7,7 +7,8 @@
 # indexado pelo Google. A loja de verdade continua sendo o tema enviado para a Shopify.
 #
 # Vai como Worker com arquivos estáticos (Workers Static Assets), como os outros sites do repositório:
-# a conta já tem 100 projetos no Cloudflare Pages, o limite.
+# a conta já tem 100 projetos no Cloudflare Pages, o limite. Só os vídeos da capa passam pelo script
+# freshfemme/preview/worker.mjs, que responde pedidos de trecho (Range), exigidos pelo Safari do iPhone.
 #
 # Usa os mesmos secrets dos outros sites (Settings → Secrets and variables → Actions):
 #   CLOUDFLARE_API_TOKEN   token do Cloudflare que pode publicar Workers (obrigatório)
@@ -122,10 +123,13 @@ jobs:
             "compatibility_date": "2025-10-01",
             "workers_dev": true,
             "preview_urls": false,
+            "main": "./freshfemme/preview/worker.mjs",
             "assets": {
               "directory": "./freshfemme/preview/dist",
+              "binding": "ASSETS",
               "not_found_handling": "404-page",
-              "html_handling": "auto-trailing-slash"
+              "html_handling": "auto-trailing-slash",
+              "run_worker_first": ["/preview/videos/*"]
             }
           }
           EOF
