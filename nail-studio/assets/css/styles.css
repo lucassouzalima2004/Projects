@@ -1052,6 +1052,141 @@ h1 em, h2 em, h3 em { font-style: italic; font-weight: 500; color: var(--accent)
 .gallery__grid img { width: 100%; height: 100%; object-fit: cover; transition: transform .7s var(--ease-out); }
 .gallery__grid li:hover img { transform: scale(1.04); }
 
+/* ---------------------------------------------------------------- Videos
+   A trilha é mais alta que a tela: o palco fica preso enquanto ela passa e o JS
+   troca o vídeo conforme o avanço da rolagem. Só opacity e transform animam,
+   para a troca ficar lisa até no celular. */
+.reel {
+  --reel-top: calc(env(safe-area-inset-top, 0px) + var(--header-h));
+  --reel-step: 75svh; /* quanto rolar para cada vídeo */
+  padding-top: var(--section);
+}
+.reel .section-head { margin-bottom: clamp(8px, 2vw, 24px); }
+.reel__track { position: relative; height: calc(100svh - var(--reel-top) + var(--n, 1) * var(--reel-step)); }
+.reel__sticky { position: sticky; top: var(--reel-top); height: calc(100svh - var(--reel-top)); }
+.reel__layout {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 14px;
+  height: 100%;
+  padding-block: 12px clamp(24px, 3vw, 40px);
+}
+@media (max-width: 1039px) {
+  /* espaço para a barra de agendamento fixa */
+  .reel__layout { padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
+}
+
+.reel__screen { display: grid; place-items: center; min-height: 0; container-type: size; }
+/* O quadro segue o formato do primeiro vídeo (--ar, vem do JS) e cabe inteiro no palco */
+.reel__frame {
+  position: relative;
+  width: min(100cqw, 100cqh * var(--ar, .5625));
+  aspect-ratio: var(--ar, .5625);
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: var(--radius-lg);
+  background: var(--ink-2);
+  box-shadow: 0 0 0 1px var(--line-dark), 0 50px 90px -50px rgba(0, 0, 0, .75);
+}
+.reel__videos { position: absolute; inset: 0; }
+.reel__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.06);
+  /* o vídeo que sai continua inteiro por baixo até o próximo terminar de aparecer */
+  transition: opacity 0s .8s, transform 0s .8s;
+}
+.reel__video.is-active {
+  z-index: 1;
+  opacity: 1;
+  transform: none;
+  transition: opacity .8s var(--ease-out), transform 1.4s var(--ease-out);
+}
+
+/* Barrinhas de progresso, como nos stories */
+.reel__bars {
+  position: absolute;
+  z-index: 2;
+  inset: 0 0 auto;
+  display: flex;
+  gap: 4px;
+  padding: 14px 16px 32px;
+  list-style: none;
+  background: linear-gradient(rgba(20, 8, 14, .42), rgba(20, 8, 14, 0));
+  pointer-events: none;
+}
+.reel__bars li { flex: 1; height: 3px; overflow: hidden; border-radius: 3px; background: rgba(251, 248, 247, .32); }
+.reel__bars span { display: block; height: 100%; background: var(--milk); transform: scaleX(0); transform-origin: left center; }
+
+.reel__toggle {
+  position: absolute;
+  z-index: 2;
+  right: 12px;
+  bottom: 12px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(38, 17, 27, .55);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: var(--milk);
+  transition: background-color .2s, transform .2s var(--ease-out);
+}
+.reel__toggle:hover { background: rgba(38, 17, 27, .82); }
+.reel__toggle:active { transform: scale(.94); }
+.reel__toggle svg { width: 18px; height: 18px; }
+
+.reel__info { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; gap: 6px 16px; }
+.reel__count { font-size: .8125rem; font-weight: 600; letter-spacing: .08em; font-variant-numeric: tabular-nums; color: var(--fg-muted); }
+.reel__count span:first-child { color: var(--accent); }
+.reel__caption {
+  min-height: 1.2em;
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.reel__caption.is-swapping { animation: caption-in .5s var(--ease-out) backwards; }
+.reel__hint { display: none; }
+
+@media (min-width: 960px) {
+  .reel__layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    grid-template-rows: minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(40px, 6vw, 96px);
+    padding-top: clamp(20px, 3vw, 40px);
+  }
+  .reel__screen { order: 2; height: 100%; }
+  .reel__info { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .reel__count { font-size: .9375rem; }
+  .reel__caption { font-size: clamp(2.2rem, 1.3rem + 1.9vw, 3.4rem); line-height: 1.08; white-space: normal; }
+  .reel__hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    font-size: .9375rem;
+    color: var(--fg-muted);
+    transition: opacity .4s;
+  }
+  .reel__hint svg { width: 18px; height: 18px; transform: rotate(90deg); animation: nudge 2.4s var(--ease-out) infinite; }
+  .reel__layout.is-last .reel__hint { opacity: 0; }
+}
+@keyframes nudge { 40% { transform: rotate(90deg) translateX(5px); } 70% { transform: rotate(90deg); } }
+
 /* ---------------------------------------------------------------- About */
 .about { padding-block: var(--section); background: var(--porcelain); }
 .about__grid { display: grid; gap: clamp(44px, 6vw, 96px); align-items: center; }

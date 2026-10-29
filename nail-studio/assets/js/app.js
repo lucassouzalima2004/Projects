@@ -286,6 +286,159 @@
       .join('');
   }
 
+  /* ------------------------------------------------------------ videos */
+  // O palco fica preso enquanto a pessoa rola e cada trecho da rolagem mostra um vídeo.
+  // Os vídeos tocam no ritmo deles; a rolagem só escolhe qual aparece (controlar o tempo
+  // do vídeo pelo scroll engasga, porque o navegador só salta bem para os quadros-chave).
+  const reel = { items: [], videos: [], bars: [], active: -1, near: false, inView: false, paused: false, blocked: false, top: 0, range: 0 };
+
+  function initReel() {
+    reel.items = (Array.isArray(S.videos) ? S.videos : []).filter((v) => v && v.src);
+    const n = reel.items.length;
+    $('#videos').hidden = !n;
+    if (!n) return;
+
+    const track = $('#reel');
+    const sticky = $('.reel__sticky', track);
+    track.style.setProperty('--n', n);
+    $('#reel-videos').innerHTML = reel.items
+      .map(
+        (v) =>
+          `<video class="reel__video" src="${esc(v.src)}"${v.poster ? ` poster="${esc(v.poster)}"` : ''}` +
+          ' muted loop playsinline preload="none" disablepictureinpicture disableremoteplayback aria-hidden="true"></video>'
+      )
+      .join('');
+    $('#reel-bars').innerHTML = reel.items.map(() => '<li><span></span></li>').join('');
+    reel.videos = $$('.reel__video', track);
+    reel.bars = $$('#reel-bars span');
+    reel.videos.forEach((v) => (v.muted = true)); // o iPhone só toca sozinho vídeo mudo
+    $('#reel-total').textContent = String(n).padStart(2, '0');
+
+    // Quem pediu menos movimento ou economia de dados vê as capas e dá o play se quiser
+    reel.paused = !motionOK() || Boolean(navigator.connection && navigator.connection.saveData);
+
+    reel.videos[0].addEventListener('loadedmetadata', (e) => {
+      const { videoWidth: w, videoHeight: h } = e.target;
+      if (w && h) $('.reel__frame').style.setProperty('--ar', (w / h).toFixed(4));
+    }, { once: true });
+
+    $('#reel-toggle').addEventListener('click', () => {
+      reel.paused = !reel.paused;
+      if (!reel.paused && reel.blocked) {
+        // Economia de bateria do iPhone bloqueia o autoplay: este toque libera todos os vídeos
+        reel.blocked = false;
+        reel.videos.forEach((v, k) => {
+          if (k !== reel.active) v.play().then(() => { if (k !== reel.active) v.pause(); }, () => {});
+        });
+      }
+      renderReel();
+      preloadReel();
+      playReel();
+    });
+
+    const measure = () => {
+      reel.top = parseFloat(getComputedStyle(sticky).top) || 0;
+      reel.range = track.offsetHeight - sticky.offsetHeight;
+      updateReel();
+    };
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!reel.inView || ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        updateReel();
+      });
+    }, { passive: true });
+    window.addEventListener('resize', measure);
+
+    if ('IntersectionObserver' in window) {
+      // Começa a baixar uma tela antes de a seção aparecer
+      const near = new IntersectionObserver(([en]) => {
+        if (!en.isIntersecting) return;
+        reel.near = true;
+        preloadReel();
+        near.disconnect();
+      }, { rootMargin: '100% 0px' });
+      near.observe(track);
+      new IntersectionObserver(([en]) => {
+        reel.inView = en.isIntersecting;
+        if (reel.inView) updateReel();
+        playReel();
+      }).observe(track);
+    } else {
+      reel.near = reel.inView = true;
+    }
+    measure();
+    renderReel();
+  }
+
+  function updateReel() {
+    const n = reel.videos.length;
+    const r = $('#reel').getBoundingClientRect();
+    const p = reel.range > 0 ? Math.min(1, Math.max(0, (reel.top - r.top) / reel.range)) : 0;
+    const x = p * n;
+    reel.bars.forEach((b, i) => (b.style.transform = `scaleX(${Math.min(1, Math.max(0, x - i))})`));
+    showReel(Math.min(n - 1, Math.floor(x)));
+  }
+
+  function showReel(i) {
+    if (i === reel.active) return;
+    const prev = reel.videos[reel.active];
+    reel.active = i;
+    reel.videos.forEach((v, k) => v.classList.toggle('is-active', k === i));
+    $('.reel__layout').classList.toggle('is-last', i === reel.videos.length - 1);
+    $('#reel-n').textContent = String(i + 1).padStart(2, '0');
+    reelCaption(Boolean(prev));
+    preloadReel();
+    playReel();
+    // O anterior continua tocando por baixo enquanto o novo aparece, e só então pausa
+    if (prev) setTimeout(() => { if (prev !== reel.videos[reel.active]) prev.pause(); }, 900);
+  }
+
+  // Baixa só o vídeo da vez e o próximo
+  function preloadReel() {
+    if (!reel.near || reel.paused) return;
+    [reel.active, reel.active + 1].forEach((k) => {
+      const v = reel.videos[k];
+      if (v && v.preload !== 'auto') v.preload = 'auto';
+    });
+  }
+
+  function playReel() {
+    const v = reel.videos[reel.active];
+    if (!v) return;
+    if (!reel.inView || reel.paused) {
+      reel.videos.forEach((x) => x.pause());
+      return;
+    }
+    const p = v.play();
+    if (p) {
+      p.catch((err) => {
+        if (!err || err.name !== 'NotAllowedError') return;
+        reel.paused = true;
+        reel.blocked = true;
+        renderReel();
+      });
+    }
+  }
+
+  function reelCaption(animate) {
+    const item = reel.items[reel.active];
+    const el = $('#reel-caption');
+    el.textContent = item ? L(item.caption) : '';
+    if (animate && motionOK()) replay(el, 'is-swapping');
+  }
+
+  // Textos que dependem do idioma: legenda e botão de pausa
+  function renderReel() {
+    if (!reel.videos.length) return;
+    reelCaption(false);
+    const b = $('#reel-toggle');
+    b.setAttribute('aria-label', t(reel.paused ? 'reel.play' : 'reel.pause'));
+    $('use', b).setAttribute('href', reel.paused ? '#i-play' : '#i-pause');
+  }
+
   const waNumber = () => String(S.whatsapp || '').replace(/\D/g, '');
   function prettyPhone(n) {
     if (/^61\d{9}$/.test(n)) return `+61 ${n.slice(2, 5)} ${n.slice(5, 8)} ${n.slice(8)}`;
@@ -850,6 +1003,7 @@
     fanLabels();
     renderLists();
     renderGallery();
+    renderReel();
     renderContact();
     renderMenu();
     renderPeriods();
@@ -1062,6 +1216,7 @@
   renderFan();
   renderAll();
   bindEvents();
+  initReel();
   bindFaq();
   initReveal();
 })();

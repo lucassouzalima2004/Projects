@@ -4,7 +4,7 @@
    • Nome, contato, cidade e horários ........ seção 1
    • Serviços e preços (o "cartão") .......... seção 2
    • Cores, formatos e acabamentos ........... seção 3
-   • Fotos (galeria e "Sobre") ............... seção 4
+   • Fotos e vídeos ......................... seção 4
    • Textos em português (pt) e inglês (en) .. seção 5
 
    Dica: mantenha as aspas e as vírgulas no fim de cada linha. Se o site
@@ -180,7 +180,7 @@ window.SITE = {
   skins: ['#F3D6C6', '#E2B596', '#C38B67', '#93603F', '#5B3727'],
 
   /* ---------------------------------------------------------------------------
-     4. FOTOS
+     4. FOTOS E VÍDEOS
      -------------------------------------------------------------------------
      Coloque as fotos em assets/img/ e liste aqui. Enquanto a lista estiver
      vazia, a galeria não aparece no site.
@@ -191,6 +191,14 @@ window.SITE = {
   // Foto dela para a seção "Sobre" (vertical, ex.: 'assets/img/sobre.jpg').
   // Vazio = mostra a ilustração do vidro de esmalte.
   aboutPhoto: '',
+
+  // Vídeos curtos (5 a 15 segundos, sem som), de preferência verticais como os
+  // do Instagram. Ao rolar a página, um vídeo dá lugar ao outro. Coloque os
+  // arquivos em assets/video/ e liste aqui, na ordem em que devem aparecer.
+  // Enquanto a lista estiver vazia, a seção de vídeos não aparece.
+  // poster = foto que aparece enquanto o vídeo carrega (o README explica como gerar).
+  // Ex.: { src: 'assets/video/01.mp4', poster: 'assets/video/01.jpg', caption: { pt: 'Francesinha em gel', en: 'Gel French tips' } },
+  videos: [],
 
   /* ---------------------------------------------------------------------------
      5. TEXTOS
@@ -269,6 +277,15 @@ window.SITE = {
       gallery: {
         eyebrow: 'Portfólio',
         title: 'Trabalhos <em>recentes</em>',
+      },
+      reel: {
+        eyebrow: 'Em vídeo',
+        title: 'De perto, <em>em movimento</em>',
+        lead: 'Cutilagem, esmaltação e acabamento, do jeito que acontecem no estúdio.',
+        label: 'Vídeos dos trabalhos',
+        hint: 'Role para ver o próximo',
+        pause: 'Pausar os vídeos',
+        play: 'Reproduzir os vídeos',
       },
       about: {
         eyebrow: 'Sobre',
@@ -399,6 +416,15 @@ window.SITE = {
       gallery: {
         eyebrow: 'Portfolio',
         title: 'Recent <em>work</em>',
+      },
+      reel: {
+        eyebrow: 'On video',
+        title: 'Up close, <em>in motion</em>',
+        lead: 'Cuticle work, polish and finish, just as they happen in the studio.',
+        label: 'Videos of our work',
+        hint: 'Scroll for the next one',
+        pause: 'Pause the videos',
+        play: 'Play the videos',
       },
       about: {
         eyebrow: 'About',
