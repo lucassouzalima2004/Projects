@@ -82,7 +82,11 @@
         "disclaimer": "*Representação artística do efeito refrescante.",
         "layout": "strip",
         "thermal_hold": 1.5,
-        "interval": 5
+        "interval": 5,
+        "video": "shopify://files/videos/freshfemme-capa-desktop.mp4",
+        "video_mobile": "shopify://files/videos/freshfemme-capa-celular.mp4",
+        "video_spray": 2,
+        "video_cold": 6
       }
     },
     "elas_amam": {
