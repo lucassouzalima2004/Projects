@@ -360,7 +360,7 @@
         "type": "textarea",
         "id": "legal_text",
         "label": "Dados legais no rodapé",
-        "default": "RHAMABOX COMERCIO VAREJISTA DE COSMETICOS LTDA · Resp. Técnico: Mariá Martelli Milan · Farmacêutica Bioquímica · CRF/SP 14 459 · CNPJ: 38.008.601/0001-13"
+        "default": "RHAMABOX COMERCIO VAREJISTA DE COSMETICOS LTDA · Resp. Técnico: Mariá Martelli Milan · Farmacêutica / Bioquímica · CRF/SP 14 459 · CNPJ: 38.008.601/0001-13"
       }
     ]
   }

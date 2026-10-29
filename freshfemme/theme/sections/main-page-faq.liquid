@@ -1,0 +1,40 @@
+{{ 'template-pages.css' | asset_url | stylesheet_tag }}
+<section class="page-hero">
+  <div class="container page-hero__inner">
+    <h1 class="h1" data-reveal="words">{{ page.title }}</h1>
+    {%- if section.settings.text != blank -%}
+      <div class="page-hero__text rte" data-reveal>{{ section.settings.text }}</div>
+    {%- endif -%}
+  </div>
+</section>
+<section class="section section--flush-top">
+  <div class="container container--narrow">
+    {%- comment -%}
+      O texto da página continua editável em Loja virtual → Páginas. Cada pergunta em negrito vira
+      um item da sanfona, e o que vem depois dela é a resposta.
+    {%- endcomment -%}
+    <div class="faq-page" data-faq-page>
+      <div class="rte page-content" data-faq-source>{{ page.content }}</div>
+      <template data-faq-icon>{% render 'icon', name: 'plus' %}</template>
+    </div>
+    {%- if section.settings.show_social -%}
+      {% render 'social-follow', heading: section.settings.social_heading %}
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Página de dúvidas",
+  "class": "section-main-page-faq",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Mostra o texto da página em sanfona: cada pergunta em negrito abre a resposta ao ser clicada."
+    },
+    { "type": "richtext", "id": "text", "label": "Texto abaixo do título" },
+    { "type": "checkbox", "id": "show_social", "label": "Mostrar as redes sociais no fim", "default": true },
+    { "type": "text", "id": "social_heading", "label": "Título das redes sociais", "default": "Ficou alguma dúvida? Fale com a gente nas redes" }
+  ]
+}
+{% endschema %}

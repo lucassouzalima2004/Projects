@@ -2,12 +2,74 @@
   "sections": {
     "hero": {
       "type": "hero-thermal",
-      "blocks": {},
-      "block_order": [],
+      "blocks": {
+        "ff40": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/BannersiteFF40.png",
+            "image_mobile": "shopify://shop_images/BannersiteFF40Mobile.png",
+            "link": "/products/kit2-spray-refrescante-para-calores-menopausa-freshfemme",
+            "alt": "O mês mais Femme do ano: site todo com até 40% off"
+          }
+        },
+        "serum": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/bannerHomeFullSerum_b3611ad7-28e3-432c-a87b-b0fdc87b9cf6.png",
+            "image_mobile": "shopify://shop_images/bannerHomeMobileSerum2.png",
+            "link": "/products/serum-concentrado-preenchedor-de-rugas-e-linhas-de-expressao-freshfemme",
+            "alt": "Sérum Concentrado Preenchedor de Rugas e Linhas de Expressão: menos rugas"
+          }
+        },
+        "spray": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/banners-fresh-femme_banner_4.png",
+            "image_mobile": "shopify://shop_images/banners_fresh_femme_mob_mobile_banner_4.jpg",
+            "link": "/products/spray-refrescante-para-calores-menopausa-freshfemme",
+            "alt": "FreshFemme Spray: alívio refrescante e imediato das ondas de calor"
+          }
+        },
+        "sabonetes": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/banners-fresh-femme_novotamanho_banner_1.png",
+            "image_mobile": "shopify://shop_images/banners_fresh_femme_mob_mobile_banner_1.jpg",
+            "link": "/products/kit-de-sabonetes-naturais-veganos-com-3-unidades-freshfemme",
+            "alt": "Sabonetes naturais e veganos: gentileza que nutre sua pele"
+          }
+        },
+        "vivaage": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/banners-fresh-femme_novotamanho_banner_2.png",
+            "image_mobile": "shopify://shop_images/banners_fresh_femme_mob_mobile_banner_2.jpg",
+            "link": "/products/kit-vivaage-rejuveneces-vivaage-slim-freshfemme-120-capsulas",
+            "alt": "VivaAge Rejuveneces e VivaAge Slim: vitalidade, emagrecimento e bem-estar"
+          }
+        },
+        "marca": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/banners_fresh_femme_banner_3.png",
+            "image_mobile": "shopify://shop_images/banners_fresh_femme_mob_mobile_banner_3.jpg",
+            "link": "/pages/quem-somos",
+            "alt": "Uma marca feita por mulher para mulheres 40 e mais"
+          }
+        }
+      },
+      "block_order": [
+        "ff40",
+        "serum",
+        "spray",
+        "sabonetes",
+        "vivaage",
+        "marca"
+      ],
       "settings": {
         "eyebrow": "",
         "heading": "Alívio imediato do <em>fogacho</em>, em segundos.",
-        "text": "O Spray Refrescante FreshFemme leva frescor na hora em que o calor sobe. Natural, vegano e aprovado pela Anvisa.",
+        "text": "O original e inovador Spray Refrescante FreshFemme leva frescor na hora em que o calor sobe. Natural, vegano e aprovado pela Anvisa.",
         "primary_label": "Quero o spray",
         "product": "spray-refrescante-para-calores-menopausa-freshfemme",
         "primary_link": "",
@@ -17,7 +79,10 @@
         "word_cold": "frescor",
         "temp_hot": "38.4",
         "temp_cold": "31.2",
-        "disclaimer": "*Representação artística do efeito refrescante."
+        "disclaimer": "*Representação artística do efeito refrescante.",
+        "layout": "strip",
+        "thermal_hold": 1.5,
+        "interval": 5
       }
     },
     "elas_amam": {
@@ -121,23 +186,98 @@
           "settings": {
             "number": "97",
             "suffix": "%",
-            "label": "de aprovação nos testes"
+            "label": "de aprovação nos testes clínicos de eficácia"
+          }
+        },
+        "prova_clientes": {
+          "type": "proof",
+          "settings": {
+            "video_url": "https://www.youtube.com/watch?v=WwMJjygife8",
+            "title": "Depoimentos de quem usa FreshFemme",
+            "caption": "Clientes"
+          }
+        },
+        "prova_opiniao": {
+          "type": "proof",
+          "settings": {
+            "video_url": "https://www.youtube.com/watch?v=Vb7L6lUBcR0",
+            "title": "Veja o que elas têm a dizer sobre o FreshFemme",
+            "caption": "Clientes"
+          }
+        },
+        "prova_medico": {
+          "type": "proof",
+          "settings": {
+            "video_url": "https://www.youtube.com/watch?v=yH92yGtMSqE",
+            "title": "Depoimento do Dr. Luís Francisco Milan Lise",
+            "caption": "Médico"
+          }
+        },
+        "prova_fogacho": {
+          "type": "proof",
+          "settings": {
+            "video_url": "https://www.youtube.com/watch?v=Sz1VovN5s8s",
+            "title": "Como saber se é fogacho ou calor?",
+            "caption": "Dra. Mariá Martelli explica"
+          }
+        },
+        "prova_alivio": {
+          "type": "proof",
+          "settings": {
+            "video_url": "https://www.youtube.com/watch?v=LjdOXUvexyg",
+            "title": "O que fazer para aliviar os calores da menopausa?",
+            "caption": "Dra. Mariá Martelli explica"
+          }
+        },
+        "prova_record": {
+          "type": "proof",
+          "settings": {
+            "video_url": "https://www.youtube.com/watch?v=nAxj0HkW7Lg",
+            "title": "FreshFemme em matéria da Record",
+            "caption": "Na TV"
+          }
+        },
+        "prova_band": {
+          "type": "proof",
+          "settings": {
+            "video_url": "https://www.youtube.com/watch?v=v03yT_AujOI",
+            "title": "Dra. Mariá Martelli no Tendências e Atualidades",
+            "caption": "Na TV · Band Mais TV"
+          }
+        },
+        "prova_trajano": {
+          "type": "proof",
+          "settings": {
+            "video_url": "https://www.youtube.com/watch?v=H5SANet3frE",
+            "title": "Luiza Helena Trajano e Mariá Martelli",
+            "caption": "Bate-papo"
           }
         }
       },
       "block_order": [
         "v1",
-        "v2"
+        "v2",
+        "prova_clientes",
+        "prova_opiniao",
+        "prova_medico",
+        "prova_fogacho",
+        "prova_alivio",
+        "prova_record",
+        "prova_band",
+        "prova_trajano"
       ],
       "settings": {
         "eyebrow": "",
         "heading": "O spray da menopausa que <em>encantou os Sharks</em>",
-        "text": "<p>Na câmera térmica dá para ver a temperatura da pele caindo na hora. Não é promessa: é ciência a serviço do conforto feminino. Premiado no Brasil e apresentado no Shark Tank Brasil.</p>",
+        "text": "<p>Pela câmera térmica, apresentamos a comprovação da temperatura da pele caindo na hora. Não é promessa: é ciência a serviço do conforto feminino. Premiado no Brasil e apresentado no Shark Tank Brasil.</p>",
         "youtube_id": "57_30YCA27Y",
         "poster": "shopify://shop_images/capaVideo.png",
         "video_label": "Shark Tank Brasil · Temporada 10",
         "badge_mark": "",
-        "badge": ""
+        "badge": "",
+        "proofs_heading": "Provas reais",
+        "proofs_text": "Depoimentos de clientes e médicos, e a Dra. Mariá explicando como o FreshFemme age.",
+        "proofs_format": "horizontal"
       }
     },
     "story": {
@@ -153,8 +293,8 @@
         "s2": {
           "type": "step",
           "settings": {
-            "title": "Borrife como um colar",
-            "text": "<p>Um jato contínuo por todo o pescoço, principalmente na nuca. Pode ser usado no corpo todo, exceto mucosas e rosto.</p>"
+            "title": "Aplique como um colar",
+            "text": "<p>Um jato contínuo ao redor de todo o pescoço, principalmente na nuca. Pode ser usado no corpo todo, exceto mucosas, rosto e áreas lesionadas.</p>"
           }
         },
         "s3": {
@@ -169,7 +309,7 @@
           "settings": {
             "number": "110",
             "suffix": "",
-            "label": "aplicações por frasco de 100 ml"
+            "label": "aplicações por frasco (cerca de 2 meses)"
           }
         },
         "n2": {
@@ -177,7 +317,7 @@
           "settings": {
             "number": "97",
             "suffix": "%",
-            "label": "de aprovação nos testes clínicos"
+            "label": "de aprovação nos testes clínicos de eficácia"
           }
         },
         "n3": {
@@ -200,7 +340,7 @@
       "settings": {
         "product": "spray-refrescante-para-calores-menopausa-freshfemme",
         "eyebrow": "",
-        "heading": "Do calor ao <em>frescor</em> em um borrifo.",
+        "heading": "Do calor ao <em>frescor</em> em segundos.",
         "text": "",
         "image": "shopify://shop_images/FreshFemme-mao.jpg"
       }
@@ -335,7 +475,7 @@
       "settings": {
         "eyebrow": "",
         "heading": "A pele <em>responde</em>",
-        "text": "<p>Fotos de clientes do Sérum Concentrado Preenchedor de Rugas & Linhas de Expressão.</p>",
+        "text": "<p>Fotos de clientes do Sérum Concentrado Preenchedor de Rugas & Linhas de Expressão. Ele é aplicado só no vinco da ruga, com a ponteira roll-on de metal, e age direto na matriz da ruga.</p>",
         "button_label": "Conhecer o Sérum",
         "button_link": "/products/serum-concentrado-preenchedor-de-rugas-e-linhas-de-expressao-freshfemme",
         "note": "Resultados podem variar de pessoa para pessoa.",
@@ -347,10 +487,10 @@
       "settings": {
         "monogram": "MM",
         "eyebrow": "",
-        "quote": "Antes de ser farmacêutica e empreendedora, eu sou <em>mulher.</em>",
+        "quote": "Antes de ser Farmacêutica e Empreendedora, eu sou <em>mulher.</em>",
         "text": "<p>Eu também sei o que é sentir no corpo e na pele as transformações que chegam com o tempo. Foi vivendo isso, e ouvindo tantas outras mulheres, que decidi usar meu conhecimento para transformar essa fase em algo mais leve.</p>",
         "name": "Mariá Martelli Milan",
-        "role": "Farmacêutica Bioquímica · CRF 14 459 · Fundadora",
+        "role": "Farmacêutica / Bioquímica · CRF 14 459 · Fundadora",
         "button_label": "Conheça nossa história",
         "button_link": "/pages/quem-somos",
         "image": "shopify://shop_images/banners_fresh_femme_banner_3.png",
@@ -373,7 +513,7 @@
           "settings": {
             "icon": "heart",
             "text": "Feito com carinho",
-            "subtext": "Criado por uma farmacêutica para mulheres 40+"
+            "subtext": "Criado por uma Farmacêutica para mulheres 40+"
           }
         },
         "v3": {

@@ -6,7 +6,7 @@
         "benefits": {
           "type": "benefits",
           "settings": {
-            "items": "Alívio imediato das ondas de calor e suores noturnos\nNatural, vegano e aprovado pela Anvisa\nSem contraindicações e sem receita\nRende cerca de 110 aplicações (2 meses)"
+            "items": "O original: spray inovador, único no Brasil\nAlívio imediato das ondas de calor e suores noturnos\nNatural, vegano e aprovado pela Anvisa\nSem contraindicações e sem receita\nRende 110 aplicações (cerca de 2 meses)"
           }
         },
         "kits": {
@@ -53,14 +53,14 @@
           "type": "collapsible",
           "settings": {
             "title": "Modo de usar",
-            "content": "<p>Aplique um jato contínuo por todo o pescoço, como um colar, principalmente na nuca, no momento do fogacho. Pode ser aplicado no corpo todo, exceto mucosas e rosto.</p>"
+            "content": "<p>Aplique um jato contínuo ao redor de todo o pescoço, como um colar, principalmente na nuca, no momento do fogacho. Pode ser aplicado no corpo todo, exceto mucosas, rosto e áreas lesionadas.</p>"
           }
         },
         "specs": {
           "type": "collapsible",
           "settings": {
             "title": "Especificações",
-            "content": "<ul><li>Volume: 100 ml</li><li>Forma: aerossol jato seco</li><li>Rendimento médio: 110 borrifadas ao redor do pescoço ou 2 meses de uso</li><li>Dermatologicamente testado</li></ul>"
+            "content": "<ul><li>Volume: 100 ml</li><li>Forma: aerossol jato seco</li><li>Rendimento: 110 aplicações ao redor de todo o pescoço (cerca de 2 meses de uso)</li><li>Dermatologicamente testado</li><li>97% de aprovação nos testes clínicos de eficácia</li></ul>"
           }
         }
       },
@@ -89,8 +89,8 @@
         "s2": {
           "type": "step",
           "settings": {
-            "title": "Borrife como um colar",
-            "text": "<p>Um jato contínuo por todo o pescoço, principalmente na nuca.</p>"
+            "title": "Aplique como um colar",
+            "text": "<p>Jato contínuo ao redor de todo o pescoço, principalmente na nuca.</p>"
           }
         },
         "s3": {
@@ -105,7 +105,7 @@
           "settings": {
             "number": "110",
             "suffix": "",
-            "label": "aplicações por frasco"
+            "label": "aplicações (cerca de 2 meses)"
           }
         },
         "n2": {
@@ -113,7 +113,7 @@
           "settings": {
             "number": "97",
             "suffix": "%",
-            "label": "de aprovação nos testes"
+            "label": "de aprovação nos testes clínicos de eficácia"
           }
         }
       },
@@ -126,7 +126,7 @@
       ],
       "settings": {
         "eyebrow": "",
-        "heading": "Do calor ao <em>frescor</em> em um borrifo.",
+        "heading": "Do calor ao <em>frescor</em> em segundos.",
         "image": "shopify://shop_images/FreshFemme-mao.jpg"
       }
     },
@@ -140,10 +140,55 @@
             "suffix": "x",
             "label": "premiado a nível nacional"
           }
+        },
+        "prova_clientes": {
+          "type": "proof",
+          "settings": {
+            "video_url": "https://www.youtube.com/watch?v=WwMJjygife8",
+            "title": "Depoimentos de quem usa FreshFemme",
+            "caption": "Clientes"
+          }
+        },
+        "prova_opiniao": {
+          "type": "proof",
+          "settings": {
+            "video_url": "https://www.youtube.com/watch?v=Vb7L6lUBcR0",
+            "title": "Veja o que elas têm a dizer sobre o FreshFemme",
+            "caption": "Clientes"
+          }
+        },
+        "prova_medico": {
+          "type": "proof",
+          "settings": {
+            "video_url": "https://www.youtube.com/watch?v=yH92yGtMSqE",
+            "title": "Depoimento do Dr. Luís Francisco Milan Lise",
+            "caption": "Médico"
+          }
+        },
+        "prova_fogacho": {
+          "type": "proof",
+          "settings": {
+            "video_url": "https://www.youtube.com/watch?v=Sz1VovN5s8s",
+            "title": "Como saber se é fogacho ou calor?",
+            "caption": "Dra. Mariá Martelli explica"
+          }
+        },
+        "prova_alivio": {
+          "type": "proof",
+          "settings": {
+            "video_url": "https://www.youtube.com/watch?v=LjdOXUvexyg",
+            "title": "O que fazer para aliviar os calores da menopausa?",
+            "caption": "Dra. Mariá Martelli explica"
+          }
         }
       },
       "block_order": [
-        "v1"
+        "v1",
+        "prova_clientes",
+        "prova_opiniao",
+        "prova_medico",
+        "prova_fogacho",
+        "prova_alivio"
       ],
       "settings": {
         "eyebrow": "",
@@ -153,7 +198,10 @@
         "poster": "shopify://shop_images/capaVideo.png",
         "video_label": "Shark Tank Brasil · Temporada 10",
         "badge_mark": "",
-        "badge": ""
+        "badge": "",
+        "proofs_heading": "Provas reais",
+        "proofs_text": "Depoimentos de clientes e médicos, e a Dra. Mariá explicando como o FreshFemme age.",
+        "proofs_format": "horizontal"
       }
     },
     "faq": {
@@ -163,7 +211,7 @@
           "type": "question",
           "settings": {
             "question": "Quanto tempo dura um frasco?",
-            "answer": "<p>Cerca de 110 aplicações ao redor do pescoço, em média 2 meses de uso.</p>"
+            "answer": "<p>Rende 110 aplicações ao redor de todo o pescoço, cerca de 2 meses de uso. O tempo é aproximado porque cada pessoa aplica uma quantidade diferente.</p>"
           }
         },
         "q2": {
@@ -177,7 +225,7 @@
           "type": "question",
           "settings": {
             "question": "Posso usar no corpo todo?",
-            "answer": "<p>Sim, exceto em mucosas e no rosto.</p>"
+            "answer": "<p>Sim, exceto em mucosas, no rosto e em áreas lesionadas.</p>"
           }
         }
       },

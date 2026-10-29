@@ -10,7 +10,7 @@ mesma ordem de hoje (Elas amam → Escolhidos para você → Kits presentes → 
 Lançamentos → Promo da semana → Nossas categorias → valores → newsletter), com algumas seções a mais
 (como o spray funciona, resultados reais do Sérum e a Dra. Mariah).
 
-![Capa no calor e no frescor](docs/capa.jpg)
+![Capa no calor, no frescor e passando para o primeiro banner](docs/capa.jpg)
 
 | Pasta / arquivo | O que é |
 | --- | --- |
@@ -47,7 +47,22 @@ site não aparece no Google. Para gerar localmente: `npm run build` e `npm run s
   Os outros produtos usam o modelo padrão.
 - **WhatsApp**: *Configurações do tema → WhatsApp* → número com DDI e DDD (ex.: `5511999999999`).
   Enquanto estiver vazio, o botão flutuante não aparece.
-- **Foto da Mariá** na seção *Fundadora* (hoje aparecem as iniciais "MM").
+- **Página Dúvidas Frequentes**: abra a página no admin (*Loja virtual → Páginas*) e, em *Modelo do tema*,
+  escolha **`page.faq`**. Cada pergunta em negrito vira um item de sanfona (fechado até clicar), e as redes
+  sociais aparecem no fim. O texto continua sendo editado na própria página.
+- **Kit 5 VivaAge Rejuveneces**: no produto, preencha *Comparar preço* com **R$ 827,50** (preço R$ 551,30).
+  O tema mostra a tarja de desconto sozinho quando há um "de/por". O Kit 5 VivaAge Slim também está sem
+  "Comparar preço".
+- **Banners da capa**: em *Capa térmica*, cada bloco *Banner* tem a imagem do computador e a do celular.
+  Vêm os 6 banners atuais da loja. Para ficarem nítidos, gere as novas artes em **2400 × 750** (computador)
+  e **1080 × 1500** (celular), com o texto longe das bordas: os do celular hoje têm só 345 px de largura.
+- **Vídeos de prova**: na seção *Vídeo e provas reais*, cada bloco *Vídeo de prova* aceita um link do YouTube,
+  um vídeo enviado para a Shopify (bom para vídeos baixados do Instagram) ou o link de um reel. Já vêm os
+  vídeos de depoimentos e de TV que estão nas páginas da loja.
+- **Selos do rodapé**: Anvisa, Premiado 2x, Dermatologicamente testado e Compra segura. Dá para trocar o ícone
+  pela arte oficial do selo em cada bloco *Selo*. Confira o número da Anvisa (veio da descrição do produto).
+- **Foto da Mariá** na seção *Fundadora*: hoje é um recorte do banner da loja; troque por uma foto profissional
+  em boa resolução.
 - **Menus**: o cabeçalho usa o menu `main-menu`. Os links das colunas *Institucional* e *Atendimento* do rodapé
   ficam no próprio bloco do rodapé (um por linha: `Texto | /endereço`) e já vêm com as páginas atuais da loja.
 - **Parcelamento**: *Configurações do tema → Vendas*. Vem configurado com 12x e 4,27% de juros ao mês, que é o
@@ -61,20 +76,25 @@ site não aparece no Google. Para gerar localmente: `npm run build` e `npm run s
 
 **Página inicial** (todas as seções podem ser reordenadas, duplicadas ou removidas no editor):
 
-- **Capa térmica 3D** — WebGL desenhado em código (não usa foto, então não aparece tom de pele). Reage ao
-  mouse, roda a 30 quadros por segundo, para quando sai da tela, baixa a resolução sozinha em aparelho fraco e
-  troca por uma imagem estática se mesmo assim ficar lento ou se o navegador não tiver 3D. Quem usa "reduzir
-  movimento" vê o quadro final parado.
+- **Capa térmica 3D com banners** — WebGL desenhado em código (não usa foto, então não aparece tom de pele).
+  A mulher borrifa o spray, o frio desce pelo corpo e, quando ela termina de gelar, a capa passa sozinha para
+  os banners de promoção (Natal, Ano Novo, kits…), com setas, bolinhas, botão de pausa e arrastar no celular.
+  Em faixa, na proporção dos banners, com o cabeçalho escuro em cima; sem banners, volta a ser tela cheia.
+  Roda a 30 quadros por segundo, para quando sai da tela e troca por uma imagem estática em aparelho fraco.
+  Quem usa "reduzir movimento" vê o quadro final parado e os banners só trocam pelas setas.
+- **Cabeçalho** que fica no topo da página (não acompanha a rolagem nem fica branco ao descer).
 - **Faixa de frete grátis** com o caminhão animado, e **selos** (Anvisa, vegano, não testado em animais…) em
   grade fixa.
 - **Vitrine com abas** (Elas amam / Spray / VivaAge / Kits presentes) com adicionar rápido.
 - **História do spray** — termômetro que esfria conforme a rolagem, passos que acendem, números animados e
   botão de compra.
 - **Categorias** em mosaico com inclinação 3D no mouse.
-- **Vídeo** do Shark Tank (o YouTube só carrega quando clicam, para não pesar).
+- **Vídeo e provas reais** — o vídeo do Shark Tank e, embaixo, um carrossel com depoimentos de clientes e
+  médicos, explicações da Dra. Mariá e matérias de TV, que abrem numa janela. O botão *Ver a prova real* da
+  capa leva até aqui. O YouTube só carrega quando clicam, para não pesar.
 - **Resultados reais** do Sérum (também aceita antes × depois com arrastar).
-- **Fundadora**, **Promoção com contagem regressiva**, **Perguntas frequentes** (com marcação para o Google),
-  **Newsletter**.
+- **Fundadora**, **Promoção com contagem regressiva**, **Perguntas frequentes** em sanfona (com marcação para
+  o Google e as redes sociais em destaque logo abaixo), **Newsletter**.
 - Extras para usar onde quiser: **Texto**, **Imagem com texto**, **Depoimentos** (use só depoimentos reais).
 
 **Loja inteira**: cabeçalho centralizado que fica transparente sobre a capa e some ao descer; menu mobile

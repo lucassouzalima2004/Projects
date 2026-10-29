@@ -1,15 +1,76 @@
-/* Capa térmica: composição simétrica — texto à esquerda, corpo térmico no centro, visor/selos à direita. */
+/* Capa: um slider em que o primeiro slide é a cena térmica (texto à esquerda, corpo no centro,
+   termômetro à direita) e os seguintes são os banners de promoção da loja. */
+.hero-slider {
+  position: relative;
+  overflow: hidden;
+  background: var(--c-night);
+  color: #f2f6f7;
+  isolation: isolate;
+  touch-action: pan-y;
+}
+.hero-slider__track { display: flex; transition: transform 0.9s var(--ease-out); will-change: transform; }
+.hero-slider__track.is-dragging { transition: none; }
+.hero-slider__slide { position: relative; flex: 0 0 100%; min-width: 0; overflow: hidden; }
+
+/* altura: em faixa, todos os slides seguem a proporção dos banners */
+.hero-slider--strip .hero-slider__slide { aspect-ratio: var(--ratio-m, 0.72); min-height: 540px; }
+@media (min-width: 750px) {
+  .hero-slider--strip .hero-slider__slide { aspect-ratio: var(--ratio-d, 3.2); min-height: 420px; }
+}
+
+/* ---------- banners ---------- */
+.hero-banner { background: var(--c-mint); }
+.hero-banner__link, .hero-banner picture { position: absolute; inset: 0; display: block; }
+.hero-banner img { width: 100%; height: 100%; user-select: none; -webkit-user-drag: none; }
+/* a arte aparece inteira (o texto nunca é cortado); a cópia desfocada atrás cobre as sobras */
+.hero-banner__img img, .hero-banner img.hero-banner__img { object-fit: contain; }
+.hero-banner__backdrop img { object-fit: cover; filter: blur(28px) saturate(1.1); transform: scale(1.15); }
+
+/* ---------- controles ---------- */
+.hero-slider__controls {
+  position: absolute; left: 50%; bottom: 14px; z-index: 3; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 2px; padding: 4px;
+  border-radius: 999px; background: rgb(5 7 12 / 0.42); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  color: #fff;
+}
+.hero-slider__arrow, .hero-slider__pause {
+  display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
+  transition: background-color 0.2s;
+}
+.hero-slider__arrow:hover, .hero-slider__pause:hover { background: rgb(255 255 255 / 0.14); }
+.hero-slider__arrow .icon { width: 18px; height: 18px; }
+.hero-slider__dots { display: flex; align-items: center; gap: 6px; padding: 0 6px; }
+.hero-slider__dot {
+  position: relative; width: 8px; height: 8px; border-radius: 999px; overflow: hidden;
+  background: rgb(255 255 255 / 0.4); transition: width 0.4s var(--ease-out), background-color 0.3s;
+}
+.hero-slider__dot::after { content: ''; position: absolute; inset: 0; background: #fff; transform: scaleX(0); transform-origin: left; }
+.hero-slider__dot.is-active { width: 28px; }
+.hero-slider__dot.is-active.is-timed::after { animation: dot-fill var(--slide-ms, 5000ms) linear forwards; }
+.hero-slider__dot.is-active:not(.is-timed)::after { transform: none; }
+@keyframes dot-fill { to { transform: none; } }
+.hero-slider__pause-icon { position: relative; width: 10px; height: 12px; }
+.hero-slider__pause-icon::before, .hero-slider__pause-icon::after {
+  content: ''; position: absolute; top: 0; bottom: 0; width: 3px; border-radius: 1px; background: currentColor;
+}
+.hero-slider__pause-icon::before { left: 1px; }
+.hero-slider__pause-icon::after { right: 1px; }
+.hero-slider.is-paused .hero-slider__pause-icon::before {
+  left: 2px; width: 0; border-radius: 0; background: none;
+  border-style: solid; border-width: 6px 0 6px 9px; border-color: transparent transparent transparent currentColor;
+}
+.hero-slider.is-paused .hero-slider__pause-icon::after { display: none; }
+
+/* ---------- cena térmica ---------- */
 .hero-thermal {
   --coolness: 0;
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: 100svh;
   background: var(--c-night);
-  color: #f2f6f7;
-  overflow: hidden;
   isolation: isolate;
 }
+.hero-slider--full .hero-thermal { min-height: 100svh; }
 
 .hero-thermal__bg { position: absolute; inset: 0; z-index: -2; pointer-events: none; }
 .hero-thermal__bg::before,
@@ -34,45 +95,6 @@
   opacity: var(--coolness);
 }
 
-/* palavra gigante atrás do corpo */
-.hero-thermal__word {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  display: grid;
-  place-items: center;
-  pointer-events: none;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: clamp(110px, 21vw, 360px);
-  line-height: 0.8;
-  letter-spacing: -0.06em;
-  padding-bottom: 8vh;
-}
-.hero-thermal__word > span {
-  grid-area: 1 / 1;
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  padding: 0 0.08em 0.1em;
-  transition: opacity 1.1s var(--ease-out), filter 1.1s var(--ease-out), transform 1.4s var(--ease-out), letter-spacing 1.4s var(--ease-out);
-}
-.hero-thermal__word-hot {
-  background-image: linear-gradient(100deg, #6d0d5f, #e2321c 40%, #ff8a1a 70%, #ffc23d);
-  opacity: 0.34;
-}
-.hero-thermal__word-cold {
-  background-image: linear-gradient(100deg, #0b3c96, #1f9fe0 45%, var(--c-ice) 75%, #e8fdff);
-  opacity: 0;
-  filter: blur(16px);
-  transform: scale(1.06);
-  letter-spacing: 0;
-}
-.hero-thermal.is-cold .hero-thermal__word-hot,
-.hero-thermal.is-spraying .hero-thermal__word-hot { opacity: 0; filter: blur(16px); transform: scale(0.96); letter-spacing: -0.09em; }
-.hero-thermal.is-cold .hero-thermal__word-cold { opacity: 0.4; filter: none; transform: none; letter-spacing: -0.05em; }
-
 /* palco do canvas */
 .hero-thermal__stage { position: relative; height: 64svh; min-height: 420px; margin-top: calc(var(--header-h) * 0.4); }
 .hero-thermal__canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1.4s var(--ease-out); }
@@ -92,6 +114,7 @@
   justify-items: center;
 }
 .hero-thermal__copy { display: grid; gap: 18px; justify-items: center; max-width: 560px; }
+.hero-thermal__eyebrow { font-size: 0.85rem; font-weight: 600; color: rgb(255 255 255 / 0.75); }
 .hero-thermal__title {
   font-size: calc(clamp(32px, 3.7vw, 56px) * var(--heading-scale));
   line-height: 1.02;
@@ -114,11 +137,38 @@
 .hero-thermal__price s { opacity: 0.7; }
 .hero-thermal__price strong { color: #fff; font-size: 1.1rem; }
 
-/* termômetro */
+/* termômetro, com a palavra calor → frescor em cima, à vista */
 .hero-thermal__gauge {
   --level: 1;
   display: grid; gap: 8px; justify-items: center; width: min(320px, 100%);
 }
+.hero-thermal__word {
+  display: grid;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(52px, 5.2vw, 92px);
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  margin-bottom: 6px;
+  justify-items: inherit;
+}
+.hero-thermal__word > span {
+  grid-area: 1 / 1;
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  padding: 0 0.06em 0.08em;
+  transition: opacity 0.9s var(--ease-out), filter 0.9s var(--ease-out), transform 1.1s var(--ease-out);
+}
+.hero-thermal__word-hot { background-image: linear-gradient(100deg, #ffc23d, #ff8a1a 35%, #e2321c 75%, #b0175a); }
+.hero-thermal__word-cold {
+  background-image: linear-gradient(100deg, #e8fdff, var(--c-ice) 40%, #1f9fe0 75%, #1a5fd0);
+  opacity: 0; filter: blur(10px); transform: translateY(8px);
+}
+.hero-thermal.is-cold .hero-thermal__word-hot,
+.hero-thermal.is-spraying .hero-thermal__word-hot { opacity: 0; filter: blur(10px); transform: translateY(-8px); }
+.hero-thermal.is-cold .hero-thermal__word-cold { opacity: 1; filter: none; transform: none; }
 .hero-thermal__gauge-label { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: rgb(255 255 255 / 0.55); }
 .hero-thermal__temp {
   font-family: var(--font-body);
@@ -143,18 +193,15 @@
 html.js .hero-in { opacity: 0; transform: translateY(22px); filter: blur(8px); animation: hero-in 1.2s var(--ease-out) forwards; animation-delay: var(--d, 0s); }
 @keyframes hero-in { to { opacity: 1; transform: none; filter: none; } }
 
-@media (max-width: 989px) {
-  .hero-thermal__word { inset: 0 0 auto; height: calc(64svh + var(--header-h) * 0.4 + 20px); font-size: 34vw; padding: var(--header-h) 0 0; }
-}
 @media (max-width: 749px) {
-  .hero-thermal__gauge { position: absolute; top: calc(-64svh + var(--header-h) + 54px); right: var(--gutter); left: auto; width: auto; justify-items: end; gap: 2px; display: none; }
+  .hero-thermal__gauge { display: none; }
 }
 
-/* desktop: palco em tela cheia e conteúdo em três colunas */
+/* desktop em tela cheia: palco ocupando tudo e conteúdo em três colunas, abaixo do cabeçalho transparente */
 @media (min-width: 990px) {
-  .hero-thermal { min-height: max(720px, 100svh); }
-  .hero-thermal__stage { position: absolute; inset: 0; height: auto; margin: 0; }
-  .hero-thermal__content {
+  .hero-slider--full .hero-thermal { min-height: max(720px, 100svh); }
+  .hero-slider--full .hero-thermal__stage { position: absolute; inset: 0; height: auto; margin: 0; }
+  .hero-slider--full .hero-thermal__content {
     position: absolute;
     inset: var(--header-h) 0 0;
     grid-template-columns: minmax(0, 1fr) minmax(0, 40vw) minmax(0, 1fr);
@@ -164,13 +211,74 @@ html.js .hero-in { opacity: 0; transform: translateY(22px); filter: blur(8px); a
     justify-items: stretch;
     pointer-events: none;
   }
-  .hero-thermal__content > * { pointer-events: auto; }
-  .hero-thermal__copy { grid-column: 1; justify-items: start; max-width: 500px; }
-  .hero-thermal__actions { justify-content: flex-start; }
-  .hero-thermal__gauge { grid-column: 3; justify-self: end; justify-items: end; text-align: right; width: min(300px, 100%); }
-  .hero-thermal__word { padding-bottom: 0; }
-  .hero-thermal__disclaimer { left: var(--gutter); right: auto; text-align: left; }
+  .hero-slider--full .hero-thermal__content > * { pointer-events: auto; }
+  .hero-slider--full .hero-thermal__copy { grid-column: 1; justify-items: start; max-width: 500px; }
+  .hero-slider--full .hero-thermal__actions { justify-content: flex-start; }
+  .hero-slider--full .hero-thermal__gauge { grid-column: 3; justify-self: end; justify-items: end; text-align: right; width: min(300px, 100%); }
+  .hero-slider--full .hero-thermal__disclaimer { left: var(--gutter); right: auto; text-align: left; }
 }
 @media (min-width: 990px) and (max-height: 760px) {
-  .hero-thermal__title { font-size: calc(clamp(32px, 3.8vw, 54px) * var(--heading-scale)); }
+  .hero-slider--full .hero-thermal__title { font-size: calc(clamp(32px, 3.8vw, 54px) * var(--heading-scale)); }
+}
+
+/* ---------- capa em faixa (com banners) ---------- */
+.hero-slider--strip .hero-thermal__stage { position: absolute; inset: 0; height: auto; min-height: 0; margin: 0; }
+.hero-slider--strip .hero-thermal__content { position: absolute; inset: 0; pointer-events: none; }
+.hero-slider--strip .hero-thermal__content > * { pointer-events: auto; }
+
+/* celular: ela na parte de cima e o texto embaixo, sobre um degradê */
+@media (max-width: 749px) {
+  .hero-slider--strip .hero-thermal__stage { bottom: 30%; }
+  .hero-slider--strip .hero-thermal__content {
+    align-content: end;
+    padding-bottom: 64px;
+    background: linear-gradient(to top, rgb(5 7 12 / 0.96) 0%, rgb(5 7 12 / 0.82) 34%, transparent 58%);
+  }
+  .hero-slider--strip .hero-thermal__copy { gap: 10px; }
+  .hero-slider--strip .hero-thermal__title { font-size: calc(clamp(26px, 7.4vw, 34px) * var(--heading-scale)); }
+  .hero-slider--strip .hero-thermal__text {
+    font-size: 0.92rem; line-height: 1.45;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .hero-slider--strip .hero-thermal__actions { gap: 8px; flex-wrap: nowrap; margin-top: 4px; }
+  .hero-slider--strip .hero-thermal__actions .btn { height: 46px; padding: 0 16px; font-size: 0.9rem; gap: 6px; }
+  .hero-slider--strip .hero-thermal__price { display: none; }
+  .hero-slider--strip .hero-thermal__disclaimer { top: 12px; bottom: auto; left: var(--gutter); right: auto; text-align: left; }
+}
+
+/* tablet: texto à esquerda e ela à direita */
+@media (min-width: 750px) and (max-width: 989px) {
+  .hero-slider--strip .hero-thermal__stage { left: 42%; }
+  .hero-slider--strip .hero-thermal__content { align-content: center; justify-items: start; text-align: left; padding-block: 28px 56px; }
+  .hero-slider--strip .hero-thermal__copy { justify-items: start; max-width: 44%; gap: 12px; }
+  .hero-slider--strip .hero-thermal__title { font-size: calc(clamp(28px, 4.2vw, 40px) * var(--heading-scale)); }
+  .hero-slider--strip .hero-thermal__text { font-size: 0.95rem; }
+  .hero-slider--strip .hero-thermal__actions { justify-content: flex-start; }
+  .hero-slider--strip .hero-thermal__actions .btn { height: 48px; padding: 0 20px; font-size: 0.92rem; }
+  .hero-slider--strip .hero-thermal__price, .hero-slider--strip .hero-thermal__gauge { display: none; }
+  .hero-slider--strip .hero-thermal__disclaimer { left: var(--gutter); right: auto; bottom: 18px; text-align: left; }
+}
+
+/* computador: três colunas dentro da faixa */
+@media (min-width: 990px) {
+  .hero-slider--strip .hero-thermal__content {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 30vw) minmax(0, 1fr);
+    align-items: center;
+    padding-block: 28px 56px;
+    text-align: left;
+    justify-items: stretch;
+  }
+  .hero-slider--strip .hero-thermal__copy { grid-column: 1; justify-items: start; max-width: 480px; gap: 14px; }
+  .hero-slider--strip .hero-thermal__title { font-size: calc(clamp(30px, 2.9vw, 50px) * var(--heading-scale)); }
+  .hero-slider--strip .hero-thermal__text { font-size: clamp(0.95rem, 1.05vw, 1.05rem); max-width: 420px; }
+  .hero-slider--strip .hero-thermal__actions { justify-content: flex-start; gap: 10px; }
+  .hero-slider--strip .hero-thermal__actions .btn { height: 50px; padding: 0 22px; font-size: 0.95rem; }
+  .hero-slider--strip .hero-thermal__gauge { grid-column: 3; justify-self: end; justify-items: end; text-align: right; width: min(280px, 100%); gap: 6px; }
+  .hero-slider--strip .hero-thermal__word { font-size: clamp(48px, 4.4vw, 84px); }
+  .hero-slider--strip .hero-thermal__temp { font-size: clamp(48px, 4.6vw, 80px); }
+  .hero-slider--strip .hero-thermal__disclaimer { left: var(--gutter); right: auto; bottom: 22px; text-align: left; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slider__track { transition: none; }
 }

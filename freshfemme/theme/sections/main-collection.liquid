@@ -1,7 +1,13 @@
 {{ 'template-collection.css' | asset_url | stylesheet_tag }}
 
-<section class="collection-hero{% if collection.image %} collection-hero--image{% endif %}">
-  {%- if collection.image and section.settings.show_image -%}
+{%- liquid
+  assign hero_image = false
+  if collection.image and section.settings.show_image
+    assign hero_image = true
+  endif
+-%}
+<section class="collection-hero{% if hero_image %} collection-hero--image{% endif %}">
+  {%- if hero_image -%}
     <div class="collection-hero__media">
       {{ collection.image | image_url: width: 2000 | image_tag: loading: 'eager', widths: '800, 1200, 1600, 2000', sizes: '100vw', alt: collection.title }}
     </div>

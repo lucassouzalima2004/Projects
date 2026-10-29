@@ -23,6 +23,9 @@
       {%- endfor -%}
     </div>
   </div>
+  {%- if section.settings.show_social -%}
+    <div class="container">{% render 'social-follow', heading: section.settings.social_heading %}</div>
+  {%- endif -%}
 </section>
 
 {%- if section.settings.schema and section.blocks.size > 0 -%}
@@ -54,7 +57,9 @@
     { "type": "richtext", "id": "text", "label": "Texto", "default": "<p>Não encontrou o que procurava? Fale com a gente.</p>" },
     { "type": "text", "id": "button_label", "label": "Texto do botão", "default": "Falar com a equipe" },
     { "type": "url", "id": "button_link", "label": "Link do botão" },
-    { "type": "checkbox", "id": "schema", "label": "Marcar como FAQ para o Google", "default": true }
+    { "type": "checkbox", "id": "schema", "label": "Marcar como FAQ para o Google", "default": true },
+    { "type": "checkbox", "id": "show_social", "label": "Mostrar as redes sociais logo abaixo", "default": true },
+    { "type": "text", "id": "social_heading", "label": "Título das redes sociais", "default": "Acompanhe a FreshFemme nas redes" }
   ],
   "blocks": [
     {

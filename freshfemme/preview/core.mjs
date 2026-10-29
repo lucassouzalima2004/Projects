@@ -16,9 +16,36 @@ function makeImage(src, { width = 1200, height = 1200, alt = '', id } = {}) {
   if (!src) return null;
   return { src, url: src, width, height, alt, id: id || src, aspect_ratio: width / height, media_type: 'image' };
 }
+// tamanho real dos arquivos da loja cuja proporção importa no layout (banners da capa)
+const SHOP_IMAGE_SIZES = {
+  'BannersiteFF40.png': [1600, 500],
+  'bannerHomeFullSerum_b3611ad7-28e3-432c-a87b-b0fdc87b9cf6.png': [1600, 500],
+  'banners-fresh-femme_banner_4.png': [1600, 500],
+  'banners-fresh-femme_novotamanho_banner_1.png': [1600, 500],
+  'banners-fresh-femme_novotamanho_banner_2.png': [1600, 500],
+  'banners_fresh_femme_banner_3.png': [1600, 500],
+  'BannersiteFF40Mobile.png': [345, 480],
+  'bannerHomeMobileSerum2.png': [345, 480],
+  'banners_fresh_femme_mob_mobile_banner_1.jpg': [345, 480],
+  'banners_fresh_femme_mob_mobile_banner_2.jpg': [345, 480],
+  'banners_fresh_femme_mob_mobile_banner_3.jpg': [345, 480],
+  'banners_fresh_femme_mob_mobile_banner_4.jpg': [345, 480],
+};
 function shopImage(value) {
   if (typeof value !== 'string' || !value.startsWith('shopify://shop_images/')) return null;
-  return makeImage(STORE_FILES + value.replace('shopify://shop_images/', ''), { alt: '' });
+  const name = value.replace('shopify://shop_images/', '');
+  const [width, height] = SHOP_IMAGE_SIZES[name] || [1200, 1200];
+  return makeImage(STORE_FILES + name, { alt: '', width, height });
+}
+
+// setting video_url: a Shopify entrega um objeto com id e type a partir do link
+function videoURL(value) {
+  if (typeof value !== 'string') return null;
+  const yt = value.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{6,})/);
+  if (yt) return { id: yt[1], type: 'youtube', toString: () => value };
+  const vm = value.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vm) return { id: vm[1], type: 'vimeo', toString: () => value };
+  return null;
 }
 
 function moneyFmt(c, opts = {}) {
@@ -149,7 +176,9 @@ export function createPreview({ Liquid, Tag, files, data, site = {} }) {
   }
 
   const pages = {};
-  for (const [handle, p] of Object.entries(data.pages)) pages[handle] = { ...p, url: `/pages/${handle}` };
+  // na loja, a página Dúvidas Frequentes usa o modelo "faq" (perguntas em sanfona)
+  const PAGE_TEMPLATES = { 'duvidas-frequentes': 'faq' };
+  for (const [handle, p] of Object.entries(data.pages)) pages[handle] = { ...p, url: `/pages/${handle}`, template_suffix: PAGE_TEMPLATES[handle] || '' };
 
   const menu = (handle, title, links) => ({ handle, title, links: links.map(([t, url]) => ({ title: t, url, links: [], current: false })) });
   const linklists = {
@@ -182,6 +211,8 @@ export function createPreview({ Liquid, Tag, files, data, site = {} }) {
       case 'page': return pages[value] || null;
       case 'link_list': return linklists[value] || null;
       case 'image_picker': return shopImage(value);
+      case 'video_url': return videoURL(value);
+      case 'video': return null; // vídeos enviados à Shopify não existem no preview
       case 'product_list': { const arr = value.map((h) => products[h]).filter(Boolean); return Object.assign(arr, { count: arr.length }); }
       case 'collection_list': { const arr = value.map((h) => collections[h]).filter(Boolean); return Object.assign(arr, { count: arr.length }); }
       default: return value;
@@ -416,7 +447,11 @@ export function createPreview({ Liquid, Tag, files, data, site = {} }) {
     if (parts[0] === 'cart') return { template: 'cart', page_type: 'cart' };
     if (parts[0] === 'search') return { template: 'search', page_type: 'search', q: u.searchParams.get('q'), all: u.searchParams.has('all') };
     if (parts[0] === 'pages' && parts[1] === 'contact') return { template: 'page', suffix: 'contact', page_type: 'page', page: pages.contact };
-    if (parts[0] === 'pages' && pages[parts[1]]) return { template: 'page', page_type: 'page', page: pages[parts[1]] };
+    if (parts[0] === 'pages' && pages[parts[1]]) {
+      const page = pages[parts[1]];
+      const suffix = page.template_suffix && files[`templates/page.${page.template_suffix}.json`] ? page.template_suffix : '';
+      return { template: 'page', suffix, page_type: 'page', page };
+    }
     if (parts[0] === 'account' && parts[1] === 'register') return { template: 'customers/register', page_type: 'customers/register' };
     if (parts[0] === 'account') return { template: 'customers/login', page_type: 'customers/login' };
     if (parts[0] === 'password') return { template: 'password', page_type: 'password', layout: 'password' };

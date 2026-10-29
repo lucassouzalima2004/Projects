@@ -7,81 +7,194 @@
   if primary_url == blank and product != blank
     assign primary_url = product.url
   endif
+  assign banners = section.blocks | where: 'type', 'banner'
+  assign slide_count = banners.size | plus: 1
+  assign layout = section.settings.layout
+  if banners.size == 0
+    assign layout = 'full'
+  endif
+  assign ratio_desktop = 3.2
+  assign ratio_mobile = 0.72
+  if banners.size > 0
+    assign first_banner = banners.first
+    if first_banner.settings.image != blank
+      assign ratio_desktop = first_banner.settings.image.aspect_ratio
+    endif
+    if first_banner.settings.image_mobile != blank
+      assign ratio_mobile = first_banner.settings.image_mobile.aspect_ratio
+    endif
+  endif
+  assign heading_text = section.settings.heading | strip_html | escape
 -%}
 
 <section
-  class="hero-thermal"
-  data-thermal
-  data-header-overlay
-  data-temp-hot="{{ section.settings.temp_hot }}"
-  data-temp-cold="{{ section.settings.temp_cold }}"
-  aria-label="{{ section.settings.heading | strip_html | escape }}"
+  class="hero-slider hero-slider--{{ layout }}"
+  {% if banners.size == 0 %}data-header-overlay{% else %}data-header-tone="dark"{% endif %}
+  {% if banners.size > 0 %}
+    data-hero-slider
+    data-interval="{{ section.settings.interval }}"
+    data-thermal-hold="{{ section.settings.thermal_hold }}"
+    aria-roledescription="{{ 'sections.hero.carousel' | t }}"
+  {% endif %}
+  aria-label="{{ heading_text }}"
+  style="--ratio-d: {{ ratio_desktop }}; --ratio-m: {{ ratio_mobile }};"
 >
-  <div class="hero-thermal__bg" aria-hidden="true"></div>
+  <div class="hero-slider__track" data-slider-track>
+    <div
+      class="hero-slider__slide hero-thermal is-active"
+      data-slide
+      data-thermal
+      data-temp-hot="{{ section.settings.temp_hot }}"
+      data-temp-cold="{{ section.settings.temp_cold }}"
+      {% if banners.size > 0 %}
+        role="group"
+        aria-roledescription="{{ 'sections.hero.slide' | t }}"
+        aria-label="{{ 'sections.hero.slide_label' | t: index: 1, count: slide_count }}"
+      {% endif %}
+    >
+      <div class="hero-thermal__bg" aria-hidden="true"></div>
 
-  <div class="hero-thermal__word" aria-hidden="true">
-    <span class="hero-thermal__word-hot">{{ section.settings.word_hot }}</span>
-    <span class="hero-thermal__word-cold">{{ section.settings.word_cold }}</span>
-  </div>
-
-  <div class="hero-thermal__stage">
-    <canvas class="hero-thermal__canvas" data-thermal-canvas aria-hidden="true"></canvas>
-    {%- if section.settings.fallback_image != blank -%}
-      {{ section.settings.fallback_image | image_url: width: 1400 | image_tag: class: 'hero-thermal__fallback', loading: 'eager', alt: '', widths: '700, 1000, 1400' }}
-    {%- else -%}
-      <img class="hero-thermal__fallback" src="{{ 'thermal-fallback.webp' | asset_url }}" alt="" width="1100" height="1100" loading="eager">
-    {%- endif -%}
-  </div>
-
-  <div class="hero-thermal__content container container--wide">
-    <div class="hero-thermal__copy">
-      {%- if section.settings.eyebrow != blank -%}
-        <p class="hero-thermal__eyebrow hero-in" style="--d: 0.2s">
-          {% render 'icon', name: 'award' %}
-          {{ section.settings.eyebrow }}
-        </p>
-      {%- endif -%}
-      <h1 class="hero-thermal__title hero-in" style="--d: 0.35s">{{ section.settings.heading }}</h1>
-      {%- if section.settings.text != blank -%}
-        <p class="hero-thermal__text hero-in" style="--d: 0.55s">{{ section.settings.text }}</p>
-      {%- endif -%}
-      <div class="hero-thermal__actions hero-in" style="--d: 0.7s">
-        {%- if section.settings.primary_label != blank -%}
-          <a href="{{ primary_url | default: routes.all_products_collection_url }}" class="btn btn--thermal btn--lg">
-            {{ section.settings.primary_label }}
-            {% render 'icon', name: 'arrow' %}
-          </a>
-        {%- endif -%}
-        {%- if section.settings.secondary_label != blank -%}
-          <a href="{{ section.settings.secondary_link | default: '#' }}" class="btn btn--ghost-light btn--lg">
-            {% render 'icon', name: 'play' %}
-            {{ section.settings.secondary_label }}
-          </a>
+      <div class="hero-thermal__stage">
+        <canvas class="hero-thermal__canvas" data-thermal-canvas aria-hidden="true"></canvas>
+        {%- if section.settings.fallback_image != blank -%}
+          {{ section.settings.fallback_image | image_url: width: 1400 | image_tag: class: 'hero-thermal__fallback', loading: 'eager', alt: '', widths: '700, 1000, 1400' }}
+        {%- else -%}
+          <img class="hero-thermal__fallback" src="{{ 'thermal-fallback.webp' | asset_url }}" alt="" width="1100" height="1100" loading="eager">
         {%- endif -%}
       </div>
-      {%- if product != blank -%}
-        <p class="hero-thermal__price hero-in" style="--d: 0.85s">
-          <span>{{ 'sections.hero.from' | t }}</span>
-          {%- if product.compare_at_price > product.price -%}<s>{{ product.compare_at_price | money }}</s>{%- endif -%}
-          <strong>{{ product.price | money }}</strong>
-        </p>
+
+      <div class="hero-thermal__content container container--wide">
+        <div class="hero-thermal__copy">
+          {%- if section.settings.eyebrow != blank -%}
+            <p class="hero-thermal__eyebrow hero-in" style="--d: 0.2s">{{ section.settings.eyebrow }}</p>
+          {%- endif -%}
+          <h1 class="hero-thermal__title hero-in" style="--d: 0.35s">{{ section.settings.heading }}</h1>
+          {%- if section.settings.text != blank -%}
+            <p class="hero-thermal__text hero-in" style="--d: 0.55s">{{ section.settings.text }}</p>
+          {%- endif -%}
+          <div class="hero-thermal__actions hero-in" style="--d: 0.7s">
+            {%- if section.settings.primary_label != blank -%}
+              <a href="{{ primary_url | default: routes.all_products_collection_url }}" class="btn btn--thermal btn--lg">
+                {{ section.settings.primary_label }}
+                {% render 'icon', name: 'arrow' %}
+              </a>
+            {%- endif -%}
+            {%- if section.settings.secondary_label != blank -%}
+              <a href="{{ section.settings.secondary_link | default: '#prova-real' }}" class="btn btn--ghost-light btn--lg">
+                {% render 'icon', name: 'play' %}
+                {{ section.settings.secondary_label }}
+              </a>
+            {%- endif -%}
+          </div>
+          {%- if product != blank -%}
+            <p class="hero-thermal__price hero-in" style="--d: 0.85s">
+              <span>{{ 'sections.hero.from' | t }}</span>
+              {%- if product.compare_at_price > product.price -%}<s>{{ product.compare_at_price | money }}</s>{%- endif -%}
+              <strong>{{ product.price | money }}</strong>
+            </p>
+          {%- endif -%}
+        </div>
+
+        <div class="hero-thermal__gauge hero-in" style="--d: 0.9s" aria-hidden="true">
+          {%- if section.settings.word_hot != blank or section.settings.word_cold != blank -%}
+            <span class="hero-thermal__word">
+              <span class="hero-thermal__word-hot">{{ section.settings.word_hot }}</span>
+              <span class="hero-thermal__word-cold">{{ section.settings.word_cold }}</span>
+            </span>
+          {%- endif -%}
+          <span class="hero-thermal__gauge-label">{{ 'sections.hero.skin_temp' | t }}</span>
+          <span class="hero-thermal__temp"><span data-thermal-temp>{{ section.settings.temp_hot | replace: '.', ',' }}</span><sup>°C</sup></span>
+          <span class="hero-thermal__scale" data-thermal-bar>
+            <i></i>
+          </span>
+          <span class="hero-thermal__scale-labels"><span>{{ 'sections.hero.cold' | t }}</span><span>{{ 'sections.hero.hot' | t }}</span></span>
+        </div>
+      </div>
+
+      {%- if section.settings.disclaimer != blank -%}
+        <p class="hero-thermal__disclaimer">{{ section.settings.disclaimer }}</p>
       {%- endif -%}
     </div>
 
-    <div class="hero-thermal__gauge hero-in" style="--d: 0.9s" aria-hidden="true">
-      <span class="hero-thermal__gauge-label">{{ 'sections.hero.skin_temp' | t }}</span>
-      <span class="hero-thermal__temp"><span data-thermal-temp>{{ section.settings.temp_hot | replace: '.', ',' }}</span><sup>°C</sup></span>
-      <span class="hero-thermal__scale" data-thermal-bar>
-        <i></i>
-      </span>
-      <span class="hero-thermal__scale-labels"><span>{{ 'sections.hero.cold' | t }}</span><span>{{ 'sections.hero.hot' | t }}</span></span>
-    </div>
+    {%- for block in banners -%}
+      {%- liquid
+        assign alt = block.settings.alt | default: heading_text
+        assign loading = 'lazy'
+        assign slide_index = forloop.index | plus: 1
+      -%}
+      <div
+        class="hero-slider__slide hero-banner"
+        data-slide
+        role="group"
+        aria-roledescription="{{ 'sections.hero.slide' | t }}"
+        aria-label="{{ 'sections.hero.slide_label' | t: index: slide_index, count: slide_count }}"
+        aria-hidden="true"
+        inert
+        {{ block.shopify_attributes }}
+      >
+        <a class="hero-banner__link" href="{{ block.settings.link | default: routes.all_products_collection_url }}" draggable="false">
+          {%- if block.settings.image != blank -%}
+            {%- comment -%} a mesma arte, desfocada, preenche a sobra quando a tela não tem a proporção do banner {%- endcomment -%}
+            {%- for layer in (1..2) -%}
+              {%- liquid
+                if layer == 1
+                  assign layer_class = 'hero-banner__backdrop'
+                  assign layer_alt = ''
+                else
+                  assign layer_class = 'hero-banner__img'
+                  assign layer_alt = alt
+                endif
+              -%}
+              <picture class="{{ layer_class }}"{% if layer == 1 %} aria-hidden="true"{% endif %}>
+                {%- if block.settings.image_mobile != blank -%}
+                  <source
+                    media="(max-width: 749px)"
+                    srcset="{{ block.settings.image_mobile | image_url: width: 750 }} 750w, {{ block.settings.image_mobile | image_url: width: 1080 }} 1080w"
+                    sizes="100vw"
+                  >
+                {%- endif -%}
+                {{ block.settings.image | image_url: width: 2400 | image_tag: loading: loading, widths: '990, 1400, 1920, 2400', sizes: '100vw', alt: layer_alt, draggable: 'false' }}
+              </picture>
+            {%- endfor -%}
+          {%- else -%}
+            {{ 'lifestyle-2' | placeholder_svg_tag: 'hero-banner__img placeholder-svg' }}
+          {%- endif -%}
+        </a>
+      </div>
+    {%- endfor -%}
   </div>
 
-  {%- if section.settings.disclaimer != blank -%}
-    <p class="hero-thermal__disclaimer">{{ section.settings.disclaimer }}</p>
+  {%- if banners.size > 0 -%}
+    <div class="hero-slider__controls">
+      <button type="button" class="hero-slider__arrow" data-slider-prev aria-label="{{ 'sections.hero.prev' | t }}">
+        {% render 'icon', name: 'chevron-left' %}
+      </button>
+      <div class="hero-slider__dots">
+        {%- for i in (1..slide_count) -%}
+          <button
+            type="button"
+            class="hero-slider__dot{% if forloop.first %} is-active{% endif %}"
+            data-slider-dot
+            aria-label="{{ 'sections.hero.goto' | t: index: i }}"
+            {% if forloop.first %}aria-current="true"{% endif %}
+          ></button>
+        {%- endfor -%}
+      </div>
+      <button type="button" class="hero-slider__arrow" data-slider-next aria-label="{{ 'sections.hero.next' | t }}">
+        {% render 'icon', name: 'chevron-right' %}
+      </button>
+      <button
+        type="button"
+        class="hero-slider__pause"
+        data-slider-pause
+        aria-label="{{ 'sections.hero.pause' | t }}"
+        data-label-pause="{{ 'sections.hero.pause' | t }}"
+        data-label-play="{{ 'sections.hero.play' | t }}"
+      >
+        <span class="hero-slider__pause-icon" aria-hidden="true"></span>
+      </button>
+    </div>
   {%- endif -%}
-
 </section>
 
 {% schema %}
@@ -91,7 +204,18 @@
   "settings": [
     {
       "type": "paragraph",
-      "content": "Animação em 3D: a mulher aparece como numa câmera térmica, borrifa o spray no pescoço e o frio desce pelo corpo."
+      "content": "Animação em 3D: a mulher aparece como numa câmera térmica, borrifa o spray no pescoço e o frio desce pelo corpo. Adicione blocos de Banner para a capa passar sozinha para as promoções depois que ela gela."
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Altura da capa",
+      "options": [
+        { "value": "strip", "label": "Faixa na proporção dos banners" },
+        { "value": "full", "label": "Tela cheia" }
+      ],
+      "default": "strip",
+      "info": "Sem banners a capa fica sempre em tela cheia, com o cabeçalho transparente por cima."
     },
     { "type": "text", "id": "eyebrow", "label": "Chamada (opcional)" },
     { "type": "inline_richtext", "id": "heading", "label": "Título", "default": "Alívio imediato do <em>fogacho</em>, em segundos." },
@@ -103,7 +227,7 @@
     { "type": "url", "id": "secondary_link", "label": "Link do botão secundário" },
     {
       "type": "header",
-      "content": "Palavra gigante no fundo"
+      "content": "Palavra ao lado do termômetro"
     },
     { "type": "text", "id": "word_hot", "label": "No calor", "default": "calor" },
     { "type": "text", "id": "word_cold", "label": "No frescor", "default": "frescor" },
@@ -119,6 +243,50 @@
       "id": "fallback_image",
       "label": "Imagem para aparelhos sem 3D",
       "info": "Opcional. Se vazio, o tema usa uma imagem própria da cena."
+    },
+    {
+      "type": "header",
+      "content": "Banners"
+    },
+    {
+      "type": "range",
+      "id": "thermal_hold",
+      "label": "Tempo com ela gelada antes do primeiro banner (segundos)",
+      "min": 0,
+      "max": 6,
+      "step": 0.5,
+      "default": 1.5
+    },
+    {
+      "type": "range",
+      "id": "interval",
+      "label": "Tempo de cada banner (segundos)",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    }
+  ],
+  "blocks": [
+    {
+      "type": "banner",
+      "name": "Banner",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagem no computador",
+          "info": "Arte pronta, com o texto na imagem. A loja atual usa 1600 × 500; para ficar nítido use 2400 × 750 e deixe o texto longe das bordas."
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Imagem no celular",
+          "info": "Vertical. Use 1080 × 1500 (a loja atual usa 345 × 480, por isso fica borrado)."
+        },
+        { "type": "url", "id": "link", "label": "Link" },
+        { "type": "text", "id": "alt", "label": "Descrição da imagem", "info": "Lida por leitores de tela, por exemplo: Site todo com até 40% off." }
+      ]
     }
   ],
   "presets": [{ "name": "Capa térmica" }]

@@ -447,6 +447,12 @@ void main(){
       document.addEventListener('visibilitychange', () => {
         if (!document.hidden && this.visible && !this.reduced) requestAnimationFrame(this.frame);
       });
+      // o slider da capa pede para recomeçar do calor sempre que volta para este slide
+      this.root.addEventListener('thermal:restart', () => {
+        if (this.reduced) return;
+        this.start = performance.now();
+        this.renderAt(0, 0);
+      });
     }
 
     resize() {

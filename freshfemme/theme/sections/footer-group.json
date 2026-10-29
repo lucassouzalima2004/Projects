@@ -31,17 +31,53 @@
           "settings": {
             "title": "Conecte-se"
           }
+        },
+        "selo_anvisa": {
+          "type": "seal",
+          "settings": {
+            "icon": "shield",
+            "title": "Aprovado pela Anvisa",
+            "text": "Nº 25351.715536/2020-26"
+          }
+        },
+        "selo_premio": {
+          "type": "seal",
+          "settings": {
+            "icon": "award",
+            "title": "Premiado 2x",
+            "text": "a nível nacional"
+          }
+        },
+        "selo_testes": {
+          "type": "seal",
+          "settings": {
+            "icon": "flask",
+            "title": "Dermatologicamente testado",
+            "text": "e 97% de aprovação nos testes clínicos de eficácia"
+          }
+        },
+        "selo_compra": {
+          "type": "seal",
+          "settings": {
+            "icon": "lock",
+            "title": "Compra 100% segura",
+            "text": "pagamento protegido pela Shopify"
+          }
         }
       },
       "block_order": [
         "categorias",
         "institucional",
         "atendimento",
-        "conecte"
+        "conecte",
+        "selo_anvisa",
+        "selo_premio",
+        "selo_testes",
+        "selo_compra"
       ],
       "settings": {
         "statement": "Menopausa não é pausa. <em>É potência.</em>",
-        "text": "Cosmética de resultado para mulheres 40+. Criada por uma farmacêutica que sentiu na pele o que é essa fase.",
+        "text": "Cosmética de resultado para mulheres 40+. Criada por uma Farmacêutica que sentiu na pele o que é essa fase.",
         "show_payments": true
       }
     }

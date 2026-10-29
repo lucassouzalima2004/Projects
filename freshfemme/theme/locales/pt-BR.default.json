@@ -28,16 +28,22 @@
     },
     "footer": {
       "rights": "Todos os direitos reservados.",
-      "payments": "Formas de pagamento"
+      "payments": "Formas de pagamento",
+      "seals": "Selos e certificações"
     },
     "hero": {
       "from": "a partir de",
       "skin_temp": "Temperatura da pele",
       "hot": "calor",
       "cold": "frescor",
-      "mode_hot": "▲ FOGACHO DETECTADO",
-      "mode_spray": "● APLICANDO SPRAY",
-      "mode_cold": "▼ FRESCOR IMEDIATO"
+      "carousel": "carrossel",
+      "slide": "slide",
+      "slide_label": "{{ index }} de {{ count }}",
+      "prev": "Anterior",
+      "next": "Próximo",
+      "goto": "Ir para o slide {{ index }}",
+      "pause": "Pausar a troca automática",
+      "play": "Retomar a troca automática"
     },
     "featured": {
       "placeholder": "Escolha uma coleção",
@@ -50,7 +56,11 @@
       }
     },
     "video": {
-      "play": "Assistir ao vídeo"
+      "play": "Assistir ao vídeo",
+      "watch": "Assistir: {{ title }}",
+      "previous": "Vídeos anteriores",
+      "next": "Próximos vídeos",
+      "player": "Vídeo"
     },
     "results": {
       "before": "Antes",

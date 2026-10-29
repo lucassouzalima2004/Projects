@@ -211,10 +211,12 @@
     // o topo transparente só faz sentido se a primeira seção da página for escura (a capa)
     const first = $('#MainContent > .shopify-section:first-child [data-header-overlay]');
     if (!first) wrap.classList.remove('header-wrap--overlay');
+    // "none": o cabeçalho sobe junto com a página, então não ganha fundo branco ao rolar
+    const fixed = wrap.dataset.sticky !== 'none';
     let lastY = window.scrollY;
     const onScroll = () => {
       const y = window.scrollY;
-      header.classList.toggle('is-solid', y > 40 || document.body.classList.contains('menu-open'));
+      header.classList.toggle('is-solid', (fixed && y > 40) || document.body.classList.contains('menu-open'));
       if (wrap.dataset.sticky === 'hide') {
         header.classList.toggle('is-hidden', y > 400 && y > lastY && !document.body.classList.contains('drawer-open'));
       }
@@ -520,6 +522,91 @@
     });
   }
 
+  /* página Dúvidas Frequentes: cada pergunta em negrito vira um item de sanfona.
+     O texto continua sendo editado na própria página da Shopify. */
+  function initFaqPage(root = document) {
+    $$('[data-faq-page]', root).forEach((wrap) => {
+      if (wrap.dataset.ready) return;
+      wrap.dataset.ready = '1';
+      const source = $('[data-faq-source]', wrap);
+      const icon = $('template[data-faq-icon]', wrap);
+      if (!source) return;
+      const text = (el) => el.textContent.replace(/\s+/g, ' ').trim();
+      // perguntas escritas TODAS EM MAIÚSCULAS ficam só com a inicial maiúscula
+      const tidy = (q) => {
+        if (q.length < 12 || q !== q.toUpperCase()) return q;
+        const lower = q.toLowerCase();
+        return (lower.charAt(0).toUpperCase() + lower.slice(1)).replace(/freshfemme/gi, 'FreshFemme').replace(/anvisa/gi, 'Anvisa');
+      };
+      const items = [];
+      // formato da loja: <ul><li><strong>Pergunta</strong><ul><li>Resposta</li></ul></li></ul>
+      $$(':scope > ul > li, :scope > ol > li', source).forEach((li) => {
+        const strong = li.firstElementChild;
+        if (!strong || strong.tagName !== 'STRONG' || !text(strong)) return;
+        const before = Array.from(li.childNodes).slice(0, Array.from(li.childNodes).indexOf(strong));
+        if (before.some((n) => n.textContent.trim())) return;
+        items.push({ anchor: li.parentElement, q: text(strong), answer: Array.from(li.childNodes).filter((n) => n !== strong) });
+      });
+      // formato alternativo: título ou parágrafo só com negrito, e a resposta logo abaixo
+      if (!items.length) {
+        const kids = Array.from(source.children);
+        kids.forEach((el, i) => {
+          const isHeading = /^H[2-4]$/.test(el.tagName);
+          const onlyStrong = el.tagName === 'P' && el.children.length === 1 && el.firstElementChild.tagName === 'STRONG' && text(el) === text(el.firstElementChild);
+          if (!(isHeading || onlyStrong) || !text(el)) return;
+          const answer = [];
+          for (let j = i + 1; j < kids.length; j++) {
+            const next = kids[j];
+            const nextQ = /^H[2-4]$/.test(next.tagName) || (next.tagName === 'P' && next.children.length === 1 && next.firstElementChild.tagName === 'STRONG' && text(next) === text(next.firstElementChild));
+            if (nextQ || next.tagName === 'HR') break;
+            answer.push(next);
+          }
+          items.push({ anchor: el, q: text(el), answer });
+        });
+      }
+      if (!items.length) return;
+      const list = document.createElement('div');
+      list.className = 'faq__list';
+      items.forEach(({ q, answer }) => {
+        const details = document.createElement('details');
+        details.className = 'accordion';
+        details.setAttribute('data-accordion', '');
+        const summary = document.createElement('summary');
+        summary.className = 'accordion__summary';
+        const label = document.createElement('span');
+        label.textContent = tidy(q);
+        const iconWrap = document.createElement('span');
+        iconWrap.className = 'accordion__icon';
+        iconWrap.setAttribute('aria-hidden', 'true');
+        if (icon) iconWrap.appendChild(icon.content.cloneNode(true));
+        summary.append(label, iconWrap);
+        const content = document.createElement('div');
+        content.className = 'accordion__content';
+        content.setAttribute('data-accordion-content', '');
+        const body = document.createElement('div');
+        body.className = 'rte';
+        answer.forEach((n) => body.appendChild(n));
+        // resposta que é uma lista de um item só vira parágrafo
+        const only = body.children.length === 1 ? body.firstElementChild : null;
+        if (only && /^(UL|OL)$/.test(only.tagName) && only.children.length === 1) {
+          const para = document.createElement('div');
+          para.append(...only.firstElementChild.childNodes);
+          only.replaceWith(para);
+        }
+        content.appendChild(body);
+        details.append(summary, content);
+        list.appendChild(details);
+      });
+      // o que vinha antes da primeira pergunta (uma introdução) fica no lugar
+      const first = items[0].anchor;
+      first.before(list);
+      items.forEach(({ anchor }) => anchor.isConnected && anchor !== list && anchor.remove());
+      $$(':scope > hr', source).forEach((hr) => hr.remove());
+      $$(':scope > p', source).forEach((p) => { if (!text(p)) p.remove(); });
+      initAccordions(wrap);
+    });
+  }
+
   /* ---------------- contagem regressiva ---------------- */
   function initCountdowns(root = document) {
     $$('[data-countdown]', root).forEach((el) => {
@@ -570,6 +657,58 @@
     wrap.classList.add('is-playing');
     wrap.appendChild(iframe);
   });
+
+  /* provas reais: setas do carrossel e o vídeo abrindo numa janela */
+  document.addEventListener('click', (e) => {
+    const arrow = e.target.closest('[data-proofs-prev], [data-proofs-next]');
+    if (arrow) {
+      const list = $('[data-proofs]', arrow.closest('.proofs'));
+      if (list) list.scrollBy({ left: (arrow.hasAttribute('data-proofs-next') ? 1 : -1) * list.clientWidth * 0.9, behavior: 'smooth' });
+      return;
+    }
+    const card = e.target.closest('[data-proof]');
+    if (card) {
+      const modal = $('[data-video-modal]', card.closest('section') || document);
+      if (!modal || typeof modal.showModal !== 'function') return;
+      const frame = $('[data-video-modal-frame]', modal);
+      const { kind, src } = card.dataset;
+      frame.textContent = '';
+      modal.classList.toggle('is-vertical', kind === 'instagram' || !!card.closest('.proofs__list--vertical'));
+      if (kind === 'file') {
+        const tpl = card.parentElement.querySelector('template[data-proof-video]');
+        if (tpl) frame.appendChild(tpl.content.cloneNode(true));
+      } else {
+        let url = '';
+        if (kind === 'youtube') url = `https://www.youtube-nocookie.com/embed/${src}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+        else if (kind === 'vimeo') url = `https://player.vimeo.com/video/${src}?autoplay=1`;
+        else if (kind === 'instagram') {
+          const m = src.match(/instagram\.com\/(?:[\w.]+\/)?(p|reel|tv)\/([\w-]+)/);
+          if (!m) {
+            window.open(src, '_blank', 'noopener');
+            return;
+          }
+          url = `https://www.instagram.com/${m[1]}/${m[2]}/embed/`;
+        }
+        if (!url) return;
+        const iframe = document.createElement('iframe');
+        iframe.src = url;
+        iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+        iframe.allowFullscreen = true;
+        iframe.title = card.getAttribute('aria-label') || '';
+        frame.appendChild(iframe);
+      }
+      modal.showModal();
+      // foco no botão de fechar: se ficasse no vídeo, o Esc iria para o YouTube e não fecharia a janela
+      $('[data-video-modal-close]', modal)?.focus();
+      return;
+    }
+    const modal = e.target.closest('[data-video-modal]');
+    if (modal && (e.target === modal || e.target.closest('[data-video-modal-close]'))) modal.close();
+  });
+  // fechar a janela para o vídeo (o evento close não sobe, por isso a captura)
+  document.addEventListener('close', (e) => {
+    if (e.target.matches && e.target.matches('[data-video-modal]')) $('[data-video-modal-frame]', e.target).textContent = '';
+  }, true);
 
   /* ---------------- produto ---------------- */
   function initProduct(root = document) {
@@ -775,6 +914,146 @@
     });
   }
 
+  /* capa: a cena térmica é o primeiro slide; quando ela termina de gelar, entram os banners */
+  function initHeroSlider(root = document) {
+    $$('[data-hero-slider]', root).forEach((el) => {
+      if (el.dataset.ready) return;
+      el.dataset.ready = '1';
+      const track = $('[data-slider-track]', el);
+      const slides = $$('[data-slide]', el);
+      const dots = $$('[data-slider-dot]', el);
+      const pauseBtn = $('[data-slider-pause]', el);
+      if (!track || slides.length < 2) return;
+      const interval = (parseFloat(el.dataset.interval) || 5) * 1000;
+      // o frio leva 7,4 s para descer pelo corpo todo (linha do tempo em thermal.js)
+      const thermalTime = (7.4 + (parseFloat(el.dataset.thermalHold) || 0)) * 1000;
+      let index = 0;
+      let timer = 0;
+      let paused = reduced;
+      let inView = true;
+
+      const isThermal = (slide) => slide.hasAttribute('data-thermal');
+      const durationFor = (slide) => (isThermal(slide) && !slide.classList.contains('thermal--fallback') ? thermalTime : interval);
+      const restartThermal = () => {
+        if (isThermal(slides[index])) slides[index].dispatchEvent(new CustomEvent('thermal:restart'));
+      };
+
+      const schedule = () => {
+        clearTimeout(timer);
+        dots.forEach((d) => d.classList.remove('is-timed'));
+        if (paused || !inView || document.hidden) return;
+        const ms = durationFor(slides[index]);
+        const dot = dots[index];
+        if (dot) {
+          dot.style.setProperty('--slide-ms', ms + 'ms');
+          void dot.offsetWidth; // reinicia a barrinha de progresso
+          dot.classList.add('is-timed');
+        }
+        timer = setTimeout(() => go(index + 1), ms);
+      };
+
+      const go = (i) => {
+        index = (i + slides.length) % slides.length;
+        track.style.transform = `translate3d(${-100 * index}%, 0, 0)`;
+        slides.forEach((slide, k) => {
+          const on = k === index;
+          slide.classList.toggle('is-active', on);
+          slide.toggleAttribute('inert', !on);
+          if (slide.hasAttribute('aria-roledescription')) slide.setAttribute('aria-hidden', on ? 'false' : 'true');
+        });
+        dots.forEach((d, k) => {
+          d.classList.toggle('is-active', k === index);
+          if (k === index) d.setAttribute('aria-current', 'true');
+          else d.removeAttribute('aria-current');
+        });
+        restartThermal();
+        schedule();
+      };
+
+      const setPaused = (value) => {
+        paused = value;
+        el.classList.toggle('is-paused', paused);
+        if (pauseBtn) pauseBtn.setAttribute('aria-label', paused ? pauseBtn.dataset.labelPlay : pauseBtn.dataset.labelPause);
+        schedule();
+      };
+
+      $('[data-slider-prev]', el)?.addEventListener('click', () => go(index - 1));
+      $('[data-slider-next]', el)?.addEventListener('click', () => go(index + 1));
+      dots.forEach((d, k) => d.addEventListener('click', () => go(k)));
+      pauseBtn?.addEventListener('click', () => setPaused(!paused));
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') go(index - 1);
+        else if (e.key === 'ArrowRight') go(index + 1);
+      });
+
+      // arrastar com o dedo (ou o mouse) troca o slide
+      let startX = 0;
+      let startY = 0;
+      let dx = 0;
+      let down = false;
+      let moved = false;
+      track.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        down = true;
+        moved = false;
+        dx = 0;
+        startX = e.clientX;
+        startY = e.clientY;
+      });
+      track.addEventListener('pointermove', (e) => {
+        if (!down) return;
+        dx = e.clientX - startX;
+        if (!moved && Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(e.clientY - startY)) {
+          moved = true;
+          track.classList.add('is-dragging');
+          clearTimeout(timer);
+          if (track.setPointerCapture) track.setPointerCapture(e.pointerId);
+        }
+        if (moved) track.style.transform = `translate3d(calc(${-100 * index}% + ${dx}px), 0, 0)`;
+      });
+      const release = () => {
+        if (!down) return;
+        down = false;
+        track.classList.remove('is-dragging');
+        if (!moved) return;
+        go(Math.abs(dx) > 50 ? index + (dx < 0 ? 1 : -1) : index);
+      };
+      track.addEventListener('pointerup', release);
+      track.addEventListener('pointercancel', release);
+      // um arrasto não deve abrir o link do banner
+      track.addEventListener('click', (e) => {
+        if (moved) {
+          e.preventDefault();
+          moved = false;
+        }
+      }, true);
+
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(([entry]) => {
+          const was = inView;
+          inView = entry.isIntersecting;
+          if (inView && !was) restartThermal();
+          schedule();
+        }, { threshold: 0.3 }).observe(el);
+      }
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) restartThermal();
+        schedule();
+      });
+
+      // editor de temas: mostra o banner selecionado e para de trocar enquanto ele está selecionado
+      el.addEventListener('shopify:block:select', (e) => {
+        const k = slides.indexOf(e.target.closest('[data-slide]'));
+        if (k < 0) return;
+        paused = true;
+        go(k);
+      });
+      el.addEventListener('shopify:block:deselect', () => setPaused(reduced));
+
+      setPaused(paused);
+    });
+  }
+
   /* ---------------- boot ---------------- */
   function initAll(root = document) {
     initReveal(root);
@@ -787,6 +1066,8 @@
     initProduct(root);
     initStory(root);
     initRotators(root);
+    initHeroSlider(root);
+    initFaqPage(root);
     initRecommendations(root);
     initCollection(root);
     bindQuantity(root);

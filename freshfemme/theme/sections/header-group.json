@@ -25,7 +25,7 @@
       "settings": {
         "menu": "main-menu",
         "transparent_home": true,
-        "sticky": "hide"
+        "sticky": "none"
       }
     }
   },

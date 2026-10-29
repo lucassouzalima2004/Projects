@@ -1,0 +1,41 @@
+{%- comment -%}
+  Botões grandes para as redes sociais, usados abaixo das dúvidas frequentes.
+  Uso: {% render 'social-follow', heading: 'Siga a FreshFemme' %}
+  Os links vêm de Configurações do tema → Redes sociais.
+{%- endcomment -%}
+{%- liquid
+  assign networks = 'instagram,tiktok,youtube,facebook' | split: ','
+  assign has_any = false
+  for network in networks
+    assign key = 'social_' | append: network
+    if settings[key] != blank
+      assign has_any = true
+    endif
+  endfor
+-%}
+{%- if has_any -%}
+  <div class="social-follow" data-reveal>
+    {%- if heading != blank -%}
+      <p class="social-follow__title">{{ heading }}</p>
+    {%- endif -%}
+    <ul class="social-follow__list" role="list">
+      {%- for network in networks -%}
+        {%- assign key = 'social_' | append: network -%}
+        {%- if settings[key] != blank -%}
+          {%- case network -%}
+            {%- when 'instagram' -%}{%- assign network_name = 'Instagram' -%}
+            {%- when 'tiktok' -%}{%- assign network_name = 'TikTok' -%}
+            {%- when 'youtube' -%}{%- assign network_name = 'YouTube' -%}
+            {%- when 'facebook' -%}{%- assign network_name = 'Facebook' -%}
+          {%- endcase -%}
+          <li>
+            <a class="social-follow__link social-follow__link--{{ network }}" href="{{ settings[key] }}" target="_blank" rel="noopener">
+              {% render 'icon', name: network %}
+              <span>{{ network_name }}</span>
+            </a>
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+  </div>
+{%- endif -%}
