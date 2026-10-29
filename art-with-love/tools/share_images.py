@@ -124,29 +124,20 @@ def heart(d, cx, cy, s, fill):
 
 
 def logo(canvas, x, y, size, center=False):
+    """Logo original dela (tools/logo.png) com "BY LULU · LONDON" embaixo."""
     d = ImageDraw.Draw(canvas)
-    f = font("Allura.ttf", size)
+    art = Image.open(pathlib.Path(__file__).resolve().parent / "logo.png").convert("RGBA")
+    h = int(size * 1.05)
+    art = art.resize((round(art.width * h / art.height), h), Image.LANCZOS)
+    x0 = int(x - art.width / 2) if center else int(x)
+    canvas.paste(art, (x0, int(y)), art)
     by = font("Jost.ttf", max(12, size // 4), wght=500)
-    # "Art with L" + coração azul no lugar do "o" + "ve", como nas cartelas dela
-    left, right = "Art with L", "ve"
-    hw = size * 0.46
-    w = d.textlength(left, font=f) + hw + d.textlength(right, font=f)
-    x0 = x - w / 2 if center else x
-    d.text((x0, y), left, font=f, fill=(20, 16, 20))
-    hx = x0 + d.textlength(left, font=f)
-    big = int(hw * 4)
-    mask = Image.new("L", (big, big), 0)
-    heart(ImageDraw.Draw(mask), big / 2, big / 2, big / 36, 255)
-    grad = holo_gradient(big, big, BLUE).rotate(-35, resample=Image.BICUBIC)
-    hs = int(hw)
-    canvas.paste(grad.resize((hs, hs), Image.LANCZOS), (int(hx), int(y + size * 0.5)), mask.resize((hs, hs), Image.LANCZOS))
-    d.text((hx + hw, y), right, font=f, fill=(20, 16, 20))
     sub = "BY LULU  ·  LONDON"
     spacing = size // 14
     sw = sum(d.textlength(c, font=by) + spacing for c in sub) - spacing
-    sx = x - sw / 2 if center else x0 + 4
+    sx = x - sw / 2 if center else x0 + 6
     for c in sub:
-        d.text((sx, y + size * 1.08), c, font=by, fill=INK2)
+        d.text((sx, y + h + size * 0.14), c, font=by, fill=INK2)
         sx += d.textlength(c, font=by) + spacing
 
 

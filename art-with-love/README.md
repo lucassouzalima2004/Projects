@@ -34,8 +34,8 @@ O conteúdo foi montado a partir das conversas do WhatsApp. Confirme e troque em
 - [ ] **Preços** de todos os produtos (os atuais são de exemplo, entre £9 e £16)
 - [ ] **Frete**: ela vai mandar por e-mail as regras novas de entrega (hoje: Royal Mail £3.50 / £4.95, grátis acima
       de £35, só Reino Unido). Muda em `shipping` no `catalog.js` e no texto de `help` em `views.js`
-- [ ] **Logo**: o do site imita o das cartelas (script preto, borboleta e coração azuis). Quando chegar o arquivo
-      original, ele substitui o `logo__script` no `index.html`
+- [x] **Logo**: o original dela está em `public/assets/img/logo.webp` (e `logo-light.webp`, branco, para o rodapé).
+      Para trocar, substitua esses dois arquivos e `tools/logo.png` (usado nas prévias de link).
 - [ ] Nomes e descrições dos produtos (escritos a partir das legendas que ela mandou)
 - [ ] Estoque: peças únicas ganham `stock: 1`; esgotadas, `stock: 0`
 - [ ] Prazo das encomendas (`madeToOrder.leadTime`, hoje "2–3 weeks")

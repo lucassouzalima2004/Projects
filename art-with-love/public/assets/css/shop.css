@@ -21,7 +21,6 @@
   --holo: linear-gradient(115deg, #F59DC2 0%, #CDB0F6 26%, #9FCFF4 50%, #A8E6CF 72%, #F8CDA4 100%);
   --holo-soft: linear-gradient(115deg, #F9D2E2 0%, #E7DAFB 30%, #D2E8FA 55%, #D6F2E6 78%, #FBE4CE 100%);
   --holo-conic: conic-gradient(from 210deg at 50% 50%, #F59DC2, #CDB0F6, #9FCFF4, #A8E6CF, #F8CDA4, #F59DC2);
-  --logo-blue: #4F86EC;
 
   --f-display: 'Bodoni Moda', 'Didot', 'Bodoni 72', Georgia, serif;
   --f-body: 'Jost', 'Futura', 'Avenir Next', system-ui, sans-serif;
@@ -263,21 +262,14 @@ p { margin: 0; }
 .header__menu { display: none; margin-left: -10px; }
 
 .logo { display: inline-flex; flex-direction: column; align-items: center; text-decoration: none; line-height: 1; }
-.logo__script {
-  font-family: var(--f-script);
-  font-size: clamp(2rem, 3.4vw, 2.7rem);
-  line-height: .9;
-  white-space: nowrap;
-  display: inline-flex; align-items: baseline;
-  padding-top: .12em;
-  color: #141014;
+.logo__img { /* logo original dela (assets/img/logo.webp) */
+  display: block;
+  height: clamp(36px, 3.6vw, 48px);
+  width: auto;
+  transition: transform .5s var(--ease-spring);
 }
-.logo__i { position: relative; }
-.logo__fly { position: absolute; left: 50%; bottom: .62em; width: .42em; height: .42em; margin-left: -.2em; transform: rotate(-24deg); transform-origin: 50% 90%; transition: transform .6s var(--ease-spring); }
-.logo:hover .logo__fly { transform: rotate(-10deg) translate(.06em, -.08em) scale(1.12); }
-.logo__heart { width: .52em; height: .52em; margin: 0 .02em 0 .04em; transform: translateY(.04em) rotate(-6deg); transition: transform .5s var(--ease-spring); }
-.logo:hover .logo__heart { transform: translateY(-.02em) rotate(6deg) scale(1.15); }
-.logo__by { font-size: .6rem; letter-spacing: .32em; text-transform: uppercase; color: var(--ink-2); margin-top: 3px; padding-left: .32em; }
+.logo:hover .logo__img { transform: scale(1.04) rotate(-1deg); }
+.logo__by { font-size: .6rem; letter-spacing: .32em; text-transform: uppercase; color: var(--ink-2); margin-top: 4px; padding-left: .32em; }
 
 .bag-btn__count {
   position: absolute; top: 4px; right: 2px;
@@ -1065,7 +1057,7 @@ fieldset.field { border: 0; margin: 0; padding: 0; }
 .footer__brand { display: grid; gap: 16px; justify-items: start; max-width: 360px; }
 .footer__brand p { font-size: .95rem; }
 .logo--footer { color: #fff; align-items: flex-start; }
-.logo--footer .logo__script { color: #fff; }
+.logo--footer .logo__img { height: 52px; }
 .logo--footer .logo__by { color: rgba(246, 238, 244, .6); padding-left: 0; }
 .footer__col { display: grid; gap: 10px; align-content: start; font-size: .95rem; }
 .footer__col h2 { font-family: var(--f-body); font-size: .74rem; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: rgba(246, 238, 244, .55); margin-bottom: 4px; }
