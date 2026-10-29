@@ -100,20 +100,31 @@ function candleArt() {
 }
 
 /* ------------------------------------------------- lançamento da semana --- */
-// A foto que ela monta (rostinho com o laço da semana). Some enquanto launch.image estiver vazio.
+// Ilustração da menina com o laço da semana no cabelo (ou uma foto já montada, em launch.image).
+// Some enquanto não houver nem ilustração com laço nem foto.
 function launchSection() {
   const l = SHOP.launch || {};
   const p = productById.get(l.product);
-  if (!l.image) return '';
+  const src = (path) => `/${String(path).replace(/^\//, '')}`;
+  const alt = esc(l.alt || (p ? `Illustration of a girl wearing the ${p.name}` : 'This week’s new bow'));
+  let art = '';
+  if (l.image) {
+    art = `<img class="launch__img" src="${src(l.image)}" alt="${alt}" loading="lazy">`;
+  } else if (l.art && l.bow) {
+    const at = l.bowAt || {};
+    art = `
+      <img class="launch__img" src="${src(l.art)}"${l.artSmall ? ` srcset="${src(l.artSmall)} 640w, ${src(l.art)} 1200w" sizes="(max-width: 860px) 92vw, 46vw"` : ''} alt="${alt}" loading="lazy">
+      <img class="launch__bow" src="${src(l.bow)}" alt="" loading="lazy" style="--x:${at.x ?? 50}%;--y:${at.y ?? 20}%;--w:${at.width ?? 20}%;--r:${at.rotate ?? 0}deg">`;
+  } else return '';
   return `
     <section class="section launch" aria-labelledby="launch-title">
       <div class="wrap split">
-        <div class="split__media launch__media" data-reveal>
-          <img src="/${esc(l.image.replace(/^\//, ''))}" alt="${esc(l.alt || (p ? `${p.name} worn in the hair` : 'This week’s new bow'))}" loading="lazy">
+        <div class="split__media" data-reveal>
+          <figure class="launch__art">${art}<span class="launch__tag">${esc(l.eyebrow || 'New this week')}</span></figure>
         </div>
         <div class="split__copy" data-reveal style="--d:.1s">
           <p class="eyebrow eyebrow--spark">${esc(l.eyebrow || 'New this week')}</p>
-          <h2 id="launch-title">${esc(l.title || 'The new bow')}</h2>
+          <h2 id="launch-title">${l.title ? esc(l.title).replace(/^(.*?)(\S+)$/, '$1<em>$2</em>') : 'The new <em>bow</em>'}</h2>
           ${l.text ? `<p class="lead">${esc(l.text)}</p>` : ''}
           ${p ? `<p class="launch__product"><strong>${esc(p.name)}</strong> ${priceTag(p)}</p>
           <a class="btn btn--primary" href="${productUrl(p)}">Shop this bow ${icon('arrow', 'btn__arrow')}</a>` : ''}
@@ -155,9 +166,8 @@ export function home() {
       <section class="ribbons" aria-label="Art with Love by Lulu">
         <img class="ribbons__bg" src="/assets/img/ribbons-1200.webp" srcset="/assets/img/ribbons-1200.webp 1200w, /assets/img/ribbons-2400.webp 2400w" sizes="100vw" alt="" width="2400" height="1103" fetchpriority="high">
         <div class="strass strass--glints" aria-hidden="true">${GLINTS.map(([x, y, sz, m], i) => `<i style="--x:${x}%;--y:${y}%;--s:${sz}px;--d:${(i * 0.9) % 5}s"${m ? '' : " data-m='0'"}></i>`).join('')}</div>
-        <div class="ribbons__tag" id="brand-tag">
-          <span class="ribbons__hole" aria-hidden="true"></span>
-          <img class="ribbons__logo" src="/assets/img/logo.webp" alt="Art with Love" width="640" height="144">
+        <div class="ribbons__brand" id="brand-tag">
+          <img class="ribbons__logo" src="/assets/img/logo.webp" srcset="/assets/img/logo.webp 640w, /assets/img/logo-1154.webp 1154w" sizes="(max-width: 700px) 86vw, 50vw" alt="Art with Love" width="640" height="144">
           <span class="ribbons__by">by Lulu · London</span>
         </div>
       </section>

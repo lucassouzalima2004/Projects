@@ -55,9 +55,13 @@ a marca da Disney na loja. A foto do caderno com a senha do Instagram ficou fora
 - **Faixa de fitas**: a foto que ela escolheu (`public/assets/img/ribbons-1200.webp` e `ribbons-2400.webp`) com o logo
   numa cartela por cima. Ela mandou um print do celular (940 px), que foi ampliado com IA para ficar nítido. Se tiver
   o arquivo original, troque esses dois arquivos.
-- **Lançamento da semana**: ela monta uma foto com o laço da semana no cabelo (rostinho de menina). Converta para WebP
-  em `public/assets/img/launch/` e preencha `launch` no `catalog.js` com a foto, o título ("Winter launch",
-  "Summer launch"…) e o `product` do laço. A seção aparece logo abaixo da faixa; com `image` vazio ela some.
+- **Lançamento da semana**: ilustração fixa de uma menina (`public/assets/img/launch/girl-ponytail*.webp`, uma das
+  imagens de exemplo que ela mandou, ampliada) com o laço da semana preso no rabo de cavalo. Para trocar o laço:
+  1. peça a ela uma foto do laço sozinho, num fundo liso e claro;
+  2. recorte o fundo (PNG/WebP transparente) e salve em `public/assets/img/launch/`;
+  3. em `launch` no `catalog.js`, troque `bow`, `product` (o laço à venda), `title` ("The Winter launch",
+     "The Summer launch"…) e `text`. Se o laço ficar fora do lugar, ajuste `bowAt` (x, y, largura e inclinação).
+  Também dá para usar uma foto já montada por ela em `image`. Sem laço e sem foto, a seção some.
 
 ## Como editar
 

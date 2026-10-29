@@ -245,16 +245,25 @@ export default {
   /* ---------------------------------------------------------------------------
      LANÇAMENTO DA SEMANA (página inicial, logo abaixo da faixa de fitas)
      -------------------------------------------------------------------------
-     image ..... foto que ela monta, com o laço da semana no cabelo
-                 (ex.: 'assets/img/launch/winter-2026.webp'). Vazio = a seção some.
+     A ilustração da menina fica fixa; toda semana troca só o laço no cabelo.
+     art ....... ilustração (artSmall = versão menor para celular)
+     bow ....... foto do laço recortada, com fundo transparente (WebP/PNG)
+     bowAt ..... onde o laço fica, em % da ilustração: x e y = centro do laço,
+                 width = largura, rotate = inclinação em graus
+     image ..... opcional: uma foto já montada, no lugar de art + bow
      product ... id do produto do laço (o botão "Shop this bow" leva até ele)
+     Sem art/bow e sem image, a seção some.
      ------------------------------------------------------------------------- */
   launch: {
+    art: 'assets/img/launch/girl-ponytail.webp',
+    artSmall: 'assets/img/launch/girl-ponytail-640.webp',
+    bow: 'assets/img/launch/bow-red-velvet.webp',
+    bowAt: { x: 39.5, y: 16, width: 22, rotate: -18 },
     image: '',
-    product: '',
+    product: 'red-velvet-bow-pair',
     eyebrow: 'New this week',
-    title: 'Winter launch',
-    text: '',
+    title: 'The Winter launch',
+    text: 'Plush red velvet wrapped in a band of rhinestones: the first bow of the season, made for Christmas parties and winter days out.',
   },
 
   /* ---------------------------------------------------------------------------
