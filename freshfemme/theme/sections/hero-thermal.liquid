@@ -25,6 +25,10 @@
     endif
   endif
   assign heading_text = section.settings.heading | strip_html | escape
+  assign has_video = false
+  if section.settings.video != blank or section.settings.video_mobile != blank
+    assign has_video = true
+  endif
 -%}
 
 <section
@@ -46,6 +50,11 @@
       data-thermal
       data-temp-hot="{{ section.settings.temp_hot }}"
       data-temp-cold="{{ section.settings.temp_cold }}"
+      {% if has_video %}
+        data-thermal-video
+        data-video-spray="{{ section.settings.video_spray }}"
+        data-video-cold="{{ section.settings.video_cold }}"
+      {% endif %}
       {% if banners.size > 0 %}
         role="group"
         aria-roledescription="{{ 'sections.hero.slide' | t }}"
@@ -55,11 +64,21 @@
       <div class="hero-thermal__bg" aria-hidden="true"></div>
 
       <div class="hero-thermal__stage">
-        <canvas class="hero-thermal__canvas" data-thermal-canvas aria-hidden="true"></canvas>
-        {%- if section.settings.fallback_image != blank -%}
-          {{ section.settings.fallback_image | image_url: width: 1400 | image_tag: class: 'hero-thermal__fallback', loading: 'eager', alt: '', widths: '700, 1000, 1400' }}
+        {%- if has_video -%}
+          {%- comment -%} vídeo gerado no lugar da cena 3D; o script toca só o do tamanho de tela certo {%- endcomment -%}
+          {%- if section.settings.video != blank -%}
+            {{ section.settings.video | video_tag: muted: true, playsinline: true, preload: 'none', class: 'hero-thermal__video hero-thermal__video--desktop', image_size: '1600x' }}
+          {%- endif -%}
+          {%- if section.settings.video_mobile != blank -%}
+            {{ section.settings.video_mobile | video_tag: muted: true, playsinline: true, preload: 'none', class: 'hero-thermal__video hero-thermal__video--mobile', image_size: '900x' }}
+          {%- endif -%}
         {%- else -%}
-          <img class="hero-thermal__fallback" src="{{ 'thermal-fallback.webp' | asset_url }}" alt="" width="1100" height="1100" loading="eager">
+          <canvas class="hero-thermal__canvas" data-thermal-canvas aria-hidden="true"></canvas>
+          {%- if section.settings.fallback_image != blank -%}
+            {{ section.settings.fallback_image | image_url: width: 1400 | image_tag: class: 'hero-thermal__fallback', loading: 'eager', alt: '', widths: '700, 1000, 1400' }}
+          {%- else -%}
+            <img class="hero-thermal__fallback" src="{{ 'thermal-fallback.webp' | asset_url }}" alt="" width="1100" height="1100" loading="eager">
+          {%- endif -%}
         {%- endif -%}
       </div>
 
@@ -243,6 +262,36 @@
       "id": "fallback_image",
       "label": "Imagem para aparelhos sem 3D",
       "info": "Opcional. Se vazio, o tema usa uma imagem própria da cena."
+    },
+    {
+      "type": "header",
+      "content": "Vídeo da mulher (opcional)"
+    },
+    {
+      "type": "paragraph",
+      "content": "Com um vídeo aqui, ele entra no lugar da animação 3D. Use fundo preto, sem texto: 16:9 no computador e 9:16 no celular. O termômetro e as cores acompanham os segundos marcados abaixo."
+    },
+    { "type": "video", "id": "video", "label": "Vídeo no computador (16:9)" },
+    { "type": "video", "id": "video_mobile", "label": "Vídeo no celular (9:16)", "info": "Se vazio, o celular usa o vídeo do computador." },
+    {
+      "type": "range",
+      "id": "video_spray",
+      "label": "Segundo em que ela borrifa",
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "s",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "video_cold",
+      "label": "Segundo em que ela termina de gelar",
+      "min": 1,
+      "max": 20,
+      "step": 0.5,
+      "unit": "s",
+      "default": 7
     },
     {
       "type": "header",

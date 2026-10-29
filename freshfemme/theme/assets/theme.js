@@ -933,6 +933,10 @@
       let inView = true;
 
       const isThermal = (slide) => slide.hasAttribute('data-thermal');
+      // com vídeo no lugar da cena 3D, o próximo banner entra quando o vídeo termina
+      const isVideo = (slide) => slide.hasAttribute('data-thermal-video');
+      const hold = (parseFloat(el.dataset.thermalHold) || 0) * 1000;
+      let videoDuration = 0;
       const durationFor = (slide) => (isThermal(slide) && !slide.classList.contains('thermal--fallback') ? thermalTime : interval);
       const restartThermal = () => {
         if (isThermal(slides[index])) slides[index].dispatchEvent(new CustomEvent('thermal:restart'));
@@ -942,8 +946,18 @@
         clearTimeout(timer);
         dots.forEach((d) => d.classList.remove('is-timed'));
         if (paused || !inView || document.hidden) return;
-        const ms = durationFor(slides[index]);
         const dot = dots[index];
+        if (isVideo(slides[index])) {
+          if (dot && videoDuration) {
+            dot.style.setProperty('--slide-ms', videoDuration * 1000 + hold + 'ms');
+            void dot.offsetWidth;
+            dot.classList.add('is-timed');
+          }
+          // reserva: se o vídeo não tocar (economia de bateria, bloqueio), segue mesmo assim
+          timer = setTimeout(() => go(index + 1), videoDuration ? videoDuration * 1000 + hold + 4000 : interval * 2);
+          return;
+        }
+        const ms = durationFor(slides[index]);
         if (dot) {
           dot.style.setProperty('--slide-ms', ms + 'ms');
           void dot.offsetWidth; // reinicia a barrinha de progresso
@@ -976,6 +990,18 @@
         if (pauseBtn) pauseBtn.setAttribute('aria-label', paused ? pauseBtn.dataset.labelPlay : pauseBtn.dataset.labelPause);
         schedule();
       };
+
+      slides.filter(isVideo).forEach((slide) => {
+        slide.addEventListener('thermal:duration', (e) => {
+          videoDuration = e.detail.duration || 0;
+          if (slides[index] === slide) schedule();
+        });
+        slide.addEventListener('thermal:ended', () => {
+          if (slides[index] !== slide || paused || !inView) return;
+          clearTimeout(timer);
+          timer = setTimeout(() => go(index + 1), hold);
+        });
+      });
 
       $('[data-slider-prev]', el)?.addEventListener('click', () => go(index - 1));
       $('[data-slider-next]', el)?.addEventListener('click', () => go(index + 1));

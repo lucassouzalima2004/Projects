@@ -48,6 +48,15 @@ function videoURL(value) {
   return null;
 }
 
+// setting video: na prévia, "shopify://files/videos/<arquivo>" aponta para preview/static/videos/<arquivo>
+function previewVideo(value) {
+  const m = typeof value === 'string' && value.match(/^shopify:\/\/files\/videos\/(.+)$/);
+  if (!m) return null;
+  const url = `/preview/videos/${m[1]}`;
+  const format = m[1].split('.').pop().toLowerCase();
+  return { media_type: 'video', alt: '', preview_image: null, sources: [{ url, mime_type: `video/${format}`, format }], toString: () => url };
+}
+
 function moneyFmt(c, opts = {}) {
   if (c == null || c === '' || Number.isNaN(Number(c))) return '';
   const s = (Number(c) / 100).toFixed(2).split('.');
@@ -212,7 +221,7 @@ export function createPreview({ Liquid, Tag, files, data, site = {} }) {
       case 'link_list': return linklists[value] || null;
       case 'image_picker': return shopImage(value);
       case 'video_url': return videoURL(value);
-      case 'video': return null; // vídeos enviados à Shopify não existem no preview
+      case 'video': return previewVideo(value);
       case 'product_list': { const arr = value.map((h) => products[h]).filter(Boolean); return Object.assign(arr, { count: arr.length }); }
       case 'collection_list': { const arr = value.map((h) => collections[h]).filter(Boolean); return Object.assign(arr, { count: arr.length }); }
       default: return value;
@@ -315,7 +324,15 @@ export function createPreview({ Liquid, Tag, files, data, site = {} }) {
     f('default_errors', () => '');
     f('format_address', (a) => (a ? [a.address1, a.city, a.zip].filter(Boolean).join('<br>') : ''));
     f('external_video_tag', () => '');
-    f('video_tag', () => '');
+    f('video_tag', (video, ...args) => {
+      if (!video || !video.sources) return '';
+      const p = Object.fromEntries(args.filter(Array.isArray));
+      const attrs = ['autoplay', 'loop', 'muted', 'playsinline', 'controls']
+        .filter((k) => p[k] === true)
+        .concat(['class', 'preload'].filter((k) => p[k]).map((k) => `${k}="${p[k]}"`));
+      const sources = video.sources.map((src) => `<source src="${src.url}" type="${src.mime_type}">`).join('');
+      return `<video ${attrs.join(' ')}>${sources}</video>`;
+    });
     f('media_tag', () => '');
     f('payment_button', () => '<div class="shopify-payment-button"><button type="button" class="shopify-payment-button__button shopify-payment-button__button--unbranded" data-preview-checkout style="width:100%;color:#fff;border:0;cursor:pointer">Comprar agora</button></div>');
     f('format_code', (s) => s);

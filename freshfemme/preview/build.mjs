@@ -79,6 +79,11 @@ for (const f of fs.readdirSync(path.join(THEME, 'assets'))) {
 }
 write('preview/shim.js', fs.readFileSync(path.join(here, 'static/shim.js')));
 write('preview/og.jpg', fs.readFileSync(path.join(here, 'static/og.jpg')));
+// vídeos da capa (quando houver), referenciados nos templates como shopify://files/videos/<arquivo>
+const videosDir = path.join(here, 'static/videos');
+if (fs.existsSync(videosDir)) {
+  for (const f of fs.readdirSync(videosDir)) write(`preview/videos/${f}`, fs.readFileSync(path.join(videosDir, f)));
+}
 write('preview/core.mjs', fs.readFileSync(path.join(here, 'core.mjs')));
 write('preview/liquid.browser.mjs', fs.readFileSync(path.join(here, 'node_modules/liquidjs/dist/liquid.browser.mjs')));
 

@@ -101,6 +101,11 @@
 .thermal--ready .hero-thermal__canvas { opacity: 1; }
 .hero-thermal__fallback { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: none; }
 .thermal--fallback .hero-thermal__fallback { display: block; }
+.hero-thermal__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: transparent; }
+@media (max-width: 749px) {
+  .hero-thermal__video { object-fit: cover; object-position: center top; }
+  .hero-slider--strip .hero-thermal[data-thermal-video] .hero-thermal__stage { bottom: 0; }
+}
 .thermal--fallback .hero-thermal__canvas { display: none; }
 
 /* conteúdo */

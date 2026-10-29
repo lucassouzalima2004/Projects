@@ -56,6 +56,10 @@ site não aparece no Google. Para gerar localmente: `npm run build` e `npm run s
 - **Banners da capa**: em *Capa térmica*, cada bloco *Banner* tem a imagem do computador e a do celular.
   Vêm os 6 banners atuais da loja. Para ficarem nítidos, gere as novas artes em **2400 × 750** (computador)
   e **1080 × 1500** (celular), com o texto longe das bordas: os do celular hoje têm só 345 px de largura.
+- **Vídeo da mulher na capa** (quando estiver pronto): em *Capa térmica → Vídeo da mulher*, escolha o vídeo
+  16:9 (computador) e o 9:16 (celular), com fundo preto e sem texto. Ele entra no lugar da animação 3D e toca
+  uma vez antes dos banners. Marque o segundo em que ela borrifa e o segundo em que termina de gelar: o
+  termômetro e a palavra calor → frescor acompanham esses tempos.
 - **Vídeos de prova**: na seção *Vídeo e provas reais*, cada bloco *Vídeo de prova* aceita um link do YouTube,
   um vídeo enviado para a Shopify (bom para vídeos baixados do Instagram) ou o link de um reel. Já vêm os
   vídeos de depoimentos e de TV que estão nas páginas da loja.

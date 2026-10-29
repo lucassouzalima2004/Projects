@@ -558,9 +558,93 @@ void main(){
   window.__thermalScenes = [];
   window.__thermalAt = (t) => window.__thermalScenes.forEach((s) => { s.visible = false; s.renderAt(t, t); });
 
+  // Vídeo gerado (Flow/Veo) no lugar da cena 3D. O termômetro, a palavra calor → frescor e as cores de
+  // fundo seguem o tempo do vídeo: quente até o borrifo, esfriando até o segundo em que ela termina de gelar.
+  class VideoScene {
+    constructor(root) {
+      this.root = root;
+      this.readout = root.querySelector('[data-thermal-temp]');
+      this.bar = root.querySelector('[data-thermal-bar]');
+      this.hot = parseFloat(root.dataset.tempHot || '38.4');
+      this.coldTemp = parseFloat(root.dataset.tempCold || '31.2');
+      this.sprayAt = parseFloat(root.dataset.videoSpray || '2');
+      this.coldAt = Math.max(this.sprayAt + 0.5, parseFloat(root.dataset.videoCold || '7'));
+      this.reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      this.phase = '';
+      this.visible = true;
+      const videos = Array.from(root.querySelectorAll('video.hero-thermal__video'));
+      const mobile = window.matchMedia('(max-width: 749px)').matches;
+      const want = mobile ? 'hero-thermal__video--mobile' : 'hero-thermal__video--desktop';
+      const video = videos.find((v) => v.classList.contains(want)) || videos[0];
+      if (!video) return;
+      // o vídeo do outro tamanho de tela sai da página antes de baixar qualquer coisa
+      videos.forEach((v) => v !== video && v.remove());
+      this.video = video;
+      root.classList.add('thermal--ready', 'thermal--video');
+      video.muted = true;
+      video.playsInline = true;
+      // dentro do slider ele toca uma vez e a capa segue para os banners; sozinho, repete
+      video.loop = !root.closest('[data-hero-slider]');
+      video.preload = 'auto';
+      video.addEventListener('loadedmetadata', () => root.dispatchEvent(new CustomEvent('thermal:duration', { detail: { duration: video.duration } })));
+      video.addEventListener('ended', () => root.dispatchEvent(new CustomEvent('thermal:ended')));
+      video.addEventListener('play', () => requestAnimationFrame(this.tick));
+      this.tick = this.tick.bind(this);
+      this.render(0);
+      if (this.reduced) return; // fica no primeiro quadro, sem tocar
+      root.addEventListener('thermal:restart', () => {
+        video.currentTime = 0;
+        this.render(0);
+        this.play();
+      });
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(([entry]) => {
+          this.visible = entry.isIntersecting;
+          if (this.visible) this.play();
+          else video.pause();
+        }).observe(root);
+      }
+      this.play();
+    }
+
+    play() {
+      if (!this.visible || this.video.ended) return;
+      const p = this.video.play();
+      if (p && p.catch) p.catch(() => {});
+    }
+
+    tick() {
+      this.render(this.video.currentTime);
+      if (!this.video.paused && !this.video.ended) requestAnimationFrame(this.tick);
+    }
+
+    render(t) {
+      const coolness = t < this.sprayAt ? 0 : easeOut(seg(t, this.sprayAt, this.coldAt));
+      const phase = t < this.sprayAt ? 'hot' : t < this.sprayAt + 0.8 ? 'spraying' : 'cold';
+      if (phase !== this.phase) {
+        this.root.classList.remove('is-' + this.phase);
+        this.phase = phase;
+        this.root.classList.add('is-' + phase);
+        this.root.dispatchEvent(new CustomEvent('thermal:phase', { detail: { phase } }));
+      }
+      const temp = this.hot + (this.coldTemp - this.hot) * coolness;
+      if (this.readout) this.readout.textContent = temp.toFixed(1).replace('.', ',');
+      if (this.bar) this.bar.style.setProperty('--level', (1 - coolness).toFixed(3));
+      this.root.style.setProperty('--coolness', coolness.toFixed(3));
+    }
+
+    // usado por __thermalAt nas capturas de tela
+    renderAt(t) {
+      if (!this.video) return;
+      this.video.pause();
+      this.video.currentTime = t;
+      this.render(t);
+    }
+  }
+
   const boot = () => {
     document.querySelectorAll('[data-thermal]:not(.thermal--ready):not(.thermal--fallback)').forEach((el) => {
-      window.__thermalScenes.push(new ThermalScene(el));
+      window.__thermalScenes.push(el.hasAttribute('data-thermal-video') ? new VideoScene(el) : new ThermalScene(el));
     });
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);

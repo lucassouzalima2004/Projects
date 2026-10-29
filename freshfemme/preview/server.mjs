@@ -3,6 +3,7 @@
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { THEME, renderRoute, cartObject, findVariant, store } from './render.mjs';
 
 const PORT = Number(process.env.PORT || 4000);
@@ -33,6 +34,11 @@ const send = (res, code, body, type = 'text/html; charset=utf-8') => {
 http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   try {
+    if (url.pathname.startsWith('/preview/videos/')) {
+      const file = path.join(path.dirname(fileURLToPath(import.meta.url)), 'static/videos', path.basename(url.pathname));
+      if (!fs.existsSync(file)) return send(res, 404, 'not found', 'text/plain');
+      return send(res, 200, fs.readFileSync(file), file.endsWith('.webm') ? 'video/webm' : 'video/mp4');
+    }
     if (url.pathname.startsWith('/assets/')) {
       const file = path.join(THEME, 'assets', path.basename(url.pathname));
       if (!fs.existsSync(file)) return send(res, 404, 'not found', 'text/plain');
