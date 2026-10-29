@@ -103,6 +103,32 @@ jobs:
               echo "Cloudflare → **Add a domain** → \`$DOMAIN\` (plano Free). Confira que o **MX mail.register.it** e os **dois TXT** (SPF e google-site-verification) foram importados: são o e-mail e o Search Console do Carlos."
               echo "Depois rode este workflow de novo (Actions → Deploy Punto Pizza → Run workflow): os nameservers para mandar ao Carlos aparecem aqui."
             } >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ -n "$zone" ]; then
+            # Registros do domínio no Cloudflare, e os do e-mail e do Google que não podem faltar
+            recs=$(curl -sS -H "$auth" "https://api.cloudflare.com/client/v4/zones/$zone/dns_records?per_page=100" || true)
+            echo "Registros DNS de $DOMAIN no Cloudflare:"
+            printf '%s' "$recs" | jq -r '.result[]? | "  \(.type)\t\(.name)\t\(.content)\t\(if .priority then "prioridade \(.priority)\t" else "" end)\(if .proxied then "proxy LIGADO" else "DNS only" end)"' 2>/dev/null || echo "  (o token não pode ler os registros)"
+            falta=""
+            for want in "MX|$DOMAIN|mail.register.it" "CNAME|pop.$DOMAIN|mail.register.it" "CNAME|autoconfig.$DOMAIN|tb-it.securemail.pro" \
+                        "TXT|$DOMAIN|v=spf1 include:spf.webapps.net ~all" "TXT|$DOMAIN|google-site-verification=uPZ_mfDLVVs4_IRwL-xE0Erv4QUaGSw4mUlZ9C-zXzs"; do
+              t=${want%%|*}; rest=${want#*|}; n=${rest%%|*}; c=${rest#*|}
+              if ! printf '%s' "$recs" | jq -e --arg t "$t" --arg n "$n" --arg c "$c" \
+                   '[.result[]? | select(.type == $t and .name == $n and ((.content | ascii_downcase | ltrimstr("\"") | rtrimstr("\"")) == ($c | ascii_downcase)))] | length > 0' > /dev/null 2>&1; then
+                falta="$falta $t $n → $c;"
+              fi
+            done
+            if [ -n "$falta" ]; then
+              echo "::warning title=Registros do e-mail/Google faltando em $DOMAIN::Crie no Cloudflare (DNS) antes de trocar os nameservers:$falta"
+              echo "**Faltam no Cloudflare (e-mail e Google):**$falta" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "Registros do e-mail e do Google: todos presentes."
+              echo "Registros do e-mail e do Google: todos presentes no Cloudflare." >> "$GITHUB_STEP_SUMMARY"
+            fi
+            printf '%s' "$recs" | jq -r --arg d "$DOMAIN" '.result[]? | select(.proxied and (.name == "pop.\($d)" or .name == "autoconfig.\($d)" or ((.type == "A" or .type == "CNAME") and (.name == $d or .name == "www.\($d)")))) | "::warning title=Proxy ligado em \(.name)::Desligue o proxy (nuvem cinza, DNS only) de \(.name) \(.type): no e-mail ele não funciona com proxy, e no site antigo o proxy pode tirar o site do ar antes da troca."' 2>/dev/null || true
+          fi
+          if [ -z "$zone" ]; then
+            :
           elif [ "$status" != "active" ]; then
             ns=$(printf '%s' "$res" | jq -r '.result[0].name_servers // [] | join(" e ")')
             echo "::notice title=Domínio $DOMAIN::Esperando a troca dos nameservers na Register.it. Novos nameservers: $ns"
