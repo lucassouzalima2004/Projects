@@ -12,7 +12,7 @@ Todas as fotos, avaliações e textos de garantia vêm do site antigo e do Googl
 
 - **Topo** centralizado: "We clean, you live." (o slogan da Ativa), uma frase curta ("House and commercial cleaning
   across Adelaide...") e dois botões de vidro no estilo do iPhone (azul-marinho para o orçamento, branco para o
-  telefone) e um selo de vidro com a nota do Google (5.0, 23 reviews) com um brilho que passa por ele de tempos em
+  telefone) e um selinho de vidro discreto com a nota do Google (★★★★★ 5.0) e um brilho que passa por ele de tempos em
   tempos. Logo abaixo, a foto da equipe num porta-retrato empoeirado (horizontal no computador, em pé no celular),
   com "clean me" escrito no pó. Quando ele aparece na tela, um pano de microfibra limpa a foto em "S" e deixa a parte
   de baixo para a pessoa terminar: no computador é só passar o mouse; no celular, arrastar o dedo na horizontal (ou
