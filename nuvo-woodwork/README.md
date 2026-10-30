@@ -78,6 +78,41 @@ Detalhes:
 - Para tirar um vídeo do ar: apague os dois arquivos do trecho em `assets/video/` e rode
   `tools/make-videos.sh --manifest`.
 
+## Versão 3D do filme
+
+Abra o site com `?3d` no fim do endereço: <https://nuvo-woodwork.lucassouzalima10.workers.dev/?3d>. O resto do site é
+o mesmo; só o filme do topo muda.
+
+**Como funciona:**
+- Cada ambiente é uma cena 3D feita da imagem dele: a foto é a textura e cada ponto fica na profundidade que a
+  imagem mostra.
+- O scroll leva a câmera para dentro de cada ambiente, e um passa para o outro numa fusão.
+- A sala, a cozinha e o closet se montam por cima do ambiente anterior, com uma borda dourada.
+- Tudo é desenhado ao vivo, na frequência da tela: não há quadros de vídeo, então não há o que travar.
+- No celular em pé, a câmera percorre cada ambiente de um lado ao outro em vez de cortar as laterais.
+- Pesa uns 4 MB no total (os vídeos pesam 22 MB).
+
+**Quando volta sozinho para o filme em vídeo:** em aparelho sem WebGL2, com "reduzir movimento" ligado, ou se o 3D
+não carregar.
+
+**Como é feito:** `tools/make-3d.py` estima a profundidade de cada imagem com o Depth Anything V2 Small (licença
+Apache 2.0, uso comercial liberado). A escala real vem do chão: a altura da câmera dos prompts e a lente de 24 mm.
+O script grava em `assets/3d/`:
+
+- a foto;
+- a malha;
+- uma camada de fundo que aparece atrás das bordas dos móveis quando a câmera se move.
+
+Precisa de Python com `torch`, `transformers`, `pillow`, `opencv-python-headless` e `numpy`:
+
+```bash
+python3 tools/make-3d.py door=porta.jpg:1.6 living=sala.jpg:1.4 kitchen=cozinha.jpg:1.2 closet=closet.jpg:1.5 house=casa.jpg:6
+```
+
+**Onde editar:** textos, ordem dos ambientes, quanto a câmera entra e a duração de cada um ficam em
+`assets/js/content.js` → `tour3d`. Para deixar o 3D como padrão (sem `?3d`), troque o teste de `NUVO_3D_ON` no
+`index.html` por `!!window.WebGL2RenderingContext && ...`.
+
 ## Laboratório 3D
 
 `lab/3d.html` é um teste do filme em 3D de verdade (Gaussian Splatting, com a biblioteca Spark). Ele ainda não faz
@@ -188,7 +223,9 @@ nuvo-woodwork/
 ├── assets/js/film.js        o filme: scroll, títulos, canvas, carregamento (e o <video> de reserva)
 ├── assets/js/film-decoder.js decodifica os quadros dos vídeos direto no navegador (WebCodecs)
 ├── assets/js/scroll.js      rolagem suave no computador e links internos
-├── assets/js/vendor/        Lenis 1.3.26 (rolagem suave, licença MIT)
+├── assets/js/film3d.js      o filme em 3D (?3d)
+├── assets/3d/               as cenas 3D (gerado pelo tools/make-3d.py)
+├── assets/js/vendor/        Lenis 1.3.26 (rolagem suave) e Three.js 0.180 (3D), licenças MIT
 ├── assets/js/app.js         menu, índice de ambientes, formulário
 ├── assets/video/            vídeos do filme + manifest.js (gerados pelo script)
 ├── assets/img/              fotos, favicon, ícone do iPhone e prévia do link

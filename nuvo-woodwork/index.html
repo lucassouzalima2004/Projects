@@ -427,10 +427,30 @@
 
   <script src="assets/js/content.js"></script>
   <script src="assets/video/manifest.js"></script>
+  <script>
+    // ?3d no endereço: o filme em 3D (film3d.js) no lugar do vídeo, se o aparelho tiver WebGL2
+    window.NUVO_3D_ON = /(^|&)3d(=|&|$)/.test(location.search.slice(1)) && !!window.WebGL2RenderingContext &&
+      !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  </script>
+  <script src="assets/3d/scenes.js"></script>
   <script src="assets/js/vendor/lenis.min.js"></script>
   <script src="assets/js/scroll.js"></script>
   <script src="assets/js/film-decoder.js"></script>
   <script src="assets/js/film.js"></script>
   <script src="assets/js/app.js"></script>
+  <script type="module">
+    if (window.NUVO_3D_ON) {
+      import('./assets/js/film3d.js').catch((e) => {
+        // sem 3D: volta para o filme em vídeo
+        console.warn('3D:', e);
+        window.NUVO_3D_ON = false;
+        document.querySelector('[data-film] .film__canvas')?.remove();
+        document.querySelector('[data-film]')?.classList.remove('is-canvas');
+        const s = document.createElement('script');
+        s.src = 'assets/js/film.js';
+        document.body.appendChild(s);
+      });
+    }
+  </script>
 </body>
 </html>
