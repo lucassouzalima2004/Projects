@@ -59,7 +59,7 @@ export function markSvg(cls = 'mark') {
 
 function logo(cls = 'logo') {
   return `<svg class="${cls}" viewBox="-467 0 3025 214" role="img" aria-label="${esc(site.name)}">
-    <g fill-rule="evenodd"><path class="logo__mark" d="${word.mark}"/><path class="logo__bora" d="${word.bora}"/><path class="logo__signs" d="${word.signs}"/></g>
+    <g fill-rule="evenodd"><path class="logo__mark" d="${word.markBox}"/><path class="logo__eye" d="${word.markEye}"/><path class="logo__bora" d="${word.bora}"/><path class="logo__signs" d="${word.signs}"/></g>
   </svg>`;
 }
 
@@ -402,49 +402,45 @@ const serviceCard = (s, i, { big = false } = {}) => `
     </div>
   </a>`;
 
-/* ---------- home campaign panel ---------- */
+/* ---------- home hero scene ---------- */
 
-// The tasks a business owner juggles, floating around the chameleon. x/y place each card in the panel (%),
-// z is how far it floats toward the viewer, r and ty tilt it; mx/my are the places on a narrow panel (phones),
-// where cards without them are left out.
+// The tasks a business owner juggles, floating behind the chameleon. x/y place each card in the scene (%),
+// z is how far behind him it floats (more negative = further back, so it moves less with the pointer),
+// side 'r' cards sit to his right with the label on their outer edge, so the part tucked behind him is the blank one.
+// mx/my are the places on phones; cards without them are left out there.
 const campaignCards = [
-  { label: 'Payroll', icon: 'users', x: 57, y: 20, z: 60, r: -3, ty: 14, mx: 23, my: 44 },
-  { label: 'Staff', icon: 'user', tone: 'pink', x: 55, y: 39, z: 90, r: 2, ty: 16, mx: 21, my: 60 },
-  { label: 'Customers', icon: 'users', x: 53, y: 55, z: 70, r: -2, ty: 14, mx: 23, my: 76 },
-  { label: 'Opening date', icon: 'cal', tone: 'pink', x: 55, y: 71, z: 110, r: 3, ty: 12 },
-  { label: 'Emails', icon: 'mail', x: 87, y: 37, z: 80, r: 3, ty: -16 },
-  { label: 'Stock', icon: 'box', tone: 'pink', x: 86, y: 55, z: 100, r: -2, ty: -14 },
-  { label: 'Scheduling', icon: 'clock', x: 84, y: 72, z: 70, r: 2, ty: -12, mx: 77, my: 75 },
+  { label: 'Payroll', icon: 'users', x: 18, y: 30, z: -60, mx: 20, my: 42 },
+  { label: 'Staff', icon: 'user', tone: 'pink', x: 13, y: 45, z: -110, mx: 17, my: 57 },
+  { label: 'Customers', icon: 'users', x: 16, y: 60, z: -80, mx: 20, my: 72 },
+  { label: 'Opening date', icon: 'cal', tone: 'pink', x: 12, y: 75, z: -130 },
+  { label: 'Emails', icon: 'mail', side: 'r', x: 96, y: 45, z: -90 },
+  { label: 'Stock', icon: 'box', tone: 'pink', side: 'r', x: 93, y: 61, z: -60 },
+  { label: 'Scheduling', icon: 'clock', side: 'r', x: 95, y: 77, z: -110 },
 ];
 
 function campaign() {
   const card = (c, i) => `
-      <div class="card${c.mx == null ? ' card--wide-only' : ''}" style="--x:${c.x}%;--y:${c.y}%;--z:${c.z}px;--r:${c.r}deg;--ty:${c.ty}deg;${c.mx != null ? `--mx:${c.mx}%;--my:${c.my}%;` : ''}--in:${0.5 + i * 0.09}s;--dur:${5 + (i % 3) * 1.3}s">
-        <div class="card__in">
-          <span class="card__icon${c.tone === 'pink' ? ' card__icon--pink' : ''}">${icon(c.icon)}</span>
-          <span class="card__text"><b>${c.label}</b><span></span><span></span></span>
-        </div>
-      </div>`;
-  return `<div class="camp-wrap" data-hero-camp>
-      <div class="camp" data-camp>
-        <div class="camp__bg" aria-hidden="true"><span class="camp__neon"></span><span class="camp__glow"></span></div>
-        <div class="camp__back" data-camp-stage-back aria-hidden="true"><span class="camp__ring"></span></div>
-        <div class="camp__copy">
-          <p class="camp__title">One <span class="camp__less">less</span> thing<span class="camp__dot">.</span></p>
-          <p class="camp__sub">You run the business. <strong>We’ll handle the signs.</strong></p>
-        </div>
-        <div class="camp__cham" aria-hidden="true">
-          <img class="camp__img" src="/assets/img/hero/chameleon.webp" width="504" height="819" alt="" fetchpriority="high" decoding="async">
-          <canvas class="camp__gl" data-cham3d data-color="/assets/img/hero/chameleon.webp" data-depth="/assets/img/hero/chameleon-depth.png"></canvas>
-        </div>
-        <div class="camp__stage" data-camp-stage aria-hidden="true">
+        <div class="card${c.side === 'r' ? ' card--r' : ''}${c.mx == null ? ' card--wide-only' : ''}" style="--x:${c.x}%;--y:${c.y}%;--z:${c.z}px;${c.mx != null ? `--mx:${c.mx}%;--my:${c.my}%;` : ''}--in:${0.5 + i * 0.09}s">
+          <div class="card__in">
+            <span class="card__icon${c.tone === 'pink' ? ' card__icon--pink' : ''}">${icon(c.icon)}</span>
+            <span class="card__text"><b>${c.label}</b><span></span><span></span></span>
+          </div>
+        </div>`;
+  return `<div class="scene-wrap">
+      <div class="scene" data-camp aria-hidden="true">
+        <div class="scene__glow" data-camp-glow></div>
+        <div class="scene__back" data-camp-back>
+          <span class="scene__ring"></span>
           ${campaignCards.map(card).join('')}
-          <div class="card card--sign" style="--x:81%;--y:14%;--z:120px;--r:-16deg;--ty:-10deg;--mx:68%;--my:40%;--in:1.2s;--dur:4.6s">
+          <div class="card card--sign" style="--x:74%;--y:18%;--z:-40px;--mx:70%;--my:24%;--in:1.2s">
             <div class="card__in"><span class="card__check">${icon('check')}</span><b>Signage</b></div>
           </div>
+          <canvas class="scene__shards" data-shards></canvas>
         </div>
-        <canvas class="camp__shards" data-shards aria-hidden="true"></canvas>
-        <div class="camp__brand">${logo('logo logo--camp')}<span>Signage without the stress.</span></div>
+        <div class="scene__cham">
+          <img class="scene__img" src="/assets/img/hero/chameleon.webp" width="504" height="819" alt="" fetchpriority="high" decoding="async">
+          <canvas class="scene__gl" data-cham3d data-color="/assets/img/hero/chameleon.webp" data-depth="/assets/img/hero/chameleon-depth.png"></canvas>
+        </div>
       </div>
     </div>`;
 }
@@ -465,6 +461,7 @@ export function home() {
     <div class="hero2__copy">
       <span class="eyebrow" data-hero-in>${icon('spark', 'i')} Adelaide signwriters</span>
       <h1 class="hero2__h" data-split data-split-now>Signage that makes your business <em>hard to miss.</em></h1>
+      <p class="hero2__tag" data-hero-in><strong>One <span>less</span> thing.</strong> You run the business. <em>We’ll handle the signs.</em></p>
       <p class="lead hero2__lead" data-hero-in>Vehicle wraps, shopfront signage, window graphics and complete business signage, designed, produced and installed by one Adelaide team.</p>
       <div class="hero2__cta" data-hero-in>
         ${btn('Start your project', '/contact', { size: 'lg' })}

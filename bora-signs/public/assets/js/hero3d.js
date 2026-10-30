@@ -1,61 +1,123 @@
-/* Home campaign panel: the chameleon in 3D and the floating task cards.
+/* Home hero scene: the chameleon in 3D with task cards floating behind him.
    The chameleon is the campaign artwork on a dense mesh pushed forward by its depth map (WebGL, no library),
-   lit by the neon and turned a little toward the pointer. The cards are HTML in a CSS 3D space that turns with it.
-   Without WebGL, or with reduced motion, the flat artwork and still cards stay. */
+   lit by the neon and turned toward the pointer. The cards, the neon ring and the glow are HTML layers behind him
+   that move the other way, so the scene has depth. Every movement runs on springs, so it eases in and out the same
+   at any frame rate. Without WebGL (or a graphics card) the flat artwork stays; with reduced motion nothing moves. */
 (() => {
-  const camp = document.querySelector('[data-camp]');
-  if (!camp) return;
-  const stage = camp.querySelector('[data-camp-stage]');
-  const canvas = camp.querySelector('[data-cham3d]');
+  const scene = document.querySelector('[data-camp]');
+  if (!scene) return;
+  const back = scene.querySelector('[data-camp-back]');
+  const glow = scene.querySelector('[data-camp-glow]');
+  const canvas = scene.querySelector('[data-cham3d]');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
-  // Pointer (or phone tilt) → where the scene looks, shared by the cards and the chameleon
-  const look = { x: 0, y: 0, tx: 0, ty: 0, active: false };
+  /* ---------- input: pointer, phone tilt, scroll ---------- */
+
+  const input = { x: 0, y: 0, last: -1e9 };
   addEventListener('pointermove', (e) => {
     if (e.pointerType === 'touch') return;
-    look.tx = clamp((e.clientX / innerWidth - 0.5) * 2, -1, 1);
-    look.ty = clamp((e.clientY / innerHeight - 0.5) * 2, -1, 1);
-    look.active = true;
+    input.x = clamp((e.clientX / innerWidth - 0.5) * 2, -1, 1);
+    input.y = clamp((e.clientY / innerHeight - 0.5) * 2, -1, 1);
+    input.last = performance.now();
   }, { passive: true });
   addEventListener('deviceorientation', (e) => {
     if (e.gamma == null) return;
-    look.tx = clamp(e.gamma / 25, -1, 1);
-    look.ty = clamp((e.beta - 45) / 30, -1, 1);
-    look.active = true;
+    input.x = clamp(e.gamma / 25, -1, 1);
+    input.y = clamp((e.beta - 45) / 30, -1, 1);
+    input.last = performance.now();
   }, { passive: true });
 
+  // A spring just under critical damping: eases in, eases out, no wobble
+  const spring = (stiffness, damping) => ({
+    x: 0, v: 0,
+    step(target, dt) { this.v += ((target - this.x) * stiffness - this.v * damping) * dt; this.x += this.v * dt; return this.x; },
+  });
+  const lookX = spring(26, 9.5);
+  const lookY = spring(26, 9.5);
+  const scrollS = spring(30, 11);
+
+  /* ---------- cards: each one floats on its own ---------- */
+
+  const rnd = (seed) => { const v = Math.sin(seed * 9301 + 49297) * 233280; return v - Math.floor(v); };
+  const cards = [...scene.querySelectorAll('.card')].map((el, i) => {
+    const r = (k) => rnd(i * 13 + k);
+    return {
+      el,
+      inner: el.querySelector('.card__in'),
+      sign: el.classList.contains('card--sign'),
+      // further back = moves less with the pointer
+      depth: clamp(-parseFloat(getComputedStyle(el).getPropertyValue('--z')) / 130, 0.3, 1.2),
+      f: [0.55 + r(1) * 0.35, 0.21 + r(2) * 0.15, 0.62 + r(3) * 0.3, 0.26 + r(4) * 0.14, 0.4 + r(5) * 0.3, 0.5 + r(6) * 0.3, 0.45 + r(7) * 0.3],
+      p: Array.from({ length: 7 }, (_, k) => r(10 + k) * Math.PI * 2),
+      fx: 0,
+      fy: 0,
+    };
+  });
+
+  let unit = 6; // one "float unit" in px, from the scene size
+  const measure = () => { unit = scene.clientWidth / 110; };
+  measure();
+  if ('ResizeObserver' in window) new ResizeObserver(measure).observe(scene);
+
+  /* ---------- loop ---------- */
+
   let visible = true;
-  new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) kick(); }).observe(camp);
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) kick(); }).observe(scene);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) kick(); });
 
   const gl3d = !reduce && canvas ? setupGL(canvas) : null;
-  const shards = reduce ? null : setupShards(camp.querySelector('[data-shards]'), camp.querySelector('.card--sign'));
+  const shards = reduce ? null : setupShards(scene.querySelector('[data-shards]'), cards.find((c) => c.sign));
 
   let running = false;
   let started = false;
+  let prev = 0;
   const t0 = performance.now();
   function frame(now) {
     if (!visible || document.hidden) { running = false; return; }
+    const dt = prev ? Math.min(0.05, (now - prev) / 1000) : 1 / 60;
+    prev = now;
     const t = (now - t0) / 1000;
-    // without a pointer the scene sways on its own
-    const ix = look.active ? look.tx : Math.sin(t * 0.35) * 0.55;
-    const iy = look.active ? look.ty : Math.sin(t * 0.27 + 1) * 0.3;
-    look.x += (ix - look.x) * 0.06;
-    look.y += (iy - look.y) * 0.06;
-    if (shards) shards.step(t);  // reads layout, so before this frame's style changes
-    stage.style.setProperty('--ry', `${(look.x * 7).toFixed(2)}deg`);
-    stage.style.setProperty('--rx', `${(-look.y * 4).toFixed(2)}deg`);
-    if (gl3d) gl3d.draw(t, look.x, look.y);
+
+    // The pointer while it is moving; after a few quiet seconds a slow figure-eight takes over, blended in
+    const idle = clamp((now - input.last - 2500) / 1500, 0, 1);
+    const ix = input.x * (1 - idle) + Math.sin(t * 0.31) * 0.6 * idle;
+    const iy = input.y * (1 - idle) + Math.sin(t * 0.47 + 1) * 0.3 * idle;
+    const x = lookX.step(ix, dt);
+    const y = lookY.step(iy, dt);
+    const s = scrollS.step(clamp(scrollY / innerHeight, 0, 1), dt);
+
+    // He leans toward the pointer; the layer behind him (ring, cards) drifts the other way and tilts; the glow drifts least
+    back.style.transform = `perspective(1400px) translate3d(${(-x * 1.3 * unit).toFixed(2)}px, ${(-y * 1.1 * unit + s * 4 * unit).toFixed(2)}px, 0) rotateX(${(-y * 5 - s * 6).toFixed(2)}deg) rotateY(${(x * 8).toFixed(2)}deg)`;
+    glow.style.transform = `translate3d(${(-x * 1.2 * unit).toFixed(2)}px, ${(-y * 0.8 * unit).toFixed(2)}px, 0)`;
+
+    for (const c of cards) {
+      const { f, p } = c;
+      const fx = (Math.sin(t * f[0] + p[0]) * 0.6 + Math.sin(t * f[1] + p[1]) * 0.4) * unit * 0.9;
+      const fy = (Math.sin(t * f[2] + p[2]) * 0.6 + Math.sin(t * f[3] + p[3]) * 0.4) * unit * 1.3;
+      const rz = Math.sin(t * f[4] + p[4]) * 2.2 + (c.sign ? -12 : 0);
+      const rx = Math.sin(t * f[5] + p[5]) * 7 - y * 4;
+      const ry = Math.cos(t * f[6] + p[6]) * 9 + x * 6;
+      const px = -x * unit * 0.8 * (1.3 - c.depth);
+      const py = -y * unit * 0.7 * (1.3 - c.depth);
+      c.fx = fx + px;
+      c.fy = fy + py;
+      c.inner.style.transform = `translate3d(${c.fx.toFixed(2)}px, ${c.fy.toFixed(2)}px, 0) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) rotateZ(${rz.toFixed(2)}deg)`;
+      c.inner.style.setProperty('--glare', (0.5 + ry / 30).toFixed(3));
+    }
+
+    if (shards) shards.step(t);
+    if (gl3d) gl3d.draw(t, x, y, s);
     requestAnimationFrame(frame);
   }
   function kick() {
     if (reduce || running || !started) return;
     running = true;
+    prev = 0;
     requestAnimationFrame(frame);
   }
   // Motion starts once the page has loaded, so it never competes with the first paint
-  const go = () => setTimeout(() => { started = true; kick(); }, 200);
+  const go = () => setTimeout(() => { started = true; kick(); }, 150);
   if (document.readyState === 'complete') go(); else addEventListener('load', go, { once: true });
 
   /* ---------- WebGL chameleon ---------- */
@@ -80,7 +142,7 @@
         gl_Position = uProj * uModel * vec4(aPos, 1.0);
       }`, `
       precision mediump float;
-      uniform sampler2D uTex; uniform vec3 uLight; uniform float uTime;
+      uniform sampler2D uTex; uniform vec3 uLight;
       varying vec2 vUv; varying vec3 vN;
       void main() {
         vec4 c = texture2D(uTex, vUv);
@@ -93,12 +155,12 @@
         vec3 col = c.rgb * (0.86 + 0.26 * diff);
         col += vec3(1.0, 0.22, 0.62) * rim * 0.32;                 // pink neon on the edges
         col += vec3(0.75, 0.55, 1.0) * spec * 0.35;                // sheen that slides over skin and glasses
-        float a = c.a * smoothstep(1.0, 0.955, vUv.y);             // the artwork is cut at the bottom
+        float a = c.a * smoothstep(1.0, 0.8, vUv.y);               // he fades out where the artwork is cut
         gl_FragColor = vec4(col * a, a);
       }`);
     if (!prog) return null;
     const loc = (n) => gl.getUniformLocation(prog, n);
-    const u = { proj: loc('uProj'), model: loc('uModel'), tex: loc('uTex'), light: loc('uLight'), time: loc('uTime') };
+    const u = { proj: loc('uProj'), model: loc('uModel'), tex: loc('uTex'), light: loc('uLight') };
 
     const load = (src) => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
     Promise.all([load(cv.dataset.color), load(cv.dataset.depth)]).then(([color, depth]) => {
@@ -124,8 +186,8 @@
       const px = ctx.getImageData(0, 0, dc.width, dc.height).data;
       const dw = dc.width, dh = dc.height;
       const at = (x, y) => px[(Math.min(dh - 1, Math.max(0, y)) * dw + Math.min(dw - 1, Math.max(0, x))) * 4] / 255;
-      const sample = (u, v) => {  // bilinear
-        const x = u * (dw - 1), y = v * (dh - 1);
+      const sample = (uu, vv) => {  // bilinear
+        const x = uu * (dw - 1), y = vv * (dh - 1);
         const x0 = Math.floor(x), y0 = Math.floor(y), fx = x - x0, fy = y - y0;
         const a = at(x0, y0) * (1 - fx) + at(x0 + 1, y0) * fx;
         const b = at(x0, y0 + 1) * (1 - fx) + at(x0 + 1, y0 + 1) * fx;
@@ -180,7 +242,7 @@
 
     let shown = false;
     return {
-      draw(t, lx, ly) {
+      draw(t, lx, ly, ls) {
         if (!ready) return;
         const dpr = Math.min(devicePixelRatio || 1, 1.75);
         const w = Math.round(cv.clientWidth * dpr), h = Math.round(cv.clientHeight * dpr);
@@ -193,19 +255,20 @@
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
         gl.useProgram(prog);
-        // The mesh is 1 unit tall; frame it so it fills the canvas height
-        const fov = 0.5, dist = 1 / (2 * Math.tan(fov / 2)) * 1.0;
+        // Same framing as the flat artwork: 94% of the canvas height, standing on its bottom edge
+        const fov = 0.5, view = 1 / 0.94, dist = view / (2 * Math.tan(fov / 2));
         gl.uniformMatrix4fv(u.proj, false, perspective(fov, w / h, 0.1, 10));
-        const yaw = lx * 0.2 + Math.sin(t * 0.5) * 0.02;
-        const pitch = ly * 0.09;
-        const breathe = 1 + Math.sin(t * 1.7) * 0.006;
-        const model = multiply(translate(0, Math.sin(t * 0.9) * 0.006, -dist), multiply(rotY(yaw), multiply(rotX(pitch), scale(1, breathe, 1))));
+        const yaw = lx * 0.21 + Math.sin(t * 0.5) * 0.02;
+        const pitch = ly * 0.1 + ls * 0.12;
+        const breathe = 1 + Math.sin(t * 1.6) * 0.007;
+        const tx = lx * 0.008;
+        const ty = 0.5 - view / 2 + Math.sin(t * 0.85) * 0.007 - ly * 0.008;
+        const model = multiply(translate(tx, ty, -dist), multiply(rotY(yaw), multiply(rotX(pitch), scale(1, breathe, 1))));
         gl.uniformMatrix4fv(u.model, false, model);
         gl.uniform3f(u.light, -0.6 + lx * 0.9, 0.5 - ly * 0.4, 0.8);
-        gl.uniform1f(u.time, t);
         gl.uniform1i(u.tex, 0);
         gl.drawElements(gl.TRIANGLES, count, gl.UNSIGNED_SHORT, 0);
-        if (!shown) { shown = true; camp.classList.add('is-3d'); }
+        if (!shown) { shown = true; scene.classList.add('is-3d'); }
       },
     };
   }
@@ -239,30 +302,35 @@
 
   /* ---------- the Signage card breaks into shards, then puts itself back together ---------- */
 
-  function setupShards(cv, card) {
-    if (!cv || !card) return null;
+  // The shard canvas sits in the same layer as the cards, so the card's place comes from layout, measured on resize only
+  function setupShards(cv, sign) {
+    if (!cv || !sign) return null;
     const ctx = cv.getContext('2d');
     const colors = ['#ff5fa9', '#f62584', '#ffffff', '#b98cff', '#8a3be0'];
-    const N = 70;
-    const parts = Array.from({ length: N }, (_, i) => ({
-      // start somewhere on the card, drift to the right (a little up or down), away from the headline
+    const parts = Array.from({ length: 64 }, (_, i) => ({
+      // start somewhere on the card, drift to the right (a little up or down)
       sx: Math.random(), sy: Math.random(),
       dx: 0.6 + Math.random() * 1.3, dy: -0.4 + Math.random() * 0.65,
       rot: Math.random() * 6, spin: (Math.random() - 0.5) * 8,
       size: 3 + Math.random() * 6, color: colors[i % colors.length], delay: Math.random() * 0.35,
     }));
     const CYCLE = 7;
+    let box = { x: 0, y: 0, w: 0, h: 0 };
+    const place = () => {
+      const el = sign.el;
+      box = { x: el.offsetLeft - el.offsetWidth / 2 - cv.offsetLeft, y: el.offsetTop - el.offsetHeight / 2 - cv.offsetTop, w: el.offsetWidth, h: el.offsetHeight };
+    };
+    place();
+    if ('ResizeObserver' in window) new ResizeObserver(place).observe(scene);
     return {
       step(t) {
         const dpr = Math.min(devicePixelRatio || 1, 2);
         const w = Math.round(cv.clientWidth * dpr), h = Math.round(cv.clientHeight * dpr);
         if (!w || !h) return;
-        if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+        if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; place(); }
         ctx.clearRect(0, 0, w, h);
         ctx.globalCompositeOperation = 'lighter';
-        // where the card sits inside the shard canvas
-        const cr = card.getBoundingClientRect(), vr = cv.getBoundingClientRect();
-        const cx = (cr.left - vr.left) * dpr, cy = (cr.top - vr.top) * dpr, cw = cr.width * dpr, ch = cr.height * dpr;
+        const cx = (box.x + sign.fx) * dpr, cy = (box.y + sign.fy) * dpr, cw = box.w * dpr, ch = box.h * dpr;
         const phase = (t % CYCLE) / CYCLE;
         // 0–.35 whole card · .35–.6 breaks away to the right · .6–.85 gone, shards drift · .85–1 flies back together
         let k;
@@ -273,23 +341,24 @@
         if (phase >= 0.35 && phase < 0.47) op = 1 - (phase - 0.35) / 0.12;
         else if (phase >= 0.47 && phase < 0.88) op = 0;
         else if (phase >= 0.88 && phase < 0.98) op = (phase - 0.88) / 0.1;
-        card.style.opacity = op.toFixed(3);
+        sign.el.style.opacity = op.toFixed(3);
         // a few shards always trail off the right edge, like the campaign image
         for (const p of parts) {
           const kk = clamp((k - p.delay) / (1 - p.delay), 0, 1);
           const e = 1 - Math.pow(1 - kk, 3);
           const trail = (t * 0.25 + p.sx) % 1;
-          const x = cx + p.sx * cw + e * p.dx * cw * 1.3 + (k === 0 ? trail * cw * 0.5 * (p.sy > 0.6 ? 1 : 0) : 0);
-          const y = cy + p.sy * ch + e * p.dy * ch * 1.8 - (k === 0 ? trail * ch * 0.6 * (p.sy > 0.6 ? 1 : 0) : 0);
-          const alpha = k === 0 ? (p.sy > 0.6 && p.sx > 0.7 ? (1 - trail) * 0.8 : 0) : (1 - kk * 0.55);
+          const trailing = k === 0 && p.sy > 0.6;
+          const x = cx + p.sx * cw + e * p.dx * cw * 1.3 + (trailing ? trail * cw * 0.5 : 0);
+          const y = cy + p.sy * ch + e * p.dy * ch * 1.8 - (trailing ? trail * ch * 0.6 : 0);
+          const alpha = k === 0 ? (trailing && p.sx > 0.7 ? (1 - trail) * 0.8 : 0) : (1 - kk * 0.55);
           if (alpha <= 0.01) continue;
           ctx.save();
           ctx.globalAlpha = alpha;
           ctx.translate(x, y);
           ctx.rotate(p.rot + p.spin * e);
           ctx.fillStyle = p.color;
-          const s = p.size * dpr;
-          ctx.beginPath(); ctx.moveTo(-s, -s * 0.6); ctx.lineTo(s, -s * 0.2); ctx.lineTo(-s * 0.2, s); ctx.closePath(); ctx.fill();
+          const sz = p.size * dpr;
+          ctx.beginPath(); ctx.moveTo(-sz, -sz * 0.6); ctx.lineTo(sz, -sz * 0.2); ctx.lineTo(-sz * 0.2, sz); ctx.closePath(); ctx.fill();
           ctx.restore();
         }
       },

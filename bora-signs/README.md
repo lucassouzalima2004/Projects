@@ -6,10 +6,11 @@ com título, descrição e dados estruturados para o Google, e os anúncios pode
 
 ## O que tem no site
 
-- **Home**: no topo, o título com a nota 5.0 do Google e, ao lado, o banner da campanha "One less thing" em 3D: o camaleão
-  de óculos gira de leve seguindo o mouse (ou sozinho, no celular), com luz neon, e as tarefas do dono do negócio flutuam
-  em volta; o card "Signage" se desfaz em estilhaços e volta. Depois: faixa de serviços que acelera com a rolagem, números,
-  serviços, processo em 4 passos, trabalhos recentes em rolagem horizontal, clientes, depoimentos, dúvidas e chamada final.
+- **Home**: no topo, o título, o "One less thing" da campanha e a nota 5.0 do Google; ao lado, direto no fundo do site,
+  o camaleão de óculos em 3D, que gira seguindo o mouse (ou sozinho, no celular) com luz neon, e as tarefas do dono do
+  negócio flutuando atrás dele, cada uma no seu ritmo; o card "Signage" se desfaz em estilhaços e volta. Depois: faixa de
+  serviços que acelera com a rolagem, números, serviços, processo em 4 passos, trabalhos recentes em rolagem horizontal,
+  clientes, depoimentos, dúvidas e chamada final. O camaleão do logo pisca.
 - **Uma página por serviço** (13), com os mesmos endereços do Wix: `/vehicle-signage`, `/shopfront-signage`, `/window-graphics`,
   `/office-signage`, `/decor` etc. Cada uma tem por que contratar, opções, fotos, depoimento, processo, dúvidas e serviços relacionados.
 - **Van antes/depois** em `/vehicle-signage`: arrastando, a van branca vai sendo envelopada e o preço indicativo sobe de
@@ -30,13 +31,13 @@ com título, descrição e dados estruturados para o Google, e os anúncios pode
 | Preços da van ($500 → $7.000) e nomes dos pacotes | `wrapEstimate` em `src/site.mjs` |
 | Números da home (15+ anos etc.) e logos de clientes | `stats` e `clients` em `src/site.mjs` |
 | Nota do Google no topo da home | `google` em `src/site.mjs` (`null` esconde) |
-| Cards que flutuam no banner (nomes, ícones, posições) | `campaignCards` em `src/render.mjs` |
+| Cards que flutuam atrás do camaleão (nomes, ícones, posições) | `campaignCards` em `src/render.mjs` |
 | Textos de cada serviço, título e descrição do Google, dúvidas | `services` em `src/content.mjs` |
 | Processo, depoimentos da home, dúvidas da home, fotos da faixa "Recent work" | `src/content.mjs` |
 | Layout das páginas | `src/render.mjs` |
 | Cores e fontes | topo de `public/assets/css/site.css` |
 | Animações e interações | `public/assets/js/site.js` |
-| Camaleão 3D, giro dos cards e estilhaços do banner | `public/assets/js/hero3d.js` |
+| Camaleão 3D, parallax, flutuação dos cards e estilhaços | `public/assets/js/hero3d.js` |
 
 Fotos novas: coloque em `public/assets/img/work/` como `<nome>-800` e `<nome>-1600`, em `.avif` e `.webp`
 (mais um `.jpg` de 1200 px para a prévia do link), e registre largura e altura em `src/images.mjs`.
