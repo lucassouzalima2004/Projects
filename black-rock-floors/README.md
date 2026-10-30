@@ -154,6 +154,21 @@ páginas com essa lista. No Chrome e no Android não aparecia.
   normais entre navegadores. Menu do celular, FAQ aberto, foto ampliada, páginas de serviço e formulário também foram
   conferidos no WebKit.
 
+### Oitava rodada (28 a 30/10): Google Search Console
+
+O site foi para o `blackrockfloors.com` em 17/10 (o Lucas ligou o domínio pelo Cloudflare; o Gabriel pagou). Em 28/10
+o Gabriel pediu ajuda para colocar o site no **Google Search Console** ("quero que o Google possa achar o meu site"):
+pelo Wix não dá, porque o domínio aparece como gerenciado externamente. Ele também quer ter acesso ao domínio e ao
+site, para não depender de ninguém no futuro.
+
+- Ao conferir o domínio, apareceu um problema sério: o canonical, a prévia do link, o `sitemap.xml` e o `robots.txt`
+  ainda apontavam para o endereço `.workers.dev`, que tem `noindex`. A última publicação tinha sido minutos antes de
+  o domínio ser ligado, e o workflow procurava o endereço com www. Agora o endereço oficial é o sem www
+  (`https://blackrockfloors.com`) e a publicação de 30/10 já saiu com ele.
+- O passo a passo do Search Console e do acesso do Gabriel está em
+  [Google Search Console e acesso do Gabriel](#google-search-console-e-acesso-do-gabriel).
+- O Gabriel mandou a senha do Wix e códigos de acesso pelo WhatsApp (16/10). Vale ele trocar a senha do Wix.
+
 ## O que tem no site
 
 **Página inicial** (`index.html`):
@@ -300,7 +315,7 @@ e rode `bash tools/make-hero-video.sh`.
 O workflow `.github/workflows/deploy-black-rock-floors.yml` publica o site no Cloudflare a cada push que mexe em
 `black-rock-floors/` (no `main` ou no branch `claude/practical-goldberg-vyf1zm`). Vai como **Worker** chamado
 `blackrockfloors`, no mesmo esquema da The Berry Coffee, porque a conta já chegou ao limite de projetos do Cloudflare Pages.
-No ar em <https://blackrockfloors.lucassouzalima10.workers.dev> (o endereço também aparece no resumo de cada execução, em **Actions**).
+No ar em <https://blackrockfloors.com> (o domínio do Gabriel) e, como prévia, em <https://blackrockfloors.lucassouzalima10.workers.dev> (o endereço também aparece no resumo de cada execução, em **Actions**).
 
 - Usa o mesmo secret dos outros sites: `CLOUDFLARE_API_TOKEN` (e `CLOUDFLARE_ACCOUNT_ID`, opcional).
 - Na publicação, o workflow coloca o endereço completo no `og:image` (o WhatsApp exige), o `canonical` e o `og:url` em cada página, e gera o `sitemap.xml` e o `robots.txt`.
@@ -315,32 +330,50 @@ No ar em <https://blackrockfloors.lucassouzalima10.workers.dev> (o endereço tam
   confere o vídeo (206) e a 404 (sem cache).
 - No endereço `.workers.dev`, o site vai com `noindex` (arquivo `_headers`): o Google não indexa a prévia.
 
-### Ligar o domínio do Gabriel: `blackrockfloors.com`
+### O domínio do Gabriel: `blackrockfloors.com`
 
-**Situação em 17/10:** o domínio está registrado no Wix (desde 12/10) e os *nameservers* já são os do Cloudflare
-(`hadlee` e `terin.ns.cloudflare.com`, os mesmos do genialup.com, ou seja, a conta do Lucas). Os passos 1 e 2 estão
-feitos. Mas o domínio ainda aponta para o Wix, que responde "página não encontrada": faltam os passos 3 a 7.
+- **Registro:** no Wix, na conta do Gabriel (desde 12/10; renova em 11/10/2027). No Wix ele aparece como
+  "Gerenciado externamente / Não atribuído a um site", e isso é o normal: o DNS está no Cloudflare.
+- **DNS e hospedagem:** na conta do Cloudflare do Lucas (a mesma do genialup.com). Os *nameservers* foram trocados no
+  Wix em 17/10, e o Lucas ligou `blackrockfloors.com` e `www.blackrockfloors.com` ao Worker `blackrockfloors` pelo
+  painel (Workers & Pages → blackrockfloors → Settings → Domains & Routes). O deploy não mexe nesses domínios: o
+  Wrangler só publica domínios que estejam no `wrangler.jsonc`, e o workflow não põe nenhum lá.
+- **Endereço oficial:** `https://blackrockfloors.com`, sem www, que é o que o Gabriel e o Lucas usam. É o `FINAL_URL`
+  do workflow: o canonical, o `og:url`, a prévia do link, o `sitemap.xml` e o `robots.txt` usam esse endereço. O www
+  abre o mesmo site, com o canonical apontando para o sem www. O `.workers.dev` continua como prévia, com `noindex`.
+- **E-mail:** o domínio não tem (nenhum registro MX). Se o Gabriel quiser um e-mail @blackrockfloors.com, o Cloudflare
+  Email Routing encaminha de graça para o Gmail dele.
 
-1. ~~Cloudflare: **Add a domain**~~ (feito).
-2. ~~Wix: trocar os *nameservers* pelos do Cloudflare~~ (feito em 17/10). O domínio continua registrado no Wix, e a
-   renovação anual também é lá.
-3. **Antes de ligar:** trocar as avaliações de exemplo pelas reais, ou tirar os depoimentos (veja a lista "Antes de
-   mostrar ao Gabriel"). No domínio, o site fica aberto ao Google e ao público.
-4. Cloudflare → `blackrockfloors.com` → **DNS → Records**: apague os registros de `blackrockfloors.com` e de `www`
-   que vieram do Wix (tipos A, AAAA ou CNAME). O domínio não tem e-mail (nenhum registro MX), então nada mais muda.
-5. Cloudflare → **Workers & Pages → blackrockfloors → Settings → Domains & Routes → Add → Custom domain**:
-   `www.blackrockfloors.com`; depois, de novo, `blackrockfloors.com`. O Cloudflare cria os registros e o certificado
-   sozinho (leva alguns minutos).
-6. Recomendado: Cloudflare → `blackrockfloors.com` → **Rules → Redirect Rules**, com o modelo **Redirect from root
-   to WWW** (301). Assim o endereço sem www leva ao com www, o oficial.
-7. Publicar de novo: GitHub → **Actions → Deploy Black Rock Floors** → abra a última execução → **Re-run all jobs**.
-   O botão "Run workflow" não aparece porque o workflow não está no branch padrão do repositório. O workflow vê que
-   `https://www.blackrockfloors.com` já abre o site e passa o canonical, o sitemap e a prévia do link para o domínio
-   (é o `FINAL_URL` no topo do workflow). O resumo da execução mostra "Domínio no ar".
-8. Google: no Search Console, adicione `blackrockfloors.com` (a verificação por DNS é automática com o Cloudflare) e
-   envie `https://www.blackrockfloors.com/sitemap.xml`. No Perfil da Empresa no Google, coloque o site novo.
+Recomendado no Cloudflare (precisa do login):
 
-O endereço `.workers.dev` continua funcionando, com `noindex`, como prévia.
+1. **SSL/TLS → Edge Certificates → Always Use HTTPS**: ligar. Hoje o endereço com `http://` também abre o site, sem
+   levar para o `https://`.
+2. **Rules → Redirect Rules**: levar o www para o endereço sem www (301). O canonical já resolve isso para o Google;
+   o redirecionamento deixa o endereço da barra igual para todo mundo.
+
+Para publicar de novo sem mudar nada: GitHub → **Actions → Deploy Black Rock Floors** → abra a última execução →
+**Re-run all jobs**. O botão "Run workflow" não aparece porque o workflow não está no branch padrão do repositório.
+
+### Google Search Console e acesso do Gabriel
+
+O Gabriel tentou verificar o site no Search Console pelo Wix e não conseguiu, porque o DNS não está mais no Wix.
+O jeito certo é uma **propriedade de domínio**, que cobre o domínio inteiro (com e sem www, http e https):
+
+1. Gabriel, no Search Console: **Adicionar propriedade → Domínio** → `blackrockfloors.com` → copiar o registro TXT
+   que o Google mostra (`google-site-verification=…`).
+2. Lucas, no Cloudflare → `blackrockfloors.com` → **DNS → Records → Add record**: tipo **TXT**, nome **@**, conteúdo
+   = o valor que o Google deu, TTL **Auto** → **Save**. Não apague esse registro depois: ele mantém a verificação.
+3. Gabriel clica em **Verificar** (pode levar alguns minutos). Depois: **Sitemaps** →
+   `https://blackrockfloors.com/sitemap.xml` → **Enviar**.
+
+Outro jeito, sem mexer no DNS: propriedade **Prefixo do URL** (`https://blackrockfloors.com/`) com o método **Tag
+HTML**. O Gabriel manda a tag `<meta name="google-site-verification" content="…">`, ela entra no `<head>` do
+`index.html` e o site é publicado de novo.
+
+**Acesso do Gabriel ao domínio:** no Cloudflare, **Members → Invite members** → e-mail do Gabriel → na permissão,
+escolher só o domínio `blackrockfloors.com` e a função **Domain Administrator** → **Invite members**. Ele passa a
+ver e mudar o DNS (e verificar o Search Console sozinho) sem acesso aos outros sites da conta. O registro do domínio
+já é dele, no Wix.
 
 ## Ver no computador
 

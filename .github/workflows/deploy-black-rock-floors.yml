@@ -11,10 +11,11 @@
 # Usa os mesmos secrets dos outros sites do repositório (Settings → Secrets and variables → Actions):
 #   CLOUDFLARE_API_TOKEN   token do Cloudflare que pode publicar Workers (obrigatório)
 #   CLOUDFLARE_ACCOUNT_ID  ID da conta (opcional: sem ele, o workflow descobre a conta pelo token)
-# O endereço final é o domínio do Gabriel (FINAL_URL, logo abaixo). Enquanto ele não abrir este site, o canonical,
-# o sitemap e a prévia do link usam o endereço .workers.dev; quando abrir, a publicação seguinte passa a usar o
-# domínio sozinha. Para forçar outro endereço, crie a variável (mesma tela, aba Variables):
-#   BLACKROCK_SITE_URL     ex.: https://www.blackrockfloors.com
+# O endereço oficial é o domínio do Gabriel sem www (FINAL_URL, logo abaixo), que é o que ele e o Lucas usam.
+# O domínio e o www foram ligados ao Worker pelo painel do Cloudflare (17/10); o deploy não mexe nisso.
+# Se o domínio deixar de abrir este site, o canonical, o sitemap e a prévia do link voltam a usar o .workers.dev.
+# Para forçar outro endereço, crie a variável (mesma tela, aba Variables):
+#   BLACKROCK_SITE_URL     ex.: https://blackrockfloors.com
 # Enquanto o token não existir, o workflow só avisa e não falha.
 name: Deploy Black Rock Floors (Cloudflare)
 
@@ -35,7 +36,7 @@ concurrency:
 
 env:
   WORKER: blackrockfloors
-  FINAL_URL: https://www.blackrockfloors.com
+  FINAL_URL: https://blackrockfloors.com
 
 jobs:
   check:
