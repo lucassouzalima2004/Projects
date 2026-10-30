@@ -380,7 +380,7 @@
       armed = true;
       const go = () => setTimeout(startAuto, 650);
       if (!('IntersectionObserver' in window)) { go(); return; }
-      const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { io.disconnect(); go(); } }, { threshold: .45 });
+      const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { io.disconnect(); go(); } }, { threshold: .3 });
       io.observe(glass);
     }
 

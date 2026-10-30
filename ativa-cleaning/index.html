@@ -21,7 +21,8 @@
 
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
-  <link rel="preload" as="image" href="assets/img/hero-team.jpg" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/img/hero-team-wide.jpg" media="(min-width: 761px)" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/img/hero-team.jpg" media="(max-width: 760px)" fetchpriority="high">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -122,22 +123,21 @@
   </header>
 
   <main id="main">
-    <!-- ============ Topo: o porta-retrato empoeirado que o pano limpa ============ -->
+    <!-- ============ Topo: título centralizado e, embaixo, o porta-retrato empoeirado que o pano limpa ============ -->
     <section class="hero" id="top">
       <div class="hero__light" aria-hidden="true"></div>
       <div class="wrap hero__grid">
         <div class="hero__copy">
-          <p class="eyebrow hero__in" style="--d:0"><svg class="icon"><use href="#i-spark"/></svg> House &amp; commercial cleaning · Adelaide, SA</p>
           <h1 class="hero__title">
-            <span class="hero__line"><span class="hero__in" style="--d:1">We clean,</span></span>
-            <span class="hero__line"><span class="hero__in" style="--d:2"><em class="swipe">you live.</em></span></span>
+            <span class="hero__line"><span class="hero__in" style="--d:0">We clean,</span></span>
+            <span class="hero__line"><span class="hero__in" style="--d:1"><em class="swipe">you live.</em></span></span>
           </h1>
-          <p class="hero__lead hero__in" style="--d:3">Spotless homes and workplaces across Adelaide. Regular and once-off house cleans, end-of-lease cleans with our bond-back guarantee, and offices, cafés and childcare centres kept fresh, by a small team that treats your space like its own.</p>
-          <div class="hero__actions hero__in" style="--d:4">
-            <a class="btn btn--ink btn--lg" href="#quote">Get my free quote <svg class="icon"><use href="#i-arrow"/></svg></a>
-            <a class="btn btn--ghost btn--lg" data-tel href="tel:+61438357508"><svg class="icon"><use href="#i-phone"/></svg> 0438 357 508</a>
+          <p class="hero__lead hero__in" style="--d:2">House and commercial cleaning across Adelaide, by a small team that treats your space like its own.</p>
+          <div class="hero__actions hero__in" style="--d:3">
+            <a class="glass-btn glass-btn--ink" href="#quote">Get a free quote <svg class="icon"><use href="#i-arrow"/></svg></a>
+            <a class="glass-btn glass-btn--light" data-tel href="tel:+61438357508"><svg class="icon"><use href="#i-phone"/></svg> 0438 357 508</a>
           </div>
-          <ul class="hero__trust hero__in" style="--d:5">
+          <ul class="hero__trust hero__in" style="--d:4">
             <li><a href="#reviews"><span class="stars" aria-hidden="true"><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg></span><span><strong data-rating>5.0</strong> on Google · <span data-review-count>23</span> reviews</span></a></li>
             <li><svg class="icon"><use href="#i-shield"/></svg> Bond-back guarantee</li>
             <li><svg class="icon"><use href="#i-check"/></svg> Free quotes</li>
@@ -149,8 +149,11 @@
             <div class="pane__frame">
               <div class="pane__mat">
                 <div class="pane__glass" data-glass>
-                  <img class="pane__view" src="assets/img/hero-team.jpg" width="1000" height="1250" fetchpriority="high"
-                       alt="Two members of the Ativa team smiling outdoors in their navy uniforms">
+                  <picture>
+                    <source media="(min-width: 761px)" srcset="assets/img/hero-team-wide.jpg" width="1440" height="900">
+                    <img class="pane__view" src="assets/img/hero-team.jpg" width="1000" height="1250" fetchpriority="high"
+                         alt="Two members of the Ativa team smiling outdoors in their navy uniforms">
+                  </picture>
                   <canvas class="pane__grime" data-grime aria-hidden="true"></canvas>
                   <span class="pane__sheen" aria-hidden="true"></span>
                   <span class="pane__glint" aria-hidden="true"></span>

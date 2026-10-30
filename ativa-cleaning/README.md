@@ -10,11 +10,13 @@ Todas as fotos, avaliações e textos de garantia vêm do site antigo e do Googl
 
 ## O que tem no site
 
-- **Topo**: "We clean, you live." (o slogan da Ativa) com "House & commercial cleaning". Ao lado, a foto da equipe num
-  porta-retrato empoeirado, com "clean me" escrito no pó. Quando ele aparece na tela, um pano de microfibra limpa a
-  foto em "S" e deixa a parte de baixo para a pessoa terminar: no computador é só passar o mouse; no celular, arrastar
-  o dedo na horizontal (ou tocar em "tap here" para o pano terminar sozinho). No fim aparece "Spotless. That's the Ativa
-  finish." com brilhos, e um botão para empoeirar de novo. Quem ativou "reduzir movimento" já vê a foto limpa.
+- **Topo** centralizado: "We clean, you live." (o slogan da Ativa), uma frase curta ("House and commercial cleaning
+  across Adelaide...") e dois botões de vidro no estilo do iPhone (azul-marinho para o orçamento, branco para o
+  telefone). Logo abaixo, a foto da equipe num porta-retrato empoeirado (horizontal no computador, em pé no celular),
+  com "clean me" escrito no pó. Quando ele aparece na tela, um pano de microfibra limpa a foto em "S" e deixa a parte
+  de baixo para a pessoa terminar: no computador é só passar o mouse; no celular, arrastar o dedo na horizontal (ou
+  tocar em "tap here" para o pano terminar sozinho). No fim aparece "Spotless. That's the Ativa finish." com brilhos,
+  e um botão para empoeirar de novo. Quem ativou "reduzir movimento" já vê a foto limpa.
 - **Faixa** correndo com os serviços (casa, fim de contrato, escritórios, cafés, creches, pós-obra...).
 - **Home or business**: seletor **Residential | Commercial** (a pílula escura desliza até a escolhida). Cada lado tem
   fotos da equipe, um trecho de avaliação real e os serviços:
