@@ -58,6 +58,12 @@ export default {
     ],
   },
 
+  // Google rating shown under the home headline (as on the old site). null hides it.
+  google: {
+    rating: '5.0',
+    url: 'https://www.google.com/search?q=Bora+Signs+Welland+SA+reviews',
+  },
+
   stats: [
     { value: 15, suffix: '+', label: 'Years in signage' },
     { value: 100, suffix: 's', label: 'Of happy Adelaide clients' },

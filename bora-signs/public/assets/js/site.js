@@ -147,7 +147,7 @@
     if (!reduce) split(el);
     if (!el.hasAttribute('data-split-now')) io.observe(el);
   });
-  $$('[data-reveal], [data-oneless]').forEach((el) => io.observe(el));
+  $$('[data-reveal]').forEach((el) => io.observe(el));
 
   const loaded = () => {
     body.classList.add('is-loaded');

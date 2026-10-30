@@ -32,6 +32,7 @@ const assets = {
   css: hash('assets/css/site.css'),
   js: hash('assets/js/site.js'),
   lenis: hash('assets/js/lenis.min.js'),
+  hero3d: hash('assets/js/hero3d.js'),
 };
 
 rmSync(out, { recursive: true, force: true });

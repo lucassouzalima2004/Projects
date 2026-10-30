@@ -31,6 +31,11 @@ const sprite = `<svg class="sprite" aria-hidden="true" focusable="false">
   <symbol id="i-spark" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1.5c.6 5.4 2.9 8 8.5 8.5-5.6.6-7.9 3.2-8.5 8.5-.6-5.3-2.9-7.9-8.5-8.5 5.6-.5 7.9-3.1 8.5-8.5z"/></symbol>
   <symbol id="i-drag" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M9 6 3 12l6 6M15 6l6 6-6 6"/></symbol>
   <symbol id="i-quote" viewBox="0 0 48 48"><path fill="currentColor" d="M20 10C10.6 13.2 5 20.4 5 29.5 5 35.4 8.6 39 13.3 39c4.3 0 7.4-3.1 7.4-7.3 0-4-2.9-6.9-6.6-7.2.8-4.4 4.2-8.3 9.2-10.4L20 10zm21 0c-9.4 3.2-15 10.4-15 19.5 0 5.9 3.6 9.5 8.3 9.5 4.3 0 7.4-3.1 7.4-7.3 0-4-2.9-6.9-6.6-7.2.8-4.4 4.2-8.3 9.2-10.4L41 10z"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="9" cy="8" r="3.4"/><path d="M2.5 19c.6-3.6 3.3-5.6 6.5-5.6s5.9 2 6.5 5.6z"/><circle cx="16.8" cy="9" r="2.6"/><path d="M15.6 13.5c3 .1 5.3 1.9 5.9 5.5h-4.2c-.3-2.2-.8-3.9-1.7-5.5z"/></g></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20.5c.7-4.3 3.9-6.6 8-6.6s7.3 2.3 8 6.6z"/></g></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4" stroke-linecap="round"/></g><g fill="currentColor"><rect x="7" y="13" width="3" height="3" rx=".8"/><rect x="14" y="13" width="3" height="3" rx=".8"/></g></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.6 20.5 7v10L12 21.4 3.5 17V7zM6 8l6 3.2L18 8l-6-3.1zm-.6 2v6l5.6 2.9v-6z"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></g></symbol>
   <symbol id="i-menu" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 8h16M4 16h16"/></symbol>
   <symbol id="i-close" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
   <symbol id="i-chev" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></symbol>
@@ -53,15 +58,8 @@ export function markSvg(cls = 'mark') {
 }
 
 function logo(cls = 'logo') {
-  const id = `eye-${++eyeIds}`;
-  const { eye, pupil } = mark;
-  return `<svg class="${cls}" viewBox="0 0 3025 214" role="img" aria-label="${esc(site.name)}">
-    <g class="logo__mark" transform="translate(0 2) scale(.5066)">
-      <path d="${mark.body}"/>
-      <mask id="${id}"><rect width="756" height="414" fill="#fff"/><circle cx="${pupil.cx}" cy="${pupil.cy}" r="${pupil.r}" fill="#000"/></mask>
-      <circle cx="${eye.cx}" cy="${eye.cy}" r="${eye.r}" mask="url(#${id})"/>
-    </g>
-    <g transform="translate(467 0)" fill-rule="evenodd"><path class="logo__bora" d="${word.bora}"/><path class="logo__signs" d="${word.signs}"/></g>
+  return `<svg class="${cls}" viewBox="-467 0 3025 214" role="img" aria-label="${esc(site.name)}">
+    <g fill-rule="evenodd"><path class="logo__mark" d="${word.mark}"/><path class="logo__bora" d="${word.bora}"/><path class="logo__signs" d="${word.signs}"/></g>
   </svg>`;
 }
 
@@ -309,6 +307,7 @@ ${head}
 <link rel="stylesheet" href="/assets/css/site.css?v=${assets.css}">
 <script src="/assets/js/lenis.min.js?v=${assets.lenis}" defer></script>
 <script src="/assets/js/site.js?v=${assets.js}" defer></script>
+${slug === 'index' ? `<script src="/assets/js/hero3d.js?v=${assets.hero3d}" defer></script>` : ''}
 ${noindex ? '' : jsonLd({ url, title, description, image: ogImage }, ld)}
 ${pixel()}
 </head>
@@ -403,31 +402,84 @@ const serviceCard = (s, i, { big = false } = {}) => `
     </div>
   </a>`;
 
+/* ---------- home campaign panel ---------- */
+
+// The tasks a business owner juggles, floating around the chameleon. x/y place each card in the panel (%),
+// z is how far it floats toward the viewer, r and ty tilt it; mx/my are the places on a narrow panel (phones),
+// where cards without them are left out.
+const campaignCards = [
+  { label: 'Payroll', icon: 'users', x: 57, y: 20, z: 60, r: -3, ty: 14, mx: 23, my: 44 },
+  { label: 'Staff', icon: 'user', tone: 'pink', x: 55, y: 39, z: 90, r: 2, ty: 16, mx: 21, my: 60 },
+  { label: 'Customers', icon: 'users', x: 53, y: 55, z: 70, r: -2, ty: 14, mx: 23, my: 76 },
+  { label: 'Opening date', icon: 'cal', tone: 'pink', x: 55, y: 71, z: 110, r: 3, ty: 12 },
+  { label: 'Emails', icon: 'mail', x: 87, y: 37, z: 80, r: 3, ty: -16 },
+  { label: 'Stock', icon: 'box', tone: 'pink', x: 86, y: 55, z: 100, r: -2, ty: -14 },
+  { label: 'Scheduling', icon: 'clock', x: 84, y: 72, z: 70, r: 2, ty: -12, mx: 77, my: 75 },
+];
+
+function campaign() {
+  const card = (c, i) => `
+      <div class="card${c.mx == null ? ' card--wide-only' : ''}" style="--x:${c.x}%;--y:${c.y}%;--z:${c.z}px;--r:${c.r}deg;--ty:${c.ty}deg;${c.mx != null ? `--mx:${c.mx}%;--my:${c.my}%;` : ''}--in:${0.5 + i * 0.09}s;--dur:${5 + (i % 3) * 1.3}s">
+        <div class="card__in">
+          <span class="card__icon${c.tone === 'pink' ? ' card__icon--pink' : ''}">${icon(c.icon)}</span>
+          <span class="card__text"><b>${c.label}</b><span></span><span></span></span>
+        </div>
+      </div>`;
+  return `<div class="camp-wrap" data-hero-camp>
+      <div class="camp" data-camp>
+        <div class="camp__bg" aria-hidden="true"><span class="camp__neon"></span><span class="camp__glow"></span></div>
+        <div class="camp__back" data-camp-stage-back aria-hidden="true"><span class="camp__ring"></span></div>
+        <div class="camp__copy">
+          <p class="camp__title">One <span class="camp__less">less</span> thing<span class="camp__dot">.</span></p>
+          <p class="camp__sub">You run the business. <strong>We’ll handle the signs.</strong></p>
+        </div>
+        <div class="camp__cham" aria-hidden="true">
+          <img class="camp__img" src="/assets/img/hero/chameleon.webp" width="504" height="819" alt="" fetchpriority="high" decoding="async">
+          <canvas class="camp__gl" data-cham3d data-color="/assets/img/hero/chameleon.webp" data-depth="/assets/img/hero/chameleon-depth.png"></canvas>
+        </div>
+        <div class="camp__stage" data-camp-stage aria-hidden="true">
+          ${campaignCards.map(card).join('')}
+          <div class="card card--sign" style="--x:81%;--y:14%;--z:120px;--r:-16deg;--ty:-10deg;--mx:68%;--my:40%;--in:1.2s;--dur:4.6s">
+            <div class="card__in"><span class="card__check">${icon('check')}</span><b>Signage</b></div>
+          </div>
+        </div>
+        <canvas class="camp__shards" data-shards aria-hidden="true"></canvas>
+        <div class="camp__brand">${logo('logo logo--camp')}<span>Signage without the stress.</span></div>
+      </div>
+    </div>`;
+}
+
+// Google's "G", for the rating under the home headline
+const googleG = `<svg class="grating__g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>`;
+
 /* ---------- home ---------- */
 
 export function home() {
   const tickerItems = ['Vehicle wraps', 'Shopfront signs', 'Window graphics', 'Office signage', 'Neon & illuminated', 'Wall graphics', 'Trailer wraps', 'Frosted film', 'Mesh banners'];
   const ticker = (items) => items.map((t) => `<span>${t}</span>${icon('spark', 'i ticker__spark')}`).join('');
   const rest = services.filter((s) => !featured.includes(s.slug));
-  const tasks = ['Payroll', 'Staff', 'Customers', 'Emails', 'Stock', 'Scheduling', 'Opening date'];
 
   const body = `
-<section class="phero phero--home">
-  <div class="container center">
-    <h1 class="phero__title">
+<section class="hero2">
+  <div class="container hero2__grid">
+    <div class="hero2__copy">
       <span class="eyebrow" data-hero-in>${icon('spark', 'i')} Adelaide signwriters</span>
-      <span class="phero__h" data-split data-split-now>Signage that makes your business <em>hard to miss.</em></span>
-    </h1>
-    <p class="lead phero__lead" data-hero-in>Vehicle wraps, shopfront signage and window graphics, designed, produced and installed by one Adelaide team.</p>
-    <div class="cta-row" data-hero-in>
-      ${btn('Start your project', '/contact', { size: 'lg' })}
-      ${btn(site.phone, tel, { kind: 'ghost', size: 'lg', ico: 'phone' })}
+      <h1 class="hero2__h" data-split data-split-now>Signage that makes your business <em>hard to miss.</em></h1>
+      <p class="lead hero2__lead" data-hero-in>Vehicle wraps, shopfront signage, window graphics and complete business signage, designed, produced and installed by one Adelaide team.</p>
+      <div class="hero2__cta" data-hero-in>
+        ${btn('Start your project', '/contact', { size: 'lg' })}
+        ${btn(site.phone, tel, { kind: 'ghost', size: 'lg', ico: 'phone' })}
+      </div>
+      <ul class="hero2__trust" data-hero-in>
+        <li>${icon('check')}Design to installation</li>
+        <li>${icon('check')}Adelaide-based team</li>
+        <li>${icon('check')}Quality materials</li>
+      </ul>
+      ${site.google ? `<a class="grating" href="${site.google.url}" target="_blank" rel="noopener" data-hero-in>
+        ${googleG}<strong>${site.google.rating}</strong><span class="grating__stars" aria-hidden="true">★★★★★</span><span>on Google</span>
+      </a>` : ''}
     </div>
-  </div>
-  <div class="container">
-    <div class="phero__media" data-parallax>
-      ${picture('install-van-wrap', 'Bora Signs installer applying a printed wrap to a work van with a heat gun', { sizes: '(min-width: 1280px) 1200px, 100vw', eager: true })}
-    </div>
+    ${campaign()}
   </div>
 </section>
 
@@ -463,26 +515,6 @@ export function home() {
     </div>
   </div>
 </section>
-
-<section class="section oneless" data-oneless>
-  <div class="container oneless__grid">
-    <div class="oneless__copy">
-      ${kicker('Signage without the stress')}
-      <h2 class="mega-type" data-split>One <span class="grad">less</span> thing.</h2>
-      <p class="lead" data-reveal>You run the business. <strong class="pink">We’ll handle the signs.</strong></p>
-      <p data-reveal>Opening a new site, rebranding or adding vans to the fleet already comes with a long to-do list. Hand the signage to one team that measures, designs, produces and installs, and keeps you posted the whole way.</p>
-      <div data-reveal>${btn('Hand it over', '/contact')}</div>
-    </div>
-    <div class="oneless__stage" aria-hidden="true">
-      <div class="orbit">
-        ${tasks.map((t, i) => `<span class="task" style="--a:${(360 / (tasks.length + 1)) * i}deg"><span class="task__in"><span class="task__chip">${t}</span></span></span>`).join('')}
-        <span class="task task--sign" style="--a:${(360 / (tasks.length + 1)) * tasks.length}deg"><span class="task__in"><span class="task__chip">${icon('check')} Signage</span></span></span>
-      </div>
-      <div class="oneless__mark">${markSvg('mark mark--orbit')}</div>
-    </div>
-  </div>
-</section>
-
 ${processSection()}
 
 <section class="work" id="work" data-hscroll>
