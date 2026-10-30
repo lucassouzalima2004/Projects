@@ -7,8 +7,10 @@ com título, descrição e dados estruturados para o Google, e os anúncios pode
 ## O que tem no site
 
 - **Home**: no topo, o título, o "One less thing" da campanha e a nota 5.0 do Google; ao lado, direto no fundo do site,
-  o camaleão de óculos em 3D, que gira seguindo o mouse (ou sozinho, no celular) com luz neon, e as tarefas do dono do
-  negócio flutuando atrás dele, cada uma no seu ritmo; o card "Signage" se desfaz em estilhaços e volta. Depois: faixa de
+  o camaleão de óculos em 3D, que gira seguindo o mouse com luz neon, e as tarefas do dono do negócio flutuando atrás
+  dele, cada uma no seu ritmo; o card "Signage" se desfaz em estilhaços e volta, e ele dá um pulinho olhando para o card.
+  Parado, ele olha em volta sozinho. No celular ele aparece primeiro, antes do título: dá para arrastar o dedo para os
+  lados para girá-lo, um toque faz ele pular, e a rolagem também o vira. Depois: faixa de
   serviços que acelera com a rolagem, números, serviços, processo em 4 passos, trabalhos recentes em rolagem horizontal,
   clientes, depoimentos, dúvidas e chamada final. O camaleão do logo pisca.
 - **Uma página por serviço** (13), com os mesmos endereços do Wix: `/vehicle-signage`, `/shopfront-signage`, `/window-graphics`,

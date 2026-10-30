@@ -12,8 +12,9 @@
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
-  /* ---------- input: pointer, phone tilt, scroll ---------- */
+  /* ---------- input: pointer, phone tilt, touch drag, scroll ---------- */
 
+  const touchOnly = matchMedia('(hover: none)').matches;
   const input = { x: 0, y: 0, last: -1e9 };
   addEventListener('pointermove', (e) => {
     if (e.pointerType === 'touch') return;
@@ -28,7 +29,28 @@
     input.last = performance.now();
   }, { passive: true });
 
-  // A spring just under critical damping: eases in, eases out, no wobble
+  // On a phone, drag sideways across him to turn him (vertical swipes still scroll the page); a tap makes him hop
+  const drag = { on: false, id: 0, x0: 0, y0: 0, x: 0, moved: false };
+  scene.addEventListener('pointerdown', (e) => {
+    if (e.pointerType !== 'touch') return;
+    Object.assign(drag, { on: true, id: e.pointerId, x0: e.clientX, y0: e.clientY, x: 0, moved: false });
+  });
+  scene.addEventListener('pointermove', (e) => {
+    if (!drag.on || e.pointerId !== drag.id) return;
+    drag.x = clamp((e.clientX - drag.x0) / (scene.clientWidth * 0.35), -1.2, 1.2);
+    if (Math.abs(e.clientX - drag.x0) > 8) drag.moved = true;
+  });
+  const release = (e) => {
+    if (!drag.on || e.pointerId !== drag.id) return;
+    drag.on = false;
+    if (!drag.moved) { hop.v -= 2.2; lookX.v += (Math.random() < 0.5 ? -1 : 1) * 6; }
+    else lookX.v += drag.x * 4;  // let go: he swings back with a little wobble
+    input.last = performance.now() - 1500;
+  };
+  scene.addEventListener('pointerup', release);
+  scene.addEventListener('pointercancel', release);
+
+  // Springs: the look settles without wobble, the hop is bouncy
   const spring = (stiffness, damping) => ({
     x: 0, v: 0,
     step(target, dt) { this.v += ((target - this.x) * stiffness - this.v * damping) * dt; this.x += this.v * dt; return this.x; },
@@ -36,6 +58,18 @@
   const lookX = spring(26, 9.5);
   const lookY = spring(26, 9.5);
   const scrollS = spring(30, 11);
+  const hop = spring(70, 7);
+
+  // While nobody moves the pointer he looks around on his own: a new glance every few seconds
+  const glance = { x: 0, y: 0, next: 0 };
+  const lookAround = (t) => {
+    if (t < glance.next) return;
+    glance.x = (Math.random() * 2 - 1) * (touchOnly ? 1 : 0.8);
+    glance.y = (Math.random() * 2 - 1) * 0.45;
+    glance.next = t + 1.8 + Math.random() * 2.4;
+  };
+  // The Signage card shatters: he hops and turns to look at it
+  const cheer = () => { hop.v -= 1.8; glance.x = 0.9; glance.y = -0.5; glance.next = performance.now() / 1000 + 1.6; };
 
   /* ---------- cards: each one floats on its own ---------- */
 
@@ -67,7 +101,7 @@
   document.addEventListener('visibilitychange', () => { if (!document.hidden) kick(); });
 
   const gl3d = !reduce && canvas ? setupGL(canvas) : null;
-  const shards = reduce ? null : setupShards(scene.querySelector('[data-shards]'), cards.find((c) => c.sign));
+  const shards = reduce ? null : setupShards(scene.querySelector('[data-shards]'), cards.find((c) => c.sign), cheer);
 
   let running = false;
   let started = false;
@@ -79,17 +113,21 @@
     prev = now;
     const t = (now - t0) / 1000;
 
-    // The pointer while it is moving; after a few quiet seconds a slow figure-eight takes over, blended in
-    const idle = clamp((now - input.last - 2500) / 1500, 0, 1);
-    const ix = input.x * (1 - idle) + Math.sin(t * 0.31) * 0.6 * idle;
-    const iy = input.y * (1 - idle) + Math.sin(t * 0.47 + 1) * 0.3 * idle;
+    // Pointer (or finger) while it is moving; after a few quiet seconds he looks around by himself, blended in
+    lookAround(now / 1000);
+    const idle = drag.on ? 0 : clamp((now - input.last - 2500) / 1500, 0, 1);
+    const sway = touchOnly ? 0.22 : 0.12;
+    const ax = glance.x + Math.sin(t * 0.7) * sway, ay = glance.y + Math.sin(t * 0.9 + 1) * sway * 0.6;
+    const ix = drag.on ? drag.x : input.x * (1 - idle) + ax * idle;
+    const iy = drag.on ? 0 : input.y * (1 - idle) + ay * idle;
     const x = lookX.step(ix, dt);
     const y = lookY.step(iy, dt);
     const s = scrollS.step(clamp(scrollY / innerHeight, 0, 1), dt);
+    const h = hop.step(0, dt);
 
     // He leans toward the pointer; the layer behind him (ring, cards) drifts the other way and tilts; the glow drifts least
     back.style.transform = `perspective(1400px) translate3d(${(-x * 1.3 * unit).toFixed(2)}px, ${(-y * 1.1 * unit + s * 4 * unit).toFixed(2)}px, 0) rotateX(${(-y * 5 - s * 6).toFixed(2)}deg) rotateY(${(x * 8).toFixed(2)}deg)`;
-    glow.style.transform = `translate3d(${(-x * 1.2 * unit).toFixed(2)}px, ${(-y * 0.8 * unit).toFixed(2)}px, 0)`;
+    glow.style.transform = `translate3d(${(-x * 1.2 * unit).toFixed(2)}px, ${(-y * 0.8 * unit).toFixed(2)}px, 0) scale(${(1 + Math.sin(t * 1.3) * 0.04 - h * 0.15).toFixed(3)})`;
 
     for (const c of cards) {
       const { f, p } = c;
@@ -106,8 +144,8 @@
       c.inner.style.setProperty('--glare', (0.5 + ry / 30).toFixed(3));
     }
 
-    if (shards) shards.step(t);
-    if (gl3d) gl3d.draw(t, x, y, s);
+    if (shards) shards.step(t, x, y);
+    if (gl3d) gl3d.draw(t, x, y, s, h, lookX.v);
     requestAnimationFrame(frame);
   }
   function kick() {
@@ -242,7 +280,7 @@
 
     let shown = false;
     return {
-      draw(t, lx, ly, ls) {
+      draw(t, lx, ly, ls, hp, vx) {
         if (!ready) return;
         const dpr = Math.min(devicePixelRatio || 1, 1.75);
         const w = Math.round(cv.clientWidth * dpr), h = Math.round(cv.clientHeight * dpr);
@@ -258,12 +296,14 @@
         // Same framing as the flat artwork: 94% of the canvas height, standing on its bottom edge
         const fov = 0.5, view = 1 / 0.94, dist = view / (2 * Math.tan(fov / 2));
         gl.uniformMatrix4fv(u.proj, false, perspective(fov, w / h, 0.1, 10));
-        const yaw = lx * 0.21 + Math.sin(t * 0.5) * 0.02;
+        const yaw = lx * (touchOnly ? 0.3 : 0.21) + Math.sin(t * 0.5) * 0.02 + ls * (touchOnly ? 0.35 : 0);
         const pitch = ly * 0.1 + ls * 0.12;
-        const breathe = 1 + Math.sin(t * 1.6) * 0.007;
+        const lean = clamp(-vx * 0.025, -0.12, 0.12);           // leans into a quick turn
+        const breathe = 1 + Math.sin(t * 1.6) * (touchOnly ? 0.012 : 0.007);
+        const squash = clamp(1 - hp * 0.25, 0.94, 1.06);        // stretches going up (hp < 0), squashes landing
         const tx = lx * 0.008;
-        const ty = 0.5 - view / 2 + Math.sin(t * 0.85) * 0.007 - ly * 0.008;
-        const model = multiply(translate(tx, ty, -dist), multiply(rotY(yaw), multiply(rotX(pitch), scale(1, breathe, 1))));
+        const ty = 0.5 - view / 2 + Math.sin(t * 0.85) * 0.007 - ly * 0.008 - Math.min(0, hp) * 0.22;
+        const model = multiply(translate(tx, ty, -dist), multiply(rotY(yaw), multiply(rotX(pitch), multiply(rotZ(lean), scale(1 / Math.sqrt(squash), breathe * squash, 1)))));
         gl.uniformMatrix4fv(u.model, false, model);
         gl.uniform3f(u.light, -0.6 + lx * 0.9, 0.5 - ly * 0.4, 0.8);
         gl.uniform1i(u.tex, 0);
@@ -298,12 +338,13 @@
   function translate(x, y, z) { return new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1]); }
   function scale(x, y, z) { return new Float32Array([x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1]); }
   function rotY(a) { const c = Math.cos(a), s = Math.sin(a); return new Float32Array([c, 0, -s, 0, 0, 1, 0, 0, s, 0, c, 0, 0, 0, 0, 1]); }
+  function rotZ(a) { const c = Math.cos(a), s = Math.sin(a); return new Float32Array([c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]); }
   function rotX(a) { const c = Math.cos(a), s = Math.sin(a); return new Float32Array([1, 0, 0, 0, 0, c, s, 0, 0, -s, c, 0, 0, 0, 0, 1]); }
 
   /* ---------- the Signage card breaks into shards, then puts itself back together ---------- */
 
   // The shard canvas sits in the same layer as the cards, so the card's place comes from layout, measured on resize only
-  function setupShards(cv, sign) {
+  function setupShards(cv, sign, onBreak) {
     if (!cv || !sign) return null;
     const ctx = cv.getContext('2d');
     const colors = ['#ff5fa9', '#f62584', '#ffffff', '#b98cff', '#8a3be0'];
@@ -314,7 +355,10 @@
       rot: Math.random() * 6, spin: (Math.random() - 0.5) * 8,
       size: 3 + Math.random() * 6, color: colors[i % colors.length], delay: Math.random() * 0.35,
     }));
+    // neon dust rising slowly behind him
+    const dust = Array.from({ length: 34 }, () => ({ x: Math.random(), y: Math.random(), s: 0.6 + Math.random() * 1.6, v: 0.012 + Math.random() * 0.03, tw: Math.random() * 6, c: colors[Math.floor(Math.random() * colors.length)] }));
     const CYCLE = 7;
+    let lastPhase = 0;
     let box = { x: 0, y: 0, w: 0, h: 0 };
     const place = () => {
       const el = sign.el;
@@ -323,15 +367,27 @@
     place();
     if ('ResizeObserver' in window) new ResizeObserver(place).observe(scene);
     return {
-      step(t) {
+      step(t, lx, ly) {
         const dpr = Math.min(devicePixelRatio || 1, 2);
         const w = Math.round(cv.clientWidth * dpr), h = Math.round(cv.clientHeight * dpr);
         if (!w || !h) return;
         if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; place(); }
         ctx.clearRect(0, 0, w, h);
         ctx.globalCompositeOperation = 'lighter';
+        for (const d of dust) {
+          const yy = ((d.y - t * d.v) % 1 + 1) % 1;
+          const a = Math.sin(t * 1.5 + d.tw) * 0.35 + 0.45;
+          ctx.globalAlpha = a * Math.min(1, yy * 4) * Math.min(1, (1 - yy) * 4);
+          ctx.fillStyle = d.c;
+          ctx.beginPath();
+          ctx.arc((d.x * w) - lx * 8 * dpr * d.s, yy * h - ly * 6 * dpr * d.s, d.s * dpr * 1.4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
         const cx = (box.x + sign.fx) * dpr, cy = (box.y + sign.fy) * dpr, cw = box.w * dpr, ch = box.h * dpr;
         const phase = (t % CYCLE) / CYCLE;
+        if (lastPhase < 0.35 && phase >= 0.35 && onBreak) onBreak();
+        lastPhase = phase;
         // 0–.35 whole card · .35–.6 breaks away to the right · .6–.85 gone, shards drift · .85–1 flies back together
         let k;
         if (phase < 0.35) k = 0;

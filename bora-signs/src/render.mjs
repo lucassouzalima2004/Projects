@@ -409,13 +409,13 @@ const serviceCard = (s, i, { big = false } = {}) => `
 // side 'r' cards sit to his right with the label on their outer edge, so the part tucked behind him is the blank one.
 // mx/my are the places on phones; cards without them are left out there.
 const campaignCards = [
-  { label: 'Payroll', icon: 'users', x: 18, y: 30, z: -60, mx: 20, my: 42 },
-  { label: 'Staff', icon: 'user', tone: 'pink', x: 13, y: 45, z: -110, mx: 17, my: 57 },
-  { label: 'Customers', icon: 'users', x: 16, y: 60, z: -80, mx: 20, my: 72 },
+  { label: 'Payroll', icon: 'users', x: 18, y: 30, z: -60, mx: 16, my: 54 },
+  { label: 'Staff', icon: 'user', tone: 'pink', x: 13, y: 45, z: -110, mx: 15, my: 71 },
+  { label: 'Customers', icon: 'users', x: 16, y: 60, z: -80, mx: 17, my: 37 },
   { label: 'Opening date', icon: 'cal', tone: 'pink', x: 12, y: 75, z: -130 },
-  { label: 'Emails', icon: 'mail', side: 'r', x: 96, y: 45, z: -90 },
-  { label: 'Stock', icon: 'box', tone: 'pink', side: 'r', x: 93, y: 61, z: -60 },
-  { label: 'Scheduling', icon: 'clock', side: 'r', x: 95, y: 77, z: -110 },
+  { label: 'Emails', icon: 'mail', side: 'r', x: 96, y: 45, z: -90, mx: 83, my: 74 },
+  { label: 'Stock', icon: 'box', tone: 'pink', side: 'r', x: 93, y: 61, z: -60, mx: 82, my: 88 },
+  { label: 'Scheduling', icon: 'clock', side: 'r', x: 95, y: 77, z: -110, mx: 82, my: 58 },
 ];
 
 function campaign() {
@@ -432,7 +432,7 @@ function campaign() {
         <div class="scene__back" data-camp-back>
           <span class="scene__ring"></span>
           ${campaignCards.map(card).join('')}
-          <div class="card card--sign" style="--x:74%;--y:18%;--z:-40px;--mx:70%;--my:24%;--in:1.2s">
+          <div class="card card--sign" style="--x:74%;--y:18%;--z:-40px;--mx:72%;--my:13%;--in:1.2s">
             <div class="card__in"><span class="card__check">${icon('check')}</span><b>Signage</b></div>
           </div>
           <canvas class="scene__shards" data-shards></canvas>
