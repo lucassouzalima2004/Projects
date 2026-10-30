@@ -19,12 +19,15 @@
   const header = $('[data-header]');
   const film = $('[data-film]');
   let filmEnd = 0;
+  let filmOff = 0;
   const measure = () => {
     filmEnd = film ? film.offsetTop + film.offsetHeight - window.innerHeight : 0;
+    // até onde o topo ainda ocupa a tela (as cenas têm uma tela de altura só)
+    filmOff = film ? Math.max(filmEnd, film.offsetTop + film.offsetHeight / 2) : 0;
   };
   const headerState = () => {
     header.classList.toggle('is-solid', window.scrollY > Math.max(24, filmEnd - 8));
-    document.documentElement.classList.toggle('on-film', window.scrollY < filmEnd);
+    document.documentElement.classList.toggle('on-film', window.scrollY < filmOff);
   };
   measure();
   headerState();

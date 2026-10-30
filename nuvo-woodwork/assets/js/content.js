@@ -26,7 +26,7 @@ window.NUVO = {
   },
 
   /* ---------------------------------------------------------------------------
-     2. TRECHOS DO FILME
+     4. TRECHOS DO FILME EM VÍDEO (a versão antiga, em ?video)
      -------------------------------------------------------------------------
      Um voo só, da porta da casa até a casa inteira acesa, feito de 4 vídeos
      encadeados (o último quadro de um é o primeiro do próximo; veja PROMPTS.md).
@@ -54,73 +54,74 @@ window.NUVO = {
   },
 
   /* ---------------------------------------------------------------------------
-     3. FILME EM 3D (versão para comparar: o site com ?3d no fim do endereço)
+     3. AS CENAS DO TOPO (chapters.js)
      -------------------------------------------------------------------------
-     Cada ambiente é uma cena 3D feita da imagem dele (tools/make-3d.py →
-     assets/3d/). O scroll leva a câmera para dentro; os ambientes com
-     build: true se montam em volta de quem chega.
+     Cada cena ocupa a tela inteira. Uma pequena rolada leva à próxima, numa
+     transição com parallax. Na última, a rolagem segue para o resto do site.
 
-     length ....... quanto scroll o ambiente ocupa, em % da altura da tela
-     dolly ........ quanto a câmera entra, em fração da profundidade do ambiente
-     pan: false ... no celular em pé, a câmera fica no centro em vez de percorrer
-                    o ambiente de um lado ao outro
-     beats ........ os títulos: at: [entra, sai] de 0 a 1 dentro do ambiente
+     image ........ a foto da cena, em assets/img/ (larga, 16:9, com 2752 px de
+                    largura e uma cópia com 1376 px terminada em -1376; ver
+                    tools/make-scenes.sh)
+     tall ......... opcional: a versão em pé (9:16) para o celular
+     focus ........ [x, y] de 0 a 1: o ponto da foto que fica no meio da tela
+                    quando ela corta a foto (padrão: o centro). No celular em pé a
+                    câmera passeia devagar em volta dele.
+     card ......... opcional: uma foto de projeto real da Nuvo que flutua na cena
+     eyebrow ...... a linha pequena em cima do título
+     title ........ \n quebra a linha; *palavra* fica em itálico dourado
+     text, cue .... opcionais: um parágrafo e o aviso para rolar
+     actions ...... true: os botões de contato
+     align ........ 'left' (padrão) ou 'center'
      ------------------------------------------------------------------------- */
-  tour3d: [
+  chapters: [
     {
       id: 'door',
-      length: 150,
-      dolly: 0.25,
-      pan: false,
-      beats: [
-        {
-          at: [0, 0.3],
-          hero: true,
-          eyebrow: 'NUVO Woodwork · South Florida',
-          title: 'Where wood\nbecomes *art.*',
-          text: 'Custom kitchens, closets and millwork for luxury homes, designed in 3D and finished by hand.',
-          cue: 'Scroll to come in',
-        },
-        { at: [0.4, 0.8], eyebrow: 'Foyers & millwork', title: 'First\nimpressions\nare built.' },
-      ],
+      label: 'Entrance',
+      image: 'scenes/door.webp',
+      focus: [0.5, 0.6],
+      eyebrow: 'NUVO Woodwork · South Florida',
+      title: 'Where wood\nbecomes *art.*',
+      text: 'Custom kitchens, closets and millwork for luxury homes, designed in 3D and finished by hand.',
+      cue: 'Scroll to come in',
     },
     {
       id: 'living',
-      length: 190,
-      dolly: 0.18,
-      build: true,
-      beats: [{ at: [0.4, 0.8], eyebrow: 'Living rooms & media walls', title: 'Built around\nthe way\nyou live.' }],
+      label: 'Living',
+      image: 'scenes/living.webp',
+      focus: [0.7, 0.5],
+      eyebrow: 'Living rooms & media walls',
+      title: 'Built around\nthe way\nyou live.',
+      card: { image: 'work/entertainment.webp', caption: 'A NUVO media wall' },
     },
     {
       id: 'kitchen',
-      length: 210,
-      dolly: 0.2,
-      build: true,
-      beats: [{ at: [0.38, 0.8], eyebrow: 'Kitchens', title: 'Cut on CNC.\nFinished\nby hand.' }],
+      label: 'Kitchen',
+      image: 'scenes/kitchen.webp',
+      focus: [0.55, 0.55],
+      eyebrow: 'Kitchens',
+      title: 'Cut on CNC.\nFinished\nby hand.',
+      card: { image: 'work/kitchen.webp', caption: 'Camino Real Signature House' },
     },
     {
       id: 'closet',
-      length: 190,
-      dolly: 0.2,
-      build: true,
-      beats: [{ at: [0.4, 0.8], eyebrow: 'Closets', title: 'A room made\nfor getting\nready.' }],
+      label: 'Closet',
+      image: 'scenes/closet.webp',
+      focus: [0.5, 0.55],
+      eyebrow: 'Closets',
+      title: 'A room made\nfor getting\nready.',
+      card: { image: 'work/closet.webp', caption: 'A NUVO walk-in closet' },
     },
     {
       id: 'house',
-      length: 240,
-      dolly: 0.06,
-      pan: false,
-      beats: [
-        { at: [0.12, 0.48], eyebrow: 'One house, one workshop', title: 'Every room,\none *signature.*' },
-        {
-          at: [0.56, 1],
-          align: 'center',
-          eyebrow: 'Free 3D design consultation',
-          title: 'Your home\nis *next.*',
-          text: 'Tell us about the room. We visit, measure and show you the design in 3D before anything is built.',
-          actions: true,
-        },
-      ],
+      label: 'Your home',
+      image: 'scenes/house.webp',
+      focus: [0.5, 0.5],
+      align: 'center',
+      eyebrow: 'Free 3D design consultation',
+      title: 'Your home\nis *next.*',
+      text: 'Tell us about the room. We visit, measure and show you the design in 3D before anything is built.',
+      actions: true,
+      cue: 'Keep scrolling to see our work',
     },
   ],
 

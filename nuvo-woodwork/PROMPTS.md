@@ -1,4 +1,79 @@
-# Vídeos da casa NUVO · prompts
+# Imagens e vídeos da casa NUVO · prompts
+
+O topo do site agora são **cenas em foto**: cada ambiente ocupa a tela inteira e uma pequena rolada leva ao próximo,
+numa passagem com parallax. Então o que mais melhora o site agora são **fotos**, não vídeos. Elas estão logo abaixo,
+em "Fotos para as cenas do topo". O voo em vídeo continua no ar em `?video`, e os prompts dele seguem depois.
+
+## Fotos para as cenas do topo
+
+Gere no Flow sempre **anexando uma imagem da casa como referência** (as 5 imagens de baixo estão em
+`assets/img/keys/`), para todas as cenas parecerem a mesma casa: mesma madeira, mesma pedra, mesma luz. Baixe na
+**maior resolução** que ele oferecer (o site usa 2752 px de largura; menor que isso eu amplio, mas a original grande
+fica melhor). Depois é só me mandar, ou rodar `tools/make-scenes.sh nome=arquivo.png` (veja o README).
+
+### 1. As versões em pé (9:16) das 5 cenas · resolve o "corta a imagem" do celular
+
+No celular em pé cabe só um quarto da largura da foto 16:9. Hoje o site centraliza o ponto mais bonito e a câmera
+passeia devagar pela sala, mas com a versão em pé o celular mostra o ambiente inteiro. Anexe cada uma das 5 imagens
+(porta, sala, cozinha, closet, casa) e peça:
+
+```text
+Recreate this exact scene as a vertical 9:16 photograph from the same camera position and height: same architecture, materials, woodwork, furniture, light and colors. Keep the main subject centered and extend the view upward and downward (ceiling and floor) instead of cropping the sides. Ultra-photorealistic architectural photography, physically accurate light and reflections. No people, no text, no logos, no watermark, no fisheye. --ar 9:16
+```
+
+Nomes: `door-tall.png`, `living-tall.png`, `kitchen-tall.png`, `closet-tall.png`, `house-tall.png`. No site cada uma
+entra como `tall` na cena dela, e o celular em pé passa a usar a foto em pé no lugar da larga.
+
+### 2. Mais cozinha (o Guilherme pediu mais cozinhas e mais detalhes)
+
+Cozinha é o carro-chefe. Estas três viram cenas novas logo depois da cozinha atual. Anexe a **imagem da cozinha**
+(`assets/img/keys/kitchen.webp`) como referência em todas.
+
+**Cozinha · o detalhe da gaveta e da ilha** (`kitchen-detail.png`)
+
+```text
+Use the attached image as the strict reference for the same kitchen, materials and light. Close-up architectural detail photograph at counter height, 50mm lens: the end of the white-oak island where the thick white quartzite waterfall edge meets the travertine floor, and a fully open push-to-open walnut drawer with fitted white-oak dividers holding neatly arranged utensils and linen. Flawless grain match across the drawer fronts, razor-thin even reveals, crisp edges. Warm golden-hour side light grazing across the wood grain, shallow depth of field with the brass pendants softly out of focus in the background. Premium editorial interior photography, physically accurate materials and reflections. No people, no hands, no text, no logos, no brand names, no watermark. --ar 16:9
+```
+
+**Cozinha · a despensa e a parede de armários** (`kitchen-pantry.png`)
+
+```text
+Use the attached image as the strict reference for the same kitchen, materials and light. The camera now stands beside the island at eye level (1.5 meters), 24mm lens, looking at the wall of handleless walnut tall cabinets with two tall pantry doors swung fully open, revealing a walk-in-depth pantry fitted entirely in white oak: lit shelves with warm 2700K LED strips, pull-out drawers with glass jars, ceramic bowls and neatly folded linen, and a recessed appliance garage with an espresso machine on a honed quartzite counter. The island and one brass pendant are visible in the foreground on the left. Every piece of cabinetry is finished, precise and immaculate. Three-layer depth, premium architectural interior photography, physically accurate materials and reflections. No people, no text, no logos, no brand names, no watermark, no fisheye, no clutter. --ar 16:9
+```
+
+**Cozinha · vista do outro lado, para o jardim** (`kitchen-garden.png`)
+
+```text
+Use the attached image as the strict reference for the same residence, kitchen, materials and light. Reverse angle: the camera is now behind the walnut tall cabinets at eye level (1.5 meters), 24mm lens, looking across the full length of the white-oak island with its quartzite waterfall top, the three brass pendants and the leather stools, toward floor-to-ceiling glass doors fully open to the tropical garden and the pool in golden-hour light. On the right, a long walnut buffet with fluted doors and a backlit oak shelf above it. Premium architectural interior photography with deep foreground, midground and background separation, physically accurate light and reflections. No people, no text, no logos, no watermark, no fisheye, no clutter. --ar 16:9
+```
+
+### 3. Outros ambientes (opcional · o índice do site já tem escritório, bar e lavanderia)
+
+Anexe a **imagem da sala** (`assets/img/keys/living.webp`) como referência.
+
+**Bar e adega** (`bar.png`)
+
+```text
+Use the attached image as the strict reference for the same residence, materials and light. The camera is at eye level (1.4 meters), 24mm lens, perfectly centered on a built-in wet bar and wine wall: floor-to-ceiling walnut cabinetry with a glass-enclosed, softly lit wine display in the center, bronze-tinted glass shelves with crystal glasses, a honed quartzite bar top with a brass faucet, and fluted white-oak panels on both sides. Evening light, warm 2700K accent lighting. Premium architectural interior photography, physically accurate materials and reflections. No people, no text, no logos, no labels on bottles, no watermark, no fisheye. --ar 16:9
+```
+
+**Escritório** (`office.png`)
+
+```text
+Use the attached image as the strict reference for the same residence, materials and light. The camera is at eye level (1.4 meters), 24mm lens, centered on a home office: a floor-to-ceiling walnut library wall with backlit open shelves holding books and ceramics, closed lower cabinets with push-to-open doors, a slim brass rolling ladder, and a long white-oak desk floating in front of a window with the tropical garden in soft afternoon light. Every piece of woodwork is finished, precise and immaculate. Premium architectural interior photography, physically accurate materials and reflections. No people, no screens with content, no text, no logos, no watermark, no fisheye. --ar 16:9
+```
+
+**Banheiro** (`bath.png`)
+
+```text
+Use the attached image as the strict reference for the same residence, materials and light. The camera is in the primary bathroom at eye level (1.5 meters), 24mm lens, perfectly centered on a long floating walnut double vanity with handleless drawers and a thick honed travertine top with two integrated basins and brushed brass faucets, a full-width mirror with warm backlighting, fluted white-oak wall panels and a tall window with soft golden-hour light. Premium architectural interior photography, physically accurate materials and reflections. No people, no text, no logos, no watermark, no fisheye. --ar 16:9
+```
+
+Para cada cena nova, gere também a versão em pé (prompt do item 1).
+
+---
+
+## O filme em vídeo (`?video`)
 
 Mesmo método do site de referência que o Guilherme mandou ("Criei um Site 3D com IA Sem Usar 3D", do Lucas Rocha):
 uma **imagem inicial**, uma **imagem final** gerada usando a primeira como referência, e um **vídeo de 10 segundos no
@@ -19,7 +94,7 @@ primeiro do próximo, e no site eles viram um voo só, da porta da casa até a c
 **Total: 5 imagens e 4 vídeos de 10 s.** Se o tempo for curto, faça só o **vídeo 1**: sozinho ele já dá o efeito
 da referência, e os outros entram no site conforme ficarem prontos.
 
-## Passo a passo
+### Passo a passo
 
 1. **Imagem 1** (16:9) com o prompt dela. Ela define a casa inteira: materiais, luz, paisagismo.
 2. **Imagens 2, 3 e 4**: anexe a imagem indicada como referência e cole o prompt. **Imagem 5**: anexe a Imagem 1.
@@ -46,33 +121,33 @@ Fora do Seedance, funciona no Kling (start/end frame) e no Veo 3.1 (first/last f
 
 ---
 
-## As 5 imagens
+### As 5 imagens
 
-### Imagem 1 · A porta (início do site)
+#### Imagem 1 · A porta (início do site)
 
 ```text
 Ultra-photorealistic cinematic establishing frame of the front entrance of a fictional contemporary luxury residence in Boca Raton, South Florida. Eye-level camera at 1.6 meters, perfectly centered, 24mm wide-angle architectural lens. A monumental 4-meter closed pivot front door in warm American walnut with a slim vertical matte-black pull dominates the center, set into a tall wall of honed limestone beneath a deep cantilevered concrete canopy with a white-oak soffit and hidden warm lighting. Large limestone stepping pads cross a still reflecting pool toward the door. Dense high-end tropical landscaping frames both sides: royal palms, bird-of-paradise, sculpted shrubs, ornamental grasses, textured stone planters and warm garden lighting. Soft late-afternoon golden-hour sunlight, long soft shadows, realistic reflections on the water, premium architectural photography with deep foreground, midground and background separation. The interior must not be visible yet: the closed door creates mystery about what exists behind it. Perfectly symmetrical composition, physically accurate materials and lighting, genuinely buildable architecture. No street, no cars, no gate, no people, no signs, no text, no logos, no watermark, no fisheye distortion, no aerial view. --ar 16:9
 ```
 
-### Imagem 2 · A sala pronta (anexe a Imagem 1)
+#### Imagem 2 · A sala pronta (anexe a Imagem 1)
 
 ```text
 Use the attached image as the strict reference for the same fictional residence in Boca Raton. Preserve its architectural language, materials (honed limestone, warm American walnut, rift-cut white oak, matte-black metal), golden-hour light and color palette. The camera is now inside, past the front door and the double-height foyer, at eye level (1.4 meters) with the same 24mm architectural lens, perfectly centered on the main wall of the open living room. The wall is a floor-to-ceiling composition of vertical fluted walnut panels with a large black TV mounted flush in the center, a long floating white-oak console below it with push-to-open doors, and symmetrical backlit display niches with ceramics glowing in warm 2700K light. At the right edge, part of a wet bar with bronze-tinted glass shelves and a wine column. A low cream sofa and a wool rug in the foreground, honed travertine floor, floor-to-ceiling glass on the left with the tropical garden in golden light. Every piece of woodwork is finished, precise and immaculate: the work of a high-end custom millwork studio. Three-layer depth, premium architectural interior photography, physically accurate materials, reflections and contact shadows. No people, no pets, no text, no logos, no watermark, no fisheye, no kitchen visible. --ar 16:9
 ```
 
-### Imagem 3 · A cozinha pronta (anexe a Imagem 2)
+#### Imagem 3 · A cozinha pronta (anexe a Imagem 2)
 
 ```text
 Use the attached image as the strict reference for the same residence and interior style. Preserve the materials, golden-hour light, travertine floor, ceiling height and color palette. The camera is now in the open kitchen next to the living room, at counter height (1.2 meters), 24mm lens, perfectly centered on a long white-oak island with a thick waterfall-edge white quartzite top, three sculptural brass pendant lights above it and four leather counter stools. Behind the island, a full wall of handleless walnut tall cabinets with an integrated refrigerator and ovens, and a recessed niche with backlit oak shelves in the center. A large window on the left looks onto the tropical garden in golden light. All cabinetry is finished, precise and immaculate. Three-layer depth, premium architectural interior photography, physically accurate materials and reflections. No people, no text, no logos, no watermark, no fisheye, no clutter. --ar 16:9
 ```
 
-### Imagem 4 · O closet pronto (anexe a Imagem 2)
+#### Imagem 4 · O closet pronto (anexe a Imagem 2)
 
 ```text
 Use the attached image as the strict reference for the same residence and interior style. Preserve the materials (white oak, walnut, travertine, brushed brass), warm light and color palette. The camera is now upstairs, inside the primary walk-in closet, at eye level (1.5 meters), 24mm lens, in a perfectly symmetrical view down the center. On both sides, floor-to-ceiling white-oak wardrobes with bronze-tinted glass doors and integrated warm LED lighting, with neatly hung clothes and lit shoe shelves. In the center, an island with walnut drawers and a pale stone top. At the far end, a full-height mirror and a velvet bench under a clerestory window with warm late-afternoon light. All woodwork is finished, precise and immaculate. Premium architectural interior photography, physically accurate materials and reflections. No people, no text, no logos, no brand names on clothes, no watermark, no fisheye. --ar 16:9
 ```
 
-### Imagem 5 · A casa inteira acesa (anexe a Imagem 1; fim do site)
+#### Imagem 5 · A casa inteira acesa (anexe a Imagem 1; fim do site)
 
 ```text
 Use the attached image as the strict reference for the same residence, materials and landscaping. The camera has pulled back about 40 meters and risen to 6 meters, still perfectly centered on the front entrance axis. The entire two-story contemporary residence is now visible just after sunset: cantilevered concrete volumes, honed limestone walls, the tall walnut pivot door and floor-to-ceiling glass. Every room glows with warm interior light, revealing walnut and white-oak millwork inside: the living room media wall, the kitchen, the upstairs closet. The reflecting pool mirrors the facade, royal palms frame both sides, and the sky is a soft warm afterglow fading to deep blue. Premium architectural photography, physically accurate light and reflections, perfectly symmetrical composition. No people, no cars, no street, no text, no logos, no watermark, no fisheye. --ar 16:9
@@ -80,9 +155,9 @@ Use the attached image as the strict reference for the same residence, materials
 
 ---
 
-## Os 4 vídeos (Seedance 2.0 · 10 segundos · 16:9)
+### Os 4 vídeos (Seedance 2.0 · 10 segundos · 16:9)
 
-### Vídeo 1 · Da porta à sala · `01-living.mp4`
+#### Vídeo 1 · Da porta à sala · `01-living.mp4`
 
 `@image_1` = Imagem 1 · `@image_2` = Imagem 2
 
@@ -114,7 +189,7 @@ AUDIO: No music or dialogue.
 CONSTRAINTS: No cuts, transitions, teleportation, straight-only flight, slow motion, particles, dissolves, morphs, visible drones or quadcopters (the camera itself is never seen), people, pets, vehicles, text or logos. Lock @image_1 as the opening and @image_2 as the exact design and final frame.
 ```
 
-### Vídeo 2 · Da sala à cozinha · `02-kitchen.mp4`
+#### Vídeo 2 · Da sala à cozinha · `02-kitchen.mp4`
 
 `@image_1` = último quadro do vídeo 1 (ou a Imagem 2) · `@image_2` = Imagem 3
 
@@ -146,7 +221,7 @@ AUDIO: No music or dialogue.
 CONSTRAINTS: No cuts, transitions, teleportation, straight-only flight, slow motion, particles, dissolves, morphs, visible drones or quadcopters (the camera itself is never seen), people, pets, text or logos. Lock @image_1 as the opening and @image_2 as the exact design and final frame.
 ```
 
-### Vídeo 3 · Da cozinha ao closet · `03-closet.mp4`
+#### Vídeo 3 · Da cozinha ao closet · `03-closet.mp4`
 
 `@image_1` = último quadro do vídeo 2 (ou a Imagem 3) · `@image_2` = Imagem 4
 
@@ -178,7 +253,7 @@ AUDIO: No music or dialogue.
 CONSTRAINTS: No cuts, transitions, teleportation, straight-only flight, slow motion, particles, dissolves, morphs, visible drones or quadcopters (the camera itself is never seen), people, pets, text or logos. Lock @image_1 as the opening and @image_2 as the exact design and final frame.
 ```
 
-### Vídeo 4 · Do closet à casa inteira · `04-finale.mp4`
+#### Vídeo 4 · Do closet à casa inteira · `04-finale.mp4`
 
 `@image_1` = último quadro do vídeo 3 (ou a Imagem 4) · `@image_2` = Imagem 5
 
@@ -212,7 +287,7 @@ CONSTRAINTS: No cuts, transitions, teleportation, straight-only flight, slow mot
 
 ---
 
-## Depois de gerar
+### Depois de gerar
 
 Me mande os MP4 (pode ser um de cada vez) e as imagens. Eu rodo, na pasta `nuvo-woodwork/`:
 
@@ -258,10 +333,10 @@ coloridos tirados de imagens) e o navegador desenha a cena ao vivo, na frequênc
 
 ---
 
-## Versão em pé para o celular (9:16)
+## Versão em pé do filme em vídeo (9:16)
 
-No celular em pé o site mostra só o meio do vídeo 16:9, e o Guilherme achou que fica cortado. Se o caminho for
-continuar com vídeo (e não 3D), a solução é o mesmo voo gravado em pé:
+No celular em pé o filme em vídeo mostra só o meio do vídeo 16:9, e o Guilherme achou que fica cortado. Se o caminho
+voltar a ser o vídeo, a solução é o mesmo voo gravado em pé:
 
 1. **As 5 imagens em 9:16:** anexe cada imagem 16:9 como referência e peça:
 

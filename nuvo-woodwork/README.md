@@ -10,39 +10,56 @@ O site é em inglês (o público é americano).
 
 ## O que tem no site
 
-- **O filme da casa** (topo, preso na tela durante o scroll), no formato do site de referência que o Guilherme mandou:
-  um voo de drone contínuo, da porta fechada até a casa inteira acesa, passando pela sala, cozinha e closet, que se
-  montam na frente da câmera. São 4 vídeos de 10 s encadeados (o último quadro de um é o primeiro do próximo).
-  - No computador a rolagem da página inteira é suave (Lenis): cada giro da roda ou gesto do trackpad vira um
-    deslizamento que freia aos poucos, e o filme, os títulos e as seções deslizam juntos. No celular fica a
-    rolagem do próprio aparelho. Para deslizar mais ou menos, mude `LERP` no `assets/js/scroll.js`.
-  - O vídeo anda com o scroll e com um pouco de inércia, para deslizar em vez de pular. O navegador decodifica os
-    quadros um pouco adiante do scroll e o filme é desenhado num canvas, fundindo dois quadros vizinhos: o movimento
-    é contínuo mesmo rolando bem devagar, e a imagem para nítida num quadro inteiro quando o scroll para.
-  - As partes com mais movimento ganham mais scroll e as partes paradas passam depressa, então o vídeo nunca fica
-    parado enquanto a pessoa rola.
-  - O filme começa a ser usado enquanto o vídeo ainda baixa. Em navegador sem decodificador (WebCodecs), ou em
-    aparelho que não aguenta o canvas, o site usa sozinho o `<video>` normal.
-  - Títulos grandes à esquerda (no celular, embaixo) que sobem e somem presos ao scroll, e no fim o convite para a
-    consultoria 3D grátis, com botões de agendar e ligar.
-  - Enquanto um vídeo carrega (ou se não carregar), o trecho mostra o primeiro e o último quadro dele, que se
-    fundem com o scroll.
+- **As cenas da casa** (topo): cada ambiente ocupa a tela inteira (entrada, sala, cozinha, closet e a casa acesa) e
+  uma pequena rolada já leva à próxima cena, numa passagem com parallax (`assets/js/chapters.js`):
+  - a cena nova sobe por cima da anterior e a foto dela anda mais devagar que ela, com um leve zoom, como a câmera
+    entrando no ambiente; a anterior fica para trás e escurece; os títulos e o card do projeto real andam mais rápido.
+    Voltando, o mesmo movimento ao contrário. A passagem roda no tempo dela (1,1 s), não presa ao scroll, então é
+    sempre lisa, e começa no mesmo instante da rolada.
+  - Funciona com a roda do mouse, o trackpad (um gesto muda uma cena só, mesmo com a inércia do Mac), o dedo, as
+    setas e o espaço do teclado e os tracinhos na lateral direita (cada um com o nome do ambiente).
+  - Na última cena a rolagem segue para o resto do site; voltando ao topo, rolar para cima volta pelas cenas.
+  - Parada, a foto continua viva: zoom bem lento no computador; no celular em pé, onde a foto larga não cabe, a câmera
+    passeia devagar de um lado para o outro da sala. No computador as camadas também acompanham o mouse.
+  - Em cada ambiente flutua uma foto de um projeto real da Nuvo ("Real project"), no computador.
+  - Com "reduzir movimento" ligado, as cenas só trocam com uma fusão rápida.
+  - O filme antigo em vídeo (o voo de drone pela casa) continua no ar em `?video` no fim do endereço; veja
+    "O filme em vídeo" mais abaixo.
 - **Índice de ambientes** com fotos de projetos reais. No computador, a foto acompanha o cursor; no celular, aparece
-  ao lado. Cada linha volta o filme até aquele ambiente (escritório e lavanderia, que ficaram fora do voo, levam ao
-  formulário).
+  ao lado. Cada linha volta para aquele ambiente nas cenas do topo (escritório e lavanderia, que não têm cena, levam
+  ao formulário).
 - **O estúdio**: a história do Eduardo (italiano, nascido no Brasil, marceneiro há mais de 30 anos, na Flórida desde
   2015), três fotos de residências e os números.
 - **Processo** em 6 passos (como cotas de desenho técnico) e as marcas de ferragem/máquinas.
 - **Depoimentos** do Google (copiados do widget do site atual).
 - **Contato** com formulário (cidade e ambientes), telefone, e-mail, endereço da oficina e horário.
 - Prévia bonita do link no WhatsApp (`og-image.jpg`), favicon e ícone do iPhone com o monograma, dados estruturados
-  para o Google, e respeito ao "reduzir movimento" (aí o filme não baixa os vídeos: mostra cada ambiente em foto).
+  para o Google, e respeito ao "reduzir movimento".
 
 Identidade: o logo é o oficial, vetorizado a partir do PNG do site atual. Bronze **#976421** e cinza **#8A8582** do
 logo, ébano **#14110F** e linho **#F2ECE3**. Fontes: Jost (títulos; geométrica como o "NUVO" do logo), Instrument Sans
 (textos) e DM Mono (detalhes), todas dentro de `assets/fonts/`.
 
-## Os vídeos
+## As fotos das cenas
+
+Ficam em `assets/img/scenes/`: cada cena tem a foto larga com 2752 px (`kitchen.webp`) e uma cópia com 1376 px para
+telas pequenas (`kitchen-1376.webp`). As 5 de hoje são as imagens do Flow que abriam e fechavam os vídeos (1376 px),
+ampliadas 2× com um upscaler de IA (Swin2SR), que tira os artefatos do JPEG e deixa as bordas nítidas.
+
+Para trocar uma foto ou pôr uma cena nova:
+
+1. Gere a imagem no Flow (os prompts, em 16:9 e na versão em pé para o celular, estão no
+   [PROMPTS.md](PROMPTS.md), em "Fotos para as cenas do topo"). Baixe na maior resolução que ele der.
+2. Rode `tools/make-scenes.sh kitchen=~/Downloads/cozinha.png` dentro de `nuvo-woodwork/` (precisa do ffmpeg). Foto
+   deitada vira as duas larguras; foto em pé vira uma de 1440 px. Se a imagem for pequena, o script avisa.
+3. Em `assets/js/content.js` → `chapters`, a cena aponta para a foto (`image`), para a versão em pé (`tall`, que o
+   celular em pé usa no lugar da larga, sem cortar), para o ponto de interesse (`focus`) e para o card do projeto
+   real (`card`). Para uma cena nova, copie um bloco e mude o `id`, o `label` (o nome nos tracinhos) e os textos.
+
+## O filme em vídeo (`?video`)
+
+O topo antigo, o voo de drone pela casa preso ao scroll, continua no ar com `?video` no fim do endereço
+(<https://nuvo-woodwork.lucassouzalima10.workers.dev/?video>). Tudo abaixo vale para ele.
 
 **Situação:** os 4 vídeos e as 5 imagens já estão no site (14/10). O vídeo 4 (`04-finale`) veio com drones voando
 sobre a piscina entre 2 s e 7 s; no site ele está cortado (closet → fusão → casa acesa, 4,25 s). Para ter o trecho
@@ -78,41 +95,6 @@ Detalhes:
 - Para tirar um vídeo do ar: apague os dois arquivos do trecho em `assets/video/` e rode
   `tools/make-videos.sh --manifest`.
 
-## Versão 3D do filme
-
-Abra o site com `?3d` no fim do endereço: <https://nuvo-woodwork.lucassouzalima10.workers.dev/?3d>. O resto do site é
-o mesmo; só o filme do topo muda.
-
-**Como funciona:**
-- Cada ambiente é uma cena 3D feita da imagem dele: a foto é a textura e cada ponto fica na profundidade que a
-  imagem mostra.
-- O scroll leva a câmera para dentro de cada ambiente, e um passa para o outro numa fusão.
-- A sala, a cozinha e o closet se montam por cima do ambiente anterior, com uma borda dourada.
-- Tudo é desenhado ao vivo, na frequência da tela: não há quadros de vídeo, então não há o que travar.
-- No celular em pé, a câmera percorre cada ambiente de um lado ao outro em vez de cortar as laterais.
-- Pesa uns 4 MB no total (os vídeos pesam 22 MB).
-
-**Quando volta sozinho para o filme em vídeo:** em aparelho sem WebGL2, com "reduzir movimento" ligado, ou se o 3D
-não carregar.
-
-**Como é feito:** `tools/make-3d.py` estima a profundidade de cada imagem com o Depth Anything V2 Small (licença
-Apache 2.0, uso comercial liberado). A escala real vem do chão: a altura da câmera dos prompts e a lente de 24 mm.
-O script grava em `assets/3d/`:
-
-- a foto;
-- a malha;
-- uma camada de fundo que aparece atrás das bordas dos móveis quando a câmera se move.
-
-Precisa de Python com `torch`, `transformers`, `pillow`, `opencv-python-headless` e `numpy`:
-
-```bash
-python3 tools/make-3d.py door=porta.jpg:1.6 living=sala.jpg:1.4 kitchen=cozinha.jpg:1.2 closet=closet.jpg:1.5 house=casa.jpg:6
-```
-
-**Onde editar:** textos, ordem dos ambientes, quanto a câmera entra e a duração de cada um ficam em
-`assets/js/content.js` → `tour3d`. Para deixar o 3D como padrão (sem `?3d`), troque o teste de `NUVO_3D_ON` no
-`index.html` por `!!window.WebGL2RenderingContext && ...`.
-
 ## Laboratório 3D
 
 `lab/3d.html` é um teste do filme em 3D de verdade (Gaussian Splatting, com a biblioteca Spark). Ele ainda não faz
@@ -131,10 +113,10 @@ salvo em `lab/` abre direto pelo endereço: `lab/3d.html?splat=cozinha.spz`. Aju
 - `flip=0`: para escaneamentos que já vêm em pé;
 - `debug`: mostra os quadros por segundo.
 
-## Diagnóstico do filme
+## Diagnóstico do filme em vídeo
 
-Abra o site com `?debug` no fim do endereço (ex.: `https://nuvo-woodwork.lucassouzalima10.workers.dev/?debug`) e role
-pelo filme: um painel no canto mostra, a cada segundo, como o filme está rodando naquele aparelho:
+Abra o site com `?video&debug` no fim do endereço (ex.: `https://nuvo-woodwork.lucassouzalima10.workers.dev/?video&debug`)
+e role pelo filme: um painel no canto mostra, a cada segundo, como o filme está rodando naquele aparelho:
 
 - **Modo:** canvas (decodificador) ou `<video>`, e por quê.
 - **Tela:** a frequência dela (60 Hz, 120 Hz...).
@@ -143,20 +125,22 @@ pelo filme: um painel no canto mostra, a cada segundo, como o filme está rodand
 - **Decodificador:** quadros por segundo e atraso.
 - **Baixado:** quanto de cada vídeo já chegou.
 
-Para comparar os dois modos no mesmo aparelho: `?film=video` força o `<video>` e `?film=canvas` força o canvas
-(dá para juntar: `?debug&film=video`).
+Para comparar os dois modos no mesmo aparelho: `?video&film=video` força o `<video>` e `?video&film=canvas` força o
+canvas (dá para juntar: `?video&debug&film=video`).
 
 ## Como editar
 
 | O quê | Onde |
 | --- | --- |
-| Títulos do filme (e em que segundo do vídeo entram), ordem dos trechos, velocidade do filme | `assets/js/content.js` → `scenes` e `tour` |
+| Cenas do topo: ordem, títulos, fotos, ponto de interesse e card do projeto real | `assets/js/content.js` → `chapters` |
+| Duração e curva da passagem entre as cenas | `assets/js/chapters.js` → `DUR` e `EASE` |
+| Títulos do filme em vídeo (`?video`) e em que segundo entram | `assets/js/content.js` → `scenes` e `tour` |
 | Telefone, e-mail e endereço do formulário | `assets/js/content.js` → `contact` (e no `index.html`) |
 | Ambientes, estúdio, processo, depoimentos, contato e rodapé | `index.html` |
-| Fotos dos projetos | `assets/img/work/` (índice e estúdio); imagens do filme em `assets/img/keys/` |
+| Fotos dos projetos | `assets/img/work/` (índice, estúdio e cards das cenas); fotos das cenas em `assets/img/scenes/` |
 | Cores e fontes | topo do `assets/css/styles.css` |
 
-Nos títulos do filme, `\n` quebra a linha e `*palavra*` fica em itálico dourado.
+Nos títulos, `\n` quebra a linha e `*palavra*` fica em itálico dourado.
 
 ### Formulário
 
@@ -217,18 +201,19 @@ nuvo-woodwork → Custom domains, e o `og:image` já sai com o endereço certo.
 ```
 nuvo-woodwork/
 ├── index.html               página (logo vetorizado embutido)
-├── PROMPTS.md               prompts das 5 imagens e dos 4 vídeos
+├── PROMPTS.md               prompts das fotos das cenas (Flow) e dos vídeos
 ├── assets/css/styles.css    visual
-├── assets/js/content.js     trechos do filme (títulos, tempos, fotos) e contato
-├── assets/js/film.js        o filme: scroll, títulos, canvas, carregamento (e o <video> de reserva)
+├── assets/js/content.js     cenas do topo, trechos do filme em vídeo e contato
+├── assets/js/chapters.js    as cenas do topo: passagem com parallax, roda, trackpad, dedo e teclado
+├── assets/js/film.js        o filme em vídeo (?video): scroll, títulos, canvas, carregamento
 ├── assets/js/film-decoder.js decodifica os quadros dos vídeos direto no navegador (WebCodecs)
 ├── assets/js/scroll.js      rolagem suave no computador e links internos
-├── assets/js/film3d.js      o filme em 3D (?3d)
-├── assets/3d/               as cenas 3D (gerado pelo tools/make-3d.py)
-├── assets/js/vendor/        Lenis 1.3.26 (rolagem suave) e Three.js 0.180 (3D), licenças MIT
+├── assets/js/vendor/        Lenis 1.3.26 (rolagem suave, licença MIT)
 ├── assets/js/app.js         menu, índice de ambientes, formulário
 ├── assets/video/            vídeos do filme + manifest.js (gerados pelo script)
+├── assets/img/scenes/       fotos das cenas do topo (geradas pelo make-scenes.sh)
 ├── assets/img/              fotos, favicon, ícone do iPhone e prévia do link
 ├── assets/fonts/            fontes
+├── tools/make-scenes.sh     imagens do Flow → assets/img/scenes/
 └── tools/make-videos.sh     videos/ → assets/video/
 ```

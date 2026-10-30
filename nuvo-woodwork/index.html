@@ -24,7 +24,9 @@
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
   <link rel="preload" href="assets/fonts/jost.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="assets/img/keys/door.webp" as="image" fetchpriority="high">
+  <!-- A foto da primeira cena (a mesma lista de tamanhos que o chapters.js usa nela; se a primeira cena mudar em
+       content.js, ou ganhar a versão em pé, atualize aqui) -->
+  <link rel="preload" as="image" href="assets/img/scenes/door.webp" imagesrcset="assets/img/scenes/door-1376.webp 1376w, assets/img/scenes/door.webp 2752w" imagesizes="(max-aspect-ratio: 16/9) calc(100vh * 1.8), 100vw" fetchpriority="high">
   <link rel="stylesheet" href="assets/css/styles.css">
   <script>document.documentElement.classList.add('js');</script>
 
@@ -111,7 +113,7 @@
   </div>
 
   <main>
-    <!-- O filme: o vídeo fica preso na tela e anda com o scroll enquanto a seção rola (film.js) -->
+    <!-- O topo: as cenas da casa, uma rolada leva à próxima (chapters.js). Em ?video, o filme antigo (film.js). -->
     <section class="film" id="tour" data-film aria-label="A walk through a NUVO home, room by room">
       <div class="film__stage">
         <div class="film__media" data-film-media aria-hidden="true"></div>
@@ -126,13 +128,13 @@
       </div>
     </section>
 
-    <!-- Índice de ambientes: fotos de projetos reais. Cada linha volta ao ambiente no filme. -->
+    <!-- Índice de ambientes: fotos de projetos reais. Cada linha volta ao ambiente nas cenas do topo. -->
     <section class="rooms on-light" id="rooms" aria-labelledby="rooms-title">
       <div class="wrap">
         <header class="section-head" data-reveal>
           <p class="eyebrow">Index · 08 rooms</p>
           <h2 class="h2" id="rooms-title">Every room, <em>built to measure.</em></h2>
-          <p class="lead">Photos from real NUVO projects across South Florida. Pick a room to see it built again in the house above, or plan yours with us.</p>
+          <p class="lead">Photos from real NUVO projects across South Florida. Pick a room to see it in the house above, or plan yours with us.</p>
         </header>
 
         <ol class="index" data-index>
@@ -428,29 +430,14 @@
   <script src="assets/js/content.js"></script>
   <script src="assets/video/manifest.js"></script>
   <script>
-    // ?3d no endereço: o filme em 3D (film3d.js) no lugar do vídeo, se o aparelho tiver WebGL2
-    window.NUVO_3D_ON = /(^|&)3d(=|&|$)/.test(location.search.slice(1)) && !!window.WebGL2RenderingContext &&
-      !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // O topo do site: as cenas com parallax (chapters.js). O filme antigo em vídeo continua em ?video.
+    window.NUVO_FILM_MODE = /(^|&)video(=|&|$)/.test(location.search.slice(1)) ? 'video' : 'chapters';
   </script>
-  <script src="assets/3d/scenes.js"></script>
   <script src="assets/js/vendor/lenis.min.js"></script>
   <script src="assets/js/scroll.js"></script>
   <script src="assets/js/film-decoder.js"></script>
   <script src="assets/js/film.js"></script>
+  <script src="assets/js/chapters.js"></script>
   <script src="assets/js/app.js"></script>
-  <script type="module">
-    if (window.NUVO_3D_ON) {
-      import('./assets/js/film3d.js').catch((e) => {
-        // sem 3D: volta para o filme em vídeo
-        console.warn('3D:', e);
-        window.NUVO_3D_ON = false;
-        document.querySelector('[data-film] .film__canvas')?.remove();
-        document.querySelector('[data-film]')?.classList.remove('is-canvas');
-        const s = document.createElement('script');
-        s.src = 'assets/js/film.js';
-        document.body.appendChild(s);
-      });
-    }
-  </script>
 </body>
 </html>

@@ -575,6 +575,230 @@ body.menu-open { overflow: hidden; }
   .beat__cue { margin-top: 1.5rem; }
 }
 
+/* ---------------------------------------------------------------- Cenas do topo (chapters.js) */
+/* Cada ambiente ocupa a tela inteira e uma pequena rolada leva ao próximo, numa passagem com
+   parallax. A altura é a da tela "pequena" do celular (com a barra do navegador aparecendo):
+   ela não muda quando a barra some, então o resto da página não pula. */
+.film.is-chapters {
+  height: 100vh;
+  height: 100svh;
+  touch-action: none;           /* o dedo troca de cena em vez de rolar a página... */
+  touch-action: pinch-zoom;     /* ...e o zoom com dois dedos continua funcionando */
+}
+.film.is-chapters.is-free {     /* na última cena (ou com a página rolada) o dedo rola a página */
+  touch-action: pan-y;
+  touch-action: pan-y pinch-zoom;
+}
+.film.is-chapters .film__stage { position: relative; height: 100%; }
+
+.chapter {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  visibility: hidden;
+  background: var(--ebony);
+}
+.chapter.is-active,
+.chapter.is-in,
+.chapter.is-out { visibility: visible; }
+/* Na passagem, a cena de cima desliza sobre a outra com uma sombra na borda */
+.chapter.is-top { z-index: 2; box-shadow: 0 0 90px 10px rgba(8, 6, 5, .55); }
+
+.chapter__media,
+.chapter__media .chapter__float,
+.chapter__shade,
+.chapter__dim {
+  position: absolute;
+  inset: 0;
+}
+.chapter__float > picture { display: contents; }
+/* chapters.js dá o tamanho e a posição da foto: cobre a tela com o ponto de interesse no centro */
+.chapter__img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Sombra que deixa os títulos legíveis sobre ambientes claros */
+.chapter__shade {
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(20, 17, 15, .55) 0%, rgba(20, 17, 15, 0) 20%),
+    linear-gradient(90deg, rgba(20, 17, 15, .84) 0%, rgba(20, 17, 15, .52) 32%, rgba(20, 17, 15, 0) 64%);
+}
+.chapter--center .chapter__shade {
+  background:
+    linear-gradient(180deg, rgba(20, 17, 15, .55) 0%, rgba(20, 17, 15, 0) 20%),
+    radial-gradient(ellipse 64% 60% at 50% 50%, rgba(20, 17, 15, .74), rgba(20, 17, 15, .14));
+}
+/* Escurece a cena que fica para trás na passagem */
+.chapter__dim {
+  z-index: 2;
+  opacity: 0;
+  background: var(--ebony-3);
+  pointer-events: none;
+}
+
+/* Títulos: à esquerda, no meio da altura (ou centralizados na última cena) */
+.chapter__copy {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  padding: calc(var(--header-h) + 24px) var(--gutter) 64px;
+  pointer-events: none;
+}
+.chapter__copy > .chapter__float { width: min(52vw, 880px); pointer-events: auto; }
+.chapter--center .chapter__copy { justify-content: center; text-align: center; }
+.chapter--center .chapter__copy > .chapter__float { width: min(64rem, 100%); }
+.chapter--center .beat__text { max-width: 36rem; margin-inline: auto; }
+.chapter--center .beat__cue { justify-content: center; }
+
+/* Foto de um projeto real da Nuvo, flutuando na frente da cena, como uma foto impressa */
+.chapter__card {
+  position: absolute;
+  z-index: 1;
+  right: calc(var(--gutter) + 72px);
+  bottom: clamp(48px, 9vh, 110px);
+  width: clamp(210px, 19vw, 320px);
+  margin: 0;
+  pointer-events: none;
+}
+.chapter__card .chapter__float {
+  padding: 10px 10px 0;
+  border: 1px solid rgba(243, 235, 221, .14);
+  background: rgba(20, 17, 15, .86);
+  box-shadow: 0 34px 70px -24px rgba(0, 0, 0, .7);
+}
+.chapter__card img {
+  width: 100%;
+  height: auto;
+  max-height: 38vh;
+  object-fit: cover;
+}
+.chapter__card figcaption {
+  display: grid;
+  gap: .4rem;
+  padding: .85rem .15rem 1rem;
+  font: 400 .8rem/1.35 var(--font-body);
+  color: var(--cream);
+}
+.chapter__card figcaption span {
+  font: 400 .64rem/1 var(--font-mono);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+/* No computador, cada camada acompanha o mouse num ritmo: a foto (longe) vai para o lado
+   contrário, os títulos e o card (perto) vão junto, o card mais que todos */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .chapter__media .chapter__float { inset: -28px; }
+  .chapter__float {
+    transform: translate3d(calc(var(--mx, 0) * var(--px) * 1px), calc(var(--my, 0) * var(--py) * 1px), 0);
+    will-change: transform;
+  }
+  .chapter__float[data-depth="1"] { --px: -20; --py: -14; }
+  .chapter__float[data-depth="2"] { --px: 9; --py: 6; }
+  .chapter__float[data-depth="3"] { --px: 26; --py: 18; }
+}
+
+/* Tracinhos de navegação na lateral direita: o da cena na tela fica maior, com o nome */
+.chapters__nav {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  right: calc(var(--gutter) - 14px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  transform: translateY(-50%);
+}
+.chapters__nav button {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 0;
+  background: none;
+  color: var(--sand);
+  font: 500 .64rem/1 var(--font-body);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 12px rgba(20, 17, 15, .7);
+  cursor: pointer;
+}
+.chapters__nav button::after {
+  content: "";
+  width: 16px;
+  height: 1px;
+  background: currentColor;
+  box-shadow: 0 0 8px rgba(20, 17, 15, .6);
+  opacity: .6;
+  transition: width .6s var(--ease-out), opacity .4s, background-color .4s;
+}
+.chapters__nav span {
+  opacity: 0;
+  transform: translateX(8px);
+  transition: opacity .4s var(--ease), transform .5s var(--ease-out);
+}
+.chapters__nav button:hover span,
+.chapters__nav button:focus-visible span,
+.chapters__nav [aria-current] span { opacity: 1; transform: none; }
+.chapters__nav button:hover::after { width: 26px; opacity: 1; }
+.chapters__nav [aria-current] { color: var(--cream); }
+.chapters__nav [aria-current]::after { width: 40px; opacity: 1; background: var(--gold); }
+.chapters__nav button:focus-visible { outline: 1px solid var(--gold); outline-offset: -4px; }
+
+/* Telas baixas (celular deitado, janela pequena): títulos menores, sem o card */
+@media (max-height: 560px) and (min-width: 721px) {
+  .chapter__copy { padding-top: calc(var(--header-h) + 8px); padding-bottom: 20px; }
+  .chapter .beat__eyebrow { margin-bottom: .8rem; }
+  .chapter .beat__title { font-size: clamp(2rem, 10.5vh, 3.4rem); }
+  .chapter .beat__text { margin-top: .8rem; }
+  .chapter .beat__actions { margin-top: 1.2rem; }
+  .chapter .beat__cue,
+  .chapter__card { display: none; }
+}
+
+@media (max-width: 720px) {
+  /* No celular os títulos ficam embaixo, sobre uma sombra que sobe do pé da tela */
+  .chapter__shade,
+  .chapter--center .chapter__shade {
+    background:
+      linear-gradient(180deg, rgba(20, 17, 15, .5) 0%, rgba(20, 17, 15, 0) 18%),
+      linear-gradient(0deg, rgba(20, 17, 15, .92) 0%, rgba(20, 17, 15, .64) 36%, rgba(20, 17, 15, 0) 64%);
+  }
+  .chapter__copy {
+    align-items: flex-end;
+    padding: 0 var(--gutter) calc(env(safe-area-inset-bottom) + 44px);
+  }
+  .chapter__copy > .chapter__float,
+  .chapter--center .chapter__copy > .chapter__float { width: 100%; }
+  .chapter__card { display: none; }
+  .chapters__nav { right: 0; }
+  .chapters__nav span { /* o nome some da tela, mas continua para o leitor de tela */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .chapters__nav button { min-height: 30px; padding: 0 12px; }
+  .chapters__nav button::after { width: 12px; }
+  .chapters__nav [aria-current]::after { width: 24px; }
+}
+
 /* ---------------------------------------------------------------- Rooms index */
 .rooms { padding: var(--section) 0 calc(var(--section) * .55); }
 

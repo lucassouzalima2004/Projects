@@ -23,7 +23,7 @@
   const C = window.NUVO;
   const film = document.querySelector('[data-film]');
   if (!C || !Array.isArray(C.scenes) || !C.scenes.length || !film) return;
-  if (window.NUVO_3D_ON) return; // o filme em 3D (film3d.js) está no lugar deste
+  if (window.NUVO_FILM_MODE !== 'video') return; // o topo do site agora são as cenas (chapters.js)
 
   const VIDEOS = window.NUVO_VIDEOS || {};
   const D = window.NUVO_DECODER; // film-decoder.js (só existe se o navegador tiver WebCodecs)
