@@ -101,11 +101,28 @@
 .thermal--ready .hero-thermal__canvas { opacity: 1; }
 .hero-thermal__fallback { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: none; }
 .thermal--fallback .hero-thermal__fallback { display: block; }
-/* o preto do vídeo some no fundo da capa (lighten): sem caixa em volta dela, e o brilho de fundo aparece */
-.hero-thermal__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: transparent; mix-blend-mode: lighten; }
+/* Vídeo da mulher. No computador o elemento tem a proporção do vídeo e fica no centro, para as bordas
+   sumirem num degradê: nem um fundo de cor (o roxo da câmera térmica) nem algum canto retocado formam um
+   retângulo na capa. O lighten faz o mesmo com fundos pretos. */
+.hero-thermal__video {
+  position: absolute; top: 0; bottom: 0; left: 50%; width: auto; height: 100%; aspect-ratio: 16 / 9;
+  transform: translateX(-50%); object-fit: cover; background: transparent; mix-blend-mode: lighten;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 24%, #000 76%, transparent), linear-gradient(to bottom, transparent, #000 10%, #000 88%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, #000 24%, #000 76%, transparent), linear-gradient(to bottom, transparent, #000 10%, #000 88%, transparent);
+  mask-composite: intersect;
+}
 @media (max-width: 749px) {
-  .hero-thermal__video { object-fit: cover; object-position: center top; }
+  /* no celular ela ocupa a largura toda: só a borda de cima, logo abaixo do cabeçalho, some */
+  .hero-thermal__video {
+    left: 0; width: 100%; aspect-ratio: auto; transform: none; object-position: center top;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 9%); mask-image: linear-gradient(to bottom, transparent, #000 9%);
+  }
   .hero-slider--strip .hero-thermal[data-thermal-video] .hero-thermal__stage { bottom: 0; }
+  /* com ela ocupando o quadro inteiro, o título e os botões ganham um degradê mais forte por baixo */
+  .hero-slider--strip .hero-thermal[data-thermal-video] .hero-thermal__content {
+    background: linear-gradient(to top, rgb(5 7 12 / 0.97) 0%, rgb(5 7 12 / 0.9) 36%, rgb(5 7 12 / 0.55) 56%, transparent 74%);
+  }
 }
 .thermal--fallback .hero-thermal__canvas { display: none; }
 
