@@ -226,3 +226,55 @@ têm vídeo mostram as imagens, então dá para publicar aos poucos.
 
 **Baixe sempre na maior resolução** (no Flow: **1080p Upscaled**). No celular em pé o site mostra só o meio do
 vídeo, bem ampliado; com 720p a imagem fica mole, com 1080p fica bem mais nítida.
+
+---
+
+## Teste em 3D de verdade (Marble · World Labs)
+
+**Por que testar:** em vez de um vídeo, o site recebe o ambiente em 3D (Gaussian Splatting: milhões de pontinhos
+coloridos tirados de imagens) e o navegador desenha a cena ao vivo, na frequência da tela.
+
+- **Fluidez:** não existem quadros, então não há o que travar.
+- **Celular:** em pé, a câmera abre na vertical em vez de cortar as laterais.
+- **Montagem:** no começo do scroll, o ambiente "se monta" em volta de quem chega.
+
+**Faça primeiro com um ambiente só, a cozinha:**
+
+1. Entre em <https://marble.worldlabs.ai> e crie um mundo a partir de imagem.
+2. Suba a **Imagem 3 · a cozinha pronta**, no arquivo original, sem compressão do WhatsApp. Se o Guilherme mandar
+   fotos de cozinhas reais da Nuvo, faça também com uma delas: aí é a cozinha de verdade deles em 3D.
+3. Use o modelo mais forte disponível. Quando ficar pronto, ande um pouco dentro do mundo e confira:
+   - a marcenaria tem que ficar reta, sem derreter;
+   - não pode aparecer nada estranho atrás da câmera.
+4. Exporte: **Gaussian splat → SPZ → 500k** (a versão mais leve, boa para o site). Exportar exige o plano pago.
+5. Abra <https://nuvo-woodwork.lucassouzalima10.workers.dev/lab/3d.html> no computador e no celular, escolha o
+   arquivo e role a página. Ou me mande o arquivo, que eu deixo no link e ajusto o caminho da câmera.
+
+**Outra forma, com realidade total:** escanear uma cozinha pronta de verdade com o iPhone. Use o Scaniverse
+(grátis), o Polycam ou o Luma:
+
+- ande devagar em volta do ambiente filmando por 1 a 2 minutos, olhando para a marcenaria de vários ângulos;
+- exporte em SPZ ou PLY e me mande.
+
+---
+
+## Versão em pé para o celular (9:16)
+
+No celular em pé o site mostra só o meio do vídeo 16:9, e o Guilherme achou que fica cortado. Se o caminho for
+continuar com vídeo (e não 3D), a solução é o mesmo voo gravado em pé:
+
+1. **As 5 imagens em 9:16:** anexe cada imagem 16:9 como referência e peça:
+
+   ```
+   Recreate this exact scene as a vertical 9:16 photograph from the same camera position and height: same
+   architecture, materials, woodwork, furniture, light and colors. Keep the subject centered and extend the
+   view upward and downward (ceiling and floor). Ultra-photorealistic architectural photography, no people,
+   no text, no watermark. --ar 9:16
+   ```
+
+2. **Os 4 vídeos em 9:16:** mesmos prompts, mesmo gerador e **mesma duração (10 s)**. Use as imagens 9:16 como
+   primeiro e último quadro (e, do vídeo 2 em diante, o último quadro do vídeo anterior em 9:16).
+3. Nomes: `01-living-mobile.mp4`, `02-kitchen-mobile.mp4`, `03-closet-mobile.mp4`, `04-finale-mobile.mp4`.
+   O script já usa esses arquivos no celular em pé no lugar do recorte.
+
+**Baixe sempre em 1080p ou 4K** (no Flow: *Upscaled*). Os vídeos atuais são 720p.

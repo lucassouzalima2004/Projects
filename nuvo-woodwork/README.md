@@ -78,6 +78,24 @@ Detalhes:
 - Para tirar um vídeo do ar: apague os dois arquivos do trecho em `assets/video/` e rode
   `tools/make-videos.sh --manifest`.
 
+## Laboratório 3D
+
+`lab/3d.html` é um teste do filme em 3D de verdade (Gaussian Splatting, com a biblioteca Spark). Ele ainda não faz
+parte do site e nada aponta para ele. Abra
+<https://nuvo-woodwork.lucassouzalima10.workers.dev/lab/3d.html>, escolha um arquivo 3D (.spz, .ply, .splat) e role:
+
+- no começo o ambiente se monta em volta da câmera;
+- depois a câmera percorre o ambiente;
+- no celular em pé a câmera abre na vertical em vez de cortar.
+
+Como gerar o arquivo (Marble ou escaneamento com o iPhone) está no fim do [PROMPTS.md](PROMPTS.md). Um arquivo
+salvo em `lab/` abre direto pelo endereço: `lab/3d.html?splat=cozinha.spz`. Ajustes pelo endereço:
+
+- `dist=1.8`: quantos metros a câmera anda;
+- `turn=12`: quantos graus ela vira;
+- `flip=0`: para escaneamentos que já vêm em pé;
+- `debug`: mostra os quadros por segundo.
+
 ## Diagnóstico do filme
 
 Abra o site com `?debug` no fim do endereço (ex.: `https://nuvo-woodwork.lucassouzalima10.workers.dev/?debug`) e role

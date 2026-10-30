@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>NUVO · Laboratório 3D</title>
+  <!--
+    Teste do filme em 3D de verdade (Gaussian Splatting): o ambiente vem como um arquivo 3D
+    (.spz, .ply, .splat ou .ksplat) e o navegador desenha a cena ao vivo, na frequência da tela.
+    O scroll leva a câmera para dentro do ambiente; no começo ele "se monta" em volta de quem chega.
+
+    Como usar:
+      • abra a página e escolha (ou arraste) o arquivo exportado do Marble (World Labs);
+      • ou passe o endereço: 3d.html?splat=../lab/cozinha.spz
+    Ajustes pelo endereço: dist=1.8 (metros que a câmera anda), arc=0.35, turn=12 (graus),
+    flip=0 (arquivos de escaneamento que já vêm em pé), debug (mostra quadros por segundo).
+  -->
+  <link rel="preload" href="../assets/fonts/jost.woff2" as="font" type="font/woff2" crossorigin>
+  <style>
+    @font-face { font-family: "Jost"; src: url("../assets/fonts/jost.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+    @font-face { font-family: "Instrument Sans"; src: url("../assets/fonts/instrument-sans.woff2") format("woff2"); font-weight: 400 700; font-display: swap; }
+    :root { --ebony: #14110F; --cream: #F3EBDD; --gold: #CDA46A; --sand: #B9AD9F; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--ebony); color: var(--cream); font-family: "Instrument Sans", system-ui, sans-serif; }
+    .track { height: 420vh; }
+    .stage { position: fixed; inset: 0; overflow: hidden; }
+    canvas { display: block; width: 100%; height: 100%; }
+    .shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(20,17,15,.7), rgba(20,17,15,0) 55%); opacity: var(--shade, 0); }
+    .beat { position: absolute; left: clamp(18px, 4.2vw, 56px); top: 50%; transform: translate3d(0, calc(-50% + var(--y, 0px)), 0); opacity: var(--o, 0); pointer-events: none; }
+    .beat p { margin: 0 0 1.2rem; font-size: .78rem; letter-spacing: .26em; text-transform: uppercase; color: var(--gold); }
+    .beat h1 { margin: 0; font: 400 clamp(2.6rem, 6.2vw, 7rem)/1.02 "Jost", sans-serif; letter-spacing: -.02em; text-shadow: 0 2px 36px rgba(20,17,15,.5); }
+    @media (max-width: 720px) {
+      .shade { background: linear-gradient(0deg, rgba(20,17,15,.85), rgba(20,17,15,0) 60%); }
+      .beat { top: auto; bottom: 64px; transform: translate3d(0, var(--y, 0px), 0); }
+    }
+    .card { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(30rem, calc(100% - 32px)); padding: 26px 24px; border-radius: 14px; background: rgba(28,24,21,.92); border: 1px solid rgba(242,236,227,.14); text-align: center; z-index: 5; }
+    .card h2 { margin: 0 0 .6rem; font: 400 1.9rem/1.1 "Jost", sans-serif; }
+    .card p { margin: 0 0 1.1rem; color: var(--sand); font-size: .95rem; line-height: 1.55; }
+    .card label { display: inline-block; padding: .85rem 1.3rem; border-radius: 999px; background: var(--gold); color: var(--ebony); font-weight: 600; cursor: pointer; }
+    .card input { display: none; }
+    .card.is-drop { outline: 2px dashed var(--gold); outline-offset: 6px; }
+    .status { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 6; padding: .45rem .9rem; border-radius: 999px; background: rgba(0,0,0,.6); font: 12px/1.3 ui-monospace, Menlo, monospace; color: #e8f5df; pointer-events: none; }
+    .status:empty { display: none; }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
+        "@sparkjsdev/spark": "https://cdn.jsdelivr.net/npm/@sparkjsdev/spark@2.3.1/dist/spark.module.js"
+      }
+    }
+  </script>
+  <script src="../assets/js/vendor/lenis.min.js"></script>
+</head>
+<body>
+  <div class="stage">
+    <canvas aria-hidden="true"></canvas>
+    <div class="shade" aria-hidden="true"></div>
+    <div class="beat" data-at="0,0.2"><p>NUVO Woodwork · South Florida</p><h1>Where wood<br>becomes art.</h1></div>
+    <div class="beat" data-at="0.62,1"><p>Kitchens</p><h1>Cut on CNC.<br>Finished<br>by hand.</h1></div>
+  </div>
+  <div class="track" aria-hidden="true"></div>
+
+  <div class="card" data-card>
+    <h2>Laboratório 3D</h2>
+    <p>Escolha o arquivo 3D do ambiente (.spz, .ply, .splat ou .ksplat), por exemplo o que o Marble exporta. Depois é só rolar a página.</p>
+    <label>Escolher arquivo<input type="file" accept=".spz,.ply,.splat,.ksplat,.zip" data-file></label>
+  </div>
+  <div class="status" data-status></div>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { SparkRenderer, SplatMesh, dyno } from '@sparkjsdev/spark';
+
+    const q = new URLSearchParams(location.search);
+    const num = (k, d) => (q.has(k) && !isNaN(+q.get(k)) ? +q.get(k) : d);
+    const DIST = num('dist', 1.8); // metros que a câmera anda para dentro do ambiente
+    const ARC = num('arc', 0.35); // desvio lateral do caminho, em metros
+    const TURN = (num('turn', 12) * Math.PI) / 180; // quanto a câmera vira no meio do caminho
+    const FLIP = q.get('flip') !== '0'; // Marble salva com o y para baixo
+    const DEBUG = q.has('debug');
+
+    const $status = document.querySelector('[data-status]');
+    const $card = document.querySelector('[data-card]');
+    const say = (t) => ($status.textContent = t);
+
+    /* ------------------------------------------------------------ cena */
+    const canvas = document.querySelector('canvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: false });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color('#14110F');
+    const camera = new THREE.PerspectiveCamera(60, 1, 0.02, 600);
+    scene.add(new SparkRenderer({ renderer }));
+
+    // O mesmo ângulo na horizontal em qualquer tela: no celular em pé a câmera abre mais na vertical
+    // (até 90°) em vez de cortar as laterais
+    function fit() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      renderer.setSize(w, h, false);
+      const aspect = w / h;
+      const hfov = (72 * Math.PI) / 180;
+      let vfov = 2 * Math.atan(Math.tan(hfov / 2) / aspect);
+      vfov = Math.min(vfov, (90 * Math.PI) / 180);
+      camera.fov = (vfov * 180) / Math.PI;
+      camera.aspect = aspect;
+      camera.updateProjectionMatrix();
+    }
+
+    /* ------------------------------------------------------------ o ambiente se monta */
+    // Cada ponto do ambiente aparece quando a "onda" que sai de onde a câmera começa passa por ele,
+    // com um brilho dourado na frente da onda (a marcenaria se formando em volta de quem chega).
+    const radius = dyno.dynoFloat(100);
+    const glow = dyno.dynoFloat(0);
+    function assembly() {
+      return dyno.dynoBlock({ gsplat: dyno.Gsplat }, { gsplat: dyno.Gsplat }, ({ gsplat }) => {
+        const d = new dyno.Dyno({
+          inTypes: { gsplat: dyno.Gsplat, r: 'float', g: 'float' },
+          outTypes: { gsplat: dyno.Gsplat },
+          statements: ({ inputs, outputs }) => dyno.unindentLines(`
+            ${outputs.gsplat} = ${inputs.gsplat};
+            vec3 p = ${inputs.gsplat}.center;
+            float d = length(p) + 0.18 * sin(p.x * 3.1 + p.y * 2.3) * sin(p.z * 2.7 + p.y * 1.7);
+            float r = ${inputs.r};
+            float inside = 1.0 - smoothstep(r - 0.5, r, d);
+            float edge = exp(-pow((d - r + 0.25) / 0.22, 2.0)) * ${inputs.g};
+            ${outputs.gsplat}.scales = ${inputs.gsplat}.scales * mix(0.15, 1.0, inside) * step(0.001, inside);
+            ${outputs.gsplat}.rgba.rgb = mix(${inputs.gsplat}.rgba.rgb, vec3(0.86, 0.68, 0.44), clamp(edge, 0.0, 0.8));
+            ${outputs.gsplat}.rgba.a = ${inputs.gsplat}.rgba.a * inside;
+          `),
+        });
+        gsplat = d.apply({ gsplat, r: radius, g: glow }).gsplat;
+        return { gsplat };
+      });
+    }
+
+    let mesh = null;
+    let dirty = true;
+
+    async function open(source) {
+      $card.hidden = true;
+      say('Carregando o ambiente…');
+      if (mesh) {
+        scene.remove(mesh);
+        mesh.dispose && mesh.dispose();
+      }
+      const opts = Object.assign({ objectModifier: assembly() }, source);
+      opts.onProgress = (e) => e.total && say('Carregando o ambiente… ' + Math.round((e.loaded / e.total) * 100) + '%');
+      mesh = new SplatMesh(opts);
+      if (FLIP) mesh.quaternion.set(1, 0, 0, 0);
+      scene.add(mesh);
+      try {
+        await mesh.initialized;
+        say('');
+        wake();
+      } catch (e) {
+        say('Não consegui abrir este arquivo.');
+        $card.hidden = false;
+      }
+    }
+
+    // Arquivo escolhido, arrastado ou passado pelo endereço
+    document.querySelector('[data-file]').addEventListener('change', (e) => {
+      const f = e.target.files[0];
+      if (f) f.arrayBuffer().then((b) => open({ fileBytes: new Uint8Array(b), fileName: f.name }));
+    });
+    window.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      $card.classList.add('is-drop');
+    });
+    window.addEventListener('drop', (e) => {
+      e.preventDefault();
+      $card.classList.remove('is-drop');
+      const f = e.dataTransfer.files[0];
+      if (f) f.arrayBuffer().then((b) => open({ fileBytes: new Uint8Array(b), fileName: f.name }));
+    });
+    if (q.get('splat')) open({ url: q.get('splat') });
+
+    /* ------------------------------------------------------------ scroll → câmera */
+    const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+    const ease = (t) => t * t * (3 - 2 * t);
+    const beats = Array.from(document.querySelectorAll('.beat')).map((el) => ({ el, at: el.dataset.at.split(',').map(Number) }));
+    const shade = document.querySelector('.shade');
+
+    // Rolagem suave no computador, como no site
+    let lenis = null;
+    if (window.Lenis && matchMedia('(hover: hover) and (pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      lenis = new window.Lenis({ lerp: 0.11, smoothWheel: true, autoRaf: false });
+    }
+
+    let last = -1;
+    const look = new THREE.Vector3();
+    function place(u) {
+      // 0 → 0,35: o ambiente se monta enquanto a câmera entra devagar; 0,35 → 1: ela percorre o ambiente
+      const a = ease(clamp(u / 0.35));
+      const b = ease(clamp((u - 0.35) / 0.65));
+      radius.value = a < 1 ? 0.6 + a * 11 : 1e4; // no fim, tudo à mostra (inclusive o que se vê pelas janelas)
+      glow.value = a < 1 ? 1 : 0;
+      const z = -(0.25 * a + (DIST - 0.25) * b);
+      const x = Math.sin(Math.PI * b) * ARC;
+      const yaw = -Math.sin(Math.PI * b) * TURN;
+      camera.position.set(x, 0, z);
+      look.set(x + Math.sin(yaw), 0, z - Math.cos(yaw));
+      camera.lookAt(look);
+      // títulos
+      let s = 0;
+      beats.forEach((bt) => {
+        const [p0, p1] = bt.at;
+        const o = u < p0 || u > p1 ? 0 : Math.min(p0 <= 0 ? 1 : clamp((u - p0) / 0.06), p1 >= 1 ? 1 : clamp((p1 - u) / 0.06));
+        bt.el.style.setProperty('--o', o.toFixed(3));
+        bt.el.style.setProperty('--y', ((1 - o) * 30).toFixed(1) + 'px');
+        s = Math.max(s, o);
+      });
+      shade.style.setProperty('--shade', s.toFixed(3));
+    }
+
+    // Desenha enquanto algo muda e mais um pouco depois (a ordenação dos pontos termina em segundo
+    // plano); parado, não gasta bateria
+    let frames = 0;
+    let t0 = performance.now();
+    let idle = 0;
+    let raf = 0;
+    function wake() {
+      dirty = true;
+      idle = 0;
+      if (!raf) raf = requestAnimationFrame(frame);
+    }
+    function frame(t) {
+      raf = 0;
+      if (lenis) lenis.raf(t);
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const u = clamp(window.scrollY / Math.max(1, max));
+      if (u !== last || dirty) {
+        last = u;
+        place(u);
+        if (mesh && mesh.isInitialized) mesh.updateVersion();
+        dirty = false;
+        idle = 0;
+      } else {
+        idle++;
+      }
+      renderer.render(scene, camera);
+      if (DEBUG) {
+        frames++;
+        if (t - t0 > 1000) {
+          say(Math.round((frames * 1000) / (t - t0)) + ' quadros/s · ' + renderer.domElement.width + '×' + renderer.domElement.height);
+          frames = 0;
+          t0 = t;
+        }
+      }
+      if (idle < 45 || (lenis && lenis.isScrolling === 'smooth')) raf = requestAnimationFrame(frame);
+    }
+    window.addEventListener('scroll', wake, { passive: true });
+    window.addEventListener('wheel', wake, { passive: true });
+    window.addEventListener('resize', () => {
+      fit();
+      wake();
+    });
+    fit();
+    wake();
+    window.NUVO_LAB = { camera, get mesh() { return mesh; } };
+  </script>
+</body>
+</html>
