@@ -1,14 +1,17 @@
 /* =============================================================================
-   A visita por clique (?tour), no formato do site do reel que o Lucas mandou:
-   a câmera para em cada ambiente, com etiquetas em cima das passagens. Clicar
-   numa etiqueta toca o vídeo da câmera indo até lá; no fim, o vídeo vira a foto
-   do ambiente (bem mais nítida) e aparecem o título e as próximas etiquetas. O
-   link no canto de cima volta: voando, quando existe o vídeo de trás para
-   frente; senão, com uma fusão entre as fotos.
+   A visita (?tour): a câmera para em cada ambiente e um mini vídeo rápido a
+   leva até o próximo. Uma rolada (roda, trackpad, dedo ou setas) toca o vídeo
+   inteiro até o cômodo seguinte; rolando para cima, o mesmo vídeo de trás para
+   frente. Na última parada a rolagem segue para o resto do site.
+   Como no reel que o Lucas mandou, também há etiquetas em cima das passagens:
+   clicar numa leva direto àquele ambiente, e o link no canto de cima volta.
+   No fim de cada vídeo, a foto do ambiente (bem mais nítida) entra por cima do
+   último quadro e aparecem o título e as etiquetas.
 
-   O vídeo toca no tempo dele (não preso ao scroll), por isso é sempre liso. A
-   rolagem da página continua normal. No celular em pé as etiquetas viram botões
-   embaixo do título. Textos, etiquetas e vídeos ficam em content.js (visit).
+   O vídeo toca no tempo dele (não preso ao scroll), por isso é sempre liso.
+   Computador e celular têm vídeos separados: deitados (16:9) e em pé (9:16).
+   No celular em pé as etiquetas viram botões embaixo do título.
+   Textos, etiquetas e vídeos ficam em content.js (visit).
    ========================================================================== */
 (function () {
   'use strict';
@@ -22,8 +25,14 @@
   const MOVES = V.moves || [];
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
   const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
-  const AR = 16 / 9; // os vídeos e as fotos
+  const portrait = window.matchMedia('(max-aspect-ratio: 1/1)');
+  // Em pé, com as versões em pé de tudo (visit.tall): vídeos e fotos 9:16. Senão, 16:9.
+  const tall = () => !!V.tall && portrait.matches;
+  const ORDER = (V.order || V.stops.map((s) => s.id)).filter((id) => STOPS.has(id));
   const FADE = 420; // fusão entre o vídeo e a foto (ms)
+  const QUIET = 200; // ms sem rolar que separam um gesto do outro
+  const NUDGE = 8; // px de rolagem que já contam como "quero o próximo cômodo"
+  const SWIPE = 30; // px que o dedo anda para trocar de cômodo
   const OUT = 'cubic-bezier(0.16, 1, 0.3, 1)';
   const PAN = 'cubic-bezier(0.45, 0, 0.25, 1)';
 
@@ -38,9 +47,13 @@
   stage.innerHTML =
     '<div class="tour__frame">' +
     '<video class="tour__video" muted playsinline preload="auto" disablepictureinpicture aria-hidden="true"></video>' +
-    V.stops.map((s, i) =>
-      '<img class="tour__still" data-stop="' + esc(s.id) + '" alt="" decoding="async" src="assets/img/' + esc(s.image) + '"' +
-      (i ? ' fetchpriority="low"' : ' fetchpriority="high"') + '>').join('') +
+    V.stops.map((s, i) => {
+      const img = '<img class="tour__still" data-stop="' + esc(s.id) + '" alt="" decoding="async" src="assets/img/' + esc(s.image) + '"' +
+        (i ? ' fetchpriority="low"' : ' fetchpriority="high"') + '>';
+      return V.tall && s.tall
+        ? '<picture><source media="(max-aspect-ratio: 1/1)" srcset="assets/img/' + esc(s.tall) + '">' + img + '</picture>'
+        : img;
+    }).join('') +
     V.stops.map((s) =>
       '<div class="tour__pins" data-stop="' + esc(s.id) + '" inert>' +
       (s.pins || []).map((p) =>
@@ -79,17 +92,19 @@
         s.pins.map((p) => '<button class="tour__choice" type="button" data-to="' + esc(p.to) + '">' + esc(p.label) + '</button>').join('') +
         '</div>';
     }
+    if (s.cue) h += '<p class="beat__cue" data-line><span aria-hidden="true"></span>' + esc(s.cue) + '</p>';
     return h;
   }
 
   /* ------------------------------------------------------------ enquadramento */
-  // As fotos, o vídeo e as etiquetas moram juntos num quadro 16:9 que cobre a tela, com o ponto de
-  // interesse do ambiente o mais perto do meio que der. Entre dois ambientes o quadro desliza junto
-  // com o voo.
+  // As fotos, o vídeo e as etiquetas moram juntos num quadro (16:9, ou 9:16 em pé) que cobre a tela,
+  // com o ponto de interesse do ambiente o mais perto do meio que der. Entre dois ambientes o quadro
+  // desliza junto com o voo.
   let box = { w: 0, h: 0 };
   function measure() {
     const W = stage.clientWidth;
     const H = stage.clientHeight;
+    const AR = tall() ? 9 / 16 : 16 / 9;
     let w = W;
     let h = W / AR;
     if (h < H) {
@@ -101,7 +116,7 @@
     frame.style.height = h.toFixed(1) + 'px';
   }
   function shift(id) {
-    const f = (STOPS.get(id) || {}).focus || [0.5, 0.5];
+    const f = (!tall() && (STOPS.get(id) || {}).focus) || [0.5, 0.5]; // o focus é da foto deitada
     return {
       x: Math.min(0, Math.max(box.W - box.w, box.W / 2 - f[0] * box.w)),
       y: Math.min(0, Math.max(box.H - box.h, box.H / 2 - f[1] * box.h)),
@@ -157,7 +172,7 @@
     if (r) return { m: r, rev: true };
     return null;
   }
-  const fileOf = (r) => r.m.video + (r.rev ? '-rev' : '');
+  const fileOf = (r) => r.m.video + (tall() ? '-tall' : '') + (r.rev ? '-rev' : '');
 
   // Deixa o vídeo pronto no quadro t, já desenhado por baixo da foto
   function cue(url, t) {
@@ -209,6 +224,7 @@
   /* ------------------------------------------------------------ estado */
   let here = null;
   let busy = false;
+  let target = null; // para onde a câmera está indo
 
   function show(el, on) {
     el.classList.toggle('is-on', on);
@@ -234,6 +250,7 @@
   function arrive(id, first) {
     here = id;
     busy = false;
+    target = null;
     const s = STOPS.get(id);
     stills.forEach((el, k) => {
       show(el, k === id);
@@ -243,6 +260,7 @@
     film.classList.remove('is-moving');
     film.dataset.stop = id;
     copy.innerHTML = copyHTML(s);
+    if (typeof freeTouch === 'function') freeTouch();
     const lines = Array.from(copy.querySelectorAll('[data-line]'));
     if (!reduce.matches) {
       lines.forEach((el, k) =>
@@ -268,16 +286,19 @@
       back.hidden = true;
       back.classList.remove('is-shown');
     }
-    // as fotos e os vídeos dos próximos caminhos já ficam prontos
-    const next = (s.pins || []).map((p) => p.to).concat(s.back ? [s.back.to] : []);
+    // as fotos e os vídeos dos próximos caminhos já ficam prontos: primeiro o da rolada para baixo,
+    // depois o da rolada para cima, depois os das etiquetas
+    const k = ORDER.indexOf(id);
+    const next = [ORDER[k + 1], ORDER[k - 1]].concat((s.pins || []).map((p) => p.to), s.back ? [s.back.to] : [])
+      .filter((to, i, all) => to && to !== id && all.indexOf(to) === i);
     next.forEach((to) => {
       const im = stills.get(to);
       if (im && im.decode) im.decode().catch(() => {});
     });
     if (canPlay && !saveData && !reduce.matches) {
       const want = next.map((to) => route(id, to)).filter(Boolean).map(fileOf);
-      // no computador todos; no celular só o primeiro (os outros quando o dedo encosta na etiqueta)
-      (fine.matches ? want : want.slice(0, 1)).reduce((p, name) => p.then(() => load(name).catch(() => {})), Promise.resolve());
+      // no computador todos; no celular os dois da rolada (os outros quando o dedo encosta na etiqueta)
+      (fine.matches ? want : want.slice(0, 2)).reduce((p, name) => p.then(() => load(name).catch(() => {})), Promise.resolve());
     }
   }
 
@@ -287,6 +308,7 @@
     const r = canPlay && !reduce.matches && !document.hidden ? route(here, to) : null;
     if (!r) return fade(to);
     busy = true;
+    target = to;
     if (button) button.classList.add('is-loading');
     let url;
     try {
@@ -349,6 +371,7 @@
   async function fade(to, keepCopy) {
     if (busy && !keepCopy) return;
     busy = true;
+    target = to;
     if (!keepCopy) leave();
     const dest = stills.get(to);
     if (dest.decode) await dest.decode().catch(() => {});
@@ -377,6 +400,103 @@
     if (r && canPlay) load(fileOf(r)).catch(() => {});
   }, { passive: true });
 
+  /* ------------------------------------------------------------ rolada, dedo e teclado */
+  const atTop = () => window.scrollY <= 2;
+  const menuOpen = () => document.body.classList.contains('menu-open');
+  const at = () => ORDER.indexOf(target || here); // o cômodo na tela (ou chegando nele)
+  const last = ORDER.length - 1;
+  const step = (dir) => {
+    const to = ORDER[at() + dir];
+    if (to) go(to);
+  };
+
+  // Roda e trackpad: um gesto troca um cômodo só. Depois que o dedo sai, o trackpad continua mandando
+  // eventos por mais de um segundo (a inércia), cada vez menores; se a rolagem volta a crescer no meio
+  // disso, é um gesto novo, e ele vale. (O mesmo das cenas do topo, em chapters.js.)
+  let lastWheel = 0;
+  let gated = false; // o gesto atual já trocou de cômodo (ou veio rolando a página): espera um gesto novo
+  let acc = 0;
+  let peak = 0;
+  let valley = 0;
+  window.addEventListener('wheel', (e) => {
+    if (menuOpen() || e.ctrlKey) return;
+    let dy = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : 0;
+    if (e.deltaMode === 1) dy *= 16;
+    else if (e.deltaMode === 2) dy *= window.innerHeight;
+    const v = Math.abs(dy);
+    const now = performance.now();
+    const gap = now - lastWheel;
+    lastWheel = now;
+    // uma pausa separa um gesto do outro, a não ser que seja o mesmo gesto depois de um engasgo
+    const stall = gated && gap < 1000 && v > 0 && (busy || (v <= valley && v < peak));
+    if (gap > QUIET && !stall) {
+      gated = false;
+      acc = 0;
+      peak = valley = 0;
+    }
+    if (!dy) return;
+    if (valley < peak && v > valley * 2 + 6) {
+      peak = valley = v; // voltou a crescer depois de frear: gesto novo
+      gated = false;
+      acc = 0;
+    } else if (v >= peak) peak = valley = v;
+    else if (v < valley) valley = v;
+    if (!atTop()) {
+      gated = true; // chegou ao topo rolando a página: o mesmo gesto não troca de cômodo
+      return;
+    }
+    const dir = dy > 0 ? 1 : -1;
+    const edge = (dir > 0 && at() === last) || (dir < 0 && at() === 0);
+    if (edge && !busy && !gated) return; // do último cômodo para baixo: segue para o resto do site
+    e.preventDefault();
+    e.lenisStopPropagation = true;
+    if (gated || edge || busy) return;
+    if (acc * dir < 0) acc = 0;
+    acc += dy;
+    if (Math.abs(acc) < NUDGE) return;
+    gated = true;
+    acc = 0;
+    step(dir);
+  }, { passive: false, capture: true });
+
+  // Dedo: troca assim que o dedo anda um pouco. No último cômodo para baixo, o dedo rola a página.
+  let touch = null;
+  function freeTouch() {
+    film.classList.toggle('is-free', at() === last || !atTop());
+  }
+  window.addEventListener('scroll', freeTouch, { passive: true });
+  film.addEventListener('touchstart', (e) => {
+    const p = e.touches[0];
+    touch = e.touches.length === 1 && atTop() && !menuOpen() ? { x: p.clientX, y: p.clientY, done: false } : null;
+  }, { passive: true });
+  film.addEventListener('touchmove', (e) => {
+    if (e.touches.length > 1) touch = null; // dois dedos: é zoom
+    if (!touch) return;
+    if (!film.classList.contains('is-free') && e.cancelable) e.preventDefault();
+    const p = e.touches[0];
+    const dy = touch.y - p.clientY;
+    const dx = touch.x - p.clientX;
+    const dir = dy > 0 ? 1 : -1;
+    if (touch.done || busy || Math.abs(dy) < SWIPE || Math.abs(dy) < Math.abs(dx) * 1.2 || !atTop()) return;
+    if (dir > 0 && at() === last) return; // a página rola sozinha
+    touch.done = true;
+    step(dir);
+  }, { passive: false });
+  film.addEventListener('touchend', () => (touch = null), { passive: true });
+  film.addEventListener('touchcancel', () => (touch = null), { passive: true });
+
+  window.addEventListener('keydown', (e) => {
+    if (!atTop() || e.altKey || e.ctrlKey || e.metaKey || menuOpen()) return;
+    const tag = (e.target && e.target.tagName) || '';
+    if (/^(INPUT|TEXTAREA|SELECT)$/.test(tag) || ((tag === 'BUTTON' || tag === 'A') && e.key === ' ')) return;
+    const down = e.key === 'ArrowDown' || e.key === 'PageDown' || (e.key === ' ' && !e.shiftKey);
+    const up = e.key === 'ArrowUp' || e.key === 'PageUp' || (e.key === ' ' && e.shiftKey);
+    if ((down && at() < last) || (up && at() > 0)) {
+      e.preventDefault();
+      if (!busy) step(down ? 1 : -1);
+    }
+  });
+
   /* ------------------------------------------------------------ início */
   measure();
   arrive(STOPS.has(V.start) ? V.start : V.stops[0].id, true);
@@ -389,12 +509,12 @@
       if (W === box.W && H === box.H) return; // a barra do navegador do celular não muda a altura daqui
       measure();
       if (!busy) place(here);
+      freeTouch();
     });
   });
   window.dispatchEvent(new Event('resize'));
 
   // Mesma interface das outras versões (as linhas do índice de ambientes levam ao ambiente)
-  const atTop = () => window.scrollY <= 2;
   function goToScene(id) {
     if (!STOPS.has(id)) return;
     if (atTop()) {

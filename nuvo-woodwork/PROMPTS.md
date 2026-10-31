@@ -73,25 +73,26 @@ Para cada cena nova, gere também a versão em pé (prompt do item 1).
 
 ---
 
-## Vídeos para a visita por clique (`?tour`)
+## Vídeos para a visita (`?tour`)
 
-A visita por clique é no formato do reel do @michonmotion: a câmera para num ambiente, a pessoa clica numa etiqueta
-("Kitchen", "Closet") e um vídeo curto leva a câmera até lá; o "voltar" toca o mesmo vídeo de trás para frente. Hoje
-ela usa os vídeos do filme (720p e com a marcenaria se montando, que de trás para frente fica estranho, por isso o
-voltar ainda é uma fusão). Para chegar no nível do reel, cada caminho precisa de um vídeo **limpo**: só a câmera
-andando, nada se montando nem mudando de forma.
+Na visita, a câmera para em cada cômodo e **uma rolada toca um mini vídeo inteiro** (uns 2 segundos) até o próximo;
+rolando para cima, o mesmo vídeo de trás para frente. Computador e celular têm vídeos separados: **16:9** e **9:16**.
+Hoje ela usa os vídeos do filme cortados e acelerados (e, no celular, o meio recortado), que ainda têm a marcenaria se
+montando. Para chegar no nível do reel do @michonmotion, cada caminho precisa de um vídeo **limpo**: só a câmera
+andando, nada se montando nem mudando de forma (assim o vídeo de trás para frente também fica natural).
 
-No **Flow**, use **Frames to Video** (Veo) com o **primeiro e o último quadro**, **16:9**, e baixe em **1080p**
-(*Upscaled*). Os quadros são as imagens das cenas (as de `assets/img/keys/`, ou as novas do item acima). Como o vídeo
-termina exatamente na imagem do ambiente, a parada fica perfeita.
+Serve o Flow (**Frames to Video**, Veo) ou outro gerador que aceite **primeiro e último quadro**. Gere de 4 a 8 s; o
+script acelera para uns 2 s. Os quadros são as imagens das cenas (as de `assets/img/keys/`, ou as novas do item acima;
+para o 9:16, as versões em pé do item 1). Como o vídeo termina exatamente na imagem do cômodo, a parada fica perfeita.
 
 | Arquivo | Primeiro quadro | Último quadro | O caminho |
 | --- | --- | --- | --- |
-| `living-kitchen.mp4` | sala | cozinha | da sala, passando pela abertura, até a cozinha |
-| `living-closet.mp4` | sala | closet | da sala, subindo a escada flutuante, até o closet |
-| `door-living.mp4` | porta | sala | a porta pivotante abre e a câmera entra até a sala |
-| `living-bar.mp4` (opcional) | sala | bar (item 3 acima) | da sala até o bar e a adega |
-| `closet-house.mp4` (opcional) | closet | casa acesa | do closet, saindo pela janela, até a casa vista de fora |
+| `door-living` | porta | sala | a porta pivotante abre e a câmera entra até a sala |
+| `living-kitchen` | sala | cozinha | da sala, passando pela abertura, até a cozinha |
+| `kitchen-closet` | cozinha | closet | da cozinha, subindo a escada flutuante, até o closet |
+| `closet-house` | closet | casa acesa | do closet, saindo pela janela, até a casa vista de fora |
+
+Cada um em duas versões: **16:9 (computador)** e **9:16 (celular)**, com o mesmo caminho.
 
 Prompt base (troque a origem e o destino):
 
@@ -99,12 +100,18 @@ Prompt base (troque a origem e o destino):
 Smooth, steady gimbal camera walking at a calm, constant pace from the living room (first frame) through the open passage into the kitchen (last frame). One continuous camera move with a gentle ease-in at the start and ease-out at the end, eye level 1.5 meters, 24mm lens. The architecture, furniture, millwork and lighting stay exactly the same the whole time: nothing appears, disappears, assembles or changes shape. Photorealistic, natural light, subtle motion blur, perfectly stable horizon. No people, no text, no cuts, no fast moves.
 ```
 
-Para o closet (a escada): troque o caminho por
-`...from the living room (first frame), turning toward the floating walnut staircase, gliding up the stairs and along the upstairs hallway into the walk-in closet (last frame)...`.
+Para a escada: `...from the kitchen (first frame), turning toward the floating walnut staircase, gliding up the stairs
+and along the upstairs hallway into the walk-in closet (last frame)...`.
 
 Confira antes de mandar: a câmera não para nem dá trancos, o último quadro é igual à imagem, nada se deforma e não
-aparece gente. Depois é só me mandar, ou rodar `tools/make-tour-videos.sh living-kitchen=arquivo.mp4` (faz o vídeo e a
-versão de trás para frente) e apontar o caminho em `content.js` → `visit.moves` (veja o README).
+aparece gente. Depois é só me mandar, ou rodar dentro de `nuvo-woodwork/`:
+
+```bash
+SPEED=3 tools/make-tour-videos.sh living-kitchen=sala-cozinha-16x9.mp4 living-kitchen=sala-cozinha-9x16.mp4
+```
+
+O script faz a ida e a volta de cada um (o 9:16 vira `living-kitchen-tall.mp4`). As fotos em pé de cada cômodo
+(`assets/img/scenes/<cômodo>-tall.webp`) precisam ser o último quadro do vídeo em pé (veja o README).
 
 ---
 

@@ -804,7 +804,14 @@ body.menu-open { overflow: hidden; }
 .film.is-tour {
   height: 100vh;
   height: 100svh;
+  touch-action: none;           /* o dedo troca de cômodo em vez de rolar a página... */
+  touch-action: pinch-zoom;     /* ...e o zoom com dois dedos continua funcionando */
 }
+.film.is-tour.is-free {         /* no último cômodo (ou com a página rolada) o dedo rola a página */
+  touch-action: pan-y;
+  touch-action: pan-y pinch-zoom;
+}
+.tour__frame > picture { display: contents; }
 .film.is-tour .film__stage {
   position: relative;
   height: 100%;
