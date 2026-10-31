@@ -430,14 +430,19 @@
   <script src="assets/js/content.js"></script>
   <script src="assets/video/manifest.js"></script>
   <script>
-    // O topo do site: as cenas com parallax (chapters.js). O filme antigo em vídeo continua em ?video.
-    window.NUVO_FILM_MODE = /(^|&)video(=|&|$)/.test(location.search.slice(1)) ? 'video' : 'chapters';
+    // O topo do site: as cenas com parallax (chapters.js). Com ?tour, a visita por clique (tour.js);
+    // com ?video, o filme antigo em vídeo (film.js).
+    window.NUVO_FILM_MODE = (function (q) {
+      const has = (k) => new RegExp('(^|&)' + k + '(=|&|$)').test(q);
+      return has('tour') ? 'tour' : has('video') ? 'video' : 'chapters';
+    })(location.search.slice(1));
   </script>
   <script src="assets/js/vendor/lenis.min.js"></script>
   <script src="assets/js/scroll.js"></script>
   <script src="assets/js/film-decoder.js"></script>
   <script src="assets/js/film.js"></script>
   <script src="assets/js/chapters.js"></script>
+  <script src="assets/js/tour.js"></script>
   <script src="assets/js/app.js"></script>
 </body>
 </html>

@@ -25,6 +25,9 @@ O site é em inglês (o público é americano).
   - Com "reduzir movimento" ligado, as cenas só trocam com uma fusão rápida.
   - O filme antigo em vídeo (o voo de drone pela casa) continua no ar em `?video` no fim do endereço; veja
     "O filme em vídeo" mais abaixo.
+- **A visita por clique** (em teste, com `?tour` no fim do endereço), no formato do reel do @michonmotion que o Lucas
+  mandou: a câmera para em cada ambiente, com etiquetas em cima das passagens; clicar numa etiqueta toca o vídeo da
+  câmera indo até lá, e o link no canto de cima volta. Veja "A visita por clique" mais abaixo.
 - **Índice de ambientes** com fotos de projetos reais. No computador, a foto acompanha o cursor; no celular, aparece
   ao lado. Cada linha volta para aquele ambiente nas cenas do topo (escritório e lavanderia, que não têm cena, levam
   ao formulário).
@@ -55,6 +58,27 @@ Para trocar uma foto ou pôr uma cena nova:
 3. Em `assets/js/content.js` → `chapters`, a cena aponta para a foto (`image`), para a versão em pé (`tall`, que o
    celular em pé usa no lugar da larga, sem cortar), para o ponto de interesse (`focus`) e para o card do projeto
    real (`card`). Para uma cena nova, copie um bloco e mude o `id`, o `label` (o nome nos tracinhos) e os textos.
+
+## A visita por clique (`?tour`)
+
+<https://nuvo-woodwork.lucassouzalima10.workers.dev/?tour> (`assets/js/tour.js`). A câmera para num ambiente com o
+título embaixo à esquerda e etiquetas em cima das passagens (no celular em pé, elas viram botões embaixo do título).
+Clicar toca o vídeo do caminho, que termina exatamente na foto do próximo ambiente; aí a foto (nítida) entra por cima
+do último quadro e aparecem o título e as próximas etiquetas. O vídeo toca normal, não preso ao scroll, então é sempre
+liso; a rolagem da página continua normal.
+
+- O "voltar" toca o vídeo de trás para frente quando existe a versão invertida dele; sem ela, troca com uma fusão.
+- Enquanto a pessoa está num ambiente, os vídeos das etiquetas dele já vão baixando (no celular, só o primeiro; os
+  outros quando o dedo encosta na etiqueta). Cada vídeo baixa inteiro e toca da memória, porque o Cloudflare não
+  entrega pedaços de vídeo e o iPhone precisa disso para tocar direto do endereço.
+- Sem decodificador de H.264, com "reduzir movimento" ou com economia de dados, os ambientes trocam com fusão.
+- Hoje ela usa os vídeos do filme (720p, com a marcenaria se montando) só para mostrar a interação. Os vídeos
+  definitivos e os prompts estão no [PROMPTS.md](PROMPTS.md), em "Vídeos para a visita por clique".
+
+Para pôr um vídeo novo: `tools/make-tour-videos.sh living-kitchen=~/Downloads/sala-cozinha.mp4` (precisa do ffmpeg)
+cria `assets/video/living-kitchen.mp4` e `living-kitchen-rev.mp4`. Em `assets/js/content.js` → `visit.moves`, o caminho
+da sala para a cozinha passa a usar `video: 'living-kitchen'`, com `end` igual à duração do vídeo, `rate: 1` e
+`reverse: true`. Ambientes, etiquetas (posição em fração da foto) e textos ficam em `visit.stops`.
 
 ## O filme em vídeo (`?video`)
 
@@ -134,6 +158,7 @@ canvas (dá para juntar: `?video&debug&film=video`).
 | --- | --- |
 | Cenas do topo: ordem, títulos, fotos, ponto de interesse e card do projeto real | `assets/js/content.js` → `chapters` |
 | Duração e curva da passagem entre as cenas | `assets/js/chapters.js` → `DUR` e `EASE` |
+| Visita por clique (`?tour`): ambientes, etiquetas e vídeos | `assets/js/content.js` → `visit` |
 | Títulos do filme em vídeo (`?video`) e em que segundo entram | `assets/js/content.js` → `scenes` e `tour` |
 | Telefone, e-mail e endereço do formulário | `assets/js/content.js` → `contact` (e no `index.html`) |
 | Ambientes, estúdio, processo, depoimentos, contato e rodapé | `index.html` |
@@ -205,6 +230,7 @@ nuvo-woodwork/
 ├── assets/css/styles.css    visual
 ├── assets/js/content.js     cenas do topo, trechos do filme em vídeo e contato
 ├── assets/js/chapters.js    as cenas do topo: passagem com parallax, roda, trackpad, dedo e teclado
+├── assets/js/tour.js        a visita por clique (?tour): etiquetas, vídeos de um ambiente a outro
 ├── assets/js/film.js        o filme em vídeo (?video): scroll, títulos, canvas, carregamento
 ├── assets/js/film-decoder.js decodifica os quadros dos vídeos direto no navegador (WebCodecs)
 ├── assets/js/scroll.js      rolagem suave no computador e links internos
@@ -215,5 +241,6 @@ nuvo-woodwork/
 ├── assets/img/              fotos, favicon, ícone do iPhone e prévia do link
 ├── assets/fonts/            fontes
 ├── tools/make-scenes.sh     imagens do Flow → assets/img/scenes/
+├── tools/make-tour-videos.sh vídeos do Flow → assets/video/ (ida e volta, para a visita por clique)
 └── tools/make-videos.sh     videos/ → assets/video/
 ```

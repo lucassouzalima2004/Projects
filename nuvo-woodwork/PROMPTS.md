@@ -73,6 +73,41 @@ Para cada cena nova, gere também a versão em pé (prompt do item 1).
 
 ---
 
+## Vídeos para a visita por clique (`?tour`)
+
+A visita por clique é no formato do reel do @michonmotion: a câmera para num ambiente, a pessoa clica numa etiqueta
+("Kitchen", "Closet") e um vídeo curto leva a câmera até lá; o "voltar" toca o mesmo vídeo de trás para frente. Hoje
+ela usa os vídeos do filme (720p e com a marcenaria se montando, que de trás para frente fica estranho, por isso o
+voltar ainda é uma fusão). Para chegar no nível do reel, cada caminho precisa de um vídeo **limpo**: só a câmera
+andando, nada se montando nem mudando de forma.
+
+No **Flow**, use **Frames to Video** (Veo) com o **primeiro e o último quadro**, **16:9**, e baixe em **1080p**
+(*Upscaled*). Os quadros são as imagens das cenas (as de `assets/img/keys/`, ou as novas do item acima). Como o vídeo
+termina exatamente na imagem do ambiente, a parada fica perfeita.
+
+| Arquivo | Primeiro quadro | Último quadro | O caminho |
+| --- | --- | --- | --- |
+| `living-kitchen.mp4` | sala | cozinha | da sala, passando pela abertura, até a cozinha |
+| `living-closet.mp4` | sala | closet | da sala, subindo a escada flutuante, até o closet |
+| `door-living.mp4` | porta | sala | a porta pivotante abre e a câmera entra até a sala |
+| `living-bar.mp4` (opcional) | sala | bar (item 3 acima) | da sala até o bar e a adega |
+| `closet-house.mp4` (opcional) | closet | casa acesa | do closet, saindo pela janela, até a casa vista de fora |
+
+Prompt base (troque a origem e o destino):
+
+```text
+Smooth, steady gimbal camera walking at a calm, constant pace from the living room (first frame) through the open passage into the kitchen (last frame). One continuous camera move with a gentle ease-in at the start and ease-out at the end, eye level 1.5 meters, 24mm lens. The architecture, furniture, millwork and lighting stay exactly the same the whole time: nothing appears, disappears, assembles or changes shape. Photorealistic, natural light, subtle motion blur, perfectly stable horizon. No people, no text, no cuts, no fast moves.
+```
+
+Para o closet (a escada): troque o caminho por
+`...from the living room (first frame), turning toward the floating walnut staircase, gliding up the stairs and along the upstairs hallway into the walk-in closet (last frame)...`.
+
+Confira antes de mandar: a câmera não para nem dá trancos, o último quadro é igual à imagem, nada se deforma e não
+aparece gente. Depois é só me mandar, ou rodar `tools/make-tour-videos.sh living-kitchen=arquivo.mp4` (faz o vídeo e a
+versão de trás para frente) e apontar o caminho em `content.js` → `visit.moves` (veja o README).
+
+---
+
 ## O filme em vídeo (`?video`)
 
 Mesmo método do site de referência que o Guilherme mandou ("Criei um Site 3D com IA Sem Usar 3D", do Lucas Rocha):

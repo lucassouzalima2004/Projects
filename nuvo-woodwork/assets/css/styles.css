@@ -799,6 +799,207 @@ body.menu-open { overflow: hidden; }
   .chapters__nav [aria-current]::after { width: 24px; }
 }
 
+/* ---------------------------------------------------------------- Visita por clique (tour.js, em ?tour) */
+/* A câmera para em cada ambiente; as etiquetas em cima das passagens levam a câmera até lá. */
+.film.is-tour {
+  height: 100vh;
+  height: 100svh;
+}
+.film.is-tour .film__stage {
+  position: relative;
+  height: 100%;
+}
+/* O quadro 16:9 que cobre a tela: o vídeo por baixo, as fotos por cima e as etiquetas por cima de tudo
+   (tour.js dá o tamanho e a posição) */
+.tour__frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+.tour__video,
+.tour__still {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: fill; /* o vídeo é a foto achatada para 16:9: assim os dois coincidem */
+}
+.tour__still {
+  z-index: 1;
+  opacity: 0;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.tour__still.is-on { opacity: 1; }
+.tour__still.is-top { z-index: 2; }
+
+.tour__pins {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  visibility: hidden;
+  pointer-events: none;
+}
+.tour__pins.is-shown { visibility: visible; }
+.tour__pin {
+  position: absolute;
+  left: calc(var(--x) * 100%);
+  top: calc(var(--y) * 100%);
+  translate: calc(-50% + var(--dx, 0px)) -50%;
+  display: inline-flex;
+  align-items: center;
+  gap: .7em;
+  min-height: 40px;
+  padding: 0 .95em 0 1.15em;
+  border: 1px solid rgba(243, 235, 221, .34);
+  border-radius: 999px;
+  background: rgba(20, 17, 15, .52);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: var(--cream);
+  font: 500 .7rem/1 var(--font-body);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: background-color .35s, border-color .35s;
+}
+/* o pontinho dourado, com uma onda que chama o clique */
+.tour__pin::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 0 0 rgba(205, 164, 106, .55);
+  animation: pin 2.4s var(--ease) infinite;
+}
+@keyframes pin {
+  0% { box-shadow: 0 0 0 0 rgba(205, 164, 106, .55); }
+  70%, 100% { box-shadow: 0 0 0 10px rgba(205, 164, 106, 0); }
+}
+.tour__pin:hover,
+.tour__pin:focus-visible {
+  background: rgba(20, 17, 15, .74);
+  border-color: rgba(205, 164, 106, .8);
+}
+.tour__pin:focus-visible,
+.tour__choice:focus-visible,
+.tour__back:focus-visible { outline: 1px solid var(--gold); outline-offset: 4px; }
+/* baixando o vídeo: o pontinho pisca mais rápido */
+.tour__pin.is-loading::after,
+.tour__choice.is-loading::after { animation: pin-wait .7s ease-in-out infinite alternate; }
+@keyframes pin-wait { to { opacity: .25; } }
+
+/* Sombra que deixa o título legível (fica mais leve durante o voo) */
+.tour__shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(20, 17, 15, .5) 0%, rgba(20, 17, 15, 0) 20%),
+    linear-gradient(18deg, rgba(20, 17, 15, .82) 0%, rgba(20, 17, 15, .4) 32%, rgba(20, 17, 15, 0) 58%);
+  transition: opacity .8s var(--ease);
+}
+.film.is-moving .tour__shade { opacity: .35; }
+
+/* "Voltar", no canto de cima, como no reel */
+.tour__back {
+  position: absolute;
+  z-index: 3;
+  top: calc(var(--header-h) + env(safe-area-inset-top) + 18px);
+  left: var(--gutter);
+  display: inline-flex;
+  align-items: center;
+  gap: .6em;
+  padding: .55em 0;
+  border: 0;
+  border-bottom: 1px solid rgba(243, 235, 221, .45);
+  background: none;
+  color: var(--cream);
+  font: 500 .7rem/1 var(--font-body);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 12px rgba(20, 17, 15, .6);
+  cursor: pointer;
+  opacity: 0;
+  transform: translate3d(0, -6px, 0);
+  transition: opacity .5s var(--ease), transform .6s var(--ease-out), border-color .3s;
+}
+.tour__back[hidden] { display: none; }
+.tour__back.is-shown { opacity: 1; transform: none; }
+.tour__back:hover { border-color: var(--gold); }
+.tour__back svg { width: 16px; height: 16px; transform: rotate(180deg); }
+
+/* O título do ambiente, embaixo à esquerda */
+.tour__copy {
+  position: absolute;
+  z-index: 2;
+  left: var(--gutter);
+  bottom: clamp(36px, 8vh, 84px);
+  width: min(46vw, 680px);
+}
+.tour__copy .beat__eyebrow { margin-bottom: 1.1rem; }
+.tour__copy .beat__title { font-size: clamp(2.4rem, 4.4vw, 4.9rem); }
+.tour__copy .beat__line { white-space: normal; }
+.tour__copy .beat__text { margin-top: 1.2rem; max-width: 30rem; }
+.tour__copy .beat__actions { justify-content: flex-start; }
+.tour__choices { display: none; }
+
+@media (max-aspect-ratio: 1/1) {
+  /* Em pé, a foto não cabe inteira: as etiquetas viram botões embaixo do título */
+  .tour__pins { display: none; }
+  .tour__shade {
+    background:
+      linear-gradient(180deg, rgba(20, 17, 15, .5) 0%, rgba(20, 17, 15, 0) 18%),
+      linear-gradient(0deg, rgba(20, 17, 15, .92) 0%, rgba(20, 17, 15, .62) 40%, rgba(20, 17, 15, 0) 68%);
+  }
+  .tour__copy {
+    right: var(--gutter);
+    bottom: calc(env(safe-area-inset-bottom) + 32px);
+    width: auto;
+  }
+  .tour__choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+    margin-top: 1.4rem;
+  }
+  .tour__choice {
+    display: inline-flex;
+    align-items: center;
+    gap: .7em;
+    min-height: 44px;
+    padding: 0 1em 0 1.2em;
+    border: 1px solid rgba(243, 235, 221, .34);
+    border-radius: 999px;
+    background: rgba(20, 17, 15, .5);
+    color: var(--cream);
+    font: 500 .7rem/1 var(--font-body);
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .tour__choice::after {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+}
+@media (max-width: 720px) {
+  .tour__copy .beat__title { font-size: clamp(2.3rem, 10.5vw, 3.4rem); line-height: 1.02; }
+  .tour__copy .beat__text { margin-top: .9rem; font-size: .98rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tour__pin::after { animation: none; }
+}
+
 /* ---------------------------------------------------------------- Rooms index */
 .rooms { padding: var(--section) 0 calc(var(--section) * .55); }
 
