@@ -5,7 +5,7 @@ import images from './images.mjs';
 import { mark, word } from './logo.mjs';
 import { van } from './van.mjs';
 import {
-  groups, services, bySlug, featured, process, reasons, testimonials, homeFaq, finishes, work,
+  menu, groups, services, bySlug, featured, process, reasons, testimonials, homeFaq, finishes, work,
 } from './content.mjs';
 
 export const esc = (s = '') =>
@@ -95,43 +95,31 @@ const socialLinks = () =>
 /* ---------- header / footer ---------- */
 
 function header(current) {
-  const col = (g) => `
-      <div class="mega__col">
-        <p class="mega__title">${groups[g]}</p>
-        <ul>${services.filter((s) => s.group === g).map((s) => `<li><a href="${href(s.slug)}"${s.slug === current ? ' aria-current="page"' : ''}>${esc(s.name)}</a></li>`).join('')}</ul>
+  const here = (h) => (h === href(current) || (current === 'index' && h === '/') ? ' aria-current="page"' : '');
+  const item = (m, i) => {
+    if (!m.items) return `<a class="nav__link" href="${m.href}"${here(m.href)}>${m.label}</a>`;
+    const open = m.items.some(([, slug]) => slug === current);
+    const list = `<ul class="dd__menu" id="dd-${i}">${m.items.map(([label, slug]) => `<li><a href="${href(slug)}"${slug === current ? ' aria-current="page"' : ''}>${esc(label)}</a></li>`).join('')}</ul>`;
+    return `
+      <div class="dd" data-dropdown>
+        ${m.href ? `<a class="nav__link${open ? ' is-current' : ''}" href="${m.href}">${m.label}</a>` : `<span class="nav__link${open ? ' is-current' : ''}">${m.label}</span>`}
+        <button class="dd__toggle" type="button" aria-expanded="false" aria-controls="dd-${i}" aria-label="${m.label} services">${icon('chev', 'i i--sm')}</button>
+        ${list}
       </div>`;
-  const mobileGroup = (g) => `
-        <p class="menu__group">${groups[g]}</p>
-        ${services.filter((s) => s.group === g).map((s) => `<a class="menu__sub" href="${href(s.slug)}">${esc(s.name)}</a>`).join('')}`;
+  };
+  const mobile = (m) => (m.items
+    ? `<p class="menu__group">${m.href ? `<a href="${m.href}">${m.label}</a>` : m.label}</p>
+        <div class="menu__subs">${m.items.map(([label, slug]) => `<a class="menu__sub" href="${href(slug)}">${esc(label)}</a>`).join('')}</div>`
+    : `<a class="menu__link" href="${m.href}">${m.label}</a>`);
   return `
 <header class="hdr" data-hdr>
   <div class="hdr__in">
     <a class="hdr__brand" href="/" aria-label="${esc(site.name)} home">${logo()}</a>
     <nav class="nav" aria-label="Main">
-      <div class="nav__item" data-mega>
-        <button class="nav__link" type="button" aria-expanded="false" aria-controls="mega">Services ${icon('chev', 'i i--sm')}</button>
-        <div class="mega" id="mega">
-          <div class="mega__in">
-            ${col('exterior')}${col('interior')}
-            <div class="mega__col">
-              <p class="mega__title">Decor</p>
-              <ul><li><a href="/decor">Interior wrapping</a></li><li><a href="/services">All services</a></li></ul>
-            </div>
-            <a class="mega__feature" href="/vehicle-signage#wrap-it">
-              ${picture('van-wrap-omkar', '', { sizes: '260px' })}
-              <span class="mega__feature-text"><strong>Wrap a van in one drag</strong><span>See the before and after, and what it could cost.</span></span>
-            </a>
-          </div>
-        </div>
-      </div>
-      <a class="nav__link" href="/vehicle-signage"${current === 'vehicle-signage' ? ' aria-current="page"' : ''}>Vehicle wraps</a>
-      <a class="nav__link" href="/#work">Our work</a>
-      <a class="nav__link" href="/decor"${current === 'decor' ? ' aria-current="page"' : ''}>Decor</a>
-      <a class="nav__link" href="/contact"${current === 'contact' ? ' aria-current="page"' : ''}>Contact</a>
+      ${menu.map(item).join('')}
     </nav>
     <div class="hdr__actions">
-      <a class="hdr__phone" href="${tel}" aria-label="Call ${site.phone}">${icon('phone')}<span aria-hidden="true">${site.phone}</span></a>
-      ${btn('Free quote', '/contact', { kind: 'pink', size: 'sm', ico: '' })}
+      ${btn('Free Quote', '/contact', { kind: 'pink', size: 'sm', ico: '' })}
       <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Open menu" data-burger>
         <span></span><span></span>
       </button>
@@ -140,15 +128,9 @@ function header(current) {
 </header>
 <div class="menu" id="menu" data-menu hidden>
   <nav class="menu__in" aria-label="Mobile">
-    <a class="menu__link" href="/">Home</a>
-    <a class="menu__link" href="/services">Services</a>
-    <div class="menu__groups">${mobileGroup('exterior')}${mobileGroup('interior')}</div>
-    <a class="menu__link" href="/decor">Decor</a>
-    <a class="menu__link" href="/#work">Our work</a>
-    <a class="menu__link" href="/join-us">Join us</a>
-    <a class="menu__link" href="/contact">Contact</a>
+    ${menu.map(mobile).join('\n    ')}
     <div class="menu__foot">
-      <a class="btn btn--pink btn--lg" href="/contact"><span>Get a free quote</span>${icon('arrow')}</a>
+      <a class="btn btn--pink btn--lg" href="/contact"><span>Free Quote</span>${icon('arrow')}</a>
       <a class="menu__phone" href="${tel}">${icon('phone')} ${site.phone}</a>
       <div class="socials">${socialLinks()}</div>
     </div>
@@ -451,8 +433,6 @@ const googleG = `<svg class="grating__g" viewBox="0 0 48 48" aria-hidden="true">
 /* ---------- home ---------- */
 
 export function home() {
-  const tickerItems = ['Vehicle wraps', 'Shopfront signs', 'Window graphics', 'Office signage', 'Neon & illuminated', 'Wall graphics', 'Trailer wraps', 'Frosted film', 'Mesh banners'];
-  const ticker = (items) => items.map((t) => `<span>${t}</span>${icon('spark', 'i ticker__spark')}`).join('');
   const rest = services.filter((s) => !featured.includes(s.slug));
 
   const body = `
@@ -479,12 +459,6 @@ export function home() {
     ${campaign()}
   </div>
 </section>
-
-<div class="ticker" aria-hidden="true">
-  <div class="ticker__row"><div class="ticker__track" data-ticker>${ticker(tickerItems)}${ticker(tickerItems)}</div></div>
-  <div class="ticker__row ticker__row--alt"><div class="ticker__track" data-ticker data-dir="-1">${ticker([...tickerItems].reverse())}${ticker([...tickerItems].reverse())}</div></div>
-</div>
-
 <section class="section intro" id="intro">
   <div class="container narrow center">
     <div class="mascot" data-reveal>${markSvg('mark mark--mascot')}</div>
@@ -645,7 +619,7 @@ export function service(s) {
   const linked = (item) => (item.link ? ` <a class="more" href="${href(item.link)}">${esc(bySlug[item.link].name)} ${icon('arrow')}</a>` : '');
 
   const body = `
-<section class="phero">
+<section class="phero phero--short">
   <div class="container center">
     <nav class="crumbs" aria-label="Breadcrumb">
       <a href="/">Home</a><span aria-hidden="true">/</span><a href="/services">Services</a><span aria-hidden="true">/</span><span aria-current="page">${esc(s.name)}</span>
@@ -658,11 +632,6 @@ export function service(s) {
     <div class="cta-row" data-hero-in>
       ${btn('Get a free quote', `/contact?service=${s.slug}`, { size: 'lg' })}
       ${s.feature === 'wrap-slider' ? btn('Try the wrap slider', '#wrap-it', { kind: 'ghost', size: 'lg', ico: 'drag' }) : btn(site.phone, tel, { kind: 'ghost', size: 'lg', ico: 'phone' })}
-    </div>
-  </div>
-  <div class="container">
-    <div class="phero__media" data-parallax>
-      ${picture(s.image, s.imageAlt, { sizes: '(min-width: 1280px) 1200px, 100vw', eager: true })}
     </div>
   </div>
 </section>
@@ -814,20 +783,50 @@ const formShell = (kind, subject, fields, submit) => `
       </div>
     </form>`;
 
+// The quote form posts straight to ShopVox, which files it as a lead in "Online Leads" (files included).
+// Field names are ShopVox's; service and suburb are added to the job description by site.js before sending.
+const shopvoxForm = (fields, submit) => {
+  const sv = site.shopvox;
+  const action = `https://api.shopvox.com/v1/sales_leads.json?authToken=${encodeURIComponent(sv.authToken)}&account_id=${encodeURIComponent(sv.accountId)}`;
+  return `
+    <form class="form" data-form="quote" data-shopvox action="${esc(action)}" method="post" enctype="multipart/form-data" novalidate>
+      <input type="hidden" name="pipeline_name" value="${esc(sv.pipeline)}">
+      <input type="hidden" name="title" value="${esc(sv.title)}">
+      <input type="hidden" name="lead_source_name" value="${esc(sv.leadSource)}">
+      <input type="hidden" name="on_success" value="/thank-you">
+      <label class="hp" aria-hidden="true">Leave this empty<input type="text" name="vox_protection" tabindex="-1" autocomplete="off"></label>
+      <div class="form__grid">${fields}</div>
+      <div class="form__foot">
+        <button class="btn btn--pink btn--lg" type="submit" data-magnetic><span>${submit}</span>${icon('arrow')}</button>
+        <p class="form__status" role="status" aria-live="polite" data-status></p>
+      </div>
+    </form>`;
+};
+
 export function contactPage() {
   const options = services.map((s) => `<option value="${s.slug}">${esc(s.name)}</option>`).join('');
+  const viaShopvox = !!(site.shopvox && site.shopvox.authToken);
+  const n = viaShopvox
+    ? { name: 'primaryContactName', phone: 'phone_number', message: 'details' }
+    : { name: 'name', phone: 'phone', message: 'message' };
   const fields = `
-      ${field('name', 'Your name', { required: true, auto: 'name' })}
+      ${field(n.name, 'Your name', { required: true, auto: 'name' })}
       ${field('email', 'Email', { type: 'email', required: true, auto: 'email' })}
-      ${field('phone', 'Phone', { type: 'tel', auto: 'tel' })}
-      ${field('suburb', 'Suburb', { auto: 'address-level2' })}
-      <label class="field field--full">
+      ${field(n.phone, 'Phone', { type: 'tel', auto: 'tel' })}
+      ${viaShopvox ? field('company_name', 'Company name', { auto: 'organization' }) : ''}
+      ${field('suburb', 'Suburb', { auto: 'address-level2', full: !viaShopvox })}
+      <label class="field${viaShopvox ? '' : ' field--full'}">
         <span>What do you need?</span>
         <select name="service" data-service>
           <option value="">Choose a service</option>${options}<option value="other">Something else</option>
         </select>
       </label>
-      ${field('message', 'Tell us about your project', { type: 'textarea', required: true, full: true, attrs: ' placeholder="Vehicle make and model, sign size, measurements, deadline…" data-message' })}`;
+      ${field(n.message, 'Tell us about your project', { type: 'textarea', required: true, full: true, attrs: ' placeholder="Sizes, quantities, vehicle make and model, deadline…" data-message' })}
+      ${viaShopvox ? `<label class="field field--full field--file">
+        <span>Upload files (optional)</span>
+        <input type="file" name="asset[]" multiple>
+        <small>Logos, photos, inspiration, site pics: anything helps.</small>
+      </label>` : ''}`;
   const body = `
 <section class="phero phero--short">
   <div class="container center">
@@ -843,7 +842,7 @@ export function contactPage() {
   <div class="container contact__grid">
     <div class="contact__form" data-reveal>
       <h2 class="h3">Request a free quote</h2>
-      ${formShell('quote', 'New quote request from borasigns.com.au', fields, 'Send my request')}
+      ${viaShopvox ? shopvoxForm(fields, 'Send my request') : formShell('quote', 'New quote request from borasigns.com.au', fields, 'Send my request')}
     </div>
     <aside class="contact__side" data-reveal>
       <a class="contact__card" href="${tel}">${icon('phone')}<span><small>Call us</small><strong>${site.phone}</strong></span></a>
@@ -859,7 +858,7 @@ ${processSection(true)}`;
     slug: 'contact',
     title: 'Contact Bora Signs | Free Signage Quote in Adelaide',
     description:
-      'Get a free signage quote in Adelaide. Call 0482 530 280, email sales@borasigns.com.au or send your project details to Bora Signs in Welland, SA.',
+      'Get a free signage quote in Adelaide. Call 0482 530 280, email sales@borasigns.com.au or send your project details to Bora Signs in Regency Park, SA.',
     image: '/assets/img/og-image.jpg',
     bodyClass: 'is-contact',
     ld: [breadcrumbLd([['Home', `${site.url}/`], ['Contact', `${site.url}/contact`]])],
@@ -934,6 +933,19 @@ export function joinPage() {
     ld: [breadcrumbLd([['Home', `${site.url}/`], ['Join us', `${site.url}/join-us`]])],
     body,
   };
+}
+
+export function thankYou() {
+  const body = `
+<section class="phero phero--404">
+  <div class="container center">
+    <div class="nf__mark">${markSvg('mark mark--404')}</div>
+    <h1 class="phero__title"><span class="eyebrow">${icon('check', 'i')} Request received</span><span class="phero__h">Thanks! It’s one less thing now.</span></h1>
+    <p class="lead phero__lead">Your request is with our team and we’ll get back to you shortly. If it’s urgent, give us a call.</p>
+    <div class="cta-row">${btn('Back to home', '/')}${btn(site.phone, tel, { kind: 'ghost', ico: 'phone' })}</div>
+  </div>
+</section>`;
+  return { slug: 'thank-you', title: 'Thank you | Bora Signs', description: 'Your quote request has been received.', bodyClass: 'is-thanks', noindex: true, body };
 }
 
 export function notFound() {

@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 
 import site from './src/site.mjs';
 import { services } from './src/content.mjs';
-import { layout, home, service, servicesPage, contactPage, joinPage, notFound } from './src/render.mjs';
+import { layout, home, service, servicesPage, contactPage, joinPage, thankYou, notFound } from './src/render.mjs';
 
 // Previews (the workers.dev link) put their own address in canonical links and link previews, and stay out of Google:
 //   SITE_URL=https://bora-signs.example.workers.dev NOINDEX=1 node build.mjs
@@ -39,7 +39,7 @@ rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });
 cpSync(pub, out, { recursive: true });
 
-const pages = [home(), servicesPage(), ...services.map(service), contactPage(), joinPage(), notFound()];
+const pages = [home(), servicesPage(), ...services.map(service), contactPage(), joinPage(), thankYou(), notFound()];
 
 for (const page of pages) {
   writeFileSync(join(out, `${page.slug}.html`), layout({ ...page, assets }));

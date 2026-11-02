@@ -14,13 +14,13 @@ export default {
   phoneIntl: '+61482530280',
   email: 'sales@borasigns.com.au',
   address: {
-    street: 'U10A/113 Welland Ave',
-    locality: 'Welland',
+    street: 'U9/10-12 Opala St',
+    locality: 'Regency Park',
     region: 'SA',
-    postcode: '5007',
+    postcode: '5010',
     country: 'AU',
   },
-  mapUrl: 'https://maps.google.com/?q=U10A%2F113+Welland+Ave,+Welland+SA+5007',
+  mapUrl: 'https://maps.google.com/?q=U9%2F10-12+Opala+St,+Regency+Park+SA+5010',
   areaServed: 'Adelaide, South Australia',
 
   social: {
@@ -36,7 +36,18 @@ export default {
   // Google Search Console "HTML tag" verification code (only the content="..." value). Empty leaves it out.
   googleSiteVerification: '',
 
-  // Where the quote and job-application forms are sent.
+  // The quote form creates a lead in ShopVox (pipeline "Online Leads"), files included.
+  // authToken and accountId are ShopVox's web-form keys: they are meant to sit in the page, as on ShopVox's own form.
+  // Empty authToken: the quote form falls back to `form` below.
+  shopvox: {
+    authToken: 'n6f65BAYdpJg3MQcJrlY9A',
+    accountId: '76fce2bd-a258-440e-964f-c614b489eabe',
+    pipeline: 'Online Leads',
+    title: 'Contact form sales lead',
+    leadSource: 'Contact Form',
+  },
+
+  // Where the job-application form (and the quote form without ShopVox) is sent.
   // Empty: the form opens the visitor's email app with the message ready to send to `email` above.
   // Web3Forms (free): endpoint 'https://api.web3forms.com/submit' and fields { access_key: 'the key they email you' }.
   // Formspree: endpoint 'https://formspree.io/f/xxxxxxx' and fields {}.
@@ -61,7 +72,7 @@ export default {
   // Google rating shown under the home headline (as on the old site). null hides it.
   google: {
     rating: '5.0',
-    url: 'https://www.google.com/search?q=Bora+Signs+Welland+SA+reviews',
+    url: 'https://www.google.com/search?q=Bora+Signs+Adelaide+reviews',
   },
 
   stats: [

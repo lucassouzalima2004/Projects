@@ -6,13 +6,13 @@ com título, descrição e dados estruturados para o Google, e os anúncios pode
 
 ## O que tem no site
 
-- **Home**: no topo, o título, o "One less thing" da campanha e a nota 5.0 do Google; ao lado, direto no fundo do site,
-  o camaleão de óculos em 3D, que gira seguindo o mouse com luz neon, e as tarefas do dono do negócio flutuando atrás
-  dele, cada uma no seu ritmo; o card "Signage" se desfaz em estilhaços e volta, e ele dá um pulinho olhando para o card.
-  Parado, ele olha em volta sozinho. No celular ele aparece primeiro, antes do título: dá para arrastar o dedo para os
-  lados para girá-lo, um toque faz ele pular, e a rolagem também o vira. Depois: faixa de
-  serviços que acelera com a rolagem, números, serviços, processo em 4 passos, trabalhos recentes em rolagem horizontal,
-  clientes, depoimentos, dúvidas e chamada final. O camaleão do logo pisca.
+- **Home**: no topo, o título, o "One less thing" da campanha e a nota 5.0 do Google; ao lado, direto no fundo do
+  site, o camaleão de óculos em 3D, que gira seguindo o mouse com luz neon, e as tarefas do dono do negócio flutuando
+  atrás dele, cada uma no seu ritmo; o card "Signage" se desfaz em estilhaços e volta, e ele dá um pulinho olhando
+  para o card. Parado, ele olha em volta sozinho. No celular o título vem em cima e ele logo abaixo: dá para arrastar
+  o dedo para os lados para girá-lo, um toque faz ele pular, e a rolagem também o vira. Depois: números, serviços,
+  processo em 4 passos, trabalhos recentes em rolagem horizontal, clientes, depoimentos, dúvidas e chamada final. O
+  camaleão do logo pisca.
 - **Uma página por serviço** (13), com os mesmos endereços do Wix: `/vehicle-signage`, `/shopfront-signage`, `/window-graphics`,
   `/office-signage`, `/decor` etc. Cada uma tem por que contratar, opções, fotos, depoimento, processo, dúvidas e serviços relacionados.
 - **Van antes/depois** em `/vehicle-signage`: arrastando, a van branca vai sendo envelopada e o preço indicativo sobe de
@@ -28,6 +28,8 @@ com título, descrição e dados estruturados para o Google, e os anúncios pode
 | O quê | Onde |
 | --- | --- |
 | Telefone, e-mail, endereço, ABN, redes sociais | `src/site.mjs` |
+| Menu (igual ao do site atual) | `menu` em `src/content.mjs` |
+| Formulário de orçamento → ShopVox | `shopvox` em `src/site.mjs` |
 | Meta Pixel | `metaPixelId` em `src/site.mjs` (hoje vazio: o pixel `1070067669184384` é do Bora Decor) |
 | Para onde vão os formulários | `form` em `src/site.mjs` (veja abaixo) |
 | Preços da van ($500 → $7.000) e nomes dos pacotes | `wrapEstimate` em `src/site.mjs` |
@@ -57,9 +59,13 @@ npx serve dist          # abre em http://localhost:3000 (entende /vehicle-signag
 
 ## Formulários
 
-Sem configuração, o formulário abre o e-mail do visitante com a mensagem pronta para `sales@borasigns.com.au`.
-Para receber direto, sem depender do app de e-mail, crie uma chave grátis no [Web3Forms](https://web3forms.com)
-com o e-mail da Bora e preencha em `src/site.mjs`:
+O **pedido de orçamento** (`/contact`) vai direto para o **ShopVox**, como lead no funil "Online Leads", com origem
+"Contact Form": nome, e-mail, telefone, empresa, a descrição do trabalho (o serviço e o bairro escolhidos entram nela) e
+os arquivos anexados. Depois de enviar, a pessoa cai em `/thank-you`. As chaves ficam em `shopvox` no `src/site.mjs`; são
+as chaves de formulário do próprio ShopVox, feitas para ficar na página (estão no formulário deles também).
+
+O **Join Us** abre o e-mail do visitante com a mensagem pronta para `sales@borasigns.com.au`. Para receber direto,
+crie uma chave grátis no [Web3Forms](https://web3forms.com) com o e-mail da Bora e preencha `form` em `src/site.mjs`:
 
 ```js
 form: {
@@ -122,7 +128,7 @@ envie `https://www.borasigns.com.au/sitemap.xml` e, se pedirem verificação por
 - [ ] Preços da van: $500 e $7.000 foram os exemplos do Carlos. Confirmar valores e nomes dos pacotes (`wrapEstimate`).
 - [ ] Depoimentos: vieram do Wix. Confirmar que são de clientes reais (os sem nome aparecem como "Bora Signs client").
 - [ ] Horário de atendimento (o Wix não tinha; dá para incluir no `site.mjs` e nos dados do Google).
-- [ ] Formulário: configurar o Web3Forms (ou manter o envio por e-mail).
+- [ ] Join Us: configurar o Web3Forms (ou manter o envio por e-mail). O orçamento já vai para o ShopVox.
 - [ ] Meta Pixel da Bora Signs (se houver): colocar em `metaPixelId`. O `1070067669184384` é do Bora Decor.
 - [ ] Endereço do Bora Decor, se quiser um link da página `/decor` para o site da Decor.
 

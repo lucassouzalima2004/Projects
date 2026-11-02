@@ -2,6 +2,35 @@
 // Slugs match the old Wix addresses so existing Google rankings and ad links keep working
 // (the ones that changed are redirected in build.mjs).
 
+// Main menu, item for item as on the current borasigns.com.au (Exterior opens the services page when clicked)
+export const menu = [
+  { label: 'Home', href: '/' },
+  {
+    label: 'Exterior', href: '/services',
+    items: [
+      ['Shopfront Signage', 'shopfront-signage'],
+      ['Mesh Banners', 'mesh-banner-adelaide'],
+      ['Window Graphics', 'window-graphics'],
+      ['Neon & Illuminated Signage', 'neon-illuminated-signage-adelaide'],
+      ['Vehicle Signage', 'vehicle-signage'],
+      ['Trailer Wrap', 'trailer-wrap'],
+      ['Promotional Signs', 'promotional-signage'],
+    ],
+  },
+  {
+    label: 'Interior',
+    items: [
+      ['Reception Signs', 'reception-signs'],
+      ['Frosted Window Film', 'frosted-window-film'],
+      ['Office Signage', 'office-signage'],
+      ['Wall Graphics', 'wall-graphics'],
+      ['Decor', 'decor'],
+    ],
+  },
+  { label: 'Contact', href: '/contact' },
+  { label: 'Join Us', href: '/join-us' },
+];
+
 export const groups = {
   exterior: 'Exterior',
   interior: 'Interior',
@@ -577,7 +606,7 @@ export const testimonials = [
 ];
 
 export const homeFaq = [
-  { q: 'What areas do you service?', a: 'We are based in Welland and work with businesses across Adelaide and surrounds. If you are further out, ask us and we will let you know what is possible.' },
+  { q: 'What areas do you service?', a: 'We are based in Regency Park and work with businesses across Adelaide and surrounds. If you are further out, ask us and we will let you know what is possible.' },
   { q: 'Do you handle design, production and installation?', a: 'Yes. One team takes your project from the first brief to the final install, with a visual proof for you to approve before anything is made.' },
   { q: 'How much does signage cost?', a: 'Every job is different: size, materials, design and installation all affect the price. Send us photos, measurements or a brief and we will give you a clear, tailored quote.' },
   { q: 'What do I need to send for a quote?', a: 'Your logo if you have one, photos of the vehicle, wall, window or shopfront, rough measurements and what you want to achieve. That is enough to get started.' },

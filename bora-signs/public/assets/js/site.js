@@ -38,15 +38,11 @@
   /* ---------- scroll loop ---------- */
 
   const onScroll = new Set();
-  let lastY = scrollY;
-  let velocity = 0;
   let ticking = false;
   const runScroll = () => {
     ticking = false;
     const y = scrollY;
-    velocity = y - lastY;
-    onScroll.forEach((fn) => fn(y, velocity));
-    lastY = y;
+    onScroll.forEach((fn) => fn(y));
   };
   addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(runScroll); } }, { passive: true });
   addEventListener('resize', () => requestAnimationFrame(runScroll));
@@ -55,27 +51,30 @@
 
   const hdr = $('[data-hdr]');
   const dock = $('[data-dock]');
-  onScroll.add((y, v) => {
+  // The menu stays fixed at the top; it only gains a background once the page scrolls
+  onScroll.add((y) => {
     hdr.classList.toggle('is-scrolled', y > 24);
-    const busy = root.classList.contains('menu-open') || $('[data-mega].is-open');
-    if (!busy && Math.abs(v) > 2) hdr.classList.toggle('is-hidden', v > 0 && y > 500);
     if (dock) dock.classList.toggle('is-on', y > innerHeight * 0.6);
   });
 
-  // Services mega menu: opens on hover with a pointer, on click otherwise
-  const mega = $('[data-mega]');
-  if (mega) {
-    const btn = $('button', mega);
+  // Exterior / Interior dropdowns: open on hover with a pointer, with the arrow button otherwise
+  $$('[data-dropdown]').forEach((dd) => {
+    const btn = $('.dd__toggle', dd);
     let timer;
-    const set = (open) => { clearTimeout(timer); mega.classList.toggle('is-open', open); btn.setAttribute('aria-expanded', open); };
-    btn.addEventListener('click', () => set(!mega.classList.contains('is-open')));
+    const set = (open) => {
+      clearTimeout(timer);
+      if (open) $$('[data-dropdown].is-open').forEach((o) => { if (o !== dd) { o.classList.remove('is-open'); $('.dd__toggle', o).setAttribute('aria-expanded', 'false'); } });
+      dd.classList.toggle('is-open', open);
+      btn.setAttribute('aria-expanded', open);
+    };
+    btn.addEventListener('click', () => set(!dd.classList.contains('is-open')));
     if (finePointer) {
-      mega.addEventListener('pointerenter', () => set(true));
-      mega.addEventListener('pointerleave', () => { timer = setTimeout(() => set(false), 180); });
+      dd.addEventListener('pointerenter', () => set(true));
+      dd.addEventListener('pointerleave', () => { timer = setTimeout(() => set(false), 180); });
     }
-    mega.addEventListener('focusout', (e) => { if (!mega.contains(e.relatedTarget)) set(false); });
-    d.addEventListener('keydown', (e) => { if (e.key === 'Escape' && mega.classList.contains('is-open')) { set(false); btn.focus(); } });
-  }
+    dd.addEventListener('focusout', (e) => { if (!dd.contains(e.relatedTarget)) set(false); });
+    d.addEventListener('keydown', (e) => { if (e.key === 'Escape' && dd.classList.contains('is-open')) { set(false); btn.focus(); } });
+  });
 
   // Full-screen menu on small screens
   const burger = $('[data-burger]');
@@ -86,7 +85,6 @@
     root.classList.add('menu-open');
     burger.setAttribute('aria-expanded', 'true');
     burger.setAttribute('aria-label', 'Close menu');
-    hdr.classList.remove('is-hidden');
     if (lenis) lenis.stop(); else body.style.overflow = 'hidden';
   }
   function closeMenu() {
@@ -189,31 +187,6 @@
       if (r.bottom < 0 || r.top > innerHeight) return;
       img.style.setProperty('--py', `${(r.top + r.height / 2 - innerHeight / 2) * -0.12}px`);
     });
-  }
-
-  /* ---------- tickers speed up with scrolling ---------- */
-
-  const tickerEls = $$('[data-ticker]');
-  const tickers = tickerEls.map((el) => (el.getAnimations ? el.getAnimations()[0] : null)).filter(Boolean);
-  if (tickers.length && !reduce) {
-    let rate = 1;
-    let dir = 1;
-    let applied = 1;
-    let running = false;
-    const loop = () => {
-      if (!running) return;
-      const target = 1 + Math.min(Math.abs(velocity) * 0.12, 6);
-      if (Math.abs(velocity) > 1) dir = velocity > 0 ? 1 : -1;
-      rate += (target - rate) * 0.08;
-      velocity *= 0.9;
-      const next = rate * dir;
-      if (Math.abs(next - applied) > 0.02) { applied = next; tickers.forEach((a) => { a.playbackRate = next; }); }
-      requestAnimationFrame(loop);
-    };
-    new IntersectionObserver(([e]) => {
-      running = e.isIntersecting;
-      if (running) requestAnimationFrame(loop);
-    }).observe(tickerEls[0].closest('.ticker'));
   }
 
   /* ---------- process line ---------- */
@@ -486,9 +459,42 @@
       });
       if (firstBad) { say('Please fill in the highlighted fields.', 'err'); firstBad.focus(); return; }
       if (form.elements._gotcha && form.elements._gotcha.value) return;
+      if (form.elements.vox_protection && form.elements.vox_protection.value) return;
 
       const data = new FormData(form);
       const action = form.getAttribute('action') || '';
+
+      // ShopVox: one lead with the job description (service and suburb added to it) and any files
+      if (form.hasAttribute('data-shopvox')) {
+        const lead = new FormData();
+        for (const [k, v] of data) {
+          if (k === 'service' || k === 'suburb' || k === 'details') continue;
+          if (v instanceof File && !v.size) continue;  // no file chosen
+          lead.append(k, v);
+        }
+        const extra = [
+          service && service.value ? `Service: ${service.selectedOptions[0].text}` : '',
+          data.get('suburb') ? `Suburb: ${data.get('suburb')}` : '',
+        ].filter(Boolean).join('\n');
+        lead.append('details', [String(data.get('details') || '').trim(), extra].filter(Boolean).join('\n\n'));
+        const btn = $('button[type=submit]', form);
+        btn.disabled = true;
+        say(lead.getAll('asset[]').length ? 'Sending your request and files…' : 'Sending…');
+        try {
+          const res = await fetch(action, { method: 'POST', body: lead });
+          if (!res.ok) {
+            let why = '';
+            try { why = ((await res.json()).errors || []).join(' '); } catch (_) { /* not JSON */ }
+            throw new Error(why);
+          }
+          track('Lead', { content_name: 'Quote form' });
+          location.href = data.get('on_success') || '/thank-you';
+        } catch (err) {
+          say(`Sorry, that didn’t send.${err.message ? ` ${err.message}` : ''} Please try again, or call us on 0482 530 280.`, 'err');
+          btn.disabled = false;
+        }
+        return;
+      }
       if (action.startsWith('mailto:')) {
         const skip = new Set(['subject', '_gotcha', ...[...form.querySelectorAll('input[type=hidden]')].map((i) => i.name)]);
         const lines = [];
