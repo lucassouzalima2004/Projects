@@ -75,9 +75,14 @@ o resto do site; de volta ao topo, rolar para cima volta pelos cômodos.
   próxima rolada (para baixo e para cima) já vão baixando; cada um baixa inteiro e toca da memória, porque o
   Cloudflare não entrega pedaços de vídeo e o iPhone precisa disso para tocar direto do endereço.
 - Sem decodificador de H.264, com "reduzir movimento" ou com economia de dados, os cômodos trocam com fusão.
-- **Provisório:** os mini vídeos de hoje são os do filme, cortados e acelerados (`SPEED=3.5` a `4`), e os do celular
-  são o meio recortado em 9:16; as fotos em pé são o mesmo recorte das fotos largas. Os definitivos e os prompts estão
-  no [PROMPTS.md](PROMPTS.md), em "Vídeos para a visita".
+- **A casa é real:** um projeto da Nuvo que o Guilherme mandou em 31/10 (`EDITADAS.rar`, 34 fotos). A visita passa por
+  entrada → sala → bar → cozinha → banheiro → suíte (no computador o quarto, no celular o closet), e termina no convite
+  para a consultoria. O computador usa as fotos deitadas e o celular as fotos em pé do mesmo cômodo (tabela no
+  [PROMPTS.md](PROMPTS.md)); as fotos do site são essas fotos recortadas em 16:9 e 9:16 e ampliadas 2× (Swin2SR).
+- **Os mini vídeos** são do Google Flow (Veo 3.1 Fast, "Frames", 8 s): o primeiro e o último quadro são as fotos dos dois
+  cômodos, então o vídeo termina exatamente na foto. Acelerados 3,5× (`SPEED=3.5`, uns 2,2 s). Os prompts e o passo a
+  passo estão no [PROMPTS.md](PROMPTS.md), em "Vídeos para a visita". Os originais baixados ficam em `videos/flow/`
+  (fora do git).
 
 Para pôr um vídeo novo (precisa do ffmpeg):
 
@@ -200,6 +205,8 @@ Tudo veio do site atual da Nuvo (textos, fotos, depoimentos, telefone, e-mail e 
 - [ ] Se o telefone (561) 770-2595 tem WhatsApp (dá para pôr um botão)
 - [ ] Endereço da oficina: 4801 Johnson Rd, Suite 4, Coconut Creek
 - [ ] As 5 imagens e os 4 vídeos (PROMPTS.md)
+- [ ] Visita (`?tour`): o nome e o endereço da casa das fotos reais (hoje não aparecem), se a Nuvo fez tudo o que aparece
+      nela (o Guilherme disse "quase tudo") e se ela vira o topo do site no lugar das cenas
 
 ## Ver no computador
 

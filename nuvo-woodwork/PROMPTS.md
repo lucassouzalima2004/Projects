@@ -77,41 +77,40 @@ Para cada cena nova, gere também a versão em pé (prompt do item 1).
 
 Na visita, a câmera para em cada cômodo e **uma rolada toca um mini vídeo inteiro** (uns 2 segundos) até o próximo;
 rolando para cima, o mesmo vídeo de trás para frente. Computador e celular têm vídeos separados: **16:9** e **9:16**.
-Hoje ela usa os vídeos do filme cortados e acelerados (e, no celular, o meio recortado), que ainda têm a marcenaria se
-montando. Para chegar no nível do reel do @michonmotion, cada caminho precisa de um vídeo **limpo**: só a câmera
-andando, nada se montando nem mudando de forma (assim o vídeo de trás para frente também fica natural).
+A casa é um projeto real da Nuvo (as fotos `EDITADAS.rar` do Guilherme, 31/10). Cada caminho é um vídeo **limpo**:
+só a câmera andando, nada se montando nem mudando de forma (assim o vídeo de trás para frente também fica natural).
 
-Serve o Flow (**Frames to Video**, Veo) ou outro gerador que aceite **primeiro e último quadro**. Gere de 4 a 8 s; o
-script acelera para uns 2 s. Os quadros são as imagens das cenas (as de `assets/img/keys/`, ou as novas do item acima;
-para o 9:16, as versões em pé do item 1). Como o vídeo termina exatamente na imagem do cômodo, a parada fica perfeita.
+Feitos no Google Flow em 02/11: **Vídeo → Frames**, **Veo 3.1 - Fast**, 8 s, 720p (baixados em 1080p), 20 créditos
+por vídeo. O primeiro e o último quadro são as fotos recortadas em `videos/frames/` (`<cômodo>-wide.jpg` em 16:9 e
+`<cômodo>-tall.jpg` em 9:16). Como o vídeo termina na foto do cômodo, a parada fica perfeita.
 
-| Arquivo | Primeiro quadro | Último quadro | O caminho |
-| --- | --- | --- | --- |
-| `door-living` | porta | sala | a porta pivotante abre e a câmera entra até a sala |
-| `living-kitchen` | sala | cozinha | da sala, passando pela abertura, até a cozinha |
-| `kitchen-closet` | cozinha | closet | da cozinha, subindo a escada flutuante, até o closet |
-| `closet-house` | closet | casa acesa | do closet, saindo pela janela, até a casa vista de fora |
+| Vídeo | Primeiro quadro | Último quadro | Foto deitada (computador) | Foto em pé (celular) |
+| --- | --- | --- | --- | --- |
+| `foyer-living` | entrada | sala | `WALL + FOYAR` → `LIVING ROOM 1` | `FOYER 1` → `LIVING ROOM 1` (meio) |
+| `living-bar` | sala | bar | `LIVING ROOM 1` → `BAR 1` | `LIVING ROOM 1` → `BAR 2` (meio) |
+| `bar-kitchen` | bar | cozinha | `BAR 1` → `KITCHEN 4` | `BAR 2` → `KITCHEN 10` |
+| `kitchen-bath` | cozinha | banheiro | `KITCHEN 4` → `BATH` | `KITCHEN 10` → `BATH 3` |
+| `bath-suite` | banheiro | suíte | `BATH` → `BEDROOM 1` | `BATH 3` → `CLOSET 1` |
 
-Cada um em duas versões: **16:9 (computador)** e **9:16 (celular)**, com o mesmo caminho.
-
-Prompt base (troque a origem e o destino):
+Prompt base (troque o começo e o fim; na versão em pé, comece com `Vertical 9:16 phone video.`):
 
 ```text
-Smooth, steady gimbal camera walking at a calm, constant pace from the living room (first frame) through the open passage into the kitchen (last frame). One continuous camera move with a gentle ease-in at the start and ease-out at the end, eye level 1.5 meters, 24mm lens. The architecture, furniture, millwork and lighting stay exactly the same the whole time: nothing appears, disappears, assembles or changes shape. Photorealistic, natural light, subtle motion blur, perfectly stable horizon. No people, no text, no cuts, no fast moves.
+First-person point of view. The viewer glides smoothly forward at a confident, constant pace through an empty real luxury home in South Florida. Starts in the bar lounge facing the backlit blue agate bar (first frame), glides past the bar and turns gently to the right through the open plan into the kitchen, settling centered on the walnut island with four leather stools, the black glass tall cabinets and the walnut shelves (last frame). One continuous shot, eye level, wide 24mm lens, gentle ease-in and ease-out. The house is completely empty: no people, no camera equipment, no tripods, no stands, no stabilizers, no robots. The architecture, furniture, custom walnut millwork and lighting stay exactly the same the whole time: nothing appears, disappears, assembles, morphs or changes shape. Photorealistic architectural film, natural motion blur, perfectly level horizon. No text, no cuts, no fast jerky moves.
 ```
 
-Para a escada: `...from the kitchen (first frame), turning toward the floating walnut staircase, gliding up the stairs
-and along the upstairs hallway into the walk-in closet (last frame)...`.
+**Não escreva "gimbal" nem "camera" no prompt:** na primeira leva, a sala → bar em pé veio com um gimbal num tripé no
+meio da sala, e a outra versão com uma pessoa andando. Com "first-person point of view" e a lista de proibidos acima,
+saiu limpo.
 
-Confira antes de mandar: a câmera não para nem dá trancos, o último quadro é igual à imagem, nada se deforma e não
-aparece gente. Depois é só me mandar, ou rodar dentro de `nuvo-woodwork/`:
+Confira antes de usar: a câmera não para nem dá trancos, o último quadro é igual à foto, nada se deforma e não aparece
+gente nem equipamento. Depois, dentro de `nuvo-woodwork/`:
 
 ```bash
-SPEED=3 tools/make-tour-videos.sh living-kitchen=sala-cozinha-16x9.mp4 living-kitchen=sala-cozinha-9x16.mp4
+SPEED=3.5 tools/make-tour-videos.sh bar-kitchen=videos/flow/bar-kitchen.mp4 bar-kitchen=videos/flow/bar-kitchen-tall.mp4
 ```
 
-O script faz a ida e a volta de cada um (o 9:16 vira `living-kitchen-tall.mp4`). As fotos em pé de cada cômodo
-(`assets/img/scenes/<cômodo>-tall.webp`) precisam ser o último quadro do vídeo em pé (veja o README).
+O script faz a ida e a volta de cada um (o 9:16 vira `bar-kitchen-tall.mp4`). As fotos paradas de cada cômodo são as
+mesmas fotos dos quadros, ampliadas: `tools/make-scenes.sh real-bar=bar-16x9.png real-bar-tall=bar-9x16.png`.
 
 ---
 
