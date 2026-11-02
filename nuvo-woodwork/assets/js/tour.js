@@ -40,6 +40,9 @@
     String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
   const rich = (s) => esc(s).replace(/\*(.+?)\*/g, '<em>$1</em>');
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  // Espera a foto estar decodificada, mas no máximo um instante: no celular o decode() de uma foto em
+  // <picture> às vezes nunca responde, e a visita ficava presa no meio da troca (sem aceitar mais rolada)
+  const decoded = (im) => (im && im.decode ? Promise.race([im.decode().catch(() => {}), wait(250)]) : Promise.resolve());
 
   /* ------------------------------------------------------------ montagem */
   film.classList.add('is-tour');
@@ -357,7 +360,7 @@
     await playTo(b);
     // chegou: o último quadro do vídeo é a foto do ambiente, que entra por cima, nítida
     const dest = stills.get(to);
-    if (dest.decode) await dest.decode().catch(() => {});
+    await decoded(dest);
     dest.classList.add('is-top');
     dest.animate([{ opacity: 0 }, { opacity: 1 }], { duration: FADE, easing: 'ease' });
     show(dest, true);
@@ -374,7 +377,7 @@
     target = to;
     if (!keepCopy) leave();
     const dest = stills.get(to);
-    if (dest.decode) await dest.decode().catch(() => {});
+    await decoded(dest);
     dest.classList.add('is-top'); // por cima da foto que sai
     const from = here;
     const dur = reduce.matches ? 400 : 900;
