@@ -619,16 +619,3 @@ export const finishes = [
   { name: 'Soft neutrals', note: 'Effortlessly calm', color: '#D9D0C5' },
   { name: 'Statement colours', note: 'A little more depth', color: '#29384A' },
 ];
-
-// Photos in the "Our work" strip on the home page
-export const work = [
-  { img: 'install-van-wrap', title: 'Van wrap install', tag: 'Vehicle signage', link: 'vehicle-signage' },
-  { img: 'install-building-sign-tall', title: 'Building sign at height', tag: 'Shopfront signage', link: 'shopfront-signage' },
-  { img: 'trailer-wrap-mr-canes', title: 'Mr Cane’s food trailer', tag: 'Trailer wrap', link: 'trailer-wrap' },
-  { img: 'shopfront-lp-accounting-detail', title: 'LP Accounting', tag: 'Shopfront signage', link: 'shopfront-signage' },
-  { img: 'office-frosted-glass', title: 'Meeting room frosting', tag: 'Frosted film', link: 'frosted-window-film' },
-  { img: 'van-wrap-omkar', title: 'OM KAR Autocare', tag: 'Vehicle signage', link: 'vehicle-signage' },
-  { img: 'window-graphics-clinic', title: 'Clinic windows', tag: 'Window graphics', link: 'window-graphics' },
-  { img: 'reception-sign-divine-nursing', title: 'Divine Nursing', tag: 'Reception sign', link: 'reception-signs' },
-  { img: 'wall-graphics-adelaide', title: 'Welcome to Adelaide', tag: 'Wall graphics', link: 'wall-graphics' },
-];

@@ -5,7 +5,7 @@ import images from './images.mjs';
 import { mark, word } from './logo.mjs';
 import { van } from './van.mjs';
 import {
-  menu, groups, services, bySlug, featured, process, reasons, testimonials, homeFaq, finishes, work,
+  menu, groups, services, bySlug, featured, process, reasons, testimonials, homeFaq, finishes,
 } from './content.mjs';
 
 export const esc = (s = '') =>
@@ -158,7 +158,6 @@ function footer() {
       <p class="ftr__title">Company</p>
       <ul class="ftr__list">
         <li><a href="/services">All services</a></li>
-        <li><a href="/#work">Our work</a></li>
         <li><a href="/join-us">Join the team</a></li>
         <li><a href="/contact">Free quote</a></li>
       </ul>
@@ -487,28 +486,6 @@ export function home() {
   </div>
 </section>
 ${processSection()}
-
-<section class="work" id="work" data-hscroll>
-  <div class="work__sticky">
-    <div class="container work__head">
-      ${kicker('Recent work')}
-      <h2 class="display" data-split>Hard to miss, all over Adelaide.</h2>
-    </div>
-    <div class="work__viewport">
-      <div class="work__track" data-track>
-        ${work.map((w, i) => `
-        <a class="work-card${images[w.img].h > images[w.img].w ? ' work-card--tall' : ''}" href="${href(w.link)}" style="--i:${i}">
-          ${picture(w.img, `${w.title}: ${w.tag.toLowerCase()} by Bora Signs`, { sizes: '(min-width: 900px) 34vw, 80vw' })}
-          <span class="work-card__cap"><span class="work-card__tag">${esc(w.tag)}</span><strong>${esc(w.title)}</strong></span>
-        </a>`).join('')}
-        <a class="work-card work-card--next" href="/contact">
-          <span class="work-card__next">${markSvg('mark')}<strong>Your business next?</strong><span>Get a free quote ${icon('arrow')}</span></span>
-        </a>
-      </div>
-    </div>
-    <div class="container work__bar" aria-hidden="true"><span data-work-progress></span></div>
-  </div>
-</section>
 
 <section class="section reasons">
   <div class="container">

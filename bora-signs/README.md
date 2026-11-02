@@ -11,7 +11,7 @@ com título, descrição e dados estruturados para o Google, e os anúncios pode
   atrás dele, cada uma no seu ritmo; o card "Signage" se desfaz em estilhaços e volta, e ele dá um pulinho olhando
   para o card. Parado, ele olha em volta sozinho. No celular o título vem em cima e ele logo abaixo: dá para arrastar
   o dedo para os lados para girá-lo, um toque faz ele pular, e a rolagem também o vira. Depois: números, serviços,
-  processo em 4 passos, trabalhos recentes em rolagem horizontal, clientes, depoimentos, dúvidas e chamada final. O
+  processo em 4 passos, clientes, depoimentos, dúvidas e chamada final. O
   camaleão do logo pisca.
 - **Uma página por serviço** (13), com os mesmos endereços do Wix: `/vehicle-signage`, `/shopfront-signage`, `/window-graphics`,
   `/office-signage`, `/decor` etc. Cada uma tem por que contratar, opções, fotos, depoimento, processo, dúvidas e serviços relacionados.
@@ -37,7 +37,7 @@ com título, descrição e dados estruturados para o Google, e os anúncios pode
 | Nota do Google no topo da home | `google` em `src/site.mjs` (`null` esconde) |
 | Cards que flutuam atrás do camaleão (nomes, ícones, posições) | `campaignCards` em `src/render.mjs` |
 | Textos de cada serviço, título e descrição do Google, dúvidas | `services` em `src/content.mjs` |
-| Processo, depoimentos da home, dúvidas da home, fotos da faixa "Recent work" | `src/content.mjs` |
+| Processo, depoimentos da home, dúvidas da home | `src/content.mjs` |
 | Layout das páginas | `src/render.mjs` |
 | Cores e fontes | topo de `public/assets/css/site.css` |
 | Animações e interações | `public/assets/js/site.js` |

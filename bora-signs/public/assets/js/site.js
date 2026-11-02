@@ -203,39 +203,6 @@
     update();
   });
 
-  /* ---------- horizontal work strip ---------- */
-
-  const hs = $('[data-hscroll]');
-  if (hs) {
-    const trackEl = $('[data-track]', hs);
-    const viewport = $('.work__viewport', hs);
-    const bar = $('.work__bar', hs);
-    const wide = matchMedia('(min-width: 900px)');
-    let dist = 0;
-    const measure = () => {
-      const pin = wide.matches && !reduce;
-      hs.classList.toggle('is-pinned', pin);
-      if (!pin) { hs.style.height = ''; trackEl.style.transform = ''; return; }
-      dist = Math.max(0, trackEl.scrollWidth - innerWidth);
-      hs.style.height = `${innerHeight + dist}px`;
-    };
-    const update = () => {
-      if (!hs.classList.contains('is-pinned')) return;
-      const r = hs.getBoundingClientRect();
-      const p = clamp(-r.top / (hs.offsetHeight - innerHeight || 1), 0, 1);
-      trackEl.style.transform = `translate3d(${-p * dist}px,0,0)`;
-      bar.style.setProperty('--wp', p);
-    };
-    viewport.addEventListener('scroll', () => {
-      const max = viewport.scrollWidth - viewport.clientWidth;
-      bar.style.setProperty('--wp', max ? viewport.scrollLeft / max : 0);
-    }, { passive: true });
-    measure();
-    addEventListener('resize', () => { measure(); update(); });
-    addEventListener('load', () => { measure(); update(); });
-    onScroll.add(update);
-  }
-
   /* ---------- testimonials ---------- */
 
   const reviews = $('[data-reviews]');
