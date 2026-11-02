@@ -29,7 +29,9 @@
   // Em pé, com as versões em pé de tudo (visit.tall): vídeos e fotos 9:16. Senão, 16:9.
   const tall = () => !!V.tall && portrait.matches;
   const ORDER = (V.order || V.stops.map((s) => s.id)).filter((id) => STOPS.has(id));
-  const FADE = 420; // fusão entre o vídeo e a foto (ms)
+  const FADE = 420; // fusão do último quadro do vídeo para a foto, na chegada (ms)
+  const FADE_OUT = 120; // a foto saindo de cima do vídeo, na partida (ms)
+  const LOAD_WAIT = 1500; // quanto a rolada espera o vídeo terminar de baixar antes de trocar com fusão (ms)
   const QUIET = 200; // ms sem rolar que separam um gesto do outro
   const NUDGE = 8; // px de rolagem que já contam como "quero o próximo cômodo"
   const SWIPE = 30; // px que o dedo anda para trocar de cômodo
@@ -177,15 +179,20 @@
   }
   const fileOf = (r) => r.m.video + (tall() ? '-tall' : '') + (r.rev ? '-rev' : '');
 
-  // Deixa o vídeo pronto no quadro t, já desenhado por baixo da foto
+  // Deixa o vídeo pronto no quadro t, já desenhado por baixo da foto. Se o navegador demorar demais (o
+  // iPhone às vezes não prepara o vídeo antes do play), desiste e a troca vira fusão: nunca fica preso.
   function cue(url, t) {
     return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => fail(), 2500);
       const done = () => {
+        clearTimeout(timer);
         video.removeEventListener('error', fail);
         resolve();
       };
       const fail = () => {
+        clearTimeout(timer);
         video.removeEventListener('seeked', done);
+        video.removeEventListener('loadedmetadata', seek);
         reject(new Error('video'));
       };
       video.addEventListener('error', fail, { once: true });
@@ -202,17 +209,20 @@
     });
   }
 
-  // Toca até o segundo `end` e para ali (o fim do vídeo costuma ficar parado: não precisa esperar)
-  function playTo(end) {
+  // Toca até o segundo `end` e para ali (o fim do vídeo costuma ficar parado: não precisa esperar).
+  // Se o vídeo engasgar no caminho, para mesmo assim pouco depois do tempo que ele levaria.
+  function playTo(end, ms) {
     return new Promise((resolve) => {
       let raf = 0;
       const stop = () => {
         cancelAnimationFrame(raf);
         video.removeEventListener('ended', stop);
         clearInterval(guard);
+        clearTimeout(late);
         video.pause();
         resolve();
       };
+      const late = setTimeout(stop, ms + 1500);
       const check = () => {
         if (video.currentTime >= end - 0.03 || video.ended) stop();
         else raf = requestAnimationFrame(check);
@@ -228,6 +238,7 @@
   let here = null;
   let busy = false;
   let target = null; // para onde a câmera está indo
+  let queued = 0; // rolada que chegou no meio de uma troca: vale assim que a câmera chegar (1 ou -1)
 
   function show(el, on) {
     el.classList.toggle('is-on', on);
@@ -303,6 +314,11 @@
       // no computador todos; no celular os dois da rolada (os outros quando o dedo encosta na etiqueta)
       (fine.matches ? want : want.slice(0, 2)).reduce((p, name) => p.then(() => load(name).catch(() => {})), Promise.resolve());
     }
+    if (queued) {
+      const dir = queued;
+      queued = 0;
+      setTimeout(() => step(dir), 250);
+    }
   }
 
   /* ------------------------------------------------------------ de um ambiente para outro */
@@ -315,7 +331,8 @@
     if (button) button.classList.add('is-loading');
     let url;
     try {
-      url = await load(fileOf(r));
+      // vídeo ainda baixando (rede lenta): a troca não espera; vira fusão e o vídeo fica para a próxima vez
+      url = await Promise.race([load(fileOf(r)), wait(LOAD_WAIT).then(() => Promise.reject(new Error('slow')))]);
     } catch (err) {
       if (button) button.classList.remove('is-loading');
       busy = false;
@@ -343,21 +360,21 @@
     const rate = r.m.rate || 1;
     video.playbackRate = rate;
     try {
-      await video.play();
+      await Promise.race([video.play(), wait(1500).then(() => Promise.reject(new Error('play')))]);
     } catch (err) {
-      busy = false;
+      video.pause();
       return fade(to, true);
     }
     const ms = Math.max(300, ((b - a) / rate) * 1000);
-    // a foto sai por cima do vídeo (que começa no mesmo quadro dela) e o quadro desliza até o
-    // enquadramento do próximo ambiente durante o voo
-    stills.get(from).animate([{ opacity: 1 }, { opacity: 0 }], { duration: FADE, easing: 'ease', fill: 'forwards' })
+    // a foto sai logo de cima do vídeo (que começa no mesmo quadro dela; devagar, as duas apareceriam juntas
+    // com a câmera já andando) e o quadro desliza até o enquadramento do próximo ambiente durante o voo
+    stills.get(from).animate([{ opacity: 1 }, { opacity: 0 }], { duration: FADE_OUT, easing: 'ease-out', fill: 'forwards' })
       .finished.then((an) => {
         show(stills.get(from), false);
         an.cancel();
       }).catch(() => {});
     const pan = frame.animate([{ transform: offset(from) }, { transform: offset(to) }], { duration: ms, easing: PAN, fill: 'forwards' });
-    await playTo(b);
+    await playTo(b, ms);
     // chegou: o último quadro do vídeo é a foto do ambiente, que entra por cima, nítida
     const dest = stills.get(to);
     await decoded(dest);
@@ -409,6 +426,10 @@
   const at = () => ORDER.indexOf(target || here); // o cômodo na tela (ou chegando nele)
   const last = ORDER.length - 1;
   const step = (dir) => {
+    if (busy) {
+      queued = dir; // no meio de uma troca: fica guardada para quando a câmera chegar
+      return;
+    }
     const to = ORDER[at() + dir];
     if (to) go(to);
   };
@@ -453,7 +474,7 @@
     if (edge && !busy && !gated) return; // do último cômodo para baixo: segue para o resto do site
     e.preventDefault();
     e.lenisStopPropagation = true;
-    if (gated || edge || busy) return;
+    if (gated || edge) return; // (no meio de uma troca, um gesto novo fica guardado: veja step)
     if (acc * dir < 0) acc = 0;
     acc += dy;
     if (Math.abs(acc) < NUDGE) return;
@@ -480,7 +501,7 @@
     const dy = touch.y - p.clientY;
     const dx = touch.x - p.clientX;
     const dir = dy > 0 ? 1 : -1;
-    if (touch.done || busy || Math.abs(dy) < SWIPE || Math.abs(dy) < Math.abs(dx) * 1.2 || !atTop()) return;
+    if (touch.done || Math.abs(dy) < SWIPE || Math.abs(dy) < Math.abs(dx) * 1.2 || !atTop()) return;
     if (dir > 0 && at() === last) return; // a página rola sozinha
     touch.done = true;
     step(dir);
@@ -496,7 +517,7 @@
     const up = e.key === 'ArrowUp' || e.key === 'PageUp' || (e.key === ' ' && e.shiftKey);
     if ((down && at() < last) || (up && at() > 0)) {
       e.preventDefault();
-      if (!busy) step(down ? 1 : -1);
+      step(down ? 1 : -1);
     }
   });
 
