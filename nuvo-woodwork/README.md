@@ -10,8 +10,12 @@ O site é em inglês (o público é americano).
 
 ## O que tem no site
 
-- **As cenas da casa** (topo): cada ambiente ocupa a tela inteira (entrada, sala, cozinha, closet e a casa acesa) e
-  uma pequena rolada já leva à próxima cena, numa passagem com parallax (`assets/js/chapters.js`):
+- **A visita** (o topo do site desde 02/11): a casa real da Nuvo, cômodo por cômodo. A câmera para em cada cômodo e
+  uma rolada toca um mini vídeo rápido até o próximo, com vídeos separados para o computador e o celular. Também tem
+  as etiquetas em cima das passagens, como no reel do @michonmotion que o Lucas mandou. Veja "A visita" mais abaixo.
+- **As cenas da casa** (o topo anterior, agora em `?scenes` no fim do endereço): cada ambiente ocupa a tela inteira
+  (entrada, sala, cozinha, closet e a casa acesa) e uma pequena rolada já leva à próxima cena, numa passagem com
+  parallax (`assets/js/chapters.js`):
   - a cena nova sobe por cima da anterior e a foto dela anda mais devagar que ela, com um leve zoom, como a câmera
     entrando no ambiente; a anterior fica para trás e escurece; os títulos e o card do projeto real andam mais rápido.
     Voltando, o mesmo movimento ao contrário. A passagem roda no tempo dela (1,1 s), não presa ao scroll, então é
@@ -25,9 +29,6 @@ O site é em inglês (o público é americano).
   - Com "reduzir movimento" ligado, as cenas só trocam com uma fusão rápida.
   - O filme antigo em vídeo (o voo de drone pela casa) continua no ar em `?video` no fim do endereço; veja
     "O filme em vídeo" mais abaixo.
-- **A visita** (em teste, com `?tour` no fim do endereço): a câmera para em cada cômodo e uma rolada toca um mini
-  vídeo rápido até o próximo, com vídeos separados para o computador e o celular. Também tem as etiquetas em cima das
-  passagens, como no reel do @michonmotion que o Lucas mandou. Veja "A visita" mais abaixo.
 - **Índice de ambientes** com fotos de projetos reais. No computador, a foto acompanha o cursor; no celular, aparece
   ao lado. Cada linha volta para aquele ambiente nas cenas do topo (escritório e lavanderia, que não têm cena, levam
   ao formulário).
@@ -61,7 +62,7 @@ Para trocar uma foto ou pôr uma cena nova:
 
 ## A visita (`?tour`)
 
-<https://nuvo-woodwork.lucassouzalima10.workers.dev/?tour> (`assets/js/tour.js`). A câmera para num cômodo, com o título
+<https://nuvo-woodwork.lucassouzalima10.workers.dev> (o topo do site) (`assets/js/tour.js`). A câmera para num cômodo, com o título
 embaixo à esquerda. Uma rolada (roda, trackpad, dedo ou setas) toca o mini vídeo inteiro até o próximo cômodo, uns 2 s;
 rolando para cima, o mesmo vídeo de trás para frente. No fim de cada vídeo, a foto do cômodo (nítida) entra por cima do
 último quadro. Um gesto troca um cômodo só (a inércia do trackpad não pula dois). No último cômodo a rolagem segue para
@@ -206,7 +207,7 @@ Tudo veio do site atual da Nuvo (textos, fotos, depoimentos, telefone, e-mail e 
 - [ ] Endereço da oficina: 4801 Johnson Rd, Suite 4, Coconut Creek
 - [ ] As 5 imagens e os 4 vídeos (PROMPTS.md)
 - [ ] Visita (`?tour`): o nome e o endereço da casa das fotos reais (hoje não aparecem), se a Nuvo fez tudo o que aparece
-      nela (o Guilherme disse "quase tudo") e se ela vira o topo do site no lugar das cenas
+      nela (o Guilherme disse "quase tudo")
 
 ## Ver no computador
 

@@ -24,9 +24,10 @@
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
   <link rel="preload" href="assets/fonts/jost.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
-  <!-- A foto da primeira cena (a mesma lista de tamanhos que o chapters.js usa nela; se a primeira cena mudar em
-       content.js, ou ganhar a versão em pé, atualize aqui) -->
-  <link rel="preload" as="image" href="assets/img/scenes/door.webp" imagesrcset="assets/img/scenes/door-1376.webp 1376w, assets/img/scenes/door.webp 2752w" imagesizes="(max-aspect-ratio: 16/9) calc(100vh * 1.8), 100vw" fetchpriority="high">
+  <!-- A foto da primeira parada da visita (tour.js): a deitada no computador e a em pé no celular. Se a primeira
+       parada mudar em content.js (visit.start), atualize aqui -->
+  <link rel="preload" as="image" href="assets/img/scenes/real-foyer.webp" media="(min-aspect-ratio: 1/1)" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/img/scenes/real-foyer-tall.webp" media="(max-aspect-ratio: 1/1)" fetchpriority="high">
   <link rel="stylesheet" href="assets/css/styles.css">
   <script>document.documentElement.classList.add('js');</script>
 
@@ -166,7 +167,7 @@
             </a>
           </li>
           <li>
-            <a class="index__row" href="#tour" data-scene-link="living" data-preview="assets/img/work/bar.webp" data-caption="Lotus Palm residence">
+            <a class="index__row" href="#tour" data-scene-link="bar" data-preview="assets/img/work/bar.webp" data-caption="Lotus Palm residence">
               <span class="index__num">04</span>
               <h3 class="index__name">Bars</h3>
               <p class="index__desc">Wet bars, wine and bottle storage, backlit shelving and serving counters.</p>
@@ -184,7 +185,7 @@
             </a>
           </li>
           <li>
-            <a class="index__row" href="#tour" data-scene-link="living" data-preview="assets/img/work/foyer.webp">
+            <a class="index__row" href="#tour" data-scene-link="foyer" data-preview="assets/img/work/foyer.webp">
               <span class="index__num">06</span>
               <h3 class="index__name">Foyers</h3>
               <p class="index__desc">Consoles, storage benches and paneling for the first room everyone sees.</p>
@@ -430,11 +431,11 @@
   <script src="assets/js/content.js"></script>
   <script src="assets/video/manifest.js"></script>
   <script>
-    // O topo do site: as cenas com parallax (chapters.js). Com ?tour, a visita por clique (tour.js);
-    // com ?video, o filme antigo em vídeo (film.js).
+    // O topo do site: a visita pela casa real (tour.js). Com ?scenes, as cenas com parallax (chapters.js);
+    // com ?video, o filme antigo em vídeo (film.js). ?tour continua valendo (é o padrão).
     window.NUVO_FILM_MODE = (function (q) {
       const has = (k) => new RegExp('(^|&)' + k + '(=|&|$)').test(q);
-      return has('tour') ? 'tour' : has('video') ? 'video' : 'chapters';
+      return has('scenes') ? 'chapters' : has('video') ? 'video' : 'tour';
     })(location.search.slice(1));
   </script>
   <script src="assets/js/vendor/lenis.min.js"></script>
