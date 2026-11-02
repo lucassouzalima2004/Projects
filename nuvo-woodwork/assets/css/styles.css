@@ -388,6 +388,12 @@ body.menu-open { overflow: hidden; }
   color: var(--linen);
 }
 .film.is-ready { height: calc(var(--film-len) * 1vh + 100vh); }
+/* O filme andando sozinho (film.js): dentro dele o dedo troca de cômodo em vez de rolar a página,
+   e o zoom com dois dedos continua funcionando */
+.film.is-glide {
+  touch-action: none;
+  touch-action: pinch-zoom;
+}
 @supports (height: 100dvh) {
   .film.is-ready { height: calc(var(--film-len) * 1vh + 100dvh); }
 }

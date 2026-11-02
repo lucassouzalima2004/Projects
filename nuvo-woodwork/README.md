@@ -10,10 +10,12 @@ O site é em inglês (o público é americano).
 
 ## O que tem no site
 
-- **O filme** (o topo do site): uma caminhada contínua pela casa real da Nuvo, presa ao scroll: rolando para baixo a
-  câmera anda pela entrada, a sala, o bar, a cozinha e o banheiro até a suíte; rolando para cima, volta. Os títulos de
-  cada cômodo sobem quando a câmera chega nele, e o fim é o convite para a consultoria. São 5 vídeos do Google Flow
-  emendados, em velocidade normal, com versões separadas para o computador e o celular. Veja "O filme" mais abaixo.
+- **O filme** (o topo do site): uma caminhada contínua pela casa real da Nuvo, da entrada, pela sala, o bar, a
+  cozinha e o banheiro, até a suíte. **Uma rolada leva a câmera sozinha até o próximo cômodo** (uns 3 s, saindo e
+  chegando devagar), como na visita que o Guilherme aprovou: o vídeo não depende de a pessoa continuar rolando, então
+  nunca parece travado. Para cima, ela volta sozinha. O título de cada cômodo sobe quando a câmera chega, e o fim é o
+  convite para a consultoria; a próxima rolada desliza para o resto do site. São 5 vídeos do Google Flow emendados,
+  com versões separadas para o computador e o celular. Veja "O filme" mais abaixo.
 - **A visita** (em `?tour` no fim do endereço): a mesma casa, mas a câmera para em cada cômodo e uma rolada toca um
   mini vídeo rápido até o próximo, com etiquetas em cima das passagens. Veja "A visita" mais abaixo.
 - **As cenas da casa** (em `?scenes` no fim do endereço): cada ambiente ocupa a tela inteira
@@ -122,6 +124,13 @@ GOP=6 CRF=25 CRF_TALL=26 TALL_H=1920 tools/make-videos.sh
 ```
 
 Os textos, as fotos de cada trecho e quanto cada cômodo fica parado estão em `assets/js/content.js` → `scenes`.
+
+**Andar sozinho:** a roda, o trackpad (um gesto vale um cômodo, mesmo com a inércia do Mac), o dedo, as setas e o
+espaço levam a câmera sozinha até a próxima parada (o cômodo pronto, com o título na tela). Rolada no meio do caminho
+fica guardada para quando a câmera chegar. Voltando do resto do site, a câmera assume assim que a página entra de novo
+na casa e volta sozinha até o convite. O tempo de um cômodo é `tour.glide` no `content.js` (3,4 s); `glide: 0`, ou
+`?scrub` no fim do endereço, volta ao jeito anterior (o scroll anda o vídeo quadro a quadro). Com "reduzir movimento"
+ligado, também fica o jeito anterior.
 
 O filme antigo (o voo de drone pela casa fictícia, com a marcenaria se montando) saiu do ar; está no histórico do
 git. Os prompts dele continuam no [PROMPTS.md](PROMPTS.md). Resumo do caminho de um vídeo até o site:

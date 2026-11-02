@@ -747,6 +747,7 @@
   // próprio aparelho. Só com mouse e sem a rolagem suave (se ela não carregar) o filme põe inércia.
   function tick(t) {
     raf = 0;
+    if (glide) stepGlide(t); // andando sozinho: a página vai para a posição deste quadro antes de ler o scroll
     readScroll(); // a posição desta pintura (com a rolagem suave, ela muda a cada quadro)
     const had = last; // havia uma pintura logo antes (o intervalo é real)
     const dt = last ? Math.min(64, t - last) : 16;
@@ -790,6 +791,7 @@
     } else {
       scenes.forEach(seek);
     }
+    if (glide) more = true;
     if (more) kick();
     else last = 0;
   }
@@ -830,6 +832,7 @@
   function measure(first) {
     metrics.top = film.getBoundingClientRect().top + window.scrollY;
     metrics.dist = Math.max(1, film.offsetHeight - stage.offsetHeight);
+    computeStops();
     readScroll();
     if (first === true) cur = target;
     fitCanvas();
@@ -842,23 +845,242 @@
     }
   }
 
-  // Vai para um trecho: o fim do vídeo, com o ambiente pronto e o título dele na tela
+  // Vai para um trecho: a parada dele, com o ambiente pronto e o título dele na tela
   function goTo(i) {
-    const s = scenes[i];
-    if (!s) return;
-    const q = Math.max(0, s.qb - 0.002);
-    const y = metrics.top + ((s.start + s.len * q) / total) * metrics.dist;
+    const y = stops[i + 1];
+    if (y == null) return;
     if (window.NUVO_SCROLL_TO) window.NUVO_SCROLL_TO(Math.round(y));
     else window.scrollTo({ top: Math.round(y), behavior: reduce.matches ? 'auto' : 'smooth' });
   }
 
+  /* ------------------------------------------------------------ andar sozinho */
+  // Uma rolada (roda, trackpad, dedo, setas ou espaço) leva a câmera sozinha até o próximo cômodo, como
+  // na visita que o Guilherme aprovou: o vídeo não depende de a pessoa continuar rolando, então nunca
+  // parece travado. A câmera sai e chega devagar e no meio anda num passo só (pela posição do scroll,
+  // que já dá mais tempo às partes com movimento e passa depressa pelas paradas). Para cima, o mesmo
+  // caminho de volta. Rolada no meio do caminho fica guardada para quando a câmera chegar.
+  // Na última parada (o convite), a próxima rolada desliza até o resto do site; voltando de lá, a
+  // câmera assume assim que a página entra de novo no filme e volta sozinha até o convite.
+  // Com "reduzir movimento", ou ?scrub no endereço, o scroll anda o vídeo direto, como antes.
+  const GLIDE = Math.max(0, C.tour && C.tour.glide != null ? +C.tour.glide || 0 : 3.4); // segundos por cômodo
+  const QUIET = 200; // ms sem rolar que separam um gesto do outro
+  const NUDGE = 8; // px de rolagem que já contam como "quero o próximo cômodo"
+  const SWIPE = 30; // px que o dedo anda para trocar de cômodo
+  const EXIT = 1100; // ms do deslizamento entre o convite e o resto do site
+  const glideOn = () => GLIDE > 0 && !reduce.matches && !params.has('scrub');
+  let stops = []; // onde a câmera para: o começo do filme e cada cômodo pronto, com o título na tela
+  let exitY = 0; // o começo do resto do site (logo depois do filme)
+  let roomPx = 1; // distância média entre duas paradas
+  let glide = null; // { from, j, t0, T }: andando da posição from até a parada j
+  let queued = 0; // rolada que chegou no meio do caminho (1 ou -1)
+  let userAt = 0; // a última vez que a pessoa rolou ou arrastou (as rolagens dos links não contam)
+
+  function computeStops() {
+    const at = (s, q) => metrics.top + ((s.start + s.len * q) / total) * metrics.dist;
+    // A parada fica a 40% do tempo parado do cômodo: o título dele já entrou e a fusão com o próximo
+    // vídeo (no fim do trecho) ainda não começou
+    stops = [metrics.top].concat(scenes.map((s) => at(s, s.qb + (1 - s.qb) * 0.4)));
+    const pad = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+    exitY = Math.max(stops[stops.length - 1] + 1, metrics.top + film.offsetHeight - pad);
+    roomPx = stops.length > 1 ? (stops[stops.length - 1] - stops[0]) / (stops.length - 1) : 1;
+  }
+  const spot = (j) => (j < stops.length ? stops[j] : exitY); // a parada j (a última é o resto do site)
+  const inZone = (y) => y >= stops[0] - 2 && y < exitY - 2;
+  const menuOpen = () => document.body.classList.contains('menu-open');
+
+  function setScroll(y) {
+    if (window.NUVO_SCROLL) window.NUVO_SCROLL.scrollTo(y, { immediate: true, force: true });
+    else window.scrollTo({ top: y, behavior: 'instant' });
+  }
+
+  // A primeira parada depois de y, no sentido dir
+  function nextStop(y, dir) {
+    const n = stops.length + 1;
+    if (dir > 0) {
+      for (let j = 0; j < n; j++) if (spot(j) > y + 4) return j;
+    } else {
+      for (let j = n - 1; j >= 0; j--) if (spot(j) < y - 4) return j;
+    }
+    return -1;
+  }
+
+  function glideTo(j) {
+    const from = window.scrollY;
+    const last = stops.length - 1;
+    // Entre os cômodos, o tempo de um cômodo (proporcional à distância); do convite para o resto do site e
+    // de volta, um deslizamento curto
+    const T = j > last || from > stops[last] + 2 ? EXIT : clamp(GLIDE * (Math.abs(spot(j) - from) / roomPx), 0.6, GLIDE * 2.5) * 1000;
+    glide = { from, j, t0: performance.now(), T };
+    kick();
+  }
+
+  function step(dir) {
+    if (glide) {
+      queued = dir;
+      return;
+    }
+    const j = nextStop(window.scrollY, dir);
+    if (j >= 0) glideTo(j);
+  }
+
+  // Posição de 0 a 1 no tempo x (0 a 1): acelera na fração a, anda num passo só e freia na fração d
+  function ride(x, a, d) {
+    if (x <= 0) return 0;
+    if (x >= 1) return 1;
+    const v = 1 / (1 - a / 2 - d / 2);
+    if (x < a) return (v * x * x) / (2 * a);
+    if (x > 1 - d) return 1 - (v * (1 - x) * (1 - x)) / (2 * d);
+    return v * (a / 2 + x - a);
+  }
+
+  function stepGlide(t) {
+    const g = glide;
+    const x = clamp((t - g.t0) / g.T);
+    const y = g.from + (spot(g.j) - g.from) * ride(x, Math.min(0.25, 380 / g.T), Math.min(0.35, 620 / g.T));
+    lastY = y;
+    setScroll(y);
+    if (x < 1) return;
+    glide = null;
+    if (queued) {
+      const dir = queued;
+      queued = 0;
+      setTimeout(() => step(dir), 220); // o título aparece um instante antes de seguir
+    }
+  }
+
+  // Roda e trackpad: um gesto vale um cômodo. Depois que o dedo sai, o trackpad continua mandando eventos
+  // por mais de um segundo (a inércia), cada vez menores; se a rolagem volta a crescer no meio disso, é um
+  // gesto novo, e ele vale. (O mesmo da visita, em tour.js.)
+  let lastWheel = 0;
+  let gated = false; // o gesto atual já valeu: espera um gesto novo
+  let acc = 0;
+  let peak = 0;
+  let valley = 0;
+  window.addEventListener('wheel', (e) => {
+    if (!glideOn() || menuOpen() || e.ctrlKey) return;
+    let dy = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : 0;
+    if (e.deltaMode === 1) dy *= 16;
+    else if (e.deltaMode === 2) dy *= window.innerHeight;
+    const v = Math.abs(dy);
+    const now = performance.now();
+    const gap = now - lastWheel;
+    lastWheel = now;
+    userAt = now;
+    const stall = gated && gap < 1000 && v > 0 && (glide || (v <= valley && v < peak));
+    if (gap > QUIET && !stall) {
+      gated = false;
+      acc = 0;
+      peak = valley = 0;
+    }
+    if (!dy) return;
+    if (valley < peak && v > valley * 2 + 6) {
+      peak = valley = v; // voltou a crescer depois de frear: gesto novo
+      gated = false;
+      acc = 0;
+    } else if (v >= peak) peak = valley = v;
+    else if (v < valley) valley = v;
+    const y = window.scrollY;
+    const dir = dy > 0 ? 1 : -1;
+    // Fora do filme, a página rola normal (no resto do site, para cima, a câmera assume ao entrar no filme)
+    if (!glide && !inZone(y) && !(dir < 0 && Math.abs(y - exitY) <= 2)) return;
+    e.preventDefault();
+    e.lenisStopPropagation = true;
+    if (gated) return;
+    if (acc * dir < 0) acc = 0;
+    acc += dy;
+    if (Math.abs(acc) < NUDGE) return;
+    gated = true;
+    acc = 0;
+    step(dir);
+  }, { passive: false, capture: true });
+
+  // Dedo: dentro do filme, um arrasto curto vale um cômodo. No resto do site, o dedo rola a página.
+  let touch = null;
+  let finger = false; // dedo na tela
+  window.addEventListener('touchstart', (e) => {
+    const p = e.touches[0];
+    finger = true;
+    touch = glideOn() && e.touches.length === 1 && !menuOpen() ? { x: p.clientX, y: p.clientY, done: false } : null;
+  }, { passive: true });
+  window.addEventListener('touchmove', (e) => {
+    if (!touch) return;
+    if (e.touches.length > 1) {
+      touch = null; // dois dedos: é zoom
+      return;
+    }
+    userAt = performance.now();
+    if (!glide && !touch.done && !inZone(window.scrollY)) {
+      touch = null; // começou no resto do site: o dedo rola a página
+      return;
+    }
+    if (e.cancelable) e.preventDefault();
+    const p = e.touches[0];
+    const dy = touch.y - p.clientY;
+    const dx = touch.x - p.clientX;
+    if (touch.done || Math.abs(dy) < SWIPE || Math.abs(dy) < Math.abs(dx) * 1.2) return;
+    touch.done = true;
+    step(dy > 0 ? 1 : -1);
+  }, { passive: false });
+  const lift = () => {
+    finger = false;
+    touch = null;
+  };
+  window.addEventListener('touchend', lift, { passive: true });
+  window.addEventListener('touchcancel', lift, { passive: true });
+
+  // A página entrou no filme rolando pelo dedo (ou pela rolagem do próprio aparelho): quando ela para,
+  // a câmera vai sozinha até o cômodo de cima mais perto (sem brigar com o dedo nem com a inércia)
+  let settleTimer = 0;
+  function settleSoon() {
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(() => {
+      settleTimer = 0;
+      if (finger) {
+        settleSoon();
+        return;
+      }
+      const y = window.scrollY;
+      if (!glide && glideOn() && inZone(y)) {
+        const j = nextStop(y + 5, -1);
+        if (j >= 0 && Math.abs(spot(j) - y) > 2) glideTo(j);
+      }
+    }, 160);
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if (!glideOn() || e.altKey || e.ctrlKey || e.metaKey || menuOpen()) return;
+    const tag = (e.target && e.target.tagName) || '';
+    if (/^(INPUT|TEXTAREA|SELECT)$/.test(tag) || ((tag === 'BUTTON' || tag === 'A') && e.key === ' ')) return;
+    const down = e.key === 'ArrowDown' || e.key === 'PageDown' || (e.key === ' ' && !e.shiftKey);
+    const up = e.key === 'ArrowUp' || e.key === 'PageUp' || (e.key === ' ' && e.shiftKey);
+    if (!down && !up) return;
+    const y = window.scrollY;
+    if (!glide && !inZone(y) && !(up && Math.abs(y - exitY) <= 2)) return;
+    e.preventDefault();
+    step(down ? 1 : -1);
+  });
+
+  let lastY = window.scrollY;
   window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    if (glideOn() && !glide) {
+      // Voltando do resto do site, a câmera assume assim que a página entra no filme e volta até o convite.
+      // Com a rolagem suave (computador) na hora; com o dedo, quando a página parar.
+      if (lastY >= exitY - 2 && y < exitY - 2 && performance.now() - userAt < 900) {
+        if (window.NUVO_SCROLL && !finger) {
+          gated = true; // o mesmo gesto não segue para o cômodo de antes
+          glideTo(stops.length - 1);
+        } else settleSoon();
+      } else if (settleTimer) settleSoon(); // ainda andando: espera parar
+    }
+    lastY = y;
     readScroll();
     kick();
   }, { passive: true });
   window.addEventListener('resize', measure);
   const onReduce = () => {
     film.classList.toggle('is-still', reduce.matches);
+    film.classList.toggle('is-glide', glideOn());
     scenes.forEach((s) => (s.mix = -1));
     dirty = true;
     kick();
@@ -877,6 +1099,7 @@
   });
 
   film.classList.toggle('is-still', reduce.matches);
+  film.classList.toggle('is-glide', glideOn()); // o dedo troca de cômodo em vez de rolar a página (styles.css)
   film.classList.add('is-ready'); // a seção ganha a altura do filme antes da primeira medida
   measure(true);
   loadStills(scenes[0]);
@@ -959,6 +1182,8 @@
         y: seenY, // a posição de scroll que o filme desenhou por último
         x: view ? +view.x.toFixed(3) : null, // o quadro (com fração) na tela, no modo canvas
         scene: view ? view.i : null,
+        gliding: !!glide, // andando sozinho até uma parada
+        stop: stops.findIndex((y) => Math.abs(y - window.scrollY) <= 3), // a parada em que a página está (-1: nenhuma)
         base: perf.base,
         stats: Object.assign({}, stats),
         cached: scenes.map((s) => (s.track ? s.track.cache.size : 0)),
