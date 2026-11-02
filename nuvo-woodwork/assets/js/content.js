@@ -37,9 +37,10 @@ window.NUVO = {
      id: videos/02-bar.mp4 (e 02-bar-mobile.mp4, a versão em pé) →
      tools/make-videos.sh → assets/video/bar.mp4 e bar.tall.mp4.
 
-     glide ........ uma rolada leva a câmera sozinha até o próximo cômodo, em
-                    tantos segundos (o tempo de um cômodo). 0 = o scroll anda o
-                    vídeo direto, quadro a quadro (o mesmo que ?scrub no endereço).
+     glide ........ uma rolada leva a câmera sozinha até o próximo cômodo, numa
+                    curva macia, em uns tantos segundos (um cômodo, contando a
+                    saída e a chegada). 0 = o scroll anda o vídeo direto, quadro a
+                    quadro (o mesmo que ?scrub no endereço).
      pace ......... velocidade do filme: quanto scroll (em % da altura da tela)
                     vale 1 segundo de vídeo, em média. Maior = mais lento.
                     As partes com mais movimento ganham mais scroll e as partes
@@ -61,7 +62,7 @@ window.NUVO = {
      ------------------------------------------------------------------------- */
   tour: {
     pace: 24,
-    glide: 3.4,
+    glide: 3.0,
   },
 
   /* ---------------------------------------------------------------------------
