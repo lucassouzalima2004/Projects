@@ -111,7 +111,7 @@ Confira antes de usar: a câmera não para nem dá trancos, o último quadro é 
 gente nem equipamento. Depois, dentro de `nuvo-woodwork/`:
 
 ```bash
-SPEED=3.5 tools/make-tour-videos.sh bar-kitchen=videos/flow/bar-kitchen.mp4 bar-kitchen=videos/flow/bar-kitchen-tall.mp4
+SPEED=2.5 FPS=60 GOP=60 tools/make-tour-videos.sh bar-kitchen=videos/flow/bar-kitchen.mp4 bar-kitchen=videos/flow/bar-kitchen-tall.mp4
 ```
 
 O script faz a ida e a volta de cada um (o 9:16 vira `bar-kitchen-tall.mp4`). As fotos paradas de cada cômodo são as

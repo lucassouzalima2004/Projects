@@ -10,15 +10,15 @@ O site é em inglês (o público é americano).
 
 ## O que tem no site
 
-- **O filme** (o topo do site): uma caminhada contínua pela casa real da Nuvo, da entrada, pela sala, o bar, a
-  cozinha e o banheiro, até a suíte. **Uma rolada leva a câmera sozinha até o próximo cômodo** (uns 2,6 s, numa curva
-  macia: sai devagar, pega velocidade e chega devagar), como na visita que o Guilherme aprovou. Rolando de novo no
-  meio do caminho, ou sem parar, a câmera não para no cômodo do meio: segue direto. Parada num cômodo, a imagem
-  continua viva (um zoom bem lento). Para cima, ela volta sozinha. O título de cada cômodo sobe quando a câmera chega,
-  e o fim é o convite para a consultoria; a próxima rolada desliza para o resto do site. São 5 vídeos do Google Flow
-  emendados, com versões separadas para o computador e o celular. Veja "O filme" mais abaixo.
-- **A visita** (em `?tour` no fim do endereço): a mesma casa, mas a câmera para em cada cômodo e uma rolada toca um
-  mini vídeo rápido até o próximo, com etiquetas em cima das passagens. Veja "A visita" mais abaixo.
+- **A caminhada** (o topo do site): a casa real da Nuvo, da entrada, pela sala, o bar, a cozinha e o banheiro, até a
+  suíte. **Uma rolada toca o vídeo, liso, até o próximo cômodo** (uns 3 s): os vídeos tocam de verdade, em 60 quadros
+  por segundo (nenhum repetido nem fundido), e já ficam prontos no primeiro quadro, então a câmera sai na hora.
+  Rolando de novo no meio do caminho, a câmera passa pelo cômodo sem parar. Parada num cômodo, entra a foto nítida e
+  a imagem respira (um zoom bem lento). Para cima, a caminhada de volta. O fim é o convite para a consultoria; a
+  próxima rolada segue para o resto do site. Também tem as etiquetas em cima das passagens. Veja "A visita" abaixo.
+- **O filme preso ao scroll** (em `?video` no fim do endereço): os mesmos vídeos, mas o scroll anda o vídeo quadro a
+  quadro (`film.js`). Ficou como alternativa: com vídeo de 24 quadros por segundo, nas partes lentas ele funde dois
+  quadros (fica borrado) ou repete quadros (dá tranco). Veja "O filme" abaixo.
 - **As cenas da casa** (em `?scenes` no fim do endereço): cada ambiente ocupa a tela inteira
   (entrada, sala, cozinha, closet e a casa acesa) e uma pequena rolada já leva à próxima cena, numa passagem com
   parallax (`assets/js/chapters.js`):
@@ -84,15 +84,20 @@ o resto do site; de volta ao topo, rolar para cima volta pelos cômodos.
   entrada → sala → bar → cozinha → banheiro → suíte (no computador o quarto, no celular o closet), e termina no convite
   para a consultoria. O computador usa as fotos deitadas e o celular as fotos em pé do mesmo cômodo (tabela no
   [PROMPTS.md](PROMPTS.md)); as fotos do site são essas fotos recortadas em 16:9 e 9:16 e ampliadas 2× (Swin2SR).
-- **Os mini vídeos** são do Google Flow (Veo 3.1 Fast, "Frames", 8 s): o primeiro e o último quadro são as fotos dos dois
-  cômodos, então o vídeo termina exatamente na foto. Acelerados 3,5× (`SPEED=3.5`, uns 2,2 s). Os prompts e o passo a
-  passo estão no [PROMPTS.md](PROMPTS.md), em "Vídeos para a visita". Os originais baixados ficam em `videos/flow/`
-  (fora do git).
+- **Os vídeos** são do Google Flow (Veo 3.1 Fast, "Frames", 8 s, baixados em 1080p): o primeiro e o último quadro
+  são as fotos dos dois cômodos, então o vídeo termina exatamente na foto. No site eles vão 2,5× mais rápidos e com
+  60 quadros por segundo (24 × 2,5 = 60: cada quadro do Flow aparece uma vez, nada repetido nem fundido), uns 3,1 s
+  por cômodo, com a volta num arquivo próprio (`-rev`). Os prompts e o passo a passo estão no
+  [PROMPTS.md](PROMPTS.md), em "Vídeos para a visita". Os originais ficam em `videos/flow/` (fora do git).
+- **Liso desde o primeiro quadro:** dois vídeos na tela, um em cima do outro. Com a câmera parada, um fica pronto,
+  parado no primeiro quadro da caminhada para o próximo cômodo, e o outro com a volta; a rolada só dá play (a
+  câmera sai em uns 30 ms). Enquanto um toca, o outro já prepara a caminhada seguinte: rolando de novo no meio do
+  caminho, a câmera passa direto, do mesmo quadro. Medido no Chrome do Mac: 60 quadros por segundo, nenhum perdido.
 
 Para pôr um vídeo novo (precisa do ffmpeg):
 
 ```bash
-SPEED=3 tools/make-tour-videos.sh living-kitchen=sala-cozinha-16x9.mp4 living-kitchen=sala-cozinha-9x16.mp4
+SPEED=2.5 FPS=60 GOP=60 tools/make-tour-videos.sh bar-kitchen=videos/flow/bar-kitchen.mp4 bar-kitchen=videos/flow/bar-kitchen-tall.mp4
 ```
 
 Cria a ida e a volta de cada um em `assets/video/` (`living-kitchen.mp4`, `-rev`, `-tall`, `-tall-rev`). `SPEED`

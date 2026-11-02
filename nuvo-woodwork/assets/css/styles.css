@@ -860,6 +860,23 @@ body.menu-open { overflow: hidden; }
 }
 .tour__still.is-on { opacity: 1; }
 .tour__still.is-top { z-index: 2; }
+/* Os dois vídeos (tour.js): o que está tocando (ou parado no último quadro) fica na tela; o outro espera,
+   pronto no primeiro quadro da próxima caminhada */
+.tour__video { opacity: 0; }
+.tour__video.is-live { opacity: 1; }
+/* Parada num cômodo, a imagem continua viva: um zoom bem lento. Quando a câmera volta a andar, o zoom
+   desfaz durante a caminhada. */
+.tour__frame {
+  transform-origin: 50% 55%;
+  transition: scale .8s cubic-bezier(.4, 0, .2, 1);
+}
+.film.is-tour.is-resting .tour__frame {
+  scale: 1.035;
+  transition: scale 14s cubic-bezier(.25, .6, .3, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .film.is-tour.is-resting .tour__frame { scale: none; }
+}
 
 .tour__pins {
   position: absolute;

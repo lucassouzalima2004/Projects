@@ -52,6 +52,7 @@
   stage.innerHTML =
     '<div class="tour__frame">' +
     '<video class="tour__video" muted playsinline preload="auto" disablepictureinpicture aria-hidden="true"></video>' +
+    '<video class="tour__video" muted playsinline preload="auto" disablepictureinpicture aria-hidden="true"></video>' +
     V.stops.map((s, i) => {
       const img = '<img class="tour__still" data-stop="' + esc(s.id) + '" alt="" decoding="async" src="assets/img/' + esc(s.image) + '"' +
         (i ? ' fetchpriority="low"' : ' fetchpriority="high"') + '>';
@@ -71,7 +72,8 @@
     '<div class="tour__copy" aria-live="polite"></div>';
 
   const frame = stage.querySelector('.tour__frame');
-  const video = stage.querySelector('.tour__video');
+  const players = Array.from(stage.querySelectorAll('.tour__video'));
+  const video = players[0];
   const stills = new Map(Array.from(stage.querySelectorAll('.tour__still')).map((el) => [el.dataset.stop, el]));
   const pinSets = new Map(Array.from(stage.querySelectorAll('.tour__pins')).map((el) => [el.dataset.stop, el]));
   const back = stage.querySelector('.tour__back');
@@ -179,57 +181,100 @@
   }
   const fileOf = (r) => r.m.video + (tall() ? '-tall' : '') + (r.rev ? '-rev' : '');
 
-  // Deixa o vídeo pronto no quadro t, já desenhado por baixo da foto. Se o navegador demorar demais (o
-  // iPhone às vezes não prepara o vídeo antes do play), desiste e a troca vira fusão: nunca fica preso.
-  function cue(url, t) {
+  // Deixa o vídeo v pronto no quadro t, já desenhado por baixo da foto. Na primeira vez, um play e pause
+  // escondidos (o iPhone só prepara a imagem de um vídeo depois de um play). Se o navegador demorar demais,
+  // desiste e a troca vira fusão: nunca fica preso.
+  function cue(v, url, t) {
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => fail(), 2500);
       const done = () => {
         clearTimeout(timer);
-        video.removeEventListener('error', fail);
+        v.removeEventListener('error', fail);
         resolve();
       };
       const fail = () => {
         clearTimeout(timer);
-        video.removeEventListener('seeked', done);
-        video.removeEventListener('loadedmetadata', seek);
+        v.removeEventListener('seeked', done);
+        v.removeEventListener('loadedmetadata', warm);
         reject(new Error('video'));
       };
-      video.addEventListener('error', fail, { once: true });
+      v.addEventListener('error', fail, { once: true });
       const seek = () => {
-        video.addEventListener('seeked', done, { once: true });
-        video.currentTime = t + 0.001;
+        v.addEventListener('seeked', done, { once: true });
+        v.currentTime = t + 0.001;
       };
-      if (video.dataset.src !== url) {
-        video.dataset.src = url;
-        video.src = url;
-        video.addEventListener('loadedmetadata', seek, { once: true });
-      } else if (video.readyState >= 1) seek();
-      else video.addEventListener('loadedmetadata', seek, { once: true });
+      const warm = () => {
+        if (v.warm) return seek();
+        v.warm = true;
+        let p = null;
+        try {
+          p = v.play();
+        } catch (e) {
+          p = null;
+        }
+        if (p && p.then) p.then(() => (v.pause(), seek()), seek);
+        else {
+          v.pause();
+          seek();
+        }
+      };
+      if (v.dataset.src !== url) {
+        v.dataset.src = url;
+        v.src = url;
+        v.addEventListener('loadedmetadata', warm, { once: true });
+      } else if (v.readyState >= 1) seek();
+      else v.addEventListener('loadedmetadata', warm, { once: true });
     });
   }
 
-  // Toca até o segundo `end` e para ali (o fim do vídeo costuma ficar parado: não precisa esperar).
-  // Se o vídeo engasgar no caminho, para mesmo assim pouco depois do tempo que ele levaria.
-  function playTo(end, ms) {
+  // Dois vídeos: com a câmera parada num cômodo, um fica pronto, parado no primeiro quadro da caminhada até o
+  // próximo cômodo, e o outro com a volta. A rolada só dá play: a câmera sai na hora, sem esperar baixar nem
+  // procurar o quadro. Os vídeos tocam no ritmo deles (60 quadros por segundo, nenhum repetido nem fundido).
+  function prime(v, name) {
+    if (v.dataset.name === name && v.dataset.ready === '1') return Promise.resolve(v);
+    const token = (v.token = (v.token || 0) + 1);
+    v.dataset.name = name;
+    v.dataset.ready = '';
+    return load(name)
+      .then((url) => cue(v, url, 0))
+      .then(() => {
+        if (v.token !== token) throw new Error('trocado');
+        v.dataset.ready = '1';
+        return v;
+      });
+  }
+  // Prepara os arquivos pedidos nos vídeos, reaproveitando o que já tem o arquivo certo
+  function primeAll(names) {
+    const free = players.filter((v) => !names.includes(v.dataset.name));
+    names.forEach((n) => {
+      const v = players.find((p) => p.dataset.name === n) || free.shift();
+      if (v) prime(v, n).catch(() => {});
+    });
+  }
+  const live = (v) => players.forEach((p) => p.classList.toggle('is-live', p === v)); // o vídeo na tela
+
+  // Toca o vídeo v até o fim e para no último quadro. Se ele engasgar no caminho, para mesmo assim pouco
+  // depois do tempo que levaria.
+  function playTo(v, ms) {
     return new Promise((resolve) => {
       let raf = 0;
+      const end = () => (v.duration || 0) - 0.02;
       const stop = () => {
         cancelAnimationFrame(raf);
-        video.removeEventListener('ended', stop);
+        v.removeEventListener('ended', stop);
         clearInterval(guard);
         clearTimeout(late);
-        video.pause();
+        v.pause();
         resolve();
       };
       const late = setTimeout(stop, ms + 1500);
       const check = () => {
-        if (video.currentTime >= end - 0.03 || video.ended) stop();
+        if (v.currentTime >= end() || v.ended) stop();
         else raf = requestAnimationFrame(check);
       };
       // com a aba em segundo plano não há quadros: confere de tempos em tempos também
-      const guard = setInterval(() => (video.currentTime >= end - 0.03 || video.ended) && stop(), 250);
-      video.addEventListener('ended', stop);
+      const guard = setInterval(() => (v.currentTime >= end() || v.ended) && stop(), 250);
+      v.addEventListener('ended', stop);
       raf = requestAnimationFrame(check);
     });
   }
@@ -311,9 +356,12 @@
     });
     if (canPlay && !saveData && !reduce.matches) {
       const want = next.map((to) => route(id, to)).filter(Boolean).map(fileOf);
-      // no computador todos; no celular os dois da rolada (os outros quando o dedo encosta na etiqueta)
-      (fine.matches ? want : want.slice(0, 2)).reduce((p, name) => p.then(() => load(name).catch(() => {})), Promise.resolve());
+      // os dois da rolada (para baixo e para cima) ficam prontos nos dois vídeos, parados no primeiro quadro
+      primeAll(want.slice(0, 2));
+      // os das etiquetas só baixam (no computador; no celular quando o dedo encosta na etiqueta)
+      if (fine.matches) want.slice(2).reduce((p, name) => p.then(() => load(name).catch(() => {})), Promise.resolve());
     }
+    if (!reduce.matches) film.classList.add('is-resting'); // parada, a imagem respira (styles.css)
     if (queued) {
       const dir = queued;
       queued = 0;
@@ -322,74 +370,78 @@
   }
 
   /* ------------------------------------------------------------ de um ambiente para outro */
-  async function go(to, button) {
-    if (busy || !STOPS.has(to) || to === here) return;
+  // chain: a pessoa rolou de novo no meio da caminhada; a câmera passa pelo cômodo sem parar e segue
+  async function go(to, button, chain) {
+    if ((busy && !chain) || !STOPS.has(to) || to === here) return;
     const r = canPlay && !reduce.matches && !document.hidden ? route(here, to) : null;
-    if (!r) return fade(to);
+    if (!r) return fade(to, chain);
     busy = true;
     target = to;
-    if (button) button.classList.add('is-loading');
-    let url;
-    try {
-      // vídeo ainda baixando (rede lenta): a troca não espera; vira fusão e o vídeo fica para a próxima vez
-      url = await Promise.race([load(fileOf(r)), wait(LOAD_WAIT).then(() => Promise.reject(new Error('slow')))]);
-    } catch (err) {
+    const name = fileOf(r);
+    // o vídeo já pronto no primeiro quadro (o normal); se não houver, prepara agora num vídeo livre
+    let v = players.find((p) => p.dataset.name === name && p.dataset.ready === '1');
+    if (!v) {
+      if (button) button.classList.add('is-loading');
+      try {
+        const spare = players.find((p) => !p.classList.contains('is-live')) || players[0];
+        // rede lenta: a troca não espera; vira fusão e o vídeo fica para a próxima vez
+        v = await Promise.race([prime(spare, name), wait(LOAD_WAIT + 1000).then(() => Promise.reject(new Error('lento')))]);
+      } catch (err) {
+        if (button) button.classList.remove('is-loading');
+        busy = false;
+        return fade(to, chain);
+      }
       if (button) button.classList.remove('is-loading');
-      busy = false;
-      return fade(to);
     }
     const from = here;
-    const t0 = r.rev ? null : r.m.start || 0;
+    const dir = ORDER.indexOf(to) >= ORDER.indexOf(from) ? 1 : -1;
+    if (!chain) leave();
+    film.classList.remove('is-resting');
+    v.dataset.ready = ''; // este vai tocar; quando acabar, fica no último quadro
+    live(v);
     try {
-      // o arquivo de trás para frente tem a mesma duração: o trecho [start, end] vira [D - end, D - start]
-      if (r.rev) {
-        await cue(url, 0);
-        const D = video.duration;
-        await cue(url, Math.max(0, D - (r.m.end || D)));
-      } else await cue(url, t0);
+      await Promise.race([v.play(), wait(1500).then(() => Promise.reject(new Error('play')))]);
     } catch (err) {
-      if (button) button.classList.remove('is-loading');
-      busy = false;
-      return fade(to);
-    }
-    if (button) button.classList.remove('is-loading');
-    leave();
-    const D = video.duration || 0;
-    const a = video.currentTime;
-    const b = r.rev ? D - (r.m.start || 0) : Math.min(D, r.m.end || D);
-    const rate = r.m.rate || 1;
-    video.playbackRate = rate;
-    try {
-      await Promise.race([video.play(), wait(1500).then(() => Promise.reject(new Error('play')))]);
-    } catch (err) {
-      video.pause();
+      v.pause();
       return fade(to, true);
     }
-    const ms = Math.max(300, ((b - a) / rate) * 1000);
-    // a foto sai logo de cima do vídeo (que começa no mesmo quadro dela; devagar, as duas apareceriam juntas
-    // com a câmera já andando) e o quadro desliza até o enquadramento do próximo ambiente durante o voo
-    stills.get(from).animate([{ opacity: 1 }, { opacity: 0 }], { duration: FADE_OUT, easing: 'ease-out', fill: 'forwards' })
-      .finished.then((an) => {
-        show(stills.get(from), false);
-        an.cancel();
-      }).catch(() => {});
-    const pan = frame.animate([{ transform: offset(from) }, { transform: offset(to) }], { duration: ms, easing: PAN, fill: 'forwards' });
-    await playTo(b, ms);
+    // a foto sai de cima do vídeo (que começa no mesmo quadro dela)
+    const fromStill = stills.get(from);
+    if (fromStill && fromStill.classList.contains('is-on')) {
+      fromStill.animate([{ opacity: 1 }, { opacity: 0 }], { duration: FADE_OUT, easing: 'ease-out', fill: 'forwards' })
+        .finished.then((an) => {
+          show(fromStill, false);
+          an.cancel();
+        }).catch(() => {});
+    }
+    // enquanto anda, o outro vídeo já fica pronto com a caminhada seguinte (para passar direto, sem parar)
+    const onward = ORDER[ORDER.indexOf(to) + dir];
+    const nr = onward && route(to, onward);
+    const other = players.find((p) => p !== v);
+    if (nr && other) prime(other, fileOf(nr)).catch(() => {});
+    await playTo(v, ((v.duration || 3) / (v.playbackRate || 1)) * 1000);
+    // rolou de novo no mesmo sentido: segue direto para o próximo cômodo, do mesmo quadro
+    if (queued === dir && onward) {
+      queued = 0;
+      here = to;
+      film.dataset.stop = to;
+      return go(onward, null, true);
+    }
     // chegou: o último quadro do vídeo é a foto do ambiente, que entra por cima, nítida
     const dest = stills.get(to);
     await decoded(dest);
+    stills.forEach((el, k) => k !== to && show(el, false));
     dest.classList.add('is-top');
     dest.animate([{ opacity: 0 }, { opacity: 1 }], { duration: FADE, easing: 'ease' });
     show(dest, true);
     await wait(FADE * 0.6);
-    place(to);
-    pan.cancel();
     arrive(to);
   }
 
   // Sem vídeo entre os dois: a foto do próximo entra por cima, chegando de um leve zoom
   async function fade(to, keepCopy) {
     if (busy && !keepCopy) return;
+    film.classList.remove('is-resting');
     busy = true;
     target = to;
     if (!keepCopy) leave();

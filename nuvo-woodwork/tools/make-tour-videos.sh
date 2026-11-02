@@ -14,12 +14,18 @@
 #   CROP_TALL=1  de um vídeo deitado, faz também a versão do celular recortando o meio em 9:16
 #                (provisório: o certo é gerar o vídeo em pé)
 #   CRF=18       mais nítido (e mais pesado); o padrão é 20
+#   FPS=60       quadros por segundo do arquivo (o padrão é 30). Para tocar liso, SPEED × quadros do vídeo de
+#                origem tem que dar exatamente FPS: os vídeos do Flow têm 24, então SPEED=2.5 FPS=60 (nenhum
+#                quadro repetido nem fundido; 30 a partir de 24 repete um quadro a cada quatro e dá tranco)
+#   GOP=60       um quadro-chave a cada GOP quadros (o padrão é 15)
 # Precisa do ffmpeg.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 CRF=${CRF:-20}
 SPEED=${SPEED:-1}
+FPS=${FPS:-30}
+GOP=${GOP:-15}
 OUT=assets/video
 mkdir -p "$OUT"
 
@@ -27,8 +33,8 @@ enc() { # origem filtros largura-máxima destino
   local pre=""
   [ -n "${END:-}" ] && pre="trim=end=$END,"
   ffmpeg -v error -y -i "$1" -an \
-    -vf "${pre}setpts=(PTS-STARTPTS)/$SPEED,fps=30,$2scale='min($3,iw)':-2:flags=lanczos,format=yuv420p" \
-    -c:v libx264 -preset slow -crf "$CRF" -profile:v high -g 15 -movflags +faststart "$4"
+    -vf "${pre}setpts=(PTS-STARTPTS)/$SPEED,fps=$FPS,$2scale='min($3,iw)':-2:flags=lanczos,format=yuv420p" \
+    -c:v libx264 -preset slow -crf "$CRF" -profile:v high -g "$GOP" -movflags +faststart "$4"
   echo "  $4 ($(du -k "$4" | cut -f1) KB, $(ffprobe -v error -show_entries format=duration -of csv=p=0 "$4" | cut -c1-4) s)"
 }
 
