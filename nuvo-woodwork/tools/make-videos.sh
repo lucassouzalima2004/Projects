@@ -24,6 +24,9 @@
 #   CRF=24       qualidade da versão larga (menor = mais nítido e mais pesado; 20 a 28 é o normal)
 #   CRF_TALL=20  qualidade da versão do celular (ela é bem ampliada na tela, então vai mais caprichada)
 #   WIDTH=1920   largura máxima (vídeo menor fica do tamanho dele)
+#   TALL_H=1280  altura máxima da versão própria para celular (-mobile; 1920 = vídeo 9:16 em 1080p)
+#   GOP=2        um quadro-chave a cada GOP quadros. 2 = o vídeo vai a qualquer ponto na hora; 6 = uns 35%
+#                mais leve (o decodificador do site anda de quadro-chave em quadro-chave do mesmo jeito)
 #
 # Precisa do ffmpeg (com libx264). O manifest.js é refeito no fim, então dá para apagar
 # os arquivos de um trecho em assets/video/ e rodar --manifest para tirar o vídeo do ar.
@@ -33,6 +36,8 @@ cd "$(dirname "$0")/.."
 CRF=${CRF:-24}
 CRF_TALL=${CRF_TALL:-20}
 WIDTH=${WIDTH:-1920}
+TALL_H=${TALL_H:-1280}
+GOP=${GOP:-2}
 FPS=24
 OUT=assets/video
 
@@ -42,7 +47,7 @@ ffmpeg -hide_banner -encoders 2>/dev/null | grep libx264 >/dev/null || { echo "E
 encode() { # entrada, filtro, saída, crf
   ffmpeg -loglevel error -y -i "$1" -an -vf "$2,fps=$FPS" \
     -c:v libx264 -preset slow -profile:v high -pix_fmt yuv420p -crf "$4" \
-    -g 2 -keyint_min 2 -sc_threshold 0 -bf 0 -movflags +faststart "$3"
+    -g "$GOP" -keyint_min "$GOP" -sc_threshold 0 -bf 0 -movflags +faststart "$3"
   echo "✓ $3: $(du -h "$3" | cut -f1)"
 }
 
@@ -54,7 +59,7 @@ convert_video() {
   name=$(basename "${src%.*}")
   id=${name#[0-9][0-9]-}
   if [[ $id == *-mobile ]]; then
-    encode "$src" "scale=-2:'min(1280,ih)':flags=lanczos,$SHARP_TALL" "$OUT/${id%-mobile}.tall.mp4" "$CRF_TALL"
+    encode "$src" "scale=-2:'min($TALL_H,ih)':flags=lanczos,$SHARP_TALL" "$OUT/${id%-mobile}.tall.mp4" "$CRF_TALL"
     return
   fi
   encode "$src" "scale='min($WIDTH,iw)':-2:flags=lanczos,$SHARP_WIDE" "$OUT/$id.mp4" "$CRF" # sem ampliar vídeo menor
@@ -110,6 +115,7 @@ write_manifest() {
     for f in "$OUT"/*.mp4; do
       [[ -f $f && $f != *.tall.mp4 ]] || continue
       id=$(basename "${f%.mp4}")
+      [ -f "$OUT/$id.tall.mp4" ] || continue # só os trechos do filme (os vídeos da visita, ?tour, não têm .tall)
       n=$(ffprobe -v error -select_streams v:0 -count_packets -show_entries stream=nb_read_packets -of csv=p=0 "$f")
       tall=""
       [ -f "$OUT/$id.tall.mp4" ] && tall=$(printf ',\n    "tall": %s' "$(track "$OUT/$id.tall.mp4")")

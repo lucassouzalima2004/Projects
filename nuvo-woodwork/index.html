@@ -431,11 +431,11 @@
   <script src="assets/js/content.js"></script>
   <script src="assets/video/manifest.js"></script>
   <script>
-    // O topo do site: a visita pela casa real (tour.js). Com ?scenes, as cenas com parallax (chapters.js);
-    // com ?video, o filme antigo em vídeo (film.js). ?tour continua valendo (é o padrão).
+    // O topo do site: o filme da casa real, preso ao scroll (film.js). Com ?tour, a visita que para em cada
+    // cômodo (tour.js); com ?scenes, as cenas com parallax (chapters.js). ?video continua valendo (é o padrão).
     window.NUVO_FILM_MODE = (function (q) {
       const has = (k) => new RegExp('(^|&)' + k + '(=|&|$)').test(q);
-      return has('scenes') ? 'chapters' : has('video') ? 'video' : 'tour';
+      return has('tour') ? 'tour' : has('scenes') ? 'chapters' : 'video';
     })(location.search.slice(1));
   </script>
   <script src="assets/js/vendor/lenis.min.js"></script>

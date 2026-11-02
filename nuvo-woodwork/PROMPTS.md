@@ -92,6 +92,11 @@ por vídeo. O primeiro e o último quadro são as fotos recortadas em `videos/fr
 | `kitchen-bath` | cozinha | banheiro | `KITCHEN 4` → `BATH` | `KITCHEN 10` → `BATH 3` |
 | `bath-suite` | banheiro | suíte | `BATH` → `BEDROOM 1` | `BATH 3` → `CLOSET 1` |
 
+Os mesmos 5 vídeos, em velocidade normal e emendados, formam o filme do topo do site (film.js; veja o README, em
+"O filme"). Lá qualquer defeito aparece, porque o scroll deixa a pessoa parar em qualquer quadro: entrada → sala no
+computador usa a 2ª versão do Flow (`videos/flow/foyer-living-b.mp4`), porque a 1ª tinha a coluna de ripas ficando
+transparente por quase 1 s.
+
 Prompt base (troque o começo e o fim; na versão em pé, comece com `Vertical 9:16 phone video.`):
 
 ```text

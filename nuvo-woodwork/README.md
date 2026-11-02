@@ -10,10 +10,13 @@ O site é em inglês (o público é americano).
 
 ## O que tem no site
 
-- **A visita** (o topo do site desde 02/11): a casa real da Nuvo, cômodo por cômodo. A câmera para em cada cômodo e
-  uma rolada toca um mini vídeo rápido até o próximo, com vídeos separados para o computador e o celular. Também tem
-  as etiquetas em cima das passagens, como no reel do @michonmotion que o Lucas mandou. Veja "A visita" mais abaixo.
-- **As cenas da casa** (o topo anterior, agora em `?scenes` no fim do endereço): cada ambiente ocupa a tela inteira
+- **O filme** (o topo do site): uma caminhada contínua pela casa real da Nuvo, presa ao scroll: rolando para baixo a
+  câmera anda pela entrada, a sala, o bar, a cozinha e o banheiro até a suíte; rolando para cima, volta. Os títulos de
+  cada cômodo sobem quando a câmera chega nele, e o fim é o convite para a consultoria. São 5 vídeos do Google Flow
+  emendados, em velocidade normal, com versões separadas para o computador e o celular. Veja "O filme" mais abaixo.
+- **A visita** (em `?tour` no fim do endereço): a mesma casa, mas a câmera para em cada cômodo e uma rolada toca um
+  mini vídeo rápido até o próximo, com etiquetas em cima das passagens. Veja "A visita" mais abaixo.
+- **As cenas da casa** (em `?scenes` no fim do endereço): cada ambiente ocupa a tela inteira
   (entrada, sala, cozinha, closet e a casa acesa) e uma pequena rolada já leva à próxima cena, numa passagem com
   parallax (`assets/js/chapters.js`):
   - a cena nova sobe por cima da anterior e a foto dela anda mais devagar que ela, com um leve zoom, como a câmera
@@ -27,8 +30,6 @@ O site é em inglês (o público é americano).
     passeia devagar de um lado para o outro da sala. No computador as camadas também acompanham o mouse.
   - Em cada ambiente flutua uma foto de um projeto real da Nuvo ("Real project"), no computador.
   - Com "reduzir movimento" ligado, as cenas só trocam com uma fusão rápida.
-  - O filme antigo em vídeo (o voo de drone pela casa) continua no ar em `?video` no fim do endereço; veja
-    "O filme em vídeo" mais abaixo.
 - **Índice de ambientes** com fotos de projetos reais. No computador, a foto acompanha o cursor; no celular, aparece
   ao lado. Cada linha volta para aquele ambiente nas cenas do topo (escritório e lavanderia, que não têm cena, levam
   ao formulário).
@@ -99,19 +100,31 @@ A foto em pé de cada cômodo tem que ser o último quadro do vídeo em pé que 
 Em `assets/js/content.js` → `visit`: `order` é a ordem da rolada, `moves` diz qual vídeo liga dois cômodos (com
 `reverse: true` quando existe a volta) e `stops` tem as fotos, os textos e as etiquetas (posição em fração da foto).
 
-## O filme em vídeo (`?video`)
+## O filme (o topo do site)
 
-O topo antigo, o voo de drone pela casa preso ao scroll, continua no ar com `?video` no fim do endereço
-(<https://nuvo-woodwork.lucassouzalima10.workers.dev/?video>). Tudo abaixo vale para ele.
+<https://nuvo-woodwork.lucassouzalima10.workers.dev> (`assets/js/film.js`; também em `?video`). Uma caminhada só pela
+casa real, presa ao scroll, feita de 5 trechos: entrada → sala (`living`), sala → bar (`bar`), bar → cozinha
+(`kitchen`), cozinha → banheiro (`bath`) e banheiro → suíte (`closet`; no computador o quarto, no celular o closet).
 
-**Situação:** os 4 vídeos e as 5 imagens já estão no site (14/10). O vídeo 4 (`04-finale`) veio com drones voando
-sobre a piscina entre 2 s e 7 s; no site ele está cortado (closet → fusão → casa acesa, 4,25 s). Para ter o trecho
-completo do quarto e da piscina, gere de novo o vídeo 4 com o prompt atual do PROMPTS.md e rode o script.
-O vídeo 3 (`03-closet`) tinha um corte seco da cozinha para a escada em 1,46 s; no site esse corte virou uma fusão
-rápida de 0,25 s (o vídeo ficou com 9,75 s). As imagens ficam em `assets/img/keys/`.
+**Situação (02/11):** os 5 vídeos são do Google Flow (Veo 3.1 Fast, primeiro e último quadro = as fotos dos dois
+cômodos, 8 s, baixados em 1080p), os mesmos da visita, em velocidade normal. Como cada vídeo começa na foto em que o
+anterior termina, as emendas quase não aparecem (a diferença medida é de 0 a 2 px no computador e até 1% no celular,
+e o site ainda funde 0,4 s em cada uma). Entrada → sala no computador é a 2ª versão que o Flow gerou: a 1ª tinha a
+coluna de ripas "derretendo" por quase 1 s; nesta, a passagem da escada para a sala tem uma fusão de uns 0,4 s (não
+existe caminho de verdade entre as duas fotos). Os originais ficam em `videos/flow/` e os nomes que o script lê
+(`videos/01-living.mp4`, `videos/01-living-mobile.mp4`...) são atalhos para eles.
 
-Os prompts das 5 imagens e dos 4 vídeos estão em **[PROMPTS.md](PROMPTS.md)**, com o passo a passo
-(Seedance 2.0, 10 s, 16:9, como no site de referência). Resumo do caminho de um vídeo até o site:
+Para refazer os vídeos do site com os mesmos ajustes de agora (1080p no computador e no celular, um quadro-chave a
+cada 6 quadros, uns 6 MB por trecho):
+
+```bash
+GOP=6 CRF=25 CRF_TALL=26 TALL_H=1920 tools/make-videos.sh
+```
+
+Os textos, as fotos de cada trecho e quanto cada cômodo fica parado estão em `assets/js/content.js` → `scenes`.
+
+O filme antigo (o voo de drone pela casa fictícia, com a marcenaria se montando) saiu do ar; está no histórico do
+git. Os prompts dele continuam no [PROMPTS.md](PROMPTS.md). Resumo do caminho de um vídeo até o site:
 
 1. Gerar o MP4 com o nome da tabela do PROMPTS.md, ex.: `02-kitchen.mp4`. Para emendar sem salto, o primeiro quadro
    de cada vídeo é o último quadro do anterior. Para tirar esse quadro:
@@ -123,12 +136,11 @@ Os prompts das 5 imagens e dos 4 vídeos estão em **[PROMPTS.md](PROMPTS.md)**,
 
 Detalhes:
 
-- Os vídeos saem em H.264, 24 quadros por segundo, com um quadro-chave a cada 2 quadros e um pouco mais de
-  nitidez. Dá uns 6 MB por trecho de 10 s no computador e 3,5 MB no celular. A versão do celular vai mais
-  caprichada (`CRF_TALL=20`) porque na tela em pé ela é ampliada umas 3,5 vezes.
-- **Qualidade:** os vídeos atuais são 720p. No celular em pé aparece só o meio do quadro (uns 330 pixels de
-  largura), então a nitidez depende muito da resolução de origem. No Flow, baixe a versão **1080p (Upscaled)** de
-  cada vídeo e rode o script de novo: o celular passa a ter 810 × 1080 de imagem em vez de 540 × 720.
+- Os vídeos saem em H.264, 24 quadros por segundo, com um pouco mais de nitidez. Com o padrão (`GOP=2`, um
+  quadro-chave a cada 2 quadros) qualquer ponto do vídeo aparece na hora; `GOP=6` deixa uns 35% mais leve e o
+  decodificador do site continua liso (para a frente ele decodifica em sequência).
+- **Qualidade:** baixe sempre a versão **1080p (Upscaled)** do Flow. Com um vídeo vertical próprio
+  (`-mobile.mp4`), `TALL_H=1920` mantém os 1080 × 1920 dele no celular.
 - O `manifest.js` guarda, de cada vídeo, quanto a imagem muda de um quadro para o outro (é assim que o site dá mais
   scroll às partes com movimento) e onde cada quadro está dentro do arquivo (é assim que o navegador decodifica os
   quadros direto). Se trocar um vídeo, rode o script de novo.

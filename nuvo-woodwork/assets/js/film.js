@@ -23,7 +23,7 @@
   const C = window.NUVO;
   const film = document.querySelector('[data-film]');
   if (!C || !Array.isArray(C.scenes) || !C.scenes.length || !film) return;
-  if (window.NUVO_FILM_MODE !== 'video') return; // o topo do site agora são as cenas (chapters.js)
+  if (window.NUVO_FILM_MODE !== 'video') return; // ?tour é a visita (tour.js) e ?scenes as cenas (chapters.js)
 
   const VIDEOS = window.NUVO_VIDEOS || {};
   const D = window.NUVO_DECODER; // film-decoder.js (só existe se o navegador tiver WebCodecs)
@@ -156,7 +156,9 @@
     const layer = document.createElement('div');
     layer.className = 'film__scene';
     const pos = s.focus ? s.focus[0] * 100 + '% ' + s.focus[1] * 100 + '%' : '';
-    s.stills = (s.stills || []).slice(0, 2).map((src) => {
+    // No celular em pé, as fotos em pé do trecho (tall), se houver
+    const upright = window.innerWidth < window.innerHeight * 0.9 && Array.isArray(s.tall) && s.tall.length;
+    s.stills = ((upright ? s.tall : s.stills) || []).slice(0, 2).map((src) => {
       const img = document.createElement('img');
       img.className = 'film__still';
       img.alt = '';
@@ -933,7 +935,16 @@
     goTo,
     goToScene(id) {
       const s = scenes.find((x) => x.id === id);
-      if (s) goTo(s.index);
+      if (s) {
+        goTo(s.index);
+        return;
+      }
+      // O cômodo de onde um trecho sai (from, a entrada): o começo do trecho
+      const f = scenes.find((x) => x.from === id);
+      if (!f) return;
+      const y = Math.round(metrics.top + (f.start / total) * metrics.dist);
+      if (window.NUVO_SCROLL_TO) window.NUVO_SCROLL_TO(y);
+      else window.scrollTo({ top: y, behavior: reduce.matches ? 'auto' : 'smooth' });
     },
     // Posição da página em que o trecho chega a t segundos do vídeo (para links e testes)
     scrollFor(id, t) {

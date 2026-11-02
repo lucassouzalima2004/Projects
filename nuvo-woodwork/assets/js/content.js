@@ -28,12 +28,14 @@ window.NUVO = {
   },
 
   /* ---------------------------------------------------------------------------
-     4. TRECHOS DO FILME EM VÍDEO (a versão antiga, em ?video)
+     4. O FILME (o topo do site: film.js)
      -------------------------------------------------------------------------
-     Um voo só, da porta da casa até a casa inteira acesa, feito de 4 vídeos
-     encadeados (o último quadro de um é o primeiro do próximo; veja PROMPTS.md).
-     Cada trecho usa o vídeo de mesmo id: videos/02-kitchen.mp4 →
-     tools/make-videos.sh → assets/video/kitchen.mp4.
+     Uma caminhada só pela casa real da Nuvo (as fotos do Guilherme), da entrada
+     até a suíte, feita de 5 vídeos do Google Flow encadeados: cada vídeo começa
+     na foto de um cômodo e termina na do próximo, então o último quadro de um é
+     o primeiro do seguinte (veja PROMPTS.md). Cada trecho usa o vídeo de mesmo
+     id: videos/02-bar.mp4 (e 02-bar-mobile.mp4, a versão em pé) →
+     tools/make-videos.sh → assets/video/bar.mp4 e bar.tall.mp4.
 
      pace ......... velocidade do filme: quanto scroll (em % da altura da tela)
                     vale 1 segundo de vídeo, em média. Maior = mais lento.
@@ -45,6 +47,9 @@ window.NUVO = {
      hold ......... quanto o último quadro (o ambiente pronto) fica parado no fim
      stills ....... o 1º e o último quadro do vídeo, em assets/img/. Aparecem
                     enquanto o vídeo carrega (e no lugar dele, se não carregar)
+     tall ......... as mesmas duas fotos em pé (9:16), para o celular em pé
+     from ......... opcional: o cômodo de onde o trecho sai; o link do índice de
+                    ambientes para esse cômodo leva ao começo do trecho
      beats ........ os títulos que sobem e somem com o scroll:
                     time: [entra, sai] em segundos do vídeo. Negativo = antes do
                     vídeo andar (durante o lead); sem o "sai" = até o fim do trecho
@@ -129,52 +134,93 @@ window.NUVO = {
 
   scenes: [
     {
-      id: 'living', // 01-living.mp4: da porta fechada até a sala pronta
-      label: 'Living',
-      lead: 0.3,
-      hold: 0.6,
-      stills: ['keys/door.webp', 'keys/living.webp'],
+      id: 'living', // 01-living.mp4: da entrada, passando pela escada flutuante, até a sala
+      from: 'foyer', // o cômodo de onde o trecho sai (o índice de ambientes leva ao começo dele)
+      label: 'Living room',
+      lead: 0.8,
+      hold: 1.2,
+      stills: ['scenes/real-foyer.webp', 'scenes/real-living.webp'],
+      tall: ['scenes/real-foyer-tall.webp', 'scenes/real-living-tall.webp'],
       beats: [
         {
-          time: [-0.3, 0.9],
+          time: [-0.8, 1.0],
           hero: true,
           eyebrow: 'NUVO Woodwork · South Florida',
           title: 'Where wood\nbecomes *art.*',
-          text: 'Custom kitchens, closets and millwork for luxury homes, designed in 3D and finished by hand.',
+          text: 'A real NUVO home: the floating walnut stair, the slat wall and every cabinet you are about to see came out of our shop.',
           cue: 'Scroll to come in',
         },
-        { time: [1.3, 3.5], eyebrow: 'Foyers & millwork', title: 'First\nimpressions\nare built.' },
-        { time: [5.6], eyebrow: 'Living rooms & media walls', title: 'Built around\nthe way\nyou live.' },
+        { time: [1.6, 4.0], eyebrow: 'Foyers & stairs', title: 'First\nimpressions\nare built.' },
+        {
+          time: [6.0],
+          eyebrow: 'Living rooms & media walls',
+          title: 'Built around\nthe way\nyou live.',
+          text: 'Walnut niches with hidden lighting, a stone-clad TV wall and a floating console, built to measure.',
+        },
       ],
     },
     {
-      id: 'kitchen', // 02-kitchen.mp4: da sala até a cozinha pronta
-      label: 'Kitchen',
-      hold: 0.6,
-      stills: ['keys/living.webp', 'keys/kitchen.webp'],
-      beats: [{ time: [4.2], eyebrow: 'Kitchens', title: 'Cut on CNC.\nFinished\nby hand.' }],
-    },
-    {
-      id: 'closet', // 03-closet.mp4: da cozinha, escada acima, até o closet pronto
-      label: 'Closet',
-      hold: 0.6,
-      stills: ['keys/kitchen.webp', 'keys/closet.webp'],
-      beats: [{ time: [6.1], eyebrow: 'Closets', title: 'A room made\nfor getting\nready.' }],
-    },
-    {
-      id: 'finale', // 04-finale.mp4: do closet até a casa inteira acesa
-      label: 'Your home',
-      hold: 3.2,
-      stills: ['keys/closet.webp', 'keys/house.webp'],
+      id: 'bar', // 02-bar.mp4: da sala até o bar de ágata
+      label: 'Bar',
+      hold: 1.2,
+      stills: ['scenes/real-living.webp', 'scenes/real-bar.webp'],
+      tall: ['scenes/real-living-tall.webp', 'scenes/real-bar-tall.webp'],
       beats: [
-        { time: [1.8, 4.9], eyebrow: 'One house, one workshop', title: 'Every room,\none *signature.*' },
         {
-          time: [5.2],
-          align: 'center',
+          time: [6.0],
+          eyebrow: 'Bars & entertaining',
+          title: 'The room\neveryone\n*ends up in.*',
+          text: 'A backlit agate wall framed in walnut, glass shelving and a slatted walnut bar front.',
+        },
+      ],
+    },
+    {
+      id: 'kitchen', // 03-kitchen.mp4: do bar até a cozinha
+      label: 'Kitchen',
+      hold: 1.2,
+      stills: ['scenes/real-bar.webp', 'scenes/real-kitchen.webp'],
+      tall: ['scenes/real-bar-tall.webp', 'scenes/real-kitchen-tall.webp'],
+      beats: [
+        {
+          time: [6.0],
+          eyebrow: 'Kitchens',
+          title: 'Cut on CNC.\nFinished\nby hand.',
+          text: 'Walnut islands, black glass tall cabinets and lit floating shelves, all from the same workshop.',
+        },
+      ],
+    },
+    {
+      id: 'bath', // 04-bath.mp4: da cozinha, pelo corredor, até o banheiro
+      label: 'Primary bath',
+      hold: 1.2,
+      stills: ['scenes/real-kitchen.webp', 'scenes/real-bath.webp'],
+      tall: ['scenes/real-kitchen-tall.webp', 'scenes/real-bath-tall.webp'],
+      beats: [
+        {
+          time: [6.0],
+          eyebrow: 'Bathrooms',
+          title: 'Quiet luxury,\n*lit from below.*',
+          text: 'Floating walnut vanities with matte black fronts and a warm glow along the floor.',
+        },
+      ],
+    },
+    {
+      // 05-closet.mp4: do banheiro até a suíte (no computador o quarto, no celular o closet).
+      // O id é "closet" para a linha Closets do índice de ambientes chegar aqui.
+      id: 'closet',
+      label: 'Primary suite',
+      hold: 3.0,
+      stills: ['scenes/real-bath.webp', 'scenes/real-suite.webp'],
+      tall: ['scenes/real-bath-tall.webp', 'scenes/real-suite-tall.webp'],
+      beats: [
+        { time: [1.6, 4.4], eyebrow: 'One house, one workshop', title: 'Every room,\none *signature.*' },
+        {
+          time: [5.8],
           eyebrow: 'Free 3D design consultation',
           title: 'Your home\nis *next.*',
           text: 'Tell us about the room. We visit, measure and show you the design in 3D before anything is built.',
           actions: true,
+          cue: 'Keep scrolling to see our work',
         },
       ],
     },
