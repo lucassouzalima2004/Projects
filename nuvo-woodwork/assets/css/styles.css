@@ -950,6 +950,26 @@ body.menu-open { overflow: hidden; }
 }
 .film.is-moving .tour__shade { opacity: .35; }
 
+/* Rede lenta: enquanto o vídeo da caminhada baixa, uma linha dourada fina vai enchendo embaixo (tour.js) */
+.tour__load {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  height: 3px;
+  background: var(--gold);
+  transform: scaleX(var(--load, 0));
+  transform-origin: 0 50%;
+  opacity: 0;
+  pointer-events: none;
+  transition: transform .15s linear, opacity .3s var(--ease);
+}
+.film.is-loading .tour__load {
+  opacity: 1;
+  transition-delay: 0s, .2s; /* baixou rápido: nem aparece */
+}
+
 /* "Voltar", no canto de cima, como no reel */
 .tour__back {
   position: absolute;

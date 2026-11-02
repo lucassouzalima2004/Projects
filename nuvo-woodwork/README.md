@@ -77,8 +77,20 @@ o resto do site; de volta ao topo, rolar para cima volta pelos cômodos.
 - **Computador e celular são separados:** o computador usa os vídeos e as fotos deitados (16:9) e o celular em pé usa
   as versões em pé (9:16): `assets/video/<caminho>-tall.mp4` e `assets/img/scenes/<cômodo>-tall.webp`.
 - O vídeo toca normal, não preso ao scroll, então é sempre liso. Enquanto a pessoa está num cômodo, os vídeos da
-  próxima rolada (para baixo e para cima) já vão baixando; cada um baixa inteiro e toca da memória, porque o
-  Cloudflare não entrega pedaços de vídeo e o iPhone precisa disso para tocar direto do endereço.
+  próxima rolada já vão baixando, um por vez, do mais provável para o menos: o da rolada para baixo, o da rolada para
+  cima e o da caminhada seguinte (para a câmera passar direto pelo próximo cômodo). Cada um baixa inteiro e toca da
+  memória, porque o Cloudflare não entrega pedaços de vídeo e o iPhone precisa disso para tocar direto do endereço.
+- **Internet lenta:** se a pessoa rola antes de o vídeo terminar de baixar, a câmera espera, com uma linha dourada
+  fina enchendo embaixo, e anda assim que ele chega. Só se o download parar de andar (4 s) ou passar de 15 s, a troca
+  vira fusão e o vídeo fica para a próxima vez. Testado com a rede a 8 Mbps: todas as caminhadas com vídeo.
+- **iPhone com economia de bateria:** nesse modo o iPhone não deixa um vídeo dar play sozinho, só dentro de um toque.
+  Então, no primeiro toque na tela, os dois vídeos dão play e pause na mesma hora, escondidos embaixo da foto, e daí
+  em diante tocam sem precisar de toque (rolada, passada direta, volta). Enquanto isso não aconteceu, o arrasto do dedo
+  começa a caminhada quando o dedo solta, que é o toque que libera. Testado num Chrome com a mesma regra
+  (`--autoplay-policy=user-gesture-required`): a versão anterior caía na fusão, esta toca vídeo em todas.
+- `?debug` no fim do endereço (ex.: `https://nuvo-woodwork.lucassouzalima10.workers.dev/?debug`) mostra embaixo um
+  quadrinho com o estado dos dois vídeos (baixado, pronto, liberado), as últimas caminhadas (vídeo ou fusão, e por
+  quê) e o navegador: um print dele no celular de alguém diz por que o vídeo não tocou lá.
 - Sem decodificador de H.264, com "reduzir movimento" ou com economia de dados, os cômodos trocam com fusão.
 - **A casa é real:** um projeto da Nuvo que o Guilherme mandou em 31/10 (`EDITADAS.rar`, 34 fotos). A visita passa por
   entrada → sala → bar → cozinha → banheiro → suíte (no computador o quarto, no celular o closet), e termina no convite

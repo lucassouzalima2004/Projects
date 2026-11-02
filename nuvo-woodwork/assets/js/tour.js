@@ -31,7 +31,8 @@
   const ORDER = (V.order || V.stops.map((s) => s.id)).filter((id) => STOPS.has(id));
   const FADE = 420; // fusão do último quadro do vídeo para a foto, na chegada (ms)
   const FADE_OUT = 120; // a foto saindo de cima do vídeo, na partida (ms)
-  const LOAD_WAIT = 1500; // quanto a rolada espera o vídeo terminar de baixar antes de trocar com fusão (ms)
+  const STALL = 4000; // rede lenta: a rolada espera o vídeo baixar enquanto ele vem chegando; parado isso, vira fusão (ms)
+  const LOAD_MAX = 15000; // e espera no máximo isso (ms)
   const QUIET = 200; // ms sem rolar que separam um gesto do outro
   const NUDGE = 8; // px de rolagem que já contam como "quero o próximo cômodo"
   const SWIPE = 30; // px que o dedo anda para trocar de cômodo
@@ -68,6 +69,7 @@
       '</div>').join('') +
     '</div>' +
     '<div class="tour__shade" aria-hidden="true"></div>' +
+    '<div class="tour__load" aria-hidden="true"></div>' +
     '<button class="tour__back" type="button" hidden><svg aria-hidden="true"><use href="#i-arrow"/></svg><span></span></button>' +
     '<div class="tour__copy" aria-live="polite"></div>';
 
@@ -156,15 +158,31 @@
   // O Cloudflare não entrega pedaços de vídeo (e o iPhone precisa disso para tocar direto do
   // endereço): cada vídeo baixa inteiro e toca da memória.
   const files = new Map();
+  const progress = new Map(); // quanto de cada vídeo já chegou, { bytes, total }: para a barrinha
   function load(name) {
     if (!files.has(name)) {
       const p = fetch('assets/video/' + name + '.mp4')
         .then((r) => {
           if (!r.ok) throw new Error('HTTP ' + r.status);
-          return r.blob();
+          const total = +r.headers.get('content-length') || 0;
+          if (!total || !r.body || !r.body.getReader) return r.blob();
+          const reader = r.body.getReader();
+          const parts = [];
+          const g = { bytes: 0, total };
+          progress.set(name, g);
+          const pump = () => reader.read().then(({ done, value }) => {
+            if (done) return new Blob(parts, { type: 'video/mp4' });
+            parts.push(value);
+            g.bytes += value.byteLength;
+            return pump();
+          });
+          return pump();
         })
         .then((b) => URL.createObjectURL(b));
-      p.catch(() => files.delete(name));
+      p.catch(() => {
+        files.delete(name);
+        progress.delete(name);
+      });
       files.set(name, p);
     }
     return files.get(name);
@@ -231,27 +249,79 @@
   // próximo cômodo, e o outro com a volta. A rolada só dá play: a câmera sai na hora, sem esperar baixar nem
   // procurar o quadro. Os vídeos tocam no ritmo deles (60 quadros por segundo, nenhum repetido nem fundido).
   function prime(v, name) {
-    if (v.dataset.name === name && v.dataset.ready === '1') return Promise.resolve(v);
+    if (v.dataset.name === name && v.job) return v.job; // já pronto, ou se aprontando
     const token = (v.token = (v.token || 0) + 1);
     v.dataset.name = name;
     v.dataset.ready = '';
-    return load(name)
+    const job = load(name)
       .then((url) => cue(v, url, 0))
       .then(() => {
         if (v.token !== token) throw new Error('trocado');
         v.dataset.ready = '1';
         return v;
       });
+    v.job = job;
+    job.catch(() => v.job === job && (v.job = null));
+    return job;
   }
-  // Prepara os arquivos pedidos nos vídeos, reaproveitando o que já tem o arquivo certo
-  function primeAll(names) {
-    const free = players.filter((v) => !names.includes(v.dataset.name));
-    names.forEach((n) => {
-      const v = players.find((p) => p.dataset.name === n) || free.shift();
-      if (v) prime(v, n).catch(() => {});
+  // Deixa o arquivo pronto num dos vídeos: no que já tem esse arquivo, senão num que não tenha nenhum dos de keep
+  function primeIn(name, keep) {
+    const v = players.find((p) => p.dataset.name === name) || players.find((p) => !keep.includes(p.dataset.name));
+    return v ? prime(v, name) : Promise.reject(new Error('sem vídeo livre'));
+  }
+  // Espera o vídeo ficar pronto (job) enquanto o arquivo vem chegando, enchendo a barrinha embaixo; se ele
+  // parar de chegar por STALL ms, ou passar de LOAD_MAX, desiste
+  function waitFor(name, job) {
+    return new Promise((resolve, reject) => {
+      const t0 = performance.now();
+      let seen = t0;
+      let bytes = -1;
+      let timer = 0;
+      const end = (err, v) => {
+        clearInterval(timer);
+        if (err) reject(err);
+        else resolve(v);
+      };
+      const tick = () => {
+        const g = progress.get(name) || { bytes: 0, total: 0 };
+        const now = performance.now();
+        if (g.bytes !== bytes) {
+          bytes = g.bytes;
+          seen = now;
+        }
+        film.style.setProperty('--load', g.total ? Math.min(1, g.bytes / g.total).toFixed(3) : '0');
+        if (now - seen > STALL) end(new Error('rede parada'));
+        else if (now - t0 > LOAD_MAX) end(new Error('rede lenta'));
+      };
+      timer = setInterval(tick, 100);
+      tick();
+      job.then((v) => end(null, v), end);
     });
   }
   const live = (v) => players.forEach((p) => p.classList.toggle('is-live', p === v)); // o vídeo na tela
+  let playing = null; // o vídeo que está andando agora
+
+  // No iPhone com economia de bateria, um vídeo só dá play sozinho depois de ter dado play uma vez dentro de
+  // um toque, clique ou tecla. Em cada um desses, os vídeos que ainda não passaram por isso dão play e pause
+  // na mesma hora (escondidos embaixo da foto, sem andar nenhum quadro); daí em diante a rolada e a
+  // caminhada seguinte tocam neles sem precisar de toque.
+  const freed = () => players.every((v) => v.unlocked);
+  function unlock() {
+    players.forEach((v) => {
+      if (v.unlocked || v === playing) return;
+      let p = null;
+      try {
+        p = v.play();
+        v.pause();
+      } catch (e) {
+        return;
+      }
+      // parado pelo pause (AbortError) quer dizer que o play foi aceito; recusado é NotAllowedError
+      if (p && p.then) p.then(() => (v.unlocked = true), (e) => e && e.name === 'AbortError' && (v.unlocked = true));
+    });
+  }
+  ['touchstart', 'touchend', 'pointerdown', 'pointerup', 'mousedown', 'click', 'keydown'].forEach((type) =>
+    window.addEventListener(type, unlock, { capture: true, passive: true }));
 
   // Toca o vídeo v até o fim e para no último quadro. Se ele engasgar no caminho, para mesmo assim pouco
   // depois do tempo que levaria.
@@ -278,6 +348,13 @@
       raf = requestAnimationFrame(check);
     });
   }
+
+  // As últimas caminhadas (vídeo ou fusão, e por quê): em NUVO_FILM.info() e no quadrinho do ?debug
+  const log = [];
+  const note = (name, what) => {
+    log.unshift(name + ': ' + what);
+    log.length = Math.min(log.length, 6);
+  };
 
   /* ------------------------------------------------------------ estado */
   let here = null;
@@ -356,10 +433,18 @@
     });
     if (canPlay && !saveData && !reduce.matches) {
       const want = next.map((to) => route(id, to)).filter(Boolean).map(fileOf);
-      // os dois da rolada (para baixo e para cima) ficam prontos nos dois vídeos, parados no primeiro quadro
-      primeAll(want.slice(0, 2));
-      // os das etiquetas só baixam (no computador; no celular quando o dedo encosta na etiqueta)
-      if (fine.matches) want.slice(2).reduce((p, name) => p.then(() => load(name).catch(() => {})), Promise.resolve());
+      const two = want.slice(0, 2);
+      const ahead = !first && ORDER[k + 2] && route(ORDER[k + 1], ORDER[k + 2]);
+      // Os dois da rolada (para baixo e para cima) ficam prontos nos dois vídeos, parados no primeiro quadro.
+      // Baixa um arquivo por vez, do mais provável para o menos (no celular a rede não se divide): o da
+      // rolada para baixo, o da rolada para cima, o da caminhada seguinte (para a câmera passar direto pelo
+      // próximo cômodo; não na primeira parada, que já baixa bastante) e, no computador, os das etiquetas
+      // (no celular eles baixam quando o dedo encosta na etiqueta). Só com a câmera parada aqui: andando,
+      // a caminhada cuida dos vídeos.
+      const jobs = two.map((name) => () => primeIn(name, two))
+        .concat([ahead && fileOf(ahead)].concat(fine.matches ? want.slice(2) : []).filter(Boolean).map((name) => () => load(name)));
+      // (começa quando a foto já cobriu o último quadro: trocar o arquivo de um vídeo apaga a imagem dele)
+      jobs.reduce((p, job) => p.then(() => here === id && !busy && job()).catch(() => {}), wait(first ? 0 : FADE));
     }
     if (!reduce.matches) film.classList.add('is-resting'); // parada, a imagem respira (styles.css)
     if (queued) {
@@ -381,28 +466,39 @@
     // o vídeo já pronto no primeiro quadro (o normal); se não houver, prepara agora num vídeo livre
     let v = players.find((p) => p.dataset.name === name && p.dataset.ready === '1');
     if (!v) {
+      // ainda baixando (rede lenta): espera, com a barrinha embaixo enchendo; se o vídeo parar de chegar, a
+      // troca vira fusão e o vídeo fica para a próxima vez
       if (button) button.classList.add('is-loading');
+      film.classList.add('is-loading');
       try {
-        const spare = players.find((p) => !p.classList.contains('is-live')) || players[0];
-        // rede lenta: a troca não espera; vira fusão e o vídeo fica para a próxima vez
-        v = await Promise.race([prime(spare, name), wait(LOAD_WAIT + 1000).then(() => Promise.reject(new Error('lento')))]);
+        const spare = players.find((p) => p.dataset.name === name) || players.find((p) => !p.classList.contains('is-live')) || players[0];
+        v = await waitFor(name, prime(spare, name));
       } catch (err) {
-        if (button) button.classList.remove('is-loading');
+        note(name, 'fusão (' + err.message + ')');
         busy = false;
         return fade(to, chain);
+      } finally {
+        if (button) button.classList.remove('is-loading');
+        film.classList.remove('is-loading');
       }
-      if (button) button.classList.remove('is-loading');
     }
     const from = here;
     const dir = ORDER.indexOf(to) >= ORDER.indexOf(from) ? 1 : -1;
     if (!chain) leave();
     film.classList.remove('is-resting');
     v.dataset.ready = ''; // este vai tocar; quando acabar, fica no último quadro
+    v.job = null;
+    playing = v;
     live(v);
     try {
-      await Promise.race([v.play(), wait(1500).then(() => Promise.reject(new Error('play')))]);
+      await Promise.race([v.play(), wait(1500).then(() => Promise.reject(new Error('sem resposta')))]);
+      v.unlocked = true;
+      note(name, 'vídeo');
     } catch (err) {
       v.pause();
+      playing = null;
+      if (err && err.name === 'NotAllowedError') v.unlocked = false; // o próximo toque destrava de novo
+      note(name, 'fusão (play: ' + (err && err.name !== 'Error' ? err.name : err && err.message) + ')');
       return fade(to, true);
     }
     // a foto sai de cima do vídeo (que começa no mesmo quadro dela)
@@ -420,6 +516,7 @@
     const other = players.find((p) => p !== v);
     if (nr && other) prime(other, fileOf(nr)).catch(() => {});
     await playTo(v, ((v.duration || 3) / (v.playbackRate || 1)) * 1000);
+    playing = null;
     // rolou de novo no mesmo sentido: segue direto para o próximo cômodo, do mesmo quadro
     if (queued === dir && onward) {
       queued = 0;
@@ -535,7 +632,9 @@
     step(dir);
   }, { passive: false, capture: true });
 
-  // Dedo: troca assim que o dedo anda um pouco. No último cômodo para baixo, o dedo rola a página.
+  // Dedo: troca assim que o dedo anda um pouco. Se o iPhone ainda não liberou os vídeos (economia de
+  // bateria), a caminhada começa quando o dedo solta, que é o toque que libera. No último cômodo para
+  // baixo, o dedo rola a página.
   let touch = null;
   function freeTouch() {
     film.classList.toggle('is-free', at() === last || !atTop());
@@ -556,9 +655,14 @@
     if (touch.done || Math.abs(dy) < SWIPE || Math.abs(dy) < Math.abs(dx) * 1.2 || !atTop()) return;
     if (dir > 0 && at() === last) return; // a página rola sozinha
     touch.done = true;
-    step(dir);
+    if (freed()) step(dir);
+    else touch.dir = dir;
   }, { passive: false });
-  film.addEventListener('touchend', () => (touch = null), { passive: true });
+  film.addEventListener('touchend', () => {
+    const t = touch;
+    touch = null;
+    if (t && t.dir) step(t.dir); // (o unlock deste toque já rodou: escuta a janela antes)
+  }, { passive: true });
   film.addEventListener('touchcancel', () => (touch = null), { passive: true });
 
   window.addEventListener('keydown', (e) => {
@@ -612,6 +716,38 @@
   window.NUVO_FILM = {
     goTo: (i) => V.stops[i] && goToScene(V.stops[i].id),
     goToScene,
-    info: () => ({ mode: 'tour', stop: here, busy, video: video.dataset.src ? video.currentTime : null }),
+    info: () => ({
+      mode: 'tour',
+      stop: here,
+      busy,
+      video: video.dataset.src ? video.currentTime : null,
+      players: players.map((v) => ({
+        name: v.dataset.name || null,
+        ready: v.dataset.ready === '1',
+        unlocked: !!v.unlocked,
+        live: v.classList.contains('is-live'),
+      })),
+      log: log.slice(),
+    }),
   };
+
+  // ?debug: um quadrinho com o estado dos vídeos, para descobrir no celular de alguém por que não tocou
+  if (/[?&]debug\b/.test(location.search)) {
+    const pre = document.createElement('pre');
+    pre.style.cssText = 'position:fixed;left:8px;right:8px;bottom:8px;z-index:9999;margin:0;padding:8px 10px;' +
+      'font:11px/1.4 ui-monospace,monospace;color:#fff;background:rgba(0,0,0,.75);border-radius:8px;' +
+      'pointer-events:none;white-space:pre-wrap;word-break:break-all';
+    document.body.appendChild(pre);
+    setInterval(() => {
+      const i = window.NUVO_FILM.info();
+      pre.textContent = [
+        'parada: ' + i.stop + (i.busy ? ' (andando)' : ''),
+        ...i.players.map((p, n) => 'vídeo ' + (n + 1) + ': ' + (p.name || '-') + (p.ready ? ', pronto' : '') +
+          (p.unlocked ? ', liberado' : ', travado') + (p.live ? ', na tela' : '')),
+        ...Array.from(progress, ([n, g]) => n + ': ' + Math.round((100 * g.bytes) / g.total) + '%'),
+        ...i.log,
+        navigator.userAgent,
+      ].join('\n');
+    }, 500);
+  }
 })();
