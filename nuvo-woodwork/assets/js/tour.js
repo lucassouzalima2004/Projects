@@ -349,7 +349,7 @@
     });
   }
 
-  // As últimas caminhadas (vídeo ou fusão, e por quê): em NUVO_FILM.info() e no quadrinho do ?debug
+  // As últimas caminhadas (vídeo ou fusão, e por quê), em NUVO_FILM.info()
   const log = [];
   const note = (name, what) => {
     log.unshift(name + ': ' + what);
@@ -730,24 +730,4 @@
       log: log.slice(),
     }),
   };
-
-  // ?debug: um quadrinho com o estado dos vídeos, para descobrir no celular de alguém por que não tocou
-  if (/[?&]debug\b/.test(location.search)) {
-    const pre = document.createElement('pre');
-    pre.style.cssText = 'position:fixed;left:8px;right:8px;bottom:8px;z-index:9999;margin:0;padding:8px 10px;' +
-      'font:11px/1.4 ui-monospace,monospace;color:#fff;background:rgba(0,0,0,.75);border-radius:8px;' +
-      'pointer-events:none;white-space:pre-wrap;word-break:break-all';
-    document.body.appendChild(pre);
-    setInterval(() => {
-      const i = window.NUVO_FILM.info();
-      pre.textContent = [
-        'parada: ' + i.stop + (i.busy ? ' (andando)' : ''),
-        ...i.players.map((p, n) => 'vídeo ' + (n + 1) + ': ' + (p.name || '-') + (p.ready ? ', pronto' : '') +
-          (p.unlocked ? ', liberado' : ', travado') + (p.live ? ', na tela' : '')),
-        ...Array.from(progress, ([n, g]) => n + ': ' + Math.round((100 * g.bytes) / g.total) + '%'),
-        ...i.log,
-        navigator.userAgent,
-      ].join('\n');
-    }, 500);
-  }
 })();

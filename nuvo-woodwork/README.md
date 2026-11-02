@@ -88,9 +88,6 @@ o resto do site; de volta ao topo, rolar para cima volta pelos cômodos.
   em diante tocam sem precisar de toque (rolada, passada direta, volta). Enquanto isso não aconteceu, o arrasto do dedo
   começa a caminhada quando o dedo solta, que é o toque que libera. Testado num Chrome com a mesma regra
   (`--autoplay-policy=user-gesture-required`): a versão anterior caía na fusão, esta toca vídeo em todas.
-- `?debug` no fim do endereço (ex.: `https://nuvo-woodwork.lucassouzalima10.workers.dev/?debug`) mostra embaixo um
-  quadrinho com o estado dos dois vídeos (baixado, pronto, liberado), as últimas caminhadas (vídeo ou fusão, e por
-  quê) e o navegador: um print dele no celular de alguém diz por que o vídeo não tocou lá.
 - Sem decodificador de H.264, com "reduzir movimento" ou com economia de dados, os cômodos trocam com fusão.
 - **A casa é real:** um projeto da Nuvo que o Guilherme mandou em 31/10 (`EDITADAS.rar`, 34 fotos). A visita passa por
   entrada → sala → bar → cozinha → banheiro → suíte (no computador o quarto, no celular o closet), e termina no convite
