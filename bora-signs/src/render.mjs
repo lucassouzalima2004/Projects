@@ -1,57 +1,89 @@
-// HTML for every page. build.mjs calls these and writes the files.
+// HTML for every page, built from one content document (see defaults.mjs).
+// The Worker calls render(content, path, ctx) for each request; the panel calls it for the live preview.
 
-import site from './site.mjs';
 import images from './images.mjs';
-import { mark, word } from './logo.mjs';
+import { mark as markData, word } from './logo.mjs';
 import { van } from './van.mjs';
-import {
-  menu, groups, services, bySlug, featured, process, reasons, testimonials, homeFaq, finishes,
-} from './content.mjs';
+import { sprite, googleG } from './icons.mjs';
+import { esc, mark, unmark, sanitize, plain, safeUrl } from './text.mjs';
 
-export const esc = (s = '') =>
-  String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+export { esc };
+
+// The document and request being rendered. Rendering is synchronous, so module state is safe in a Worker.
+let c;
+let site;
+let ctx;
+let bySlug;
+let visible;
+
 const href = (slug) => (slug ? `/${slug}` : '/');
 const abs = (path) => site.url + path;
-const tel = `tel:${site.phoneIntl}`;
-const mailto = `mailto:${site.email}`;
 const pad = (n) => String(n).padStart(2, '0');
-const money = (n) => '$' + n.toLocaleString('en-AU');
+const money = (n) => '$' + Number(n).toLocaleString('en-AU');
+const tel = () => `tel:${site.phoneIntl}`;
+const mailto = () => `mailto:${site.email}`;
+const svc = (slug) => (visible.has(slug) ? bySlug[slug] : null);
+const link = (u) => esc(safeUrl(u) || '/');
+
+/* ---------- images ---------- */
+
+// Every image field holds one of: a photo name from images.mjs, an uploaded photo "m:<id>:<w>x<h>:<format>",
+// or (for logos and swatches) a path under /assets or /media.
+export function imageInfo(ref) {
+  if (typeof ref !== 'string' || !ref) return null;
+  const m = /^m:([a-z0-9]{6,40}):(\d{1,5})x(\d{1,5}):(webp|jpg|png)$/.exec(ref);
+  if (m) {
+    const [, id, w, h, ext] = m;
+    const W = +w;
+    const H = +h;
+    const widths = W > 800 ? [800, W] : [W];
+    const ogW = Math.min(W, 1200);
+    return {
+      w: W, h: H, widths, types: [ext === 'jpg' ? 'jpeg' : ext],
+      src: (i, type) => `/media/${id}-${i ? 1600 : 800}.${type === 'jpeg' ? 'jpg' : type}`,
+      og: `/media/${id}.jpg`, ogSize: [ogW, Math.round((H * ogW) / W)],
+    };
+  }
+  const img = images[ref];
+  if (!img) return null;
+  return {
+    ...img, types: ['avif', 'webp'],
+    src: (i, type) => `/assets/img/work/${ref}-${i ? 1600 : 800}.${type}`,
+    og: `/assets/img/work/${ref}.jpg`, ogSize: [1200, Math.round((img.h * 1200) / img.w)],
+  };
+}
+
+// A single file for small images (logos, swatches)
+export function smallSrc(ref) {
+  if (typeof ref !== 'string' || !ref) return '';
+  if (ref.startsWith('/')) return /^\/(assets|media)\/[\w./-]+$/.test(ref) && !ref.includes('..') ? ref : '';
+  const info = imageInfo(ref);
+  return info ? info.src(0, info.types[info.types.length - 1]) : '';
+}
+
+// <picture> with every format at both sizes
+export function picture(ref, alt, { sizes = '100vw', eager = false, cls = '' } = {}) {
+  const img = imageInfo(ref);
+  if (!img) return '';
+  const set = (type) => img.widths.map((w, i) => `${img.src(i, type)} ${w}w`).join(', ');
+  const last = img.types[img.types.length - 1];
+  return `<picture${cls ? ` class="${cls}"` : ''}>
+    ${img.types.slice(0, -1).map((t) => `<source type="image/${t}" srcset="${set(t)}" sizes="${sizes}">`).join('\n    ')}
+    <img src="${img.src(0, last)}" srcset="${set(last)}" sizes="${sizes}" width="${img.w}" height="${img.h}" alt="${esc(alt)}"${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async">
+  </picture>`;
+}
 
 /* ---------- small parts ---------- */
 
-const icon = (name, cls = 'i') => `<svg class="${cls}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
-
-const sprite = `<svg class="sprite" aria-hidden="true" focusable="false">
-  <symbol id="i-arrow" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 12h15M13 6l6 6-6 6"/></symbol>
-  <symbol id="i-phone" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M5 3.5h3.2l1.6 4.2-2 1.4a11 11 0 0 0 7.1 7.1l1.4-2 4.2 1.6V19a1.8 1.8 0 0 1-1.9 1.8A16.4 16.4 0 0 1 3.2 5.4 1.8 1.8 0 0 1 5 3.5z"/></symbol>
-  <symbol id="i-mail" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 6 8-6"/></g></symbol>
-  <symbol id="i-pin" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></g></symbol>
-  <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
-  <symbol id="i-plus" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 5v14M5 12h14"/></symbol>
-  <symbol id="i-spark" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1.5c.6 5.4 2.9 8 8.5 8.5-5.6.6-7.9 3.2-8.5 8.5-.6-5.3-2.9-7.9-8.5-8.5 5.6-.5 7.9-3.1 8.5-8.5z"/></symbol>
-  <symbol id="i-drag" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M9 6 3 12l6 6M15 6l6 6-6 6"/></symbol>
-  <symbol id="i-quote" viewBox="0 0 48 48"><path fill="currentColor" d="M20 10C10.6 13.2 5 20.4 5 29.5 5 35.4 8.6 39 13.3 39c4.3 0 7.4-3.1 7.4-7.3 0-4-2.9-6.9-6.6-7.2.8-4.4 4.2-8.3 9.2-10.4L20 10zm21 0c-9.4 3.2-15 10.4-15 19.5 0 5.9 3.6 9.5 8.3 9.5 4.3 0 7.4-3.1 7.4-7.3 0-4-2.9-6.9-6.6-7.2.8-4.4 4.2-8.3 9.2-10.4L41 10z"/></symbol>
-  <symbol id="i-users" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="9" cy="8" r="3.4"/><path d="M2.5 19c.6-3.6 3.3-5.6 6.5-5.6s5.9 2 6.5 5.6z"/><circle cx="16.8" cy="9" r="2.6"/><path d="M15.6 13.5c3 .1 5.3 1.9 5.9 5.5h-4.2c-.3-2.2-.8-3.9-1.7-5.5z"/></g></symbol>
-  <symbol id="i-user" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20.5c.7-4.3 3.9-6.6 8-6.6s7.3 2.3 8 6.6z"/></g></symbol>
-  <symbol id="i-cal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4" stroke-linecap="round"/></g><g fill="currentColor"><rect x="7" y="13" width="3" height="3" rx=".8"/><rect x="14" y="13" width="3" height="3" rx=".8"/></g></symbol>
-  <symbol id="i-box" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.6 20.5 7v10L12 21.4 3.5 17V7zM6 8l6 3.2L18 8l-6-3.1zm-.6 2v6l5.6 2.9v-6z"/></symbol>
-  <symbol id="i-clock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></g></symbol>
-  <symbol id="i-menu" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 8h16M4 16h16"/></symbol>
-  <symbol id="i-close" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
-  <symbol id="i-chev" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></symbol>
-  <symbol id="i-instagram" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/></g><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor"/></symbol>
-  <symbol id="i-facebook" viewBox="0 0 24 24"><path fill="currentColor" d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.5-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.8v3h2.6V21h3.1z"/></symbol>
-  <symbol id="i-tiktok" viewBox="0 0 24 24"><path fill="currentColor" d="M16.6 3c.4 2.2 1.8 3.7 4 3.9v3.1a7.4 7.4 0 0 1-4-1.2v6.3A5.9 5.9 0 1 1 10.7 9v3.2a2.8 2.8 0 1 0 2.8 2.9V3h3.1z"/></symbol>
-  <symbol id="i-youtube" viewBox="0 0 24 24"><path fill="currentColor" d="M21.6 7.2a2.6 2.6 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.6 2.6 0 0 0 2.4 7.2 27 27 0 0 0 2 12a27 27 0 0 0 .4 4.8 2.6 2.6 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.6 2.6 0 0 0 1.8-1.8A27 27 0 0 0 22 12a27 27 0 0 0-.4-4.8zM10 15V9l5.2 3L10 15z"/></symbol>
-</svg>`;
+const icon = (name, cls = 'i') => `<svg class="${cls}" aria-hidden="true"><use href="#i-${esc(name)}"/></svg>`;
 
 let eyeIds = 0;
 // The chameleon mark. Its pupil (.pupil) follows the pointer, see site.js.
 export function markSvg(cls = 'mark') {
   const id = `eye-${++eyeIds}`;
-  const { eye, pupil } = mark;
-  return `<svg class="${cls}" viewBox="${mark.viewBox}" aria-hidden="true" focusable="false">
-    <path d="${mark.body}"/>
+  const { eye, pupil } = markData;
+  return `<svg class="${cls}" viewBox="${markData.viewBox}" aria-hidden="true" focusable="false">
+    <path d="${markData.body}"/>
     <mask id="${id}"><rect width="756" height="414" fill="#fff"/><circle class="pupil" cx="${pupil.cx}" cy="${pupil.cy}" r="${pupil.r}" fill="#000"/></mask>
     <circle class="eyeball" cx="${eye.cx}" cy="${eye.cy}" r="${eye.r}" mask="url(#${id})"/>
   </svg>`;
@@ -63,63 +95,64 @@ function logo(cls = 'logo') {
   </svg>`;
 }
 
-// <picture> with AVIF and WebP at both sizes
-export function picture(name, alt, { sizes = '100vw', eager = false, cls = '' } = {}) {
-  const img = images[name];
-  if (!img) throw new Error(`Unknown image: ${name}`);
-  const set = (ext) => img.widths.map((w, i) => `/assets/img/work/${name}-${i ? 1600 : 800}.${ext} ${w}w`).join(', ');
-  return `<picture${cls ? ` class="${cls}"` : ''}>
-    <source type="image/avif" srcset="${set('avif')}" sizes="${sizes}">
-    <img src="/assets/img/work/${name}-800.webp" srcset="${set('webp')}" sizes="${sizes}" width="${img.w}" height="${img.h}" alt="${esc(alt)}"${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async">
-  </picture>`;
-}
-
 const btn = (label, url, { kind = 'pink', size = '', ico = 'arrow', attrs = '' } = {}) =>
-  `<a class="btn btn--${kind}${size ? ` btn--${size}` : ''}" href="${url}"${attrs} data-magnetic><span>${label}</span>${ico ? icon(ico) : ''}</a>`;
+  `<a class="btn btn--${kind}${size ? ` btn--${size}` : ''}" href="${url}"${attrs} data-magnetic><span>${esc(label)}</span>${ico ? icon(ico) : ''}</a>`;
 
-const kicker = (text) => `<p class="kicker"><span class="kicker__dot"></span>${esc(text)}</p>`;
+const kicker = (text) => (text ? `<p class="kicker"><span class="kicker__dot"></span>${esc(text)}</p>` : '');
 
 const sectionHead = (k, title, lead = '', { tag = 'h2', cls = '' } = {}) => `
   <header class="section-head ${cls}">
     ${k ? kicker(k) : ''}
-    <${tag} class="display" data-split>${title}</${tag}>
-    ${lead ? `<p class="lead" data-reveal>${lead}</p>` : ''}
+    <${tag} class="display" data-split>${mark(title)}</${tag}>
+    ${lead ? `<p class="lead" data-reveal>${esc(lead)}</p>` : ''}
   </header>`;
 
 const socialLinks = () =>
   Object.entries(site.social)
-    .filter(([, u]) => u)
-    .map(([k, u]) => `<a class="social" href="${u}" target="_blank" rel="noopener" aria-label="${site.name} on ${k[0].toUpperCase() + k.slice(1)}">${icon(k)}</a>`)
+    .map(([k, u]) => [k, safeUrl(u)])
+    .filter(([, u]) => /^https?:/.test(u))
+    .map(([k, u]) => `<a class="social" href="${esc(u)}" target="_blank" rel="noopener" aria-label="${esc(site.name)} on ${k === 'linkedin' ? 'LinkedIn' : k === 'tiktok' ? 'TikTok' : k === 'youtube' ? 'YouTube' : k[0].toUpperCase() + k.slice(1)}">${icon(k)}</a>`)
     .join('');
+
+const address = () => `${esc(site.address.street)}, ${esc(site.address.locality)} ${esc(site.address.region)} ${esc(site.address.postcode)}`;
+
+// Menu links to hidden or deleted services are left out
+const menuItems = (m) => m.items.filter((it) => {
+  const slug = it.href.replace(/^\//, '');
+  return it.label && (!bySlug[slug] || visible.has(slug));
+});
 
 /* ---------- header / footer ---------- */
 
 function header(current) {
   const here = (h) => (h === href(current) || (current === 'index' && h === '/') ? ' aria-current="page"' : '');
   const item = (m, i) => {
-    if (!m.items) return `<a class="nav__link" href="${m.href}"${here(m.href)}>${m.label}</a>`;
-    const open = m.items.some(([, slug]) => slug === current);
-    const list = `<ul class="dd__menu" id="dd-${i}">${m.items.map(([label, slug]) => `<li><a href="${href(slug)}"${slug === current ? ' aria-current="page"' : ''}>${esc(label)}</a></li>`).join('')}</ul>`;
+    const items = menuItems(m);
+    if (!items.length) return m.href ? `<a class="nav__link" href="${link(m.href)}"${here(m.href)}>${esc(m.label)}</a>` : '';
+    const open = items.some((it) => it.href === href(current));
+    const list = `<ul class="dd__menu" id="dd-${i}">${items.map((it) => `<li><a href="${link(it.href)}"${it.href === href(current) ? ' aria-current="page"' : ''}>${esc(it.label)}</a></li>`).join('')}</ul>`;
     return `
       <div class="dd" data-dropdown>
-        ${m.href ? `<a class="nav__link${open ? ' is-current' : ''}" href="${m.href}">${m.label}</a>` : `<span class="nav__link${open ? ' is-current' : ''}">${m.label}</span>`}
-        <button class="dd__toggle" type="button" aria-expanded="false" aria-controls="dd-${i}" aria-label="${m.label} services">${icon('chev', 'i i--sm')}</button>
+        ${m.href ? `<a class="nav__link${open ? ' is-current' : ''}" href="${link(m.href)}">${esc(m.label)}</a>` : `<span class="nav__link${open ? ' is-current' : ''}">${esc(m.label)}</span>`}
+        <button class="dd__toggle" type="button" aria-expanded="false" aria-controls="dd-${i}" aria-label="${esc(m.label)} services">${icon('chev', 'i i--sm')}</button>
         ${list}
       </div>`;
   };
-  const mobile = (m) => (m.items
-    ? `<p class="menu__group">${m.href ? `<a href="${m.href}">${m.label}</a>` : m.label}</p>
-        <div class="menu__subs">${m.items.map(([label, slug]) => `<a class="menu__sub" href="${href(slug)}">${esc(label)}</a>`).join('')}</div>`
-    : `<a class="menu__link" href="${m.href}">${m.label}</a>`);
+  const mobile = (m) => {
+    const items = menuItems(m);
+    if (!items.length) return m.href ? `<a class="menu__link" href="${link(m.href)}">${esc(m.label)}</a>` : '';
+    return `<p class="menu__group">${m.href ? `<a href="${link(m.href)}">${esc(m.label)}</a>` : esc(m.label)}</p>
+        <div class="menu__subs">${items.map((it) => `<a class="menu__sub" href="${link(it.href)}">${esc(it.label)}</a>`).join('')}</div>`;
+  };
   return `
 <header class="hdr" data-hdr>
   <div class="hdr__in">
     <a class="hdr__brand" href="/" aria-label="${esc(site.name)} home">${logo()}</a>
     <nav class="nav" aria-label="Main">
-      ${menu.map(item).join('')}
+      ${c.menu.map(item).join('')}
     </nav>
     <div class="hdr__actions">
-      ${btn('Free Quote', '/contact', { kind: 'pink', size: 'sm', ico: '' })}
+      ${btn(c.header.button, '/contact', { kind: 'pink', size: 'sm', ico: '' })}
       <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Open menu" data-burger>
         <span></span><span></span>
       </button>
@@ -128,57 +161,59 @@ function header(current) {
 </header>
 <div class="menu" id="menu" data-menu hidden>
   <nav class="menu__in" aria-label="Mobile">
-    ${menu.map(mobile).join('\n    ')}
+    ${c.menu.map(mobile).join('\n    ')}
     <div class="menu__foot">
-      <a class="btn btn--pink btn--lg" href="/contact"><span>Free Quote</span>${icon('arrow')}</a>
-      <a class="menu__phone" href="${tel}">${icon('phone')} ${site.phone}</a>
+      <a class="btn btn--pink btn--lg" href="/contact"><span>${esc(c.header.button)}</span>${icon('arrow')}</a>
+      <a class="menu__phone" href="${tel()}">${icon('phone')} ${esc(site.phone)}</a>
       <div class="socials">${socialLinks()}</div>
     </div>
   </nav>
 </div>`;
 }
 
+const hasPosts = () => c.blog.enabled && publishedPosts().length > 0;
+
 function footer() {
-  const popular = ['vehicle-signage', 'shopfront-signage', 'window-graphics', 'office-signage', 'frosted-window-film', 'decor'];
+  const f = c.footer;
+  const popular = f.popular.map(svc).filter(Boolean);
+  const company = [...f.company, ...(hasPosts() ? [{ label: c.blog.footerLabel || 'Blog', href: '/blog' }] : [])];
   const year = new Date().getFullYear();
   return `
 <footer class="ftr">
-  <div class="ftr__ticker" aria-hidden="true"><div class="ftr__ticker-track">${'<span>Hard to miss</span>'.repeat(8)}</div></div>
+  ${f.ticker ? `<div class="ftr__ticker" aria-hidden="true"><div class="ftr__ticker-track">${`<span>${esc(f.ticker)}</span>`.repeat(8)}</div></div>` : ''}
   <div class="container ftr__grid">
     <div class="ftr__brand">
       <a href="/" aria-label="${esc(site.name)} home">${logo('logo logo--ftr')}</a>
-      <p>${esc(site.tagline)} Vehicle wraps, shopfront signage, window graphics and office signage across Adelaide.</p>
+      <p>${esc(site.tagline)} ${esc(f.text)}</p>
       <div class="socials">${socialLinks()}</div>
     </div>
     <div>
-      <p class="ftr__title">Popular services</p>
-      <ul class="ftr__list">${popular.map((s) => `<li><a href="${href(s)}">${esc(bySlug[s].name)}</a></li>`).join('')}</ul>
+      <p class="ftr__title">${esc(f.popularTitle)}</p>
+      <ul class="ftr__list">${popular.map((s) => `<li><a href="${href(s.slug)}">${esc(s.name)}</a></li>`).join('')}</ul>
     </div>
     <div>
-      <p class="ftr__title">Company</p>
+      <p class="ftr__title">${esc(f.companyTitle)}</p>
       <ul class="ftr__list">
-        <li><a href="/services">All services</a></li>
-        <li><a href="/join-us">Join the team</a></li>
-        <li><a href="/contact">Free quote</a></li>
+        ${company.filter((l) => l.label).map((l) => `<li><a href="${link(l.href)}">${esc(l.label)}</a></li>`).join('\n        ')}
       </ul>
     </div>
     <div>
-      <p class="ftr__title">Contact</p>
+      <p class="ftr__title">${esc(f.contactTitle)}</p>
       <ul class="ftr__list ftr__contact">
-        <li><a href="${tel}">${icon('phone')}${site.phone}</a></li>
-        <li><a href="${mailto}">${icon('mail')}${site.email}</a></li>
-        <li><a href="${site.mapUrl}" target="_blank" rel="noopener">${icon('pin')}${esc(site.address.street)}, ${esc(site.address.locality)} ${site.address.region} ${site.address.postcode}</a></li>
+        <li><a href="${tel()}">${icon('phone')}${esc(site.phone)}</a></li>
+        <li><a href="${mailto()}">${icon('mail')}${esc(site.email)}</a></li>
+        <li><a href="${link(site.mapUrl)}" target="_blank" rel="noopener">${icon('pin')}${address()}</a></li>
       </ul>
     </div>
   </div>
   <div class="container ftr__base">
-    <p>© ${year} ${esc(site.legalName)} · ABN ${site.abn}</p>
-    <p>Signwriters in Adelaide, South Australia</p>
+    <p>© ${year} ${esc(site.legalName)} · ABN ${esc(site.abn)}</p>
+    <p>${esc(f.baseLine)}</p>
   </div>
 </footer>
 <div class="dock" data-dock>
-  <a class="dock__call" href="${tel}">${icon('phone')}<span>Call</span></a>
-  <a class="dock__quote" href="/contact">Get a free quote ${icon('arrow')}</a>
+  <a class="dock__call" href="${tel()}">${icon('phone')}<span>${esc(f.dockCall)}</span></a>
+  <a class="dock__quote" href="/contact">${esc(f.dockQuote)} ${icon('arrow')}</a>
 </div>`;
 }
 
@@ -208,7 +243,7 @@ function business() {
     },
     hasMap: site.mapUrl,
     areaServed: { '@type': 'City', name: 'Adelaide' },
-    sameAs: Object.values(site.social).filter(Boolean),
+    sameAs: Object.values(site.social).filter((u) => /^https?:/.test(safeUrl(u))),
   };
 }
 
@@ -245,37 +280,56 @@ const faqLd = (faq) => ({
 /* ---------- page shell ---------- */
 
 function pixel() {
-  if (!site.metaPixelId) return '';
+  const id = String(c.seo.metaPixelId || '').trim();
+  if (!/^\d{6,20}$/.test(id) || ctx.preview) return '';
   return `<script>
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];
 f.addEventListener('load',function(){t=b.createElement(e);t.async=!0;t.src=v;b.head.appendChild(t)})}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-fbq('init','${site.metaPixelId}');fbq('track','PageView');
+fbq('init','${id}');fbq('track','PageView');
 </script>
-<noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=${site.metaPixelId}&ev=PageView&noscript=1"></noscript>`;
+<noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=${id}&ev=PageView&noscript=1"></noscript>`;
 }
 
-export function layout({ slug, title, description, image, imageSize, body, ld = [], bodyClass = '', head = '', noindex = false, assets }) {
-  const url = slug === '404' ? `${site.url}/404` : site.url + href(slug === 'index' ? '' : slug);
-  const ogImage = abs(image || '/assets/img/og-image.jpg');
+function analytics() {
+  const id = String(c.seo.gaId || '').trim().toUpperCase();
+  if (!/^G-[A-Z0-9]{4,16}$/.test(id) || ctx.preview) return '';
+  return `<script async src="https://www.googletagmanager.com/gtag/js?id=${id}"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${id}');</script>`;
+}
+
+// In the panel's preview, links ask the panel to open that page instead, and forms don't send
+const previewScript = `<script>
+addEventListener('click',function(e){if(parent===window)return;var a=e.target.closest&&e.target.closest('a[href]');if(!a)return;var u=new URL(a.href,document.baseURI),me=new URL(document.baseURI);
+if(u.protocol!=='http:'&&u.protocol!=='https:'){e.preventDefault();return}
+if(u.hash&&u.pathname===document.documentElement.dataset.path){e.preventDefault();var t=document.getElementById(decodeURIComponent(u.hash.slice(1)));if(t)t.scrollIntoView({behavior:'smooth'});return}
+e.preventDefault();if(u.origin===me.origin)parent.postMessage({bsPreview:'go',path:u.pathname},'*')},true);
+addEventListener('submit',function(e){e.preventDefault();e.stopImmediatePropagation();alert('Preview: forms are not sent from the panel.')},true);
+</script>`;
+
+function layout({ slug, path, title, description, image, imageSize, body, ld = [], bodyClass = '', head = '', noindex = false }) {
+  const url = slug === '404' ? `${site.url}/404` : site.url + (path || href(slug === 'index' ? '' : slug));
+  const ogImage = abs(image || c.seo.ogImage || '/assets/img/og-image.jpg');
   const [ogW, ogH] = imageSize || [1200, 630];
+  const assets = ctx.assets;
+  const verify = String(c.seo.googleSiteVerification || '').trim();
   return `<!doctype html>
-<html lang="en-AU">
+<html lang="en-AU"${ctx.preview ? ` class="is-preview" data-path="${esc(path || href(slug === 'index' ? '' : slug))}"` : ''}>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
-${noindex ? '' : `<link rel="canonical" href="${url}">`}
+${noindex ? '' : `<link rel="canonical" href="${esc(url)}">`}
 <meta name="robots" content="${noindex || site.noindex ? 'noindex' : 'index, follow, max-image-preview:large'}">
 <meta name="theme-color" content="#0d0614">
-${site.googleSiteVerification ? `<meta name="google-site-verification" content="${esc(site.googleSiteVerification)}">` : ''}
-<meta property="og:type" content="website">
+${verify ? `<meta name="google-site-verification" content="${esc(verify)}">` : ''}
+<meta property="og:type" content="${slug.startsWith('blog/') ? 'article' : 'website'}">
 <meta property="og:site_name" content="${esc(site.name)}">
 <meta property="og:locale" content="en_AU">
-<meta property="og:url" content="${url}">
+<meta property="og:url" content="${esc(url)}">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
-<meta property="og:image" content="${ogImage}">
+<meta property="og:image" content="${esc(ogImage)}">
 <meta property="og:image:width" content="${ogW}">
 <meta property="og:image:height" content="${ogH}">
 <meta name="twitter:card" content="summary_large_image">
@@ -283,6 +337,7 @@ ${site.googleSiteVerification ? `<meta name="google-site-verification" content="
 <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <script>document.documentElement.classList.add('js')</script>
+${ctx.preview ? previewScript : ''}
 <link rel="preload" href="/assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
 ${head}
 <link rel="stylesheet" href="/assets/css/site.css?v=${assets.css}">
@@ -290,7 +345,7 @@ ${head}
 <script src="/assets/js/site.js?v=${assets.js}" defer></script>
 ${slug === 'index' ? `<script src="/assets/js/hero3d.js?v=${assets.hero3d}" defer></script>` : ''}
 ${noindex ? '' : jsonLd({ url, title, description, image: ogImage }, ld)}
-${pixel()}
+${pixel()}${analytics()}
 </head>
 <body class="${bodyClass}">
 ${sprite}
@@ -307,16 +362,16 @@ ${footer()}
 
 /* ---------- shared sections ---------- */
 
-const ctaFinal = (title = 'Get your free quote.') => `
+const ctaFinal = (title) => `
 <section class="cta-final">
   <div class="container center">
     <div class="cta-final__mark" data-reveal>${markSvg('mark mark--mascot')}</div>
-    ${kicker('Ready when you are')}
-    <h2 class="mega-type" data-split>${title}</h2>
-    <p class="lead" data-reveal>Whether you have a question, need a quote or want to talk through an idea, our team is ready to help.</p>
+    ${kicker(c.cta.kicker)}
+    <h2 class="mega-type" data-split>${mark(title || c.cta.title)}</h2>
+    <p class="lead" data-reveal>${esc(c.cta.text)}</p>
     <div class="cta-row" data-reveal>
-      ${btn('Get a free quote', '/contact', { size: 'lg' })}
-      ${btn(`Call ${site.phone}`, tel, { kind: 'ghost', size: 'lg', ico: 'phone' })}
+      ${btn(c.cta.button, '/contact', { size: 'lg' })}
+      ${btn(`${c.cta.call} ${site.phone}`, tel(), { kind: 'ghost', size: 'lg', ico: 'phone' })}
     </div>
   </div>
 </section>`;
@@ -324,11 +379,11 @@ const ctaFinal = (title = 'Get your free quote.') => `
 const processSection = (compact = false) => `
 <section class="section process${compact ? ' process--compact' : ''}" id="process">
   <div class="container">
-    ${sectionHead('A simpler signage process', process.title, process.lead, { cls: 'center' })}
+    ${sectionHead(c.process.kicker, c.process.title, c.process.lead, { cls: 'center' })}
     <div class="steps-wrap" data-steps>
     <div class="steps__line" aria-hidden="true"><span></span></div>
     <ol class="steps">
-      ${process.steps.map((s, i) => `
+      ${c.process.steps.map((s, i) => `
       <li class="step" data-reveal style="--d:${i * 90}ms">
         <span class="step__num">${pad(i + 1)}</span>
         <h3 class="step__title">${esc(s.title)}</h3>
@@ -339,10 +394,10 @@ const processSection = (compact = false) => `
   </div>
 </section>`;
 
-const faqSection = (faq, title = 'Good questions. Clear answers.') => `
+const faqSection = (faq, title, k) => (faq.length ? `
 <section class="section faq">
   <div class="container narrow">
-    ${sectionHead('Frequently asked questions', title, '', { cls: 'center' })}
+    ${sectionHead(k, title, '', { cls: 'center' })}
     <div class="faq__list">
       ${faq.map((f) => `
       <details class="faq__item" data-reveal>
@@ -351,26 +406,30 @@ const faqSection = (faq, title = 'Good questions. Clear answers.') => `
       </details>`).join('')}
     </div>
   </div>
-</section>`;
+</section>` : '');
 
-const quoteBlock = (q) => `
+const quoteBlock = (q) => (q && q.text ? `
 <section class="section testimonial">
   <figure class="container narrow center quote" data-reveal>
     ${icon('quote', 'quote__icon')}
     <blockquote><p>${esc(q.text)}</p></blockquote>
     <figcaption><strong>${esc(q.name)}</strong>${q.role ? `<span>${esc(q.role)}</span>` : ''}</figcaption>
   </figure>
-</section>`;
+</section>` : '');
 
-const clientsSection = () => `
+const clientsSection = () => {
+  const items = c.clients.items.filter((x) => smallSrc(x.logo));
+  if (!items.length) return '';
+  return `
 <section class="clients" aria-labelledby="clients-title">
-  <p class="clients__title" id="clients-title">Trusted by businesses big and small</p>
+  <p class="clients__title" id="clients-title">${esc(c.clients.title)}</p>
   <div class="clients__row">
     <div class="clients__track">
-      ${[0, 1].map((k) => site.clients.map((c) => `<span class="client"${k ? ' aria-hidden="true"' : ''}><img src="/assets/img/clients/${c.file}.png" alt="${k ? '' : esc(c.name)}" loading="lazy" decoding="async"></span>`).join('')).join('')}
+      ${[0, 1].map((k) => items.map((x) => `<span class="client"${k ? ' aria-hidden="true"' : ''}><img src="${esc(smallSrc(x.logo))}" alt="${k ? '' : esc(x.name)}" loading="lazy" decoding="async"></span>`).join('')).join('')}
     </div>
   </div>
 </section>`;
+};
 
 const serviceCard = (s, i, { big = false } = {}) => `
   <a class="svc${big ? ' svc--big' : ''}" href="${href(s.slug)}" data-spot data-reveal style="--d:${(i % 4) * 80}ms">
@@ -379,42 +438,47 @@ const serviceCard = (s, i, { big = false } = {}) => `
       <span class="svc__num">${pad(i + 1)}</span>
       <h3 class="svc__title">${esc(s.name)}</h3>
       <p>${esc(s.card)}</p>
-      <span class="svc__go">${s.feature === 'wrap-slider' ? 'Try the wrap slider' : 'Explore'} ${icon('arrow')}</span>
+      <span class="svc__go">${esc(s.feature === 'wrap-slider' ? c.servicePage.sliderButton : c.servicePage.cardLink)} ${icon('arrow')}</span>
     </div>
   </a>`;
 
 /* ---------- home hero scene ---------- */
 
-// The tasks a business owner juggles, floating behind the chameleon. x/y place each card in the scene (%),
-// z is how far behind him it floats (more negative = further back, so it moves less with the pointer),
+// Where the tasks float behind the chameleon (the texts and icons come from the panel). x/y place each card in the
+// scene (%), z is how far behind him it floats (more negative = further back, so it moves less with the pointer),
 // side 'r' cards sit to his right with the label on their outer edge, so the part tucked behind him is the blank one.
 // mx/my are the places on phones; cards without them are left out there.
-const campaignCards = [
-  { label: 'Payroll', icon: 'users', x: 18, y: 30, z: -60, mx: 16, my: 54 },
-  { label: 'Staff', icon: 'user', tone: 'pink', x: 13, y: 45, z: -110, mx: 15, my: 71 },
-  { label: 'Customers', icon: 'users', x: 16, y: 60, z: -80, mx: 17, my: 37 },
-  { label: 'Opening date', icon: 'cal', tone: 'pink', x: 12, y: 75, z: -130 },
-  { label: 'Emails', icon: 'mail', side: 'r', x: 96, y: 45, z: -90, mx: 83, my: 74 },
-  { label: 'Stock', icon: 'box', tone: 'pink', side: 'r', x: 93, y: 61, z: -60, mx: 82, my: 88 },
-  { label: 'Scheduling', icon: 'clock', side: 'r', x: 95, y: 77, z: -110, mx: 82, my: 58 },
+const cardSlots = [
+  { x: 18, y: 30, z: -60, mx: 16, my: 54 },
+  { x: 13, y: 45, z: -110, mx: 15, my: 71 },
+  { x: 16, y: 60, z: -80, mx: 17, my: 37 },
+  { x: 12, y: 75, z: -130 },
+  { side: 'r', x: 96, y: 45, z: -90, mx: 83, my: 74 },
+  { side: 'r', x: 93, y: 61, z: -60, mx: 82, my: 88 },
+  { side: 'r', x: 95, y: 77, z: -110, mx: 82, my: 58 },
 ];
+export const cardCount = cardSlots.length;
 
 function campaign() {
-  const card = (c, i) => `
-        <div class="card${c.side === 'r' ? ' card--r' : ''}${c.mx == null ? ' card--wide-only' : ''}" style="--x:${c.x}%;--y:${c.y}%;--z:${c.z}px;${c.mx != null ? `--mx:${c.mx}%;--my:${c.my}%;` : ''}--in:${0.5 + i * 0.09}s">
+  const card = (slot, i) => {
+    const t = c.home.hero.cards[i];
+    if (!t || !t.label) return '';
+    return `
+        <div class="card${slot.side === 'r' ? ' card--r' : ''}${slot.mx == null ? ' card--wide-only' : ''}" style="--x:${slot.x}%;--y:${slot.y}%;--z:${slot.z}px;${slot.mx != null ? `--mx:${slot.mx}%;--my:${slot.my}%;` : ''}--in:${0.5 + i * 0.09}s">
           <div class="card__in">
-            <span class="card__icon${c.tone === 'pink' ? ' card__icon--pink' : ''}">${icon(c.icon)}</span>
-            <span class="card__text"><b>${c.label}</b><span></span><span></span></span>
+            <span class="card__icon${t.pink ? ' card__icon--pink' : ''}">${icon(t.icon || 'users')}</span>
+            <span class="card__text"><b>${esc(t.label)}</b><span></span><span></span></span>
           </div>
         </div>`;
+  };
   return `<div class="scene-wrap">
       <div class="scene" data-camp aria-hidden="true">
         <div class="scene__glow" data-camp-glow></div>
         <div class="scene__back" data-camp-back>
           <span class="scene__ring"></span>
-          ${campaignCards.map(card).join('')}
+          ${cardSlots.map(card).join('')}
           <div class="card card--sign" style="--x:74%;--y:18%;--z:-40px;--mx:72%;--my:13%;--in:1.2s">
-            <div class="card__in"><span class="card__check">${icon('check')}</span><b>Signage</b></div>
+            <div class="card__in"><span class="card__check">${icon('check')}</span><b>${esc(c.home.hero.sign)}</b></div>
           </div>
           <canvas class="scene__shards" data-shards></canvas>
         </div>
@@ -426,33 +490,32 @@ function campaign() {
     </div>`;
 }
 
-// Google's "G", for the rating under the home headline
-const googleG = `<svg class="grating__g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>`;
-
 /* ---------- home ---------- */
 
-export function home() {
-  const rest = services.filter((s) => !featured.includes(s.slug));
+function home() {
+  const h = c.home;
+  const hero = h.hero;
+  const featured = h.services.featured.map(svc).filter(Boolean);
+  const rest = c.services.filter((s) => visible.has(s.slug) && !featured.includes(s));
+  const g = c.google;
 
   const body = `
 <section class="hero2">
   <div class="container hero2__grid">
     <div class="hero2__copy">
-      <span class="eyebrow" data-hero-in>${icon('spark', 'i')} Adelaide signwriters</span>
-      <h1 class="hero2__h" data-split data-split-now>Signage that makes your business <em>hard to miss.</em></h1>
-      <p class="hero2__tag" data-hero-in><strong>One <span>less</span> thing.</strong> You run the business. <em>We’ll handle the signs.</em></p>
-      <p class="lead hero2__lead" data-hero-in>Vehicle wraps, shopfront signage, window graphics and complete business signage, designed, produced and installed by one Adelaide team.</p>
+      <span class="eyebrow" data-hero-in>${icon('spark', 'i')} ${esc(hero.eyebrow)}</span>
+      <h1 class="hero2__h" data-split data-split-now>${mark(hero.title)}</h1>
+      <p class="hero2__tag" data-hero-in><strong>${esc(hero.tagStrong).replace(/\*([^*\n]+)\*/g, '<span>$1</span>')}</strong> ${esc(hero.tagText)} <em>${esc(hero.tagEm)}</em></p>
+      <p class="lead hero2__lead" data-hero-in>${esc(hero.lead)}</p>
       <div class="hero2__cta" data-hero-in>
-        ${btn('Start your project', '/contact', { size: 'lg' })}
-        ${btn(site.phone, tel, { kind: 'ghost', size: 'lg', ico: 'phone' })}
+        ${btn(hero.button, '/contact', { size: 'lg' })}
+        ${btn(site.phone, tel(), { kind: 'ghost', size: 'lg', ico: 'phone' })}
       </div>
-      <ul class="hero2__trust" data-hero-in>
-        <li>${icon('check')}Design to installation</li>
-        <li>${icon('check')}Adelaide-based team</li>
-        <li>${icon('check')}Quality materials</li>
-      </ul>
-      ${site.google ? `<a class="grating" href="${site.google.url}" target="_blank" rel="noopener" data-hero-in>
-        ${googleG}<strong>${site.google.rating}</strong><span class="grating__stars" aria-hidden="true">★★★★★</span><span>on Google</span>
+      ${hero.trust.length ? `<ul class="hero2__trust" data-hero-in>
+        ${hero.trust.map((t) => `<li>${icon('check')}${esc(t)}</li>`).join('\n        ')}
+      </ul>` : ''}
+      ${g.show ? `<a class="grating" href="${link(g.url)}" target="_blank" rel="noopener" data-hero-in>
+        ${googleG}<strong>${esc(g.rating)}</strong><span class="grating__stars" aria-hidden="true">★★★★★</span><span>on Google</span>
       </a>` : ''}
     </div>
     ${campaign()}
@@ -461,37 +524,37 @@ export function home() {
 <section class="section intro" id="intro">
   <div class="container narrow center">
     <div class="mascot" data-reveal>${markSvg('mark mark--mascot')}</div>
-    ${kicker('Built through reputation')}
-    <h2 class="display" data-split>The sign company you don’t have to chase.</h2>
-    <p class="lead" data-reveal>Signage should make running your business easier, not give you one more supplier to follow up. Bora Signs brings design, production and installation together, with straightforward advice and clear communication from the first enquiry to the final install.</p>
+    ${kicker(h.intro.kicker)}
+    <h2 class="display" data-split>${mark(h.intro.title)}</h2>
+    <p class="lead" data-reveal>${esc(h.intro.text)}</p>
     <ul class="stats">
-      ${site.stats.map((s, i) => `<li class="stat" data-reveal style="--d:${i * 100}ms"><strong><span data-count="${s.value}">${s.value}</span>${s.suffix}</strong><span>${esc(s.label)}</span></li>`).join('')}
+      ${c.stats.map((s, i) => `<li class="stat" data-reveal style="--d:${i * 100}ms"><strong><span data-count="${+s.value || 0}">${+s.value || 0}</span>${esc(s.suffix)}</strong><span>${esc(s.label)}</span></li>`).join('')}
     </ul>
-    <div data-reveal>${btn('Talk to our team', '/contact', { kind: 'ghost' })}</div>
+    <div data-reveal>${btn(h.intro.button, '/contact', { kind: 'ghost' })}</div>
   </div>
 </section>
 
 <section class="section services" id="services">
   <div class="container">
-    ${sectionHead('Our signage services', 'Made to get your business <em>noticed.</em>', 'Everything your business needs to be seen, on the road, on the street and inside your space.', { cls: 'center' })}
+    ${sectionHead(h.services.kicker, h.services.title, h.services.lead, { cls: 'center' })}
     <div class="svc-grid">
-      ${featured.map((slug, i) => serviceCard(bySlug[slug], i, { big: true })).join('')}
+      ${featured.map((s, i) => serviceCard(s, i, { big: true })).join('')}
     </div>
-    <div class="svc-more" data-reveal>
-      <p class="svc-more__title">More ways we can help</p>
+    ${rest.length ? `<div class="svc-more" data-reveal>
+      <p class="svc-more__title">${esc(h.services.moreTitle)}</p>
       <div class="chips">
         ${rest.map((s) => `<a class="chip" href="${href(s.slug)}">${esc(s.name)} ${icon('arrow')}</a>`).join('')}
       </div>
-    </div>
+    </div>` : ''}
   </div>
 </section>
 ${processSection()}
 
 <section class="section reasons">
   <div class="container">
-    ${sectionHead('Why choose Bora Signs', 'Details done right, <em>first time.</em>', '', { cls: 'center' })}
+    ${sectionHead(h.reasons.kicker, h.reasons.title, '', { cls: 'center' })}
     <div class="reasons__grid">
-      ${reasons.map((r, i) => `
+      ${h.reasons.items.map((r, i) => `
       <article class="reason" data-spot data-reveal style="--d:${i * 80}ms">
         <span class="reason__num">${pad(i + 1)}</span>
         <h3>${esc(r.title)}</h3>
@@ -503,11 +566,11 @@ ${processSection()}
 
 ${clientsSection()}
 
-<section class="section reviews" data-reviews>
+${h.reviews.items.length ? `<section class="section reviews" data-reviews>
   <div class="container narrow center">
-    ${kicker('Our satisfied clients')}
+    ${kicker(h.reviews.kicker)}
     <div class="reviews__stage">
-      ${testimonials.map((q, i) => `
+      ${h.reviews.items.map((q, i) => `
       <figure class="quote review${i === 0 ? ' is-active' : ''}" data-review aria-hidden="${i === 0 ? 'false' : 'true'}">
         ${icon('quote', 'quote__icon')}
         <blockquote><p>${esc(q.text)}</p></blockquote>
@@ -515,22 +578,21 @@ ${clientsSection()}
       </figure>`).join('')}
     </div>
     <div class="reviews__dots" role="tablist" aria-label="Testimonials">
-      ${testimonials.map((q, i) => `<button type="button" role="tab" aria-selected="${i === 0}" aria-label="Testimonial ${i + 1}" data-review-dot="${i}"></button>`).join('')}
+      ${h.reviews.items.map((q, i) => `<button type="button" role="tab" aria-selected="${i === 0}" aria-label="Testimonial ${i + 1}" data-review-dot="${i}"></button>`).join('')}
     </div>
   </div>
-</section>
+</section>` : ''}
 
-${faqSection(homeFaq, 'Common signage questions.')}
+${faqSection(h.faq.items, h.faq.title, h.faq.kicker)}
 ${ctaFinal()}`;
 
   return {
     slug: 'index',
-    title: 'Sign Shop Adelaide | Vehicle Wraps, Shopfront & Office Signage | Bora Signs',
-    description:
-      'Adelaide sign company with 15+ years of experience: vehicle wraps, shopfront signage, window graphics and office signs, designed and installed by one local team.',
-    image: '/assets/img/og-image.jpg',
+    title: h.seo.title,
+    description: h.seo.description,
+    image: c.seo.ogImage || '/assets/img/og-image.jpg',
     bodyClass: 'is-home',
-    ld: [faqLd(homeFaq)],
+    ld: h.faq.items.length ? [faqLd(h.faq.items)] : [],
     body,
   };
 }
@@ -538,13 +600,14 @@ ${ctaFinal()}`;
 /* ---------- service pages ---------- */
 
 function wrapSlider() {
-  const w = site.wrapEstimate;
+  const w = c.van;
+  const tiers = w.tiers.map((t) => ({ upTo: t.upTo, name: t.name }));
   return `
 <section class="section wrapcalc-sec" id="wrap-it">
   <div class="container">
-    ${sectionHead('Before & after', 'Drag to <em>wrap</em> the van.', 'From a logo on the door to a full wrap. Slide to see the difference, and what it could cost.', { cls: 'center' })}
+    ${sectionHead(w.kicker, w.title, w.lead, { cls: 'center' })}
   </div>
-  <div class="container wrapcalc" data-wrapcalc data-min="${w.min}" data-max="${w.max}" data-step="${w.step}" data-tiers='${esc(JSON.stringify(w.tiers))}'>
+  <div class="container wrapcalc" data-wrapcalc data-min="${+w.min}" data-max="${+w.max}" data-step="${+w.step || 50}" data-tiers='${esc(JSON.stringify(tiers))}'>
     <div class="wrapcalc__stage" data-reveal>
       <span class="wrapcalc__tag wrapcalc__tag--l">Wrapped</span>
       <span class="wrapcalc__tag wrapcalc__tag--r">Plain</span>
@@ -559,41 +622,46 @@ function wrapSlider() {
     </div>
     <div class="wrapcalc__panel" data-reveal>
       <div class="wrapcalc__stat"><span>Coverage</span><strong data-cov>50%</strong></div>
-      <div class="wrapcalc__stat"><span>Package</span><strong data-tier>Partial wrap</strong></div>
-      <div class="wrapcalc__stat wrapcalc__stat--price"><span>Indicative price</span><strong><small>from</small> <span data-price>${money(Math.round((w.min + w.max) / 2))}</span></strong></div>
-      <a class="btn btn--pink" data-quote href="/contact?service=vehicle-signage" data-magnetic><span>Get my exact quote</span>${icon('arrow')}</a>
+      <div class="wrapcalc__stat"><span>Package</span><strong data-tier>${esc((tiers.find((t) => t.upTo >= 0.5) || tiers[tiers.length - 1] || { name: '' }).name)}</strong></div>
+      <div class="wrapcalc__stat wrapcalc__stat--price"><span>Indicative price</span><strong><small>from</small> <span data-price>${money(Math.round((+w.min + +w.max) / 2))}</span></strong></div>
+      <a class="btn btn--pink" data-quote href="/contact?service=vehicle-signage" data-magnetic><span>${esc(w.button)}</span>${icon('arrow')}</a>
     </div>
     <div class="wrapcalc__meter" aria-hidden="true">
       <span class="wrapcalc__fill" data-meter></span>
-      ${w.tiers.map((t, i) => `<span class="wrapcalc__tick" style="--at:${i ? w.tiers[i - 1].upTo : 0}"><b>${esc(t.name)}</b></span>`).join('')}
+      ${tiers.map((t, i) => `<span class="wrapcalc__tick" style="--at:${i ? tiers[i - 1].upTo : 0}"><b>${esc(t.name)}</b></span>`).join('')}
     </div>
-    <p class="wrapcalc__note">Indicative prices for a mid-size van, from ${money(w.min)} for logos and lettering to ${money(w.max)} for a full wrap. Every vehicle, design and film is different, so we confirm the final price in a written quote.</p>
+    <p class="wrapcalc__note">${esc(w.note).replace(/\{min\}/g, money(w.min)).replace(/\{max\}/g, money(w.max))}</p>
   </div>
 </section>`;
 }
 
+const cssColor = (v) => (/^#[0-9a-f]{3,8}$/i.test(String(v).trim()) ? String(v).trim() : '');
+
 function finishesSection() {
+  const f = c.finishes;
   return `
 <section class="section finishes">
   <div class="container">
-    ${sectionHead('Texture. Tone. Character.', 'Find your kind of <em>beautiful.</em>', 'Bring the warmth of timber, the look of stone or a beautifully understated colour into your space.', { cls: 'center' })}
+    ${sectionHead(f.kicker, f.title, f.lead, { cls: 'center' })}
     <div class="finishes__grid">
-      ${finishes.map((f, i) => `
+      ${f.items.map((x, i) => `
       <article class="finish" data-reveal style="--d:${i * 80}ms">
-        <span class="finish__swatch" style="${f.swatch ? `background-image:url(/assets/img/decor/${f.swatch}.webp)` : `background:${f.color}`}"></span>
-        <span class="finish__num">${pad(i + 1)} / ${esc(f.note)}</span>
-        <h3>${esc(f.name)}</h3>
+        <span class="finish__swatch" style="${smallSrc(x.image) ? `background-image:url(${esc(smallSrc(x.image))})` : `background:${cssColor(x.color) || '#29384A'}`}"></span>
+        <span class="finish__num">${pad(i + 1)} / ${esc(x.note)}</span>
+        <h3>${esc(x.name)}</h3>
       </article>`).join('')}
     </div>
   </div>
 </section>`;
 }
 
-export function service(s) {
+function service(s) {
+  const t = c.servicePage;
   const url = site.url + href(s.slug);
-  const img = images[s.image];
-  const related = s.related.map((r) => bySlug[r]);
-  const linked = (item) => (item.link ? ` <a class="more" href="${href(item.link)}">${esc(bySlug[item.link].name)} ${icon('arrow')}</a>` : '');
+  const img = imageInfo(s.image);
+  const related = s.related.map(svc).filter((r) => r && r !== s);
+  const linked = (item) => (item.link && svc(item.link) ? ` <a class="more" href="${href(item.link)}">${esc(svc(item.link).name)} ${icon('arrow')}</a>` : '');
+  const gallery = s.gallery.filter((g) => imageInfo(g));
 
   const body = `
 <section class="phero phero--short">
@@ -603,12 +671,12 @@ export function service(s) {
     </nav>
     <h1 class="phero__title">
       <span class="eyebrow" data-hero-in>${icon('spark', 'i')} ${esc(s.eyebrow)}</span>
-      <span class="phero__h" data-split data-split-now>${esc(s.h1)}</span>
+      <span class="phero__h" data-split data-split-now>${mark(s.h1)}</span>
     </h1>
     <p class="lead phero__lead" data-hero-in>${esc(s.lead)}</p>
     <div class="cta-row" data-hero-in>
-      ${btn('Get a free quote', `/contact?service=${s.slug}`, { size: 'lg' })}
-      ${s.feature === 'wrap-slider' ? btn('Try the wrap slider', '#wrap-it', { kind: 'ghost', size: 'lg', ico: 'drag' }) : btn(site.phone, tel, { kind: 'ghost', size: 'lg', ico: 'phone' })}
+      ${btn(t.button, `/contact?service=${s.slug}`, { size: 'lg' })}
+      ${s.feature === 'wrap-slider' ? btn(t.sliderButton, '#wrap-it', { kind: 'ghost', size: 'lg', ico: 'drag' }) : btn(site.phone, tel(), { kind: 'ghost', size: 'lg', ico: 'phone' })}
     </div>
   </div>
 </section>
@@ -616,9 +684,9 @@ export function service(s) {
 ${s.feature === 'wrap-slider' ? wrapSlider() : ''}
 ${s.feature === 'finishes' ? finishesSection() : ''}
 
-<section class="section why">
+${s.why.items.length ? `<section class="section why">
   <div class="container">
-    ${sectionHead(s.name, esc(s.why.title), '', { cls: 'center' })}
+    ${sectionHead(s.name, s.why.title, '', { cls: 'center' })}
     <div class="why__grid why__grid--${s.why.items.length}">
       ${s.why.items.map((w, i) => `
       <article class="why-card" data-spot data-reveal style="--d:${i * 80}ms">
@@ -628,14 +696,14 @@ ${s.feature === 'finishes' ? finishesSection() : ''}
       </article>`).join('')}
     </div>
   </div>
-</section>
+</section>` : ''}
 
-<section class="section options">
+${s.options.items.length ? `<section class="section options">
   <div class="container options__grid">
     <div class="options__head">
-      ${kicker('What we do')}
-      <h2 class="display" data-split>${esc(s.options.title)}</h2>
-      <div data-reveal>${btn('Talk to us about yours', `/contact?service=${s.slug}`, { kind: 'ghost' })}</div>
+      ${kicker(t.optionsKicker)}
+      <h2 class="display" data-split>${mark(s.options.title)}</h2>
+      <div data-reveal>${btn(t.optionsButton, `/contact?service=${s.slug}`, { kind: 'ghost' })}</div>
     </div>
     <ul class="options__list">
       ${s.options.items.map((o, i) => `
@@ -645,24 +713,24 @@ ${s.feature === 'finishes' ? finishesSection() : ''}
       </li>`).join('')}
     </ul>
   </div>
-</section>
+</section>` : ''}
 
-${s.gallery.length > 1 ? `
+${gallery.length > 1 ? `
 <section class="section gallery">
   <div class="container">
-    <div class="gallery__grid gallery__grid--${Math.min(s.gallery.length, 4)}">
-      ${s.gallery.map((g, i) => `<figure class="gallery__item" data-reveal style="--d:${i * 80}ms">${picture(g, `${s.name} by Bora Signs in Adelaide`, { sizes: '(min-width: 900px) 40vw, 100vw' })}</figure>`).join('')}
+    <div class="gallery__grid gallery__grid--${Math.min(gallery.length, 4)}">
+      ${gallery.map((g, i) => `<figure class="gallery__item" data-reveal style="--d:${i * 80}ms">${picture(g, `${s.name} by Bora Signs in Adelaide`, { sizes: '(min-width: 900px) 40vw, 100vw' })}</figure>`).join('')}
     </div>
   </div>
 </section>` : ''}
 
 ${quoteBlock(s.quote)}
 ${processSection(true)}
-${faqSection(s.faq)}
+${faqSection(s.faq, t.faqTitle, t.faqKicker)}
 
-<section class="section related">
+${related.length ? `<section class="section related">
   <div class="container">
-    ${sectionHead('Keep exploring', 'Related services', '', { cls: 'center' })}
+    ${sectionHead(t.relatedKicker, t.relatedTitle, '', { cls: 'center' })}
     <div class="related__grid">
       ${related.map((r, i) => `
       <a class="rel" href="${href(r.slug)}" data-reveal style="--d:${i * 70}ms">
@@ -671,16 +739,16 @@ ${faqSection(s.faq)}
       </a>`).join('')}
     </div>
   </div>
-</section>
+</section>` : ''}
 
-${ctaFinal(s.feature === 'wrap-slider' ? 'Let’s wrap yours.' : 'Get your free quote.')}`;
+${ctaFinal(s.ctaTitle)}`;
 
   return {
     slug: s.slug,
-    title: s.title,
+    title: s.title || `${s.name} Adelaide | ${site.name}`,
     description: s.description,
-    image: `/assets/img/work/${s.image}.jpg`,
-    imageSize: [1200, Math.round((img.h * 1200) / img.w)],
+    image: img ? img.og : undefined,
+    imageSize: img ? img.ogSize : undefined,
     bodyClass: `is-service svc-${s.slug}`,
     ld: [
       {
@@ -690,12 +758,12 @@ ${ctaFinal(s.feature === 'wrap-slider' ? 'Let’s wrap yours.' : 'Get your free 
         serviceType: s.name,
         description: s.description,
         url,
-        image: abs(`/assets/img/work/${s.image}.jpg`),
+        image: img ? abs(img.og) : undefined,
         provider: { '@id': `${site.url}/#business` },
         areaServed: { '@type': 'City', name: 'Adelaide' },
       },
       breadcrumbLd([['Home', `${site.url}/`], ['Services', `${site.url}/services`], [s.name, url]]),
-      faqLd(s.faq),
+      ...(s.faq.length ? [faqLd(s.faq)] : []),
     ],
     body,
   };
@@ -703,37 +771,45 @@ ${ctaFinal(s.feature === 'wrap-slider' ? 'Let’s wrap yours.' : 'Get your free 
 
 /* ---------- other pages ---------- */
 
-export function servicesPage() {
-  const body = `
+const pageHero = (crumb, eyebrow, title, lead, extra = '') => `
 <section class="phero phero--short">
   <div class="container center">
-    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">Services</span></nav>
+    <nav class="crumbs" aria-label="Breadcrumb">${crumb}</nav>
     <h1 class="phero__title">
-      <span class="eyebrow" data-hero-in>${icon('spark', 'i')} Signage services in Adelaide</span>
-      <span class="phero__h" data-split data-split-now>Everything your business needs to be seen.</span>
+      <span class="eyebrow" data-hero-in>${icon('spark', 'i')} ${esc(eyebrow)}</span>
+      <span class="phero__h" data-split data-split-now>${mark(title)}</span>
     </h1>
-    <p class="lead phero__lead" data-hero-in>From vehicle wraps that turn your fleet into moving advertisements to shopfront and office signage that lift your professional image, one team designs, produces and installs it all.</p>
-    <div class="cta-row" data-hero-in>${btn('Get a free quote', '/contact', { size: 'lg' })}</div>
+    <p class="lead phero__lead" data-hero-in>${esc(lead)}</p>${extra}
   </div>
-</section>
-${Object.keys(groups).map((g) => `
-<section class="section services services--${g}">
+</section>`;
+const crumbs = (...items) => [`<a href="/">Home</a>`, ...items.map(([label, url]) => (url ? `<a href="${url}">${esc(label)}</a>` : `<span aria-current="page">${esc(label)}</span>`))].join('<span aria-hidden="true">/</span>');
+
+function servicesPage() {
+  const p = c.servicesPage;
+  const img = imageInfo(p.image);
+  const body = `${pageHero(crumbs(['Services']), p.eyebrow, p.title, p.lead, `
+    <div class="cta-row" data-hero-in>${btn(p.button, '/contact', { size: 'lg' })}</div>`)}
+${p.groups.map((g) => {
+  const list = c.services.filter((s) => s.group === g.key && visible.has(s.slug));
+  if (!list.length) return '';
+  return `
+<section class="section services services--${esc(g.key)}">
   <div class="container">
-    ${sectionHead(groups[g], g === 'exterior' ? 'Outside, where customers <em>find you.</em>' : g === 'interior' ? 'Inside, where you <em>win them over.</em>' : 'A fresh finish for your <em>space.</em>', '', { cls: 'center' })}
-    <div class="svc-grid svc-grid--3${services.filter((s) => s.group === g).length === 1 ? ' svc-grid--single' : ''}">
-      ${services.filter((s) => s.group === g).map((s, i) => serviceCard(s, i)).join('')}
+    ${sectionHead(g.label, g.title, '', { cls: 'center' })}
+    <div class="svc-grid svc-grid--3${list.length === 1 ? ' svc-grid--single' : ''}">
+      ${list.map((s, i) => serviceCard(s, i)).join('')}
     </div>
   </div>
-</section>`).join('')}
+</section>`;
+}).join('')}
 ${processSection(true)}
 ${ctaFinal()}`;
   return {
     slug: 'services',
-    title: 'Signage Services Adelaide | Vehicle, Shopfront & Office Signs | Bora Signs',
-    description:
-      'Bora Signs services in Adelaide: vehicle and trailer wraps, shopfront and illuminated signs, window graphics, office and reception signs, wall graphics and decor.',
-    image: '/assets/img/work/shopfront-lp-accounting.jpg',
-    imageSize: [1200, 675],
+    title: p.seo.title,
+    description: p.seo.description,
+    image: img ? img.og : undefined,
+    imageSize: img ? img.ogSize : undefined,
     bodyClass: 'is-services',
     ld: [breadcrumbLd([['Home', `${site.url}/`], ['Services', `${site.url}/services`]])],
     body,
@@ -748,41 +824,46 @@ const field = (name, label, { type = 'text', required = false, auto = '', full =
           : `<input type="${type}" name="${name}"${auto ? ` autocomplete="${auto}"` : ''}${required ? ' required' : ''}${attrs}>`}
       </label>`;
 
-const formShell = (kind, subject, fields, submit) => `
-    <form class="form" data-form="${kind}" ${site.form.endpoint ? `action="${esc(site.form.endpoint)}" method="post"` : `action="${mailto}" method="post"`} data-mailto="${site.email}" novalidate>
-      <input type="hidden" name="subject" value="${esc(subject)}">
-      ${Object.entries(site.form.fields).map(([k, v]) => `<input type="hidden" name="${esc(k)}" value="${esc(v)}">`).join('')}
-      <label class="hp" aria-hidden="true">Leave this empty<input type="text" name="_gotcha" tabindex="-1" autocomplete="off"></label>
-      <div class="form__grid">${fields}</div>
+const formFoot = (submit) => `
       <div class="form__foot">
-        <button class="btn btn--pink btn--lg" type="submit" data-magnetic><span>${submit}</span>${icon('arrow')}</button>
+        <button class="btn btn--pink btn--lg" type="submit" data-magnetic><span>${esc(submit)}</span>${icon('arrow')}</button>
         <p class="form__status" role="status" aria-live="polite" data-status></p>
-      </div>
-    </form>`;
+      </div>`;
+
+const contactData = () => ` data-phone="${esc(site.phone)}" data-email="${esc(site.email)}"`;
 
 // The quote form posts straight to ShopVox, which files it as a lead in "Online Leads" (files included).
 // Field names are ShopVox's; service and suburb are added to the job description by site.js before sending.
+// A copy without the files also lands in the panel's inbox, in case ShopVox is down.
 const shopvoxForm = (fields, submit) => {
-  const sv = site.shopvox;
+  const sv = c.shopvox;
   const action = `https://api.shopvox.com/v1/sales_leads.json?authToken=${encodeURIComponent(sv.authToken)}&account_id=${encodeURIComponent(sv.accountId)}`;
   return `
-    <form class="form" data-form="quote" data-shopvox action="${esc(action)}" method="post" enctype="multipart/form-data" novalidate>
+    <form class="form" data-form="quote" data-shopvox data-backup="/api/forms/quote" action="${esc(action)}" method="post" enctype="multipart/form-data"${contactData()} novalidate>
       <input type="hidden" name="pipeline_name" value="${esc(sv.pipeline)}">
       <input type="hidden" name="title" value="${esc(sv.title)}">
       <input type="hidden" name="lead_source_name" value="${esc(sv.leadSource)}">
       <input type="hidden" name="on_success" value="/thank-you">
       <label class="hp" aria-hidden="true">Leave this empty<input type="text" name="vox_protection" tabindex="-1" autocomplete="off"></label>
-      <div class="form__grid">${fields}</div>
-      <div class="form__foot">
-        <button class="btn btn--pink btn--lg" type="submit" data-magnetic><span>${submit}</span>${icon('arrow')}</button>
-        <p class="form__status" role="status" aria-live="polite" data-status></p>
-      </div>
+      <div class="form__grid">${fields}</div>${formFoot(submit)}
     </form>`;
 };
 
-export function contactPage() {
-  const options = services.map((s) => `<option value="${s.slug}">${esc(s.name)}</option>`).join('');
-  const viaShopvox = !!(site.shopvox && site.shopvox.authToken);
+// Forms that land in the panel's inbox (and, with a Web3Forms key, also in the team's email)
+const inboxForm = (kind, subject, fields, submit, thanks) => {
+  const key = String(c.forms.web3formsKey || '').trim();
+  return `
+    <form class="form" data-form="${kind}" data-inbox action="/api/forms/${kind}" method="post"${key ? ` data-web3forms="${esc(key)}"` : ''} data-subject="${esc(subject)}" data-thanks="${esc(thanks)}"${contactData()} novalidate>
+      <label class="hp" aria-hidden="true">Leave this empty<input type="text" name="_gotcha" tabindex="-1" autocomplete="off"></label>
+      <div class="form__grid">${fields}</div>${formFoot(submit)}
+    </form>`;
+};
+
+function contactPage() {
+  const p = c.contact;
+  const list = c.services.filter((s) => visible.has(s.slug));
+  const options = list.map((s) => `<option value="${s.slug}">${esc(s.name)}</option>`).join('');
+  const viaShopvox = !!(c.shopvox && c.shopvox.authToken && c.shopvox.accountId);
   const n = viaShopvox
     ? { name: 'primaryContactName', phone: 'phone_number', message: 'details' }
     : { name: 'name', phone: 'phone', message: 'message' };
@@ -798,34 +879,24 @@ export function contactPage() {
           <option value="">Choose a service</option>${options}<option value="other">Something else</option>
         </select>
       </label>
-      ${field(n.message, 'Tell us about your project', { type: 'textarea', required: true, full: true, attrs: ' placeholder="Sizes, quantities, vehicle make and model, deadline…" data-message' })}
+      ${field(n.message, 'Tell us about your project', { type: 'textarea', required: true, full: true, attrs: ` placeholder="${esc(p.placeholder)}" data-message` })}
       ${viaShopvox ? `<label class="field field--full field--file">
         <span>Upload files (optional)</span>
         <input type="file" name="asset[]" multiple>
-        <small>Logos, photos, inspiration, site pics: anything helps.</small>
+        <small>${esc(p.filesHint)}</small>
       </label>` : ''}`;
-  const body = `
-<section class="phero phero--short">
-  <div class="container center">
-    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">Contact</span></nav>
-    <h1 class="phero__title">
-      <span class="eyebrow" data-hero-in>${icon('spark', 'i')} Free quote · Adelaide</span>
-      <span class="phero__h" data-split data-split-now>Let’s make you hard to miss.</span>
-    </h1>
-    <p class="lead phero__lead" data-hero-in>Tell us what you need. Send your logo, photos, measurements or a quick brief and we will come back with straightforward advice and a clear quote.</p>
-  </div>
-</section>
+  const body = `${pageHero(crumbs(['Contact']), p.eyebrow, p.title, p.lead)}
 <section class="section contact">
   <div class="container contact__grid">
     <div class="contact__form" data-reveal>
-      <h2 class="h3">Request a free quote</h2>
-      ${viaShopvox ? shopvoxForm(fields, 'Send my request') : formShell('quote', 'New quote request from borasigns.com.au', fields, 'Send my request')}
+      <h2 class="h3">${esc(p.formTitle)}</h2>
+      ${viaShopvox ? shopvoxForm(fields, p.submit) : inboxForm('quote', 'New quote request from the website', fields, p.submit, c.thanks.title)}
     </div>
     <aside class="contact__side" data-reveal>
-      <a class="contact__card" href="${tel}">${icon('phone')}<span><small>Call us</small><strong>${site.phone}</strong></span></a>
-      <a class="contact__card" href="${mailto}">${icon('mail')}<span><small>Email</small><strong>${site.email}</strong></span></a>
-      <a class="contact__card" href="${site.mapUrl}" target="_blank" rel="noopener">${icon('pin')}<span><small>Workshop</small><strong>${esc(site.address.street)}, ${esc(site.address.locality)} ${site.address.region} ${site.address.postcode}</strong></span></a>
-      <div class="contact__social"><p>Follow our latest installs</p><div class="socials">${socialLinks()}</div></div>
+      <a class="contact__card" href="${tel()}">${icon('phone')}<span><small>Call us</small><strong>${esc(site.phone)}</strong></span></a>
+      <a class="contact__card" href="${mailto()}">${icon('mail')}<span><small>Email</small><strong>${esc(site.email)}</strong></span></a>
+      <a class="contact__card" href="${link(site.mapUrl)}" target="_blank" rel="noopener">${icon('pin')}<span><small>Workshop</small><strong>${address()}</strong></span></a>
+      <div class="contact__social"><p>${esc(p.follow)}</p><div class="socials">${socialLinks()}</div></div>
       <div class="contact__mascot">${markSvg('mark mark--contact')}</div>
     </aside>
   </div>
@@ -833,107 +904,265 @@ export function contactPage() {
 ${processSection(true)}`;
   return {
     slug: 'contact',
-    title: 'Contact Bora Signs | Free Signage Quote in Adelaide',
-    description:
-      'Get a free signage quote in Adelaide. Call 0482 530 280, email sales@borasigns.com.au or send your project details to Bora Signs in Regency Park, SA.',
-    image: '/assets/img/og-image.jpg',
+    title: p.seo.title,
+    description: p.seo.description,
+    image: c.seo.ogImage || '/assets/img/og-image.jpg',
     bodyClass: 'is-contact',
     ld: [breadcrumbLd([['Home', `${site.url}/`], ['Contact', `${site.url}/contact`]])],
     body,
   };
 }
 
-export function joinPage() {
-  const skills = ['Vehicle wrapping', 'Vinyl application', 'Sign installation', 'ACM signage', 'Window graphics', 'Wall graphics', 'Production or install support'];
+function joinPage() {
+  const p = c.join;
+  const img = imageInfo(p.image);
   const fields = `
       ${field('name', 'Your name', { required: true, auto: 'name' })}
       ${field('email', 'Email', { type: 'email', required: true, auto: 'email' })}
       ${field('phone', 'Phone', { type: 'tel', required: true, auto: 'tel' })}
       ${field('suburb', 'Suburb', { auto: 'address-level2' })}
-      <fieldset class="field field--full">
+      ${p.skills.length ? `<fieldset class="field field--full">
         <legend>Your experience</legend>
-        <div class="checks">${skills.map((k) => `<label class="check"><input type="checkbox" name="experience" value="${k}"><span>${k}</span></label>`).join('')}</div>
-      </fieldset>
-      <label class="field field--full">
+        <div class="checks">${p.skills.map((k) => `<label class="check"><input type="checkbox" name="experience" value="${esc(k)}"><span>${esc(k)}</span></label>`).join('')}</div>
+      </fieldset>` : ''}
+      ${p.workTypes.length ? `<label class="field field--full">
         <span>What are you looking for?</span>
-        <select name="work_type"><option>Full-time</option><option>Casual</option><option>Subcontract</option><option>Trainee</option></select>
-      </label>
+        <select name="work_type">${p.workTypes.map((k) => `<option>${esc(k)}</option>`).join('')}</select>
+      </label>` : ''}
       ${field('message', 'Tell us a bit about yourself', { type: 'textarea', required: true, full: true })}`;
-  const body = `
-<section class="phero phero--short">
-  <div class="container center">
-    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">Join us</span></nav>
-    <h1 class="phero__title">
-      <span class="eyebrow" data-hero-in>${icon('spark', 'i')} Join the Bora Signs team</span>
-      <span class="phero__h" data-split data-split-now>Good installers are hard to miss too.</span>
-    </h1>
-    <p class="lead phero__lead" data-hero-in>Bora Signs is growing. We are building a shortlist of reliable people for future opportunities in signage installation, vehicle wraps, production and install support.</p>
-  </div>
-</section>
+  const body = `${pageHero(crumbs(['Join us']), p.eyebrow, p.title, p.lead)}
 <section class="section join">
   <div class="container join__grid">
     <div class="join__copy">
       <div class="join__block" data-reveal>
-        <h2 class="h3">Who this is for</h2>
-        <p>We may not be hiring right now, but we are always open to meeting quality people who take pride in clean work, show up on time and want to be part of a growing signage business. Experienced installers, subcontractors, casuals and trainees with the right attitude are all welcome.</p>
-        <ul class="ticks">${skills.map((k) => `<li>${icon('check')}${k}</li>`).join('')}</ul>
+        <h2 class="h3">${esc(p.whoTitle)}</h2>
+        <p>${esc(p.whoText)}</p>
+        ${p.skills.length ? `<ul class="ticks">${p.skills.map((k) => `<li>${icon('check')}${esc(k)}</li>`).join('')}</ul>` : ''}
       </div>
       <div class="join__block" data-reveal>
-        <h2 class="h3">What we look for</h2>
-        <ul class="ticks">${['Show up on time', 'Communicate clearly', 'Care about quality', 'Follow instructions', 'Work well in a team', 'Respect clients and job sites', 'Keep things clean and organised', 'Are willing to learn'].map((k) => `<li>${icon('check')}${k}</li>`).join('')}</ul>
-        <p>Skill matters, but attitude and reliability matter just as much.</p>
+        <h2 class="h3">${esc(p.lookTitle)}</h2>
+        ${p.look.length ? `<ul class="ticks">${p.look.map((k) => `<li>${icon('check')}${esc(k)}</li>`).join('')}</ul>` : ''}
+        ${p.lookNote ? `<p>${esc(p.lookNote)}</p>` : ''}
       </div>
-      <div class="join__block" data-reveal>
-        <h2 class="h3">What happens after you apply?</h2>
+      ${p.steps.length ? `<div class="join__block" data-reveal>
+        <h2 class="h3">${esc(p.stepsTitle)}</h2>
         <ol class="join__steps">
-          <li>We review your experience.</li>
-          <li>If it looks like a fit, we contact you for a quick chat.</li>
-          <li>We may ask for photos of previous work or references.</li>
-          <li>If suitable, we may organise a paid trial, casual shift or interview.</li>
+          ${p.steps.map((k) => `<li>${esc(k)}</li>`).join('\n          ')}
         </ol>
-      </div>
+      </div>` : ''}
     </div>
     <div class="join__form" data-reveal>
-      <h2 class="h3">Apply to join the bench</h2>
-      ${formShell('join', 'New job application from borasigns.com.au', fields, 'Send my application')}
+      <h2 class="h3">${esc(p.formTitle)}</h2>
+      ${inboxForm('join', 'New job application from the website', fields, p.submit, p.thanks)}
     </div>
   </div>
 </section>`;
   return {
     slug: 'join-us',
-    title: 'Join Bora Signs | Vehicle Wrap & Sign Installer Jobs in Adelaide',
-    description:
-      'Join the Bora Signs team in Adelaide. We are building a shortlist of vehicle wrappers, sign installers and production people for casual and full-time work.',
-    image: '/assets/img/work/install-van-wrap.jpg',
-    imageSize: [1200, 675],
+    title: p.seo.title,
+    description: p.seo.description,
+    image: img ? img.og : undefined,
+    imageSize: img ? img.ogSize : undefined,
     bodyClass: 'is-join',
     ld: [breadcrumbLd([['Home', `${site.url}/`], ['Join us', `${site.url}/join-us`]])],
     body,
   };
 }
 
-export function thankYou() {
+function simplePage(slug, p, buttons, bodyClass, title, description) {
   const body = `
 <section class="phero phero--404">
   <div class="container center">
     <div class="nf__mark">${markSvg('mark mark--404')}</div>
-    <h1 class="phero__title"><span class="eyebrow">${icon('check', 'i')} Request received</span><span class="phero__h">Thanks! It’s one less thing now.</span></h1>
-    <p class="lead phero__lead">Your request is with our team and we’ll get back to you shortly. If it’s urgent, give us a call.</p>
-    <div class="cta-row">${btn('Back to home', '/')}${btn(site.phone, tel, { kind: 'ghost', ico: 'phone' })}</div>
+    <h1 class="phero__title"><span class="eyebrow">${slug === 'thank-you' ? `${icon('check', 'i')} ` : ''}${esc(p.eyebrow)}</span><span class="phero__h">${mark(p.title)}</span></h1>
+    <p class="lead phero__lead">${esc(p.lead)}</p>
+    <div class="cta-row">${buttons}</div>
   </div>
 </section>`;
-  return { slug: 'thank-you', title: 'Thank you | Bora Signs', description: 'Your quote request has been received.', bodyClass: 'is-thanks', noindex: true, body };
+  return { slug, title, description, bodyClass, noindex: true, body };
 }
 
-export function notFound() {
-  const body = `
-<section class="phero phero--404">
-  <div class="container center">
-    <div class="nf__mark">${markSvg('mark mark--404')}</div>
-    <h1 class="phero__title"><span class="eyebrow">Error 404</span><span class="phero__h">This page is hard to find.</span></h1>
-    <p class="lead phero__lead">Unlike your business will be. The page may have moved when we rebuilt the site.</p>
-    <div class="cta-row">${btn('Back to home', '/')}${btn('All services', '/services', { kind: 'ghost' })}</div>
-  </div>
-</section>`;
-  return { slug: '404', title: 'Page not found | Bora Signs', description: 'This page could not be found.', bodyClass: 'is-404', noindex: true, body };
+const thankYou = () => simplePage('thank-you', c.thanks, `${btn('Back to home', '/')}${btn(site.phone, tel(), { kind: 'ghost', ico: 'phone' })}`, 'is-thanks', `Thank you | ${site.name}`, 'Your quote request has been received.');
+const notFound = () => simplePage('404', c.notFound, `${btn('Back to home', '/')}${btn('All services', '/services', { kind: 'ghost' })}`, 'is-404', `Page not found | ${site.name}`, 'This page could not be found.');
+
+/* ---------- blog ---------- */
+
+export const today = () => new Date().toISOString().slice(0, 10);
+function publishedPosts() {
+  const now = today();
+  return c.posts
+    .filter((p) => p.status === 'published' && (!p.date || p.date <= now))
+    .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 }
+const niceDate = (d) => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d || '')) return '';
+  const [y, m, day] = d.split('-').map(Number);
+  return `${day} ${['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][m - 1]} ${y}`;
+};
+const excerpt = (p) => p.excerpt || plain(p.body).slice(0, 180).replace(/\s+\S*$/, '…');
+
+function blogIndex() {
+  const b = c.blog;
+  const posts = publishedPosts();
+  const body = `${pageHero(crumbs(['Blog']), b.eyebrow, b.title, b.lead)}
+<section class="section blog">
+  <div class="container">
+    ${posts.length ? `<div class="posts">
+      ${posts.map((p, i) => `
+      <a class="post-card" href="/blog/${p.slug}" data-reveal style="--d:${(i % 3) * 80}ms">
+        <div class="post-card__media">${imageInfo(p.cover) ? picture(p.cover, p.coverAlt, { sizes: '(min-width: 900px) 33vw, 100vw' }) : markSvg('mark mark--post')}</div>
+        <div class="post-card__body">
+          ${p.date ? `<time datetime="${p.date}">${niceDate(p.date)}</time>` : ''}
+          <h2 class="post-card__title">${esc(p.title)}</h2>
+          <p>${esc(excerpt(p))}</p>
+          <span class="post-card__go">${esc(b.readMore)} ${icon('arrow')}</span>
+        </div>
+      </a>`).join('')}
+    </div>` : `<p class="lead center">${esc(b.empty)}</p>`}
+  </div>
+</section>
+${ctaFinal()}`;
+  return {
+    slug: 'blog',
+    title: b.seo.title,
+    description: b.seo.description,
+    image: c.seo.ogImage || '/assets/img/og-image.jpg',
+    bodyClass: 'is-blog',
+    noindex: !posts.length,
+    ld: [breadcrumbLd([['Home', `${site.url}/`], ['Blog', `${site.url}/blog`]])],
+    body,
+  };
+}
+
+function blogPost(p) {
+  const url = `${site.url}/blog/${p.slug}`;
+  const img = imageInfo(p.cover);
+  const more = publishedPosts().filter((x) => x !== p).slice(0, 3);
+  const body = `
+<article class="article">
+  <header class="phero phero--short phero--post">
+    <div class="container center">
+      <nav class="crumbs" aria-label="Breadcrumb">${crumbs(['Blog', '/blog'], [p.title])}</nav>
+      <h1 class="phero__title">
+        ${p.date ? `<span class="eyebrow" data-hero-in>${icon('cal', 'i')} <time datetime="${p.date}">${niceDate(p.date)}</time></span>` : ''}
+        <span class="phero__h phero__h--post" data-split data-split-now>${esc(p.title)}</span>
+      </h1>
+      ${p.excerpt ? `<p class="lead phero__lead" data-hero-in>${esc(p.excerpt)}</p>` : ''}
+    </div>
+  </header>
+  ${img ? `<div class="container article__cover" data-reveal>${picture(p.cover, p.coverAlt, { sizes: '(min-width: 1100px) 1000px, 100vw', eager: true })}</div>` : ''}
+  <div class="container narrow prose" data-reveal>
+    ${sanitize(p.body)}
+  </div>
+</article>
+${more.length ? `<section class="section blog blog--more">
+  <div class="container">
+    ${sectionHead(c.blog.footerLabel || 'Blog', 'More from the *blog.*', '', { cls: 'center' })}
+    <div class="posts">
+      ${more.map((x, i) => `
+      <a class="post-card" href="/blog/${x.slug}" data-reveal style="--d:${i * 80}ms">
+        <div class="post-card__media">${imageInfo(x.cover) ? picture(x.cover, x.coverAlt, { sizes: '(min-width: 900px) 33vw, 100vw' }) : markSvg('mark mark--post')}</div>
+        <div class="post-card__body">
+          ${x.date ? `<time datetime="${x.date}">${niceDate(x.date)}</time>` : ''}
+          <h3 class="post-card__title">${esc(x.title)}</h3>
+          <span class="post-card__go">${esc(c.blog.readMore)} ${icon('arrow')}</span>
+        </div>
+      </a>`).join('')}
+    </div>
+  </div>
+</section>` : ''}
+${ctaFinal()}`;
+  const description = p.seoDescription || excerpt(p);
+  return {
+    slug: `blog/${p.slug}`,
+    path: `/blog/${p.slug}`,
+    title: p.seoTitle || `${p.title} | ${site.name}`,
+    description,
+    image: img ? img.og : undefined,
+    imageSize: img ? img.ogSize : undefined,
+    bodyClass: 'is-post',
+    ld: [
+      {
+        '@type': 'BlogPosting',
+        '@id': `${url}#article`,
+        headline: p.title,
+        description,
+        datePublished: p.date || undefined,
+        image: img ? abs(img.og) : undefined,
+        url,
+        author: { '@id': `${site.url}/#business` },
+        publisher: { '@id': `${site.url}/#business` },
+        mainEntityOfPage: { '@id': `${url}#webpage` },
+      },
+      breadcrumbLd([['Home', `${site.url}/`], ['Blog', `${site.url}/blog`], [p.title, url]]),
+    ],
+    body,
+  };
+}
+
+/* ---------- routing ---------- */
+
+// ctx: { url: site address, noindex, assets: { css, js, lenis, hero3d }, preview }
+function use(content, context) {
+  c = content;
+  ctx = context;
+  site = { ...c.company, url: context.url.replace(/\/+$/, ''), noindex: !!context.noindex };
+  bySlug = Object.fromEntries(c.services.map((s) => [s.slug, s]));
+  visible = new Set(c.services.filter((s) => !s.hidden || context.preview).map((s) => s.slug));
+}
+
+const fixed = { '': home, services: servicesPage, contact: contactPage, 'join-us': joinPage, 'thank-you': thankYou };
+
+// The page for a path, or null when there is none (the Worker then answers with notFoundPage)
+function pageFor(path) {
+  const slug = path.replace(/^\/+|\/+$/g, '');
+  if (fixed[slug]) return fixed[slug]();
+  if (slug === 'blog' && c.blog.enabled) return blogIndex();
+  const post = /^blog\/([a-z0-9-]+)$/.exec(slug);
+  if (post && c.blog.enabled) {
+    const p = c.posts.find((x) => x.slug === post[1]);
+    if (p && (ctx.preview || publishedPosts().includes(p))) return blogPost(p);
+    return null;
+  }
+  const s = svc(slug);
+  return s ? service(s) : null;
+}
+
+export function render(content, path, context) {
+  use(content, context);
+  const page = pageFor(path);
+  return page ? layout(page) : null;
+}
+
+export function renderNotFound(content, context) {
+  use(content, context);
+  return layout(notFound());
+}
+
+// Every public page, for the sitemap and for checking a document before it is published
+export function paths(content) {
+  const list = ['/', '/services', ...content.services.filter((s) => !s.hidden).map((s) => `/${s.slug}`), '/contact', '/join-us'];
+  c = content;
+  ctx = ctx || {};
+  if (content.blog.enabled) {
+    const posts = publishedPosts();
+    if (posts.length) list.push('/blog', ...posts.map((p) => `/blog/${p.slug}`));
+  }
+  return list;
+}
+
+export function sitemap(content, context) {
+  use(content, context);
+  const day = today();
+  const prio = (p) => (p === '/' ? '1.0' : p === '/join-us' || p.startsWith('/blog') ? '0.5' : '0.8');
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${paths(content).map((p) => {
+  const post = p.startsWith('/blog/') && content.posts.find((x) => `/blog/${x.slug}` === p);
+  return `  <url><loc>${esc(site.url + p)}</loc><lastmod>${(post && post.date) || day}</lastmod><priority>${prio(p)}</priority></url>`;
+}).join('\n')}
+</urlset>
+`;
+}
+
+export const titleText = unmark;

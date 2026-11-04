@@ -1,15 +1,16 @@
 # Publica o site da Bora Signs no Cloudflare, sempre no mesmo link:
 #   https://bora-signs.<subdomínio da conta>.workers.dev  (o endereço exato aparece no resumo da execução)
 #
-# Vai como Worker com arquivos estáticos (como a Punto Pizza e a Giselle), porque a conta já chegou ao limite de
-# projetos do Cloudflare Pages. Usa os mesmos secrets dos outros sites (Settings → Secrets and variables → Actions):
-#   CLOUDFLARE_API_TOKEN   token do Cloudflare que pode publicar Workers (obrigatório)
+# Vai como Worker (a conta já chegou ao limite de projetos do Cloudflare Pages): os arquivos estáticos (CSS, JS, fotos e o
+# painel em /admin) e um Worker que monta as páginas a partir do conteúdo publicado no painel. O conteúdo, as fotos
+# enviadas, as mensagens e os usuários do painel ficam no Workers KV "bora-signs-cms", que este workflow cria na primeira vez.
+#
+# Usa os mesmos secrets dos outros sites (Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN   token do Cloudflare que pode publicar Workers e mexer no Workers KV (obrigatório)
 #   CLOUDFLARE_ACCOUNT_ID  ID da conta (opcional: sem ele, o workflow descobre a conta pelo token)
 #
-# Enquanto o site não estiver no domínio, a prévia fica fora do Google (noindex) e usa o próprio link no canonical e na
-# prévia do WhatsApp. Quando www.borasigns.com.au apontar para este Worker, crie a variável BORASIGNS_SITE_URL com
-# https://www.borasigns.com.au (Settings → Secrets and variables → Actions → Variables): o site passa a ser indexado.
-# Enquanto o token não existir, o workflow só avisa e não falha.
+# O endereço oficial do site fica no painel (Configurações → SEO). Só ele aparece no Google; o link workers.dev fica fora
+# (noindex) para não competir com o site atual no Wix. Enquanto o token não existir, o workflow só avisa e não falha.
 name: Deploy Bora Signs (Cloudflare)
 
 on:
@@ -55,7 +56,7 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       ACCOUNT_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID }}
-      LIVE_URL: ${{ vars.BORASIGNS_SITE_URL }}
+      KV_TITLE: bora-signs-cms
     steps:
       - uses: actions/checkout@v4
 
@@ -105,24 +106,49 @@ jobs:
             echo "Primeira publicação: o Worker $WORKER vai ser criado."
           fi
 
+      - name: Armazenamento do painel (Workers KV)
+        run: |
+          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/storage/kv/namespaces"
+          auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+          list=$(curl -sS -H "$auth" "$api?per_page=100")
+          if [ "$(echo "$list" | jq -r '.success')" != "true" ]; then
+            echo "$list" | jq -c '.errors' || true
+            echo "::error title=Workers KV::O token do Cloudflare não pode ler o Workers KV. Edite o token em Cloudflare → My Profile → API Tokens e inclua a permissão Account → Workers KV Storage → Edit."
+            exit 1
+          fi
+          id=$(echo "$list" | jq -r --arg t "$KV_TITLE" '.result[] | select(.title == $t) | .id' | head -1)
+          if [ -z "$id" ]; then
+            created=$(curl -sS -X POST -H "$auth" -H "Content-Type: application/json" --data "{\"title\":\"$KV_TITLE\"}" "$api")
+            id=$(echo "$created" | jq -r '.result.id // empty')
+            if [ -z "$id" ]; then
+              echo "$created" | jq -c '.errors' || true
+              echo "::error title=Workers KV::Não deu para criar o KV $KV_TITLE. O token precisa da permissão Account → Workers KV Storage → Edit."
+              exit 1
+            fi
+            echo "KV $KV_TITLE criado."
+          else
+            echo "KV $KV_TITLE já existe."
+          fi
+          echo "KV_ID=$id" >> "$GITHUB_ENV"
+
       - name: Montar o site
         run: |
-          if [ -n "$LIVE_URL" ]; then
-            SITE_URL="$LIVE_URL" node bora-signs/build.mjs
-          else
-            SITE_URL="$PREVIEW_URL" NOINDEX=1 node bora-signs/build.mjs
-          fi
+          node bora-signs/build.mjs
           cat > wrangler.jsonc <<EOF
           {
             "name": "$WORKER",
+            "main": "./bora-signs/worker/index.mjs",
             "compatibility_date": "2025-10-01",
             "workers_dev": true,
             "preview_urls": false,
             "assets": {
               "directory": "./bora-signs/dist",
-              "not_found_handling": "404-page",
+              "binding": "ASSETS",
+              "not_found_handling": "none",
               "html_handling": "auto-trailing-slash"
-            }
+            },
+            "kv_namespaces": [{ "binding": "CMS", "id": "$KV_ID" }],
+            "observability": { "enabled": true }
           }
           EOF
 
@@ -132,12 +158,17 @@ jobs:
       - name: Conferir o site no ar
         run: |
           for i in 1 2 3 4 5 6; do
-            if curl -fsS --max-time 20 "$PREVIEW_URL/vehicle-signage" | grep -q "Drag to"; then
+            if curl -fsS --max-time 20 "$PREVIEW_URL/vehicle-signage" | grep -q "Drag to" \
+              && curl -fsS --max-time 20 "$PREVIEW_URL/admin/" | grep -q "Painel" \
+              && [ "$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$PREVIEW_URL/api/me")" = "401" ]; then
               echo "Site no ar: $PREVIEW_URL"
-              echo "### Bora Signs no ar: $PREVIEW_URL" >> "$GITHUB_STEP_SUMMARY"
+              {
+                echo "### Bora Signs no ar: $PREVIEW_URL"
+                echo "Painel: $PREVIEW_URL/admin"
+              } >> "$GITHUB_STEP_SUMMARY"
               exit 0
             fi
             sleep 10
           done
-          echo "::warning title=Site ainda carregando::A publicação terminou, mas $PREVIEW_URL ainda não respondeu. Abra de novo em alguns minutos."
+          echo "::warning title=Site ainda carregando::A publicação terminou, mas $PREVIEW_URL ainda não respondeu como esperado. Abra de novo em alguns minutos."
           echo "### Publicado em: $PREVIEW_URL (ainda carregando)" >> "$GITHUB_STEP_SUMMARY"

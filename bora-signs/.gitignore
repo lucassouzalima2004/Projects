@@ -1,2 +1,5 @@
 dist/
 node_modules/
+worker/build-info.mjs
+.wrangler/
+.dev.vars

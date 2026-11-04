@@ -1,8 +1,8 @@
 # Bora Signs · site
 
-Novo site da [Bora Signs](https://www.borasigns.com.au) (Adelaide), para substituir o Wix.
-É HTML, CSS e JavaScript puros, gerado por um script Node sem dependências: cada serviço vira uma página própria,
-com título, descrição e dados estruturados para o Google, e os anúncios podem apontar direto para a página certa.
+Novo site da [Bora Signs](https://www.borasigns.com.au) (Adelaide), para substituir o Wix, com **painel próprio em
+`/admin`** para o Carlos mudar textos, fotos, serviços, blog e configurações sem mexer em código.
+Roda inteiro no Cloudflare (Worker + Workers KV), sem banco de dados nem servidor para manter.
 
 ## O que tem no site
 
@@ -11,84 +11,101 @@ com título, descrição e dados estruturados para o Google, e os anúncios pode
   atrás dele, cada uma no seu ritmo; o card "Signage" se desfaz em estilhaços e volta, e ele dá um pulinho olhando
   para o card. Parado, ele olha em volta sozinho. No celular o título vem em cima e ele logo abaixo: dá para arrastar
   o dedo para os lados para girá-lo, um toque faz ele pular, e a rolagem também o vira. Depois: números, serviços,
-  processo em 4 passos, clientes, depoimentos, dúvidas e chamada final. O
-  camaleão do logo pisca.
+  processo em 4 passos, clientes, depoimentos, dúvidas e chamada final. O camaleão do logo pisca.
 - **Uma página por serviço** (13), com os mesmos endereços do Wix: `/vehicle-signage`, `/shopfront-signage`, `/window-graphics`,
   `/office-signage`, `/decor` etc. Cada uma tem por que contratar, opções, fotos, depoimento, processo, dúvidas e serviços relacionados.
 - **Van antes/depois** em `/vehicle-signage`: arrastando, a van branca vai sendo envelopada e o preço indicativo sobe de
-  **$500** (logo e letreiro) até **$7.000** (envelopamento completo). O botão "Get my exact quote" leva ao formulário já
-  com o serviço e o pacote preenchidos.
-- **Orçamento** (`/contact`), **Trabalhe conosco** (`/join-us`), **todos os serviços** (`/services`) e página 404.
+  **$500** (logo e letreiro) até **$7.000** (envelopamento completo).
+- **Blog** em `/blog` (aparece no rodapé e no Google quando houver posts publicados).
+- **Orçamento** (`/contact`, vai para o ShopVox), **Trabalhe conosco** (`/join-us`), **todos os serviços** (`/services`) e página 404.
 - Rolagem suave, olho do camaleão que segue o mouse, textos que entram palavra por palavra. Tudo é desligado para quem
   ativou "reduzir movimento" no celular ou no computador.
-- Barra fixa de "Ligar / Orçamento" no celular e prévia bonita do link (`og-image.jpg`).
 
-## Como editar
+## O painel (`/admin`)
 
-| O quê | Onde |
+Em `https://<endereço do site>/admin`, com usuário e senha. Tudo em português:
+
+| Parte do painel | O que dá para fazer |
 | --- | --- |
-| Telefone, e-mail, endereço, ABN, redes sociais | `src/site.mjs` |
-| Menu (igual ao do site atual) | `menu` em `src/content.mjs` |
-| Formulário de orçamento → ShopVox | `shopvox` em `src/site.mjs` |
-| Meta Pixel | `metaPixelId` em `src/site.mjs` (hoje vazio: o pixel `1070067669184384` é do Bora Decor) |
-| Para onde vão os formulários | `form` em `src/site.mjs` (veja abaixo) |
-| Preços da van ($500 → $7.000) e nomes dos pacotes | `wrapEstimate` em `src/site.mjs` |
-| Números da home (15+ anos etc.) e logos de clientes | `stats` e `clients` em `src/site.mjs` |
-| Nota do Google no topo da home | `google` em `src/site.mjs` (`null` esconde) |
-| Cards que flutuam atrás do camaleão (nomes, ícones, posições) | `campaignCards` em `src/render.mjs` |
-| Textos de cada serviço, título e descrição do Google, dúvidas | `services` em `src/content.mjs` |
-| Processo, depoimentos da home, dúvidas da home | `src/content.mjs` |
-| Layout das páginas | `src/render.mjs` |
-| Cores e fontes | topo de `public/assets/css/site.css` |
-| Animações e interações | `public/assets/js/site.js` |
-| Camaleão 3D, parallax, flutuação dos cards e estilhaços | `public/assets/js/hero3d.js` |
+| **Painel** | Resumo: o que mudou e ainda não foi publicado, atalhos, mensagens novas |
+| **Página inicial** | Todos os textos da home, os cartões atrás do camaleão, serviços em destaque, motivos, depoimentos, dúvidas, título e descrição no Google |
+| **Serviços** | Criar, duplicar, esconder, apagar e reordenar serviços; cada um com textos, foto, galeria, dúvidas, relacionados, lugar no menu e Google. Mudar o endereço cria o redirecionamento do antigo sozinho |
+| **Blog** | Posts com editor de texto (títulos, negrito, listas, links, fotos), capa, data (pode agendar), rascunho e Google |
+| **Outras páginas** | Página de serviços, contato, trabalhe conosco, obrigado, 404 |
+| **Blocos repetidos** | Processo em 4 passos, chamada final, cabeçalho e textos comuns das páginas de serviço |
+| **Menu e rodapé** | O menu do topo (com subitens) e as colunas do rodapé |
+| **Fotos** | Enviar fotos (o painel reduz e converte para WebP sozinho) e ver onde cada uma está em uso |
+| **Mensagens** | Candidaturas do Trabalhe conosco e cópia de cada pedido de orçamento (o original vai para o ShopVox) |
+| **Configurações** | Empresa, telefone, endereço, redes, nota do Google, números, logos de clientes, preços da van, acabamentos, SEO, ShopVox, Meta Pixel, Google Analytics, redirecionamentos |
+| **Histórico** | As últimas 60 publicações; dá para ver como estava e voltar |
+| **Usuários** | Trocar a senha, adicionar ou remover pessoas |
 
-Fotos novas: coloque em `public/assets/img/work/` como `<nome>-800` e `<nome>-1600`, em `.avif` e `.webp`
-(mais um `.jpg` de 1200 px para a prévia do link), e registre largura e altura em `src/images.mjs`.
+Como funciona: as mudanças aparecem na **prévia** ao lado na hora (computador ou celular; clicar num link da prévia abre
+o editor daquela página). **Salvar rascunho** guarda sem colocar no ar; **Publicar** coloca no site (leva até 1 minuto
+para aparecer em todo lugar). Nos títulos, `*asteriscos*` deixam a palavra em rosa.
 
-O camaleão do banner é a arte da campanha recortada (`assets/img/hero/chameleon.webp`) mais um mapa de profundidade
-(`chameleon-depth.png`, mais claro = mais perto) que dá o volume no WebGL. Sem placa de vídeo, ou com "reduzir movimento",
-aparece a arte parada, sem prejuízo para quem visita.
+**Primeiro acesso**: há dois usuários iniciais, `carlos` e `lucas`, com senhas provisórias (passadas fora do repositório).
+No primeiro login cada um cria a própria senha. A lista inicial está em `worker/seed.mjs`, só com os hashes das senhas.
+
+## Como o código está organizado
+
+```
+bora-signs/
+├── build.mjs               copia public/ e admin/ para dist/ e escreve worker/build-info.mjs
+├── wrangler.jsonc          para rodar no computador (npx wrangler dev)
+├── worker/
+│   ├── index.mjs           o Worker: monta as páginas, sitemap, robots, redirecionamentos e a API do painel
+│   ├── store.mjs           conteúdo publicado, rascunho, histórico, fotos e mensagens no Workers KV
+│   ├── auth.mjs            login (PBKDF2), sessão em cookie assinado, limite de tentativas
+│   └── seed.mjs            usuários iniciais
+├── admin/                  o painel (HTML, CSS e um arquivo JS, sem etapa de build)
+├── src/
+│   ├── defaults.mjs        o conteúdo inicial do site inteiro (vem de site.mjs e content.mjs)
+│   ├── render.mjs          HTML de todas as páginas a partir do conteúdo
+│   ├── site.mjs            dados iniciais da empresa
+│   ├── content.mjs         textos iniciais dos serviços, menu, processo, dúvidas
+│   ├── text.mjs            escape de texto, *destaque* e o filtro de HTML dos posts
+│   ├── icons.mjs, logo.mjs, van.mjs, images.mjs
+└── public/                 CSS, JS, fontes (Archivo, licença OFL), fotos e ícones
+```
+
+O conteúdo é um documento só. `src/defaults.mjs` tem os valores iniciais; depois da primeira publicação no painel vale
+o que está no KV. Campos novos adicionados ao `defaults.mjs` são preenchidos sozinhos nos documentos antigos.
+Cada publicação é testada antes: se alguma página não puder ser montada, o painel avisa e nada vai para o ar.
+
+Fotos que vieram com o site ficam em `public/assets/img/work/` (`<nome>-800` e `-1600`, em `.avif` e `.webp`, mais um
+`.jpg` de 1200 px), registradas em `src/images.mjs`. As fotos enviadas pelo painel ficam no KV e são servidas em `/media/`.
 
 ## Ver no computador
 
 ```bash
-node build.mjs          # gera a pasta dist/
-npx serve dist          # abre em http://localhost:3000 (entende /vehicle-signage sem o .html)
+node build.mjs
+npx wrangler dev        # http://localhost:8787 e http://localhost:8787/admin (KV local, separado do site no ar)
 ```
 
 ## Formulários
 
-O **pedido de orçamento** (`/contact`) vai direto para o **ShopVox**, como lead no funil "Online Leads", com origem
-"Contact Form": nome, e-mail, telefone, empresa, a descrição do trabalho (o serviço e o bairro escolhidos entram nela) e
-os arquivos anexados. Depois de enviar, a pessoa cai em `/thank-you`. As chaves ficam em `shopvox` no `src/site.mjs`; são
-as chaves de formulário do próprio ShopVox, feitas para ficar na página (estão no formulário deles também).
+O **pedido de orçamento** (`/contact`) vai direto para o **ShopVox**, como lead no funil "Online Leads", com os arquivos
+anexados, e a pessoa cai em `/thank-you`. Uma cópia sem os arquivos fica em **Mensagens** no painel. As chaves do
+ShopVox ficam no painel (Configurações → Integrações).
 
-O **Join Us** abre o e-mail do visitante com a mensagem pronta para `sales@borasigns.com.au`. Para receber direto,
-crie uma chave grátis no [Web3Forms](https://web3forms.com) com o e-mail da Bora e preencha `form` em `src/site.mjs`:
-
-```js
-form: {
-  endpoint: 'https://api.web3forms.com/submit',
-  fields: { access_key: 'a-chave-que-eles-mandam' },
-},
-```
-
-(Formspree também funciona: `endpoint: 'https://formspree.io/f/xxxx'` e `fields: {}`.)
-Quando houver um pixel da Bora Signs em `metaPixelId`, cada envio conta como **Lead** e cliques em telefone e e-mail
-contam como **Contact**.
+O **Trabalhe conosco** chega em **Mensagens**. Para receber também por e-mail, crie uma chave grátis no
+[Web3Forms](https://web3forms.com) com o e-mail da Bora e cole em Configurações → Integrações.
+Com o Meta Pixel ou o Google Analytics configurados, cada envio conta como Lead.
 
 ## Publicar
 
-O workflow `.github/workflows/deploy-bora-signs.yml` monta o site e publica no Cloudflare como **Worker** com arquivos
-estáticos (a conta já chegou ao limite de projetos do Pages, como nos outros sites do repositório), sempre no mesmo link:
-`https://bora-signs.<subdomínio da conta>.workers.dev`. O endereço exato aparece no resumo da execução em **Actions**.
-Usa o secret `CLOUDFLARE_API_TOKEN` (e `CLOUDFLARE_ACCOUNT_ID`, se existir).
+O workflow `.github/workflows/deploy-bora-signs.yml` monta o site e publica no Cloudflare como **Worker** (a conta já
+chegou ao limite de projetos do Pages), sempre em `https://bora-signs.<subdomínio da conta>.workers.dev`.
+Na primeira vez ele cria o Workers KV `bora-signs-cms`, onde ficam o conteúdo, o histórico, as fotos enviadas, as
+mensagens e os usuários. Usa o secret `CLOUDFLARE_API_TOKEN` (e `CLOUDFLARE_ACCOUNT_ID`, se existir); o token precisa
+das permissões de Workers Scripts e **Workers KV Storage** (Edit).
 
-Enquanto o site não estiver no domínio, o link fica fora do Google (`noindex`), para não competir com o site atual no Wix.
-Quando `www.borasigns.com.au` apontar para o Worker, crie a variável `BORASIGNS_SITE_URL` = `https://www.borasigns.com.au`
-em **Settings → Secrets and variables → Actions → Variables** e rode o workflow de novo: o site passa a ser indexado,
-com o domínio no canonical, no sitemap e na prévia do link.
+Publicar o código de novo **não apaga** nada do que foi feito no painel.
+
+Só o endereço oficial do site (Configurações → SEO, hoje `https://www.borasigns.com.au`) aparece no Google; o link
+workers.dev fica fora (`noindex`), para não competir com o site atual no Wix. Quando o domínio apontar para o Worker,
+ele passa a ser indexado sozinho, sem mudar nada.
 
 ### Domínio e e-mails (hoje no Wix)
 
@@ -100,53 +117,30 @@ esteja no Cloudflare, então:
 2. No Wix: trocar os nameservers do domínio pelos dois que o Cloudflare mostrar. Se o Wix não deixar trocar
    (domínio comprado nele), transferir o registro do domínio para fora do Wix (precisa do código de transferência e da ABN).
 3. Com o domínio ativo no Cloudflare: **Workers & Pages → bora-signs → Settings → Domains & Routes → Add → Custom domain**
-   → `www.borasigns.com.au` (e `borasigns.com.au`, ou uma regra redirecionando o domínio sem `www` para o `www`).
-4. Criar a variável `BORASIGNS_SITE_URL` (veja acima) e rodar o workflow.
-
-O endereço oficial do site é `https://www.borasigns.com.au` (o mesmo do Wix). Se mudar, troque `url` em `src/site.mjs`.
+   → `www.borasigns.com.au` e `borasigns.com.au` (quem abrir sem `www` é levado para o `www`).
+4. O painel passa a funcionar em `https://www.borasigns.com.au/admin`.
 
 ### Endereços antigos
 
-Os endereços do Wix foram mantidos. Os que mudaram redirecionam sozinhos (301), então anúncios e Google continuam
-caindo na página certa: `/copy-of-vehicle-signage → /trailer-wrap`, `/contact-8 → /join-us`, `/home → /`.
-Para adicionar outros, edite `redirects` em `build.mjs`.
+Os endereços do Wix foram mantidos. Os que mudaram redirecionam sozinhos (301): `/copy-of-vehicle-signage → /trailer-wrap`,
+`/contact-8 → /join-us`, `/home → /`. A lista fica no painel (Configurações → Redirecionamentos).
 
 ## SEO
 
-- Título e descrição únicos por página, com a palavra-chave e "Adelaide"; um `h1` por página.
-- Dados estruturados: `LocalBusiness` (endereço, telefone, ABN, redes), `Service` em cada serviço, `BreadcrumbList` e `FAQPage`.
-- `sitemap.xml` e `robots.txt` gerados no build; links canônicos e prévias (Open Graph) em todas as páginas.
+- Título e descrição únicos por página (editáveis no painel, com prévia de como aparece no Google), um `h1` por página.
+- Dados estruturados: `LocalBusiness`, `Service` em cada serviço, `BlogPosting` nos posts, `BreadcrumbList` e `FAQPage`.
+- `sitemap.xml` e `robots.txt` montados na hora, com os serviços e posts publicados.
 - Imagens em AVIF/WebP com tamanho certo para cada tela e fonte hospedada no próprio site.
-- Lighthouse (celular): Desempenho 92, Acessibilidade 100, SEO 100 na home.
 
 Depois de publicar no domínio: cadastre o site no [Google Search Console](https://search.google.com/search-console),
-envie `https://www.borasigns.com.au/sitemap.xml` e, se pedirem verificação por meta tag, cole o código em
-`googleSiteVerification` em `src/site.mjs`.
+envie `https://www.borasigns.com.au/sitemap.xml` e, se pedirem verificação por meta tag, cole o código no painel
+(Configurações → SEO).
 
 ## Antes de publicar no domínio
 
-- [ ] Preços da van: $500 e $7.000 foram os exemplos do Carlos. Confirmar valores e nomes dos pacotes (`wrapEstimate`).
-- [ ] Depoimentos: vieram do Wix. Confirmar que são de clientes reais (os sem nome aparecem como "Bora Signs client").
-- [ ] Horário de atendimento (o Wix não tinha; dá para incluir no `site.mjs` e nos dados do Google).
-- [ ] Join Us: configurar o Web3Forms (ou manter o envio por e-mail). O orçamento já vai para o ShopVox.
-- [ ] Meta Pixel da Bora Signs (se houver): colocar em `metaPixelId`. O `1070067669184384` é do Bora Decor.
-- [ ] Endereço do Bora Decor, se quiser um link da página `/decor` para o site da Decor.
-
-## Estrutura
-
-```
-bora-signs/
-├── build.mjs               gera dist/: páginas, sitemap, robots.txt e _redirects
-├── src/
-│   ├── site.mjs            dados da empresa e configurações
-│   ├── content.mjs         textos de todas as páginas
-│   ├── render.mjs          HTML das páginas
-│   ├── van.mjs             desenho da van do antes/depois
-│   ├── logo.mjs            logo vetorizado do arquivo da marca (logotipo e ícone do camaleão)
-│   └── images.mjs          tamanhos das fotos
-└── public/                 copiado como está para dist/
-    ├── _headers            cache e cabeçalhos de segurança do Cloudflare
-    └── assets/             css, js, fontes (Archivo, licença OFL) e imagens
-```
+- [ ] Preços da van: $500 e $7.000 foram os exemplos do Carlos. Confirmar no painel (Configurações → Van).
+- [ ] Depoimentos: vieram do Wix. Confirmar que são de clientes reais.
+- [ ] Join Us por e-mail: chave do Web3Forms (opcional; as candidaturas já chegam em Mensagens).
+- [ ] Meta Pixel e Google Analytics da Bora Signs (se houver). O pixel `1070067669184384` é do Bora Decor.
 
 `lenis.min.js` (rolagem suave) é a biblioteca [Lenis](https://github.com/darkroomengineering/lenis), licença MIT.

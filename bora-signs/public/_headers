@@ -13,3 +13,8 @@
   Cache-Control: public, max-age=2592000
 /assets/video/*
   Cache-Control: public, max-age=2592000
+
+# The panel: never cached for long, never indexed
+/admin/*
+  Cache-Control: no-cache
+  X-Robots-Tag: noindex, nofollow

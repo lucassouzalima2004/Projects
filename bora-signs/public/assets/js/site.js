@@ -3,12 +3,16 @@
   const d = document;
   const root = d.documentElement;
   const body = d.body;
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // The panel's live preview shows everything at once, without entrance animations
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches || root.classList.contains('is-preview');
   const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const $ = (sel, el = d) => el.querySelector(sel);
   const $$ = (sel, el = d) => [...el.querySelectorAll(sel)];
-  const track = (event, data) => window.fbq && window.fbq('track', event, data);
+  const track = (event, data) => {
+    if (window.fbq) window.fbq('track', event, data);
+    if (window.gtag) window.gtag('event', event === 'Lead' ? 'generate_lead' : 'contact', data ? { form: data.content_name } : {});
+  };
 
   /* ---------- smooth scroll ---------- */
 
@@ -408,6 +412,8 @@
   const params = new URLSearchParams(location.search);
   $$('[data-form]').forEach((form) => {
     const status = $('[data-status]', form);
+    const phone = form.dataset.phone || '';
+    const email = form.dataset.email || '';
     const say = (msg, kind = '') => { status.textContent = msg; status.className = `form__status${kind ? ` is-${kind}` : ''}`; };
     const service = $('[data-service]', form);
     if (service && params.get('service')) service.value = params.get('service');
@@ -447,6 +453,15 @@
         const btn = $('button[type=submit]', form);
         btn.disabled = true;
         say(lead.getAll('asset[]').length ? 'Sending your request and files…' : 'Sending…');
+        // A copy without the files goes to the site's own inbox, in case ShopVox is down
+        if (form.dataset.backup) {
+          const copy = { page: location.pathname, files: String(lead.getAll('asset[]').length || '') };
+          for (const [k, v] of data) {
+            if (typeof v !== 'string' || !v || /^(pipeline_name|title|lead_source_name|on_success|vox_protection)$/.test(k)) continue;
+            copy[k] = k === 'service' && service && service.value ? service.selectedOptions[0].text : v;
+          }
+          try { navigator.sendBeacon(form.dataset.backup, new Blob([JSON.stringify(copy)], { type: 'text/plain' })); } catch (_) { /* best effort */ }
+        }
         try {
           const res = await fetch(action, { method: 'POST', body: lead });
           if (!res.ok) {
@@ -457,7 +472,41 @@
           track('Lead', { content_name: 'Quote form' });
           location.href = data.get('on_success') || '/thank-you';
         } catch (err) {
-          say(`Sorry, that didn’t send.${err.message ? ` ${err.message}` : ''} Please try again, or call us on 0482 530 280.`, 'err');
+          say(`Sorry, that didn’t send.${err.message ? ` ${err.message}` : ''} Please try again, or call us on ${phone}.`, 'err');
+          btn.disabled = false;
+        }
+        return;
+      }
+      // Forms that land in the panel's inbox (and, with a Web3Forms key, also by email)
+      if (form.hasAttribute('data-inbox')) {
+        const fields = { page: location.pathname };
+        for (const [k] of data) {
+          if (k === '_gotcha' || k === 'page' || fields[k] !== undefined) continue;
+          const all = data.getAll(k).filter((v) => typeof v === 'string' && v.trim());
+          if (!all.length) continue;
+          fields[k] = k === 'service' && service && service.value ? service.selectedOptions[0].text : all.join(', ');
+        }
+        const btn = $('button[type=submit]', form);
+        btn.disabled = true;
+        say('Sending…');
+        try {
+          const res = await fetch(action, { method: 'POST', body: JSON.stringify(fields), headers: { 'Content-Type': 'application/json' } });
+          if (!res.ok) throw new Error(res.status);
+          if (form.dataset.web3forms) {
+            const mail = new FormData();
+            mail.append('access_key', form.dataset.web3forms);
+            mail.append('subject', form.dataset.subject || 'New message from the website');
+            mail.append('from_name', 'Bora Signs website');
+            for (const [k, v] of Object.entries(fields)) mail.append(k, v);
+            fetch('https://api.web3forms.com/submit', { method: 'POST', body: mail, headers: { Accept: 'application/json' } }).catch(() => {});
+          }
+          form.reset();
+          say(form.dataset.thanks || 'Thanks! Your message is on its way.', 'ok');
+          track('Lead', { content_name: form.dataset.form });
+          if (form.dataset.form === 'quote') location.href = '/thank-you';
+        } catch (err) {
+          say(`Sorry, that didn’t send. Please call us on ${phone}${email ? ` or email ${email}` : ''}.`, 'err');
+        } finally {
           btn.disabled = false;
         }
         return;
@@ -477,7 +526,7 @@
         const msg = data.get('message') || '';
         const text = lines.filter((l) => !l.startsWith('Message:')).join('\n') + (msg ? `\n\n${msg}` : '');
         location.href = `mailto:${form.dataset.mailto}?subject=${encodeURIComponent(data.get('subject'))}&body=${encodeURIComponent(text)}`;
-        say('Your email app should open with your message ready to send. If it doesn’t, call us on 0482 530 280.', 'ok');
+        say(`Your email app should open with your message ready to send. If it doesn’t, call us on ${phone}.`, 'ok');
         track('Contact');
         return;
       }
@@ -492,7 +541,7 @@
         say('Thanks! Your message is on its way. We’ll get back to you shortly.', 'ok');
         track('Lead', { content_name: form.dataset.form });
       } catch (err) {
-        say('Sorry, that didn’t send. Please call us on 0482 530 280 or email sales@borasigns.com.au.', 'err');
+        say(`Sorry, that didn’t send. Please call us on ${phone}${email ? ` or email ${email}` : ''}.`, 'err');
       } finally {
         btn.disabled = false;
       }

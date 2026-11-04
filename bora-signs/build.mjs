@@ -1,63 +1,43 @@
-// Builds the site into dist/: one HTML file per page plus sitemap, robots.txt and redirects.
-// No dependencies, only Node 18+:  node build.mjs
+// Prepares the site for Cloudflare: copies the static files (public/) and the admin panel (admin/) into dist/,
+// and writes worker/build-info.mjs with the fingerprints the pages use to link CSS and JS.
+// The pages themselves are rendered by the Worker (worker/index.mjs) from the content published in the panel.
+// No dependencies, only Node 18+:  node build.mjs   (then: npx wrangler dev, see README)
 
-import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-
-import site from './src/site.mjs';
-import { services } from './src/content.mjs';
-import { layout, home, service, servicesPage, contactPage, joinPage, thankYou, notFound } from './src/render.mjs';
-
-// Previews (the workers.dev link) put their own address in canonical links and link previews, and stay out of Google:
-//   SITE_URL=https://bora-signs.example.workers.dev NOINDEX=1 node build.mjs
-if (process.env.SITE_URL) site.url = process.env.SITE_URL.replace(/\/+$/, '');
-site.noindex = process.env.NOINDEX === '1';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const pub = join(root, 'public');
 const out = join(root, 'dist');
 
-// Old Wix addresses that changed, so ads, bookmarks and Google keep landing on the right page
-const redirects = {
-  '/copy-of-vehicle-signage': '/trailer-wrap',
-  '/contact-8': '/join-us',
-  '/home': '/',
-  '/blank': '/',
+const hash = (file) => createHash('sha1').update(readFileSync(file)).digest('hex').slice(0, 10);
+const assets = {
+  css: hash(join(pub, 'assets/css/site.css')),
+  js: hash(join(pub, 'assets/js/site.js')),
+  lenis: hash(join(pub, 'assets/js/lenis.min.js')),
+  hero3d: hash(join(pub, 'assets/js/hero3d.js')),
 };
 
-const hash = (file) => createHash('sha1').update(readFileSync(join(pub, file))).digest('hex').slice(0, 10);
-const assets = {
-  css: hash('assets/css/site.css'),
-  js: hash('assets/js/site.js'),
-  lenis: hash('assets/js/lenis.min.js'),
-  hero3d: hash('assets/js/hero3d.js'),
-};
+// One id for this build of the code, so pages cached in browsers refresh after a deploy
+const files = (dir) => readdirSync(dir).flatMap((f) => (statSync(join(dir, f)).isDirectory() ? files(join(dir, f)) : [join(dir, f)]));
+const code = createHash('sha1');
+for (const f of [...files(join(root, 'src')), ...files(join(root, 'admin')), join(root, 'worker/index.mjs'), join(root, 'worker/store.mjs'), join(root, 'worker/auth.mjs')].sort()) code.update(readFileSync(f));
+const id = code.digest('hex').slice(0, 10);
 
 rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });
 cpSync(pub, out, { recursive: true });
+cpSync(join(root, 'admin'), join(out, 'admin'), { recursive: true });
 
-const pages = [home(), servicesPage(), ...services.map(service), contactPage(), joinPage(), thankYou(), notFound()];
+// The panel's own files get the build id, so a deploy never mixes old and new panel code
+const panel = join(out, 'admin/index.html');
+writeFileSync(panel, readFileSync(panel, 'utf8').replace(/__BUILD__/g, id));
 
-for (const page of pages) {
-  writeFileSync(join(out, `${page.slug}.html`), layout({ ...page, assets }));
-}
-
-const today = new Date().toISOString().slice(0, 10);
-const listed = pages.filter((p) => !p.noindex);
 writeFileSync(
-  join(out, 'sitemap.xml'),
-  `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${listed.map((p) => `  <url><loc>${site.url}${p.slug === 'index' ? '/' : `/${p.slug}`}</loc><lastmod>${today}</lastmod><priority>${p.slug === 'index' ? '1.0' : p.slug === 'join-us' ? '0.4' : '0.8'}</priority></url>`).join('\n')}
-</urlset>
-`,
+  join(root, 'worker/build-info.mjs'),
+  `// Written by build.mjs. Do not edit.\nexport default ${JSON.stringify({ id, assets }, null, 2)};\n`,
 );
 
-writeFileSync(join(out, 'robots.txt'), `User-agent: *\n${site.noindex ? 'Disallow: /' : 'Allow: /'}\n\nSitemap: ${site.url}/sitemap.xml\n`);
-
-writeFileSync(join(out, '_redirects'), Object.entries(redirects).map(([from, to]) => `${from} ${to} 301`).join('\n') + '\n');
-
-console.log(`Built ${pages.length} pages into ${out}`);
+console.log(`Built ${out} (static files and the panel) and worker/build-info.mjs, build ${id}`);

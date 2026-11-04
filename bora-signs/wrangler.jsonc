@@ -1,0 +1,14 @@
+// For running the site and the panel on your computer:  node build.mjs && npx wrangler dev
+// (the deploy workflow writes its own config, with the real KV namespace)
+{
+  "name": "bora-signs",
+  "main": "worker/index.mjs",
+  "compatibility_date": "2025-10-01",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "none",
+    "html_handling": "auto-trailing-slash"
+  },
+  "kv_namespaces": [{ "binding": "CMS", "id": "local-dev" }]
+}
