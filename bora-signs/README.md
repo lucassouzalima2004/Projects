@@ -12,7 +12,7 @@ Roda inteiro no Cloudflare (Worker + Workers KV), sem banco de dados nem servido
   para o card. Parado, ele olha em volta sozinho. No celular o título vem em cima e ele logo abaixo: dá para arrastar
   o dedo para os lados para girá-lo, um toque faz ele pular, e a rolagem também o vira. Depois: números, serviços,
   processo em 4 passos, clientes, depoimentos, dúvidas e chamada final. O camaleão do logo pisca.
-- **Uma página por serviço** (13), com os mesmos endereços do Wix: `/vehicle-signage`, `/shopfront-signage`, `/window-graphics`,
+- **Uma página por serviço** (12), com os mesmos endereços do Wix: `/vehicle-signage`, `/shopfront-signage`, `/window-graphics`,
   `/office-signage`, `/decor` etc. Cada uma tem por que contratar, opções, fotos, depoimento, processo, dúvidas e serviços relacionados.
 - **Van antes/depois** em `/vehicle-signage`: arrastando, a van branca vai sendo envelopada e o preço indicativo sobe de
   **$500** (logo e letreiro) até **$7.000** (envelopamento completo).
