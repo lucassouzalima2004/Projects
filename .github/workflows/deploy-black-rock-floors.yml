@@ -139,7 +139,7 @@ jobs:
           { echo _site/index.html; find _site -mindepth 2 -name 'index.html' | sort; } | while read -r f; do
             rel="${f#_site/}"
             path="/${rel%index.html}"
-            sed -i -E "s#content=\"(\.\./)*assets/img/og-image.jpg\"#content=\"$SITE_URL/assets/img/og-image.jpg\"#" "$f"
+            sed -i -E "s#content=\"(\.\./)*assets/img/og-image.jpg(\?v=[0-9]+)?\"#content=\"$SITE_URL/assets/img/og-image.jpg\2\"#" "$f"
             # Só no <title> da página (o mapa também tem um <title> dentro do SVG)
             sed -i "0,/<\/title>/s#</title>#</title>\n  <link rel=\"canonical\" href=\"$SITE_URL$path\">\n  <meta property=\"og:url\" content=\"$SITE_URL$path\">#" "$f"
             echo "$path" >> pages.txt

@@ -265,7 +265,7 @@ def doc(title, desc, og_title, ld, main):
   <meta property="og:site_name" content="{BRAND}">
   <meta property="og:title" content="{html.escape(og_title)}">
   <meta property="og:description" content="{html.escape(desc)}">
-  <meta property="og:image" content="../assets/img/og-image.jpg">
+  <meta property="og:image" content="../assets/img/og-image.jpg?v=2">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:locale" content="en_US">

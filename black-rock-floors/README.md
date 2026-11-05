@@ -172,6 +172,8 @@ site, para não depender de ninguém no futuro.
 
 ### Nona rodada (02 a 05/11): de Floors para Remodeling
 
+**Publicada em `blackrockfloors.com` em 05/11, a pedido do Lucas, antes da aprovação do Gabriel e ainda com as pendências da lista abaixo.**
+
 Combinado em 02 e 04/11: 500 pelo pacote, sem cobrança extra pela mudança, e prazo de uma semana para o site e o SEO
 (05/11, então por volta de 12/11). O Gabriel mandou texto, um vídeo de 4 min passando pelo site, um desenho do topo e
 prints de palavras-chave. Mais de 30 áudios de 31/10 e 02/11 eram de visualização única e não vieram no zip.
@@ -249,7 +251,7 @@ maiúsculas espaçadas, ecoa o "F L O O R S" do logo).
 
 ## Antes de mostrar ao Gabriel: o que é exemplo e precisa confirmar
 
-- [ ] **Avaliações do Google**: as 8 que aparecem são **exemplos escritos por nós**. Precisam ser trocadas pelas reais antes de esta versão ir para o domínio (`index.html`, seção 3). Texto inventado apresentado como avaliação real é proibido pela FTC nos EUA. O Gabriel disse em 05/11 que manda os prints; **não apagar as faixas sem falar com ele** (em 17/10 ele reclamou quando elas saíram).
+- [ ] **Avaliações do Google**: as 8 que aparecem são **exemplos escritos por nós**. Já estão no domínio e precisam ser trocadas pelas reais o quanto antes (`index.html`, seção 3). Texto inventado apresentado como avaliação real é proibido pela FTC nos EUA. O Gabriel disse em 05/11 que manda os prints; **não apagar as faixas sem falar com ele** (em 17/10 ele reclamou quando elas saíram).
 - [ ] **Link do perfil do Google**: trocar nos dois lugares em que aparece a busca `google.com/search?q=Black+Rock+Remodeling` (Google Maps → Compartilhar).
 - [ ] **Nota**: o site mostra 5 estrelas e a palavra Google, sem número. Conferir no perfil dele se é isso mesmo. O site antigo dizia 4.9, ele escreveu "5 estrelas" e o desenho dele diz "5.0, 30+ Reviews".
 - [ ] **Logo**: adaptação provisória, feita por nós. Trocar pelo arquivo dele, se tiver.

@@ -24,7 +24,7 @@ for f in sorted(out.rglob('index.html')):
     path = '/' + str(f.parent.relative_to(out)).replace('.', '', 1) if f.parent == out else f'/{f.parent.relative_to(out)}/'
     paths.append(path)
     s = f.read_text()
-    s = re.sub(r'content="(\.\./)*assets/img/og-image\.jpg"', f'content="{site}/assets/img/og-image.jpg"', s)
+    s = re.sub(r'content="(?:\.\./)*assets/img/og-image\.jpg(\?v=\d+)?"', lambda m: f'content="{site}/assets/img/og-image.jpg{m.group(1) or ""}"', s)
     s = s.replace('</title>', f'</title>\n  <link rel="canonical" href="{site}{path}">\n  <meta property="og:url" content="{site}{path}">', 1)
     f.write_text(s)
 urls = ''.join(f'  <url><loc>{site}{p}</loc></url>\n' for p in paths)
