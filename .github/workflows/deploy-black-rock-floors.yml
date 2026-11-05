@@ -1,4 +1,4 @@
-# Publica o site da Black Rock Floors no Cloudflare, sempre no mesmo link:
+# Publica o site da Black Rock Remodeling no Cloudflare, sempre no mesmo link:
 #   https://blackrockfloors.<subdomínio da conta>.workers.dev  (o endereço exato aparece no resumo da execução)
 # Cada push que mexe em black-rock-floors/ (no main ou no branch claude/practical-goldberg-vyf1zm) atualiza esse link.
 #
@@ -8,6 +8,7 @@
 # arquivo que o navegador pede (cabeçalho Range), sem o qual o iPhone e o Safari não tocam o vídeo do topo; e em
 # endereços que não existem, para responder a página 404 sem cache.
 #
+# O formulário (/api/estimate) precisa do segredo RESEND_API_KEY no próprio Worker: veja "O formulário" no README.
 # Usa os mesmos secrets dos outros sites do repositório (Settings → Secrets and variables → Actions):
 #   CLOUDFLARE_API_TOKEN   token do Cloudflare que pode publicar Workers (obrigatório)
 #   CLOUDFLARE_ACCOUNT_ID  ID da conta (opcional: sem ele, o workflow descobre a conta pelo token)
@@ -37,6 +38,8 @@ concurrency:
 env:
   WORKER: blackrockfloors
   FINAL_URL: https://blackrockfloors.com
+  # Texto que só existe neste site. O nome antigo continua na lista: no primeiro deploy, é ele que ainda está no ar.
+  SITE_MARK: 'Floors done right|Remodeling [Ss]ervices'
 
 jobs:
   check:
@@ -105,7 +108,7 @@ jobs:
           if [ -z "$site" ]; then
             # O domínio só vira o endereço oficial quando já abre este site (antes disso, ele mostra outra coisa)
             final=$(curl -fsS --max-time 20 "$FINAL_URL/" 2>/dev/null || true)
-            if grep -q "Floors done right" <<< "$final"; then
+            if grep -Eq "$SITE_MARK" <<< "$final"; then
               site="$FINAL_URL"
             else
               site="$url"
@@ -114,7 +117,7 @@ jobs:
           echo "SITE_URL=${site%/}" >> "$GITHUB_ENV"
           # Não sobrescreve um Worker com o mesmo nome que não seja este site
           if curl -sS -H "$auth" "$acc/workers/scripts/$WORKER/settings" | jq -e '.success' > /dev/null; then
-            if curl -fsS --max-time 20 "$url/" | grep -q "Black Rock Floors"; then
+            if curl -fsS --max-time 20 "$url/" | grep -Eq "Black Rock (Floors|Remodeling)"; then
               echo "O Worker $WORKER já é este site: vai ser atualizado."
             else
               echo "::error title=Nome em uso::Já existe um Worker chamado $WORKER nesta conta que não é este site. Apague ou renomeie esse Worker, ou troque WORKER no topo deste workflow."
@@ -156,12 +159,13 @@ jobs:
             "compatibility_date": "2025-10-01",
             "workers_dev": true,
             "preview_urls": false,
+            "vars": { "MAIL_TO": "br.remodelingwa@gmail.com", "MAIL_FROM": "Black Rock Website <estimates@send.blackrockfloors.com>" },
             "assets": {
               "directory": "./_site",
               "binding": "ASSETS",
               "not_found_handling": "none",
               "html_handling": "auto-trailing-slash",
-              "run_worker_first": ["/assets/video/*"]
+              "run_worker_first": ["/assets/video/*", "/api/*"]
             }
           }
           EOF
@@ -172,7 +176,7 @@ jobs:
       - name: Conferir o site no ar
         run: |
           for i in 1 2 3 4 5 6; do
-            if curl -fsS --max-time 20 "$WORKERS_URL/" | grep -q "Floors done right"; then
+            if curl -fsS --max-time 20 "$WORKERS_URL/" | grep -q "Remodeling services"; then
               echo "Site no ar: $WORKERS_URL"
               echo "### Site no ar: $WORKERS_URL" >> "$GITHUB_STEP_SUMMARY"
               if [ "$SITE_URL" != "$WORKERS_URL" ]; then
@@ -180,7 +184,7 @@ jobs:
               fi
               # O domínio do Gabriel já abre o site?
               final=$(curl -fsS --max-time 20 "$FINAL_URL/" 2>/dev/null || true)
-              if grep -q "Floors done right" <<< "$final"; then
+              if grep -Eq "$SITE_MARK" <<< "$final"; then
                 echo "Domínio no ar: $FINAL_URL" >> "$GITHUB_STEP_SUMMARY"
                 if [ "$SITE_URL" != "${FINAL_URL%/}" ]; then
                   echo "::notice title=Domínio ligado::$FINAL_URL já abre o site. Rode a publicação de novo (Re-run all jobs) para o canonical e o sitemap passarem a usar o domínio."

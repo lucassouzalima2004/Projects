@@ -1,4 +1,4 @@
-/* Black Rock Floors · estilos
+/* Black Rock Remodeling · estilos
    Cores, fonte e medidas ficam no :root. Depois vêm as peças comuns e as seções na ordem da página. */
 
 @font-face {
@@ -972,6 +972,102 @@ a.contact-v:hover { text-decoration: underline; }
 .notfound p { margin: 18px auto 30px; max-width: 40ch; color: var(--on-dark-muted); }
 .notfound .cta-actions { justify-content: center; }
 
+/* ---------- Topo da home, como o desenho do Gabriel (05/11): texto à esquerda, cozinha à direita ---------- */
+
+.hero--home .hero-panel { background: var(--ink); }
+.hero--home .hero-media { left: auto; width: 68%; }
+.hero--home .hero-poster { object-position: 60% 50%; }
+.hero--home .hero-panel::after {
+  background: linear-gradient(90deg, var(--ink) 34%, rgba(14, 14, 13, 0.96) 40%, rgba(14, 14, 13, 0.78) 47%, rgba(14, 14, 13, 0.42) 56%, rgba(14, 14, 13, 0.12) 66%, rgba(14, 14, 13, 0) 74%);
+}
+.hero--home .hero-content {
+  right: auto; width: min(58%, 800px); align-items: flex-start; text-align: left;
+  gap: clamp(14px, 1.7vw, 24px);
+  padding: clamp(28px, 5vh, 64px) 0 clamp(28px, 5vh, 64px) clamp(28px, 4.4vw, 76px);
+}
+.hero--home .hero-kicker { justify-content: flex-start; letter-spacing: 0.22em; }
+.hero--home .hero-kicker::before { display: none; }
+.hero--home .hero-title { font-size: clamp(2.1rem, 0.9rem + 2.95vw, 4.5rem); line-height: 1.03; text-transform: uppercase; }
+.hero--home .hero-title .line { padding-left: 0; padding-right: 0; }
+.hero--home .hero-title .line:nth-child(3) > span { animation-delay: 0.2s; }
+.hero--home .hero-sub { max-width: 46ch; text-wrap: pretty; }
+.hero--home .hero-actions { justify-content: flex-start; gap: 12px; margin-top: 4px; }
+
+.hero-trust {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px 0; margin-top: 4px;
+  font-size: 0.88rem; font-weight: 520; color: rgba(255, 255, 255, 0.94);
+  animation: fade-up 1s 0.55s var(--ease-out) both;
+}
+.hero-trust li { display: inline-flex; align-items: center; gap: 8px; padding: 0 clamp(12px, 1.2vw, 18px); border-left: 1px solid rgba(255, 255, 255, 0.24); }
+.hero-trust li:first-child { padding-left: 0; border-left: 0; }
+.hero-trust .i { width: 21px; height: 21px; }
+.hero--home .hero-rating {
+  position: static; translate: none; padding: 0; border: 0; border-radius: 0; background: none;
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  font-size: inherit; color: inherit; text-shadow: none; animation: none;
+}
+.hero--home .hero-rating .stars { color: #f5b301; }
+
+@media (max-width: 899.98px), (max-aspect-ratio: 4/5) {
+  .hero--home .hero-media { width: 100%; }
+  .hero--home .hero-panel::after {
+    background: linear-gradient(180deg, rgba(14, 14, 13, 0.2) 0%, rgba(14, 14, 13, 0.62) 34%, rgba(14, 14, 13, 0.93) 62%, var(--ink) 100%);
+  }
+  .hero--home .hero-content { width: 100%; justify-content: flex-end; padding: 24px var(--hero-inset) 24px; }
+  .hero--home .hero-actions { flex-direction: column; align-items: stretch; width: 100%; }
+  .hero--home .hero-actions .btn { width: 100%; justify-content: center; }
+  .hero-trust-google { flex-basis: 100%; padding-left: 0 !important; border-left: 0 !important; }
+}
+@media (max-width: 479.98px) {
+  .hero-trust { font-size: 0.8rem; }
+  .hero-trust li { padding: 0 9px; gap: 6px; }
+  .hero-trust li:first-child { padding-left: 0; }
+  .hero-trust .i { width: 17px; height: 17px; }
+}
+
+/* ---------- Menu com lista de serviços e de cidades ---------- */
+
+.nav { align-items: center; }
+.nav-drop { position: relative; }
+.nav-drop > a { display: inline-flex; align-items: center; gap: 4px; }
+.nav-chevron { width: 14px; height: 14px; transition: transform 0.25s; }
+.nav-drop:hover .nav-chevron, .nav-drop:focus-within .nav-chevron { transform: rotate(180deg); }
+.nav-drop-panel {
+  position: absolute; top: 100%; left: 0; z-index: 60; display: grid; min-width: 232px; padding: 8px;
+  border: 1px solid var(--hair-dark); border-radius: 14px; background: var(--coal);
+  box-shadow: 0 26px 50px -24px rgba(0, 0, 0, 0.85);
+  opacity: 0; visibility: hidden; transform: translateY(6px); transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+}
+.nav-drop:hover .nav-drop-panel, .nav-drop:focus-within .nav-drop-panel { opacity: 1; visibility: visible; transform: none; }
+.nav-drop-panel a { display: block; padding: 9px 12px; }
+.nav-drop-panel a:hover { background: var(--iron); }
+
+/* ---------- Partes novas ---------- */
+
+.stat--stars dd { display: flex; align-items: center; min-height: 1em; color: #fff; }
+.stat--stars .stars svg { width: clamp(18px, 2vw, 28px); height: clamp(18px, 2vw, 28px); }
+.cities a { color: inherit; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.35); text-underline-offset: 3px; }
+.cities a:hover { color: #fff; text-decoration-color: currentColor; }
+.estimate-trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.form-status.is-ok { color: #1c7a43; font-weight: 600; }
+.know-item dd .link-arrow { margin-top: 10px; }
+
+/* Páginas de cidade: os trabalhos daquela cidade, a introdução e os links para as cidades vizinhas */
+.included-copy .lead + .lead { margin-top: -6px; }
+.city-work { background: var(--paper); color: var(--ink); }
+.city-work-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 16px; margin-top: clamp(32px, 4vw, 56px); }
+.city-work-grid .project { width: 100%; }
+.near { background: var(--ink); color: var(--on-dark); }
+.near-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(32px, 5vw, 80px); margin-top: clamp(32px, 4vw, 56px); }
+.near-title { margin-bottom: 16px; font-size: 1.05rem; font-weight: 600; color: #fff; }
+.near-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.near-links a {
+  padding: 8px 15px; border: 1px solid var(--hair-dark); border-radius: 999px;
+  font-size: 0.92rem; color: var(--on-dark); text-decoration: none; transition: border-color 0.2s, color 0.2s;
+}
+.near-links a:hover { border-color: #fff; color: #fff; }
+@media (max-width: 699.98px) { .near-grid { grid-template-columns: minmax(0, 1fr); } }
+
 /* ---------- Telas menores ---------- */
 
 @media (max-width: 1180px) {
@@ -1012,7 +1108,6 @@ a.contact-v:hover { text-decoration: underline; }
   .hero-actions { flex-direction: column; gap: 14px; width: 100%; }
   .hero-actions .btn { width: min(100%, 360px); }
   .hero-rating { bottom: 16px; font-size: 0.8rem; }
-  .hero-rating .stars { display: none; }
   .hero-toggle { right: 14px; bottom: 14px; width: 40px; height: 40px; }
   .hero-toggle .i { width: 15px; height: 15px; }
 

@@ -1,4 +1,4 @@
-/* Black Rock Floors · comportamento da página
+/* Black Rock Remodeling · comportamento da página
    Sem dependências. Todo o conteúdo está no HTML e aparece mesmo sem JavaScript;
    aqui ficam os extras: vídeo do topo, faixas que passam, menu, mapa, fotos ampliadas e formulário. */
 (() => {
@@ -7,7 +7,7 @@
   const PHONE = '+14255434667';
   const EMAIL = 'br.remodelingwa@gmail.com';
   // Horário de atendimento (hora do Pacífico): dia → [abre, fecha]
-  const HOURS = { Mon: [8, 17], Tue: [8, 17], Wed: [8, 17], Thu: [8, 17], Fri: [8, 17], Sat: [9, 14] };
+  const HOURS = { Mon: [8, 18], Tue: [8, 18], Wed: [8, 18], Thu: [8, 18], Fri: [8, 18], Sat: [8, 18] };
 
   const $ = (sel, el = document) => el.querySelector(sel);
   const $$ = (sel, el = document) => Array.from(el.querySelectorAll(sel));
@@ -623,24 +623,50 @@
       val('service') && `Service: ${val('service')}`,
     ].filter(Boolean);
 
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      if (!validate()) return;
-      const subject = `Free estimate request: ${val('service') || 'new floor'}${val('city') ? ` in ${val('city')}` : ''}`;
-      const body = ["Hi Black Rock Floors, I'd like a free estimate.", '', ...details(), '', val('message')].join('\n').trim();
+    // Se o envio direto não der certo, abre o e-mail do visitante com o pedido já escrito
+    const openEmail = () => {
+      const subject = `Free estimate request: ${val('service') || 'new project'}${val('city') ? ` in ${val('city')}` : ''}`;
+      const body = ["Hi Black Rock Remodeling, I'd like a free estimate.", '', ...details(), '', val('message')].join('\n').trim();
       window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       statusLine.textContent = 'Your email app should open with everything filled in. Just hit send. If nothing opened, call or text (425) 543-4667.';
+    };
+    const startedAt = Date.now();
+    const submitBtn = $('button[type="submit"]', form);
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!validate()) return;
+      submitBtn.disabled = true;
+      statusLine.classList.remove('is-ok');
+      statusLine.textContent = 'Sending your request…';
+      try {
+        const res = await fetch('/api/estimate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: val('name'), phone: val('phone'), email: val('email'), city: val('city'), service: val('service'),
+            message: val('message'), website: val('website'), page: window.location.pathname, elapsed: Date.now() - startedAt,
+          }),
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset();
+        statusLine.classList.add('is-ok');
+        statusLine.textContent = 'Thanks! Your request is on its way. We usually reply within 24 hours. In a hurry? Call or text (425) 543-4667.';
+      } catch (err) {
+        openEmail();
+      } finally {
+        submitBtn.disabled = false;
+      }
     });
     const smsBtn = $('[data-send-sms]', form);
     if (smsBtn) {
       smsBtn.addEventListener('click', () => {
         if (!validate()) return;
-        const body = ["Hi Black Rock Floors, I'd like a free estimate.", ...details(), val('message')].filter(Boolean).join('\n');
+        const body = ["Hi Black Rock Remodeling, I'd like a free estimate.", ...details(), val('message')].filter(Boolean).join('\n');
         window.location.href = `sms:${PHONE}?&body=${encodeURIComponent(body)}`;
         statusLine.textContent = 'Your messages app should open with the request ready to send.';
       });
     }
-    // Os links "Get a ... estimate" da página Other services já deixam o serviço escolhido no formulário
+    // Os links com data-pick já deixam o serviço escolhido no formulário
     const service = form.elements.service;
     document.addEventListener('click', (e) => {
       const pick = e.target.closest('[data-pick]');

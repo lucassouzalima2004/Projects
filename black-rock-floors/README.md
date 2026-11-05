@@ -1,6 +1,7 @@
-# Black Rock Floors · site
+# Black Rock Remodeling · site
 
-Site novo da **Black Rock Floors**, empresa de pisos do **Gabriel Olimpio** em King & Snohomish County, Washington (EUA).
+Site da **Black Rock Remodeling** (antes Black Rock Floors), empresa de reformas e pisos do **Gabriel Olimpio** em
+King & Snohomish County, Washington (EUA). O endereço continua sendo `blackrockfloors.com`.
 O site é em inglês, porque o público é americano. É HTML, CSS e JavaScript puros: sem build e sem dependências.
 Dá para abrir o `index.html` direto no navegador.
 
@@ -169,66 +170,100 @@ site, para não depender de ninguém no futuro.
   [Google Search Console e acesso do Gabriel](#google-search-console-e-acesso-do-gabriel).
 - O Gabriel mandou a senha do Wix e códigos de acesso pelo WhatsApp (16/10). Vale ele trocar a senha do Wix.
 
+### Nona rodada (02 a 05/11): de Floors para Remodeling
+
+Combinado em 02 e 04/11: 500 pelo pacote, sem cobrança extra pela mudança, e prazo de uma semana para o site e o SEO
+(05/11, então por volta de 12/11). O Gabriel mandou texto, um vídeo de 4 min passando pelo site, um desenho do topo e
+prints de palavras-chave. Mais de 30 áudios de 31/10 e 02/11 eram de visualização única e não vieram no zip.
+
+O que ele pediu e o que foi feito:
+
+- **Marca:** a licença dele é da Black Rock Remodeling, então o nome mudou em todo o site. O logo é uma adaptação
+  provisória (`tools/make-logo.py`): falta o arquivo original, se ele tiver.
+- **Foco:** "60 a 70% em piso. O site tem que falar mais de piso, o SEO também" (áudio de 05/11). Por isso o nome é
+  Remodeling, mas o título, o primeiro serviço, a faixa de tipos de piso e as páginas de cidade falam de piso.
+- **Topo da home:** como o desenho dele: texto à esquerda, cozinha à direita, Licensed, Bonded, Insured e a nota do
+  Google. O título é o da última mensagem dele ("Remodeling Services & Flooring Specialists in Seattle, WA"). O vermelho
+  no "Seattle, WA" era só ilustrativo (05/11). Ele riscou de verde as duas linhas abaixo do texto, então elas saíram.
+- **Foto do topo:** é um recorte do desenho dele (`assets/img/hero-kitchen*.webp`), no lugar do vídeo de piso. Falta
+  escolher o **vídeo de cozinha**: se ele não tiver um, usar um clipe de banco de imagens.
+- **Home = Other services:** a lista de serviços agora tem Flooring, cozinha, banheiro, pintura externa e interna, decks e
+  cercas, e construção nova, e cada um abre uma página que explica o serviço. O endereço `/other-services/` redireciona
+  para a lista (arquivo `_redirects`). "Before you choose flooring" traz os tipos de piso, como ele pediu.
+- **Avaliações:** saiu a quantidade (137) e a nota em número em todo o site; ficaram as 5 estrelas com o Google, como ele
+  escreveu em 02/11. **As faixas de avaliações continuam com os exemplos** até ele mandar os prints: veja a lista abaixo.
+- **Cidades:** ele mandou 22 cidades num mapa (02/11) e 8 numa tabela (05/11). Foram feitas as 8 da tabela, mais as 4 de
+  cozinha e banheiro da mesma mensagem. As outras entram depois, se ele confirmar; Lucas já tinha dito que entram no preço.
+  Palavra-chave: "Flooring Contractor [cidade] WA" (a tabela), com "flooring installation" e "flooring company" no texto (o áudio de 02/11).
+- **Páginas de piso:** ficaram, ligadas à nova `/flooring/`, porque a lista de SEO dele (05/11) pede LVP, hardwood, laminate e tile.
+- **Formulário:** agora manda direto para o e-mail: veja [O formulário](#o-formulário). SMS de verdade ficou de fora por
+  enquanto: custa por mês e exige registro de operadora nos EUA, que pode estourar o prazo.
+- **Horário:** segunda a sábado, das 8h às 18h. Falta o **link do perfil do Google** (hoje o botão abre uma busca).
+
 ## O que tem no site
 
 **Página inicial** (`index.html`):
 
 - **Faixa do topo** com "aberto agora / fechado agora" calculado pelo horário de Seattle, telefone, "Text us" e horário.
-- **Painel com o vídeo de piso** (cantos arredondados, como o da Mastery Floors) e o texto no centro, como no anúncio que o Gabriel mandou: local entre linhas finas, *Floors done right the first time.* em serifada, 4 itens com ✓, botão branco *Get a free estimate* e o link *View our work ↓*. Embaixo, a nota do Google (4.9 · 137 reviews) e o botão de pausar. No celular, o vídeo é outro, em pé.
-- **O fundador**, logo abaixo do topo: foto do Gabriel, a frase da missão, a bio do site antigo e, embaixo, os números do site antigo (6 serviços, 24h, 100%, 4.9).
+- **Cabeçalho** com menu: Home, Services (lista), Our Work, Reviews, About, Service Area (lista de cidades) e Contact.
+- **Topo** como o desenho do Gabriel: texto à esquerda e cozinha à direita.
+- **O fundador**: foto do Gabriel, a frase da missão, a bio do site antigo e os números (6 serviços de piso, 24h, 100%, 5 estrelas no Google).
 - **Avaliações do Google passando** em duas faixas, em sentidos opostos. Param com o mouse em cima, dá para arrastar e tem botão de pausar.
-- **Serviços** ("Every floor. One accountable crew."): lista dos 6 serviços, cada um com uma foto em que o piso ocupa a maior parte. No computador, ao passar o mouse, a foto grande ao lado muda. Cada serviço leva à sua página.
-- **Projetos recentes passando**: fotos reais dos trabalhos do Gabriel, com o nome da cidade. Clicar abre a foto grande.
+- **Serviços** ("Every project. One accountable crew."): 7 serviços com foto, cada um com link para a sua página.
+- **Flooring specialists**: os 6 tipos de piso, cada um com link para a sua página.
+- **Projetos recentes passando**: fotos reais dos trabalhos do Gabriel (pisos e reformas), com o nome da cidade. Clicar abre a foto grande.
 - **Why homeowners choose us** (os 4 itens do site antigo) e **How it works** (4 passos).
-- **Área atendida**: as 18 cidades do site antigo, mais Snohomish, e um **mapa** com as cidades nas coordenadas reais, a divisa entre os condados e a montanha do logo a leste.
-- **FAQ**: as 8 perguntas do site antigo, com respostas.
-- **Contato** e **pedido de orçamento**: o formulário abre o e-mail (ou o SMS) já preenchido.
-- **Rodapé** com a faixa "Trust the local experts." (do site antigo) e um desenho de tábuas com as emendas desencontradas.
+- **More we do**: o resto da lista dele (drywall, carpintaria, portas e janelas, rodapés).
+- **Área atendida**: as cidades e o **mapa**; as 8 cidades com página própria viram link.
+- **FAQ** e **pedido de orçamento**, que chega direto no e-mail.
+- **Rodapé** com a faixa "Trust the local experts.", os serviços e as cidades.
 - Barra fixa no celular (ligar, mandar texto, orçamento).
 
-**Páginas de serviço** (uma por serviço, boas para o Google): `hardwood-floor-installation/`, `luxury-vinyl-plank/`,
-`laminate-flooring/`, `tile-installation/`, `hardwood-floor-refinishing/` e `stair-treads/`. Cada uma tem o que está incluído
-(com um cartão de orçamento grátis ao lado), "Good to know", o passo a passo, os projetos, perguntas próprias e o formulário
-com o serviço já marcado.
+**Páginas de serviço:** `flooring/` (geral, com os tipos de piso), os 6 tipos (`hardwood-floor-installation/`,
+`luxury-vinyl-plank/`, `laminate-flooring/`, `tile-installation/`, `hardwood-floor-refinishing/`, `stair-treads/`) e as
+reformas (`kitchen-remodeling/`, `bathroom-remodeling/`, `exterior-painting/`, `interior-painting/`, `decks-and-fences/`,
+`new-construction/`). Cada uma tem o que está incluído, "Good to know", o passo a passo, os projetos, perguntas próprias e o
+formulário com o serviço já marcado.
 
-**Other services** (`other-services/`): a "aba" de reformas da Black Rock Remodeling que o Gabriel pediu. Topo *More than
-flooring.* com a foto do banheiro de Snohomish, a apresentação com o texto dele, os 6 serviços com as fotos dele (como
-a lista de pisos da home; o link de cada um já marca o serviço no formulário), **Our work** com os trabalhos reais e a
-cidade (clicar abre a foto grande), o resto da lista dele em cartões, o passo a passo, os 6 serviços de piso e o
-formulário.
+**Páginas de cidade:** `flooring-contractor-<cidade>-wa/` para Seattle, Bellevue, Kirkland, Lynnwood, Bothell, Everett,
+Kenmore e Snohomish. Cada uma tem texto próprio (o Google trata páginas de cidade quase iguais como spam), os trabalhos
+reais daquela cidade quando existem (Everett e Kenmore ainda não têm foto), perguntas próprias, links para as cidades vizinhas e
+o formulário com a cidade preenchida. Mais `kitchen-remodeling-seattle/`, `bathroom-remodeling-seattle/`,
+`kitchen-remodeling-bellevue/` e `bathroom-remodeling-kirkland/`.
+
+Os textos ficam em `tools/service-pages.py` e `tools/pages_content.py`, e o HTML sai de `python3 tools/service-pages.py`.
 
 **Também:** página 404, prévia bonita do link no WhatsApp (`assets/img/og-image.jpg`), dados estruturados para o Google
 (empresa, horários, área atendida, serviços, FAQ e trilha de navegação), `sitemap.xml` e `robots.txt` gerados na publicação.
 Para quem ativou "reduzir movimento", as animações de entrada desligam; o vídeo e as faixas continuam (pedido do cliente),
 com os botões de pausa.
 
-**Testes (16/10, depois da sétima rodada):** Lighthouse no computador 100 em desempenho, acessibilidade, boas práticas
+**Testes de 16/10, antes da nona rodada (ainda não refeitos com as páginas novas):** Lighthouse no computador 100 em desempenho, acessibilidade, boas práticas
 e SEO; no celular, 95 em desempenho na home e 92 na página Other services, 100 nos outros três. Zero problemas no teste de
 acessibilidade (axe) em todas as páginas. Layout conferido também no motor do Safari (WebKit), do celular ao computador.
 
-Identidade: logo vetorizado a partir do PNG que o Gabriel mandou. Preto **#0E0E0D**, osso **#EBE7E0** e o vermelho do "R"
+Identidade: logo vetorizado a partir do PNG que o Gabriel mandou e adaptado para Remodeling na nona rodada. Preto **#0E0E0D**, osso **#EBE7E0** e o vermelho do "R"
 da camisa dele, **#C8102E**. Fontes, dentro de `assets/fonts/`: **Cormorant Garamond** nos títulos (a serifada elegante
 que o Gabriel pediu, só nos pesos usados, 500 e 450 itálico) e **Archivo** no resto (larguras variáveis; a versão larga, em
 maiúsculas espaçadas, ecoa o "F L O O R S" do logo).
 
 ## Antes de mostrar ao Gabriel: o que é exemplo e precisa confirmar
 
-- [ ] **Avaliações do Google**: as 8 que aparecem são **exemplos escritos por nós**. Troque pelas avaliações reais do perfil do Google dele antes de ligar o domínio (`index.html`, seção 3). Enquanto isso, a prévia `.workers.dev` não aparece no Google (`noindex`).
-- [ ] **Link "Read them on Google"**: trocar pelo link do perfil do Google da empresa (Google Maps → Compartilhar).
-- [ ] **Nota e quantidade**: 4.9 e 137 avaliações vieram do site antigo. Confirmar os números de hoje (aparecem na linha do Google no topo, nos números do fundador, na seção de avaliações, nas páginas de serviço e na `og-image.jpg`).
+- [ ] **Avaliações do Google**: as 8 que aparecem são **exemplos escritos por nós**. Precisam ser trocadas pelas reais antes de esta versão ir para o domínio (`index.html`, seção 3). Texto inventado apresentado como avaliação real é proibido pela FTC nos EUA. O Gabriel disse em 05/11 que manda os prints; **não apagar as faixas sem falar com ele** (em 17/10 ele reclamou quando elas saíram).
+- [ ] **Link do perfil do Google**: trocar nos dois lugares em que aparece a busca `google.com/search?q=Black+Rock+Remodeling` (Google Maps → Compartilhar).
+- [ ] **Nota**: o site mostra 5 estrelas e a palavra Google, sem número. Conferir no perfil dele se é isso mesmo. O site antigo dizia 4.9, ele escreveu "5 estrelas" e o desenho dele diz "5.0, 30+ Reviews".
+- [ ] **Logo**: adaptação provisória, feita por nós. Trocar pelo arquivo dele, se tiver.
+- [ ] **Vídeo de cozinha** no topo: falta escolher (veja a nona rodada).
+- [ ] **Lista final de cidades**: 8 feitas; as outras do mapa dele dependem de ele confirmar.
+- [ ] **Textos novos** (`tools/pages_content.py`): escritos por nós, com os bairros e os tipos de casa de cada cidade. O Gabriel precisa ler e dizer se atende mesmo cada lugar e se faz tudo o que está na lista de cada serviço. A página de Everett e a de Kenmore precisam de fotos.
+- [ ] **Licensed, Bonded, Insured**: vieram do desenho dele. Confirmar no nome da Remodeling.
 - [x] **Fotos dos projetos**: fotos reais dele, com a cidade de cada trabalho (16/10).
 - [x] **Fotos dos serviços**: fotos reais dele (16/10).
-- [ ] **Formulário direto no e-mail**: ele quer receber os pedidos no e-mail. Falta escolher o serviço de envio (veja [O formulário](#o-formulário)).
-- [ ] **Vídeo do topo**: montado com 3 clipes gratuitos de piso, do Coverr e do Mixkit (veja [O vídeo do topo](#o-vídeo-do-topo)). Dá para trocar por filmagens dos pisos que ele instalou ou por um vídeo gerado por IA (prompts prontos em `tools/PROMPTS.md`).
-- [ ] **Nome da empresa**: o logo e a camisa dizem *Black Rock Floors*; o site antigo e o e-mail dizem *Black Rock Remodeling LLC*. Ele contou (16/10) que a empresa é a Black Rock Remodeling e que a de pisos veio depois; a página Other services diz que a Black Rock Floors é a parte de pisos da Black Rock Remodeling LLC. Confirmar se quer o nome da LLC também no rodapé.
-- [ ] **Página Other services**: a introdução, a lista de serviços e as fotos são dele (16/10); as frases de cada serviço, as etiquetas (Siding, Trim…) e o passo a passo foram escritos por nós: pedir para ele ler, principalmente se faz tudo o que está nas etiquetas.
 - [ ] **Fotos dos 6 serviços de reforma**: parecem imagens geradas por IA (todas em 1536 × 1024, o tamanho padrão do ChatGPT; as fotos Refinish e Tile dos pisos também). Servem de ilustração do serviço, e por isso os trabalhos reais ficam separados, em *Our work*, com a cidade. Se ele tiver fotos reais desses serviços, é só trocar (mesmo nome de arquivo em `assets/img/other/services/` e um `?v=` no endereço).
 - [ ] **Número de registro na L&I**: em Washington, a lei (RCW 18.27.100) pede o número de registro de empreiteiro na propaganda que mostra o nome da empresa, e o site conta como propaganda (vale confirmar com a L&I). Pedir o número e colocar no rodapé; também passa confiança.
 - [ ] **E-mail** `br.remodelingwa@gmail.com`: confirmar que continua sendo o dele.
 - [ ] **Respostas do FAQ** e **textos das páginas de serviço** (o que está incluído, prazos, mover móveis, tipos de acabamento): escritos por nós com base nas práticas comuns do mercado. Pedir para ele ler.
 - [ ] **Números**: "6 services in-house", "24h quote turnaround", "100% free estimates" (do site antigo).
-- [ ] **Cidades**: as 18 do site antigo e Snohomish. No print, as duas últimas ficaram cortadas: perguntar se falta alguma.
-- [ ] **Horário**: seg a sex 8h–17h, sáb 9h–14h, domingo fechado (do site antigo).
 - [ ] **Instagram, Facebook, Yelp…**: o site antigo não mostrava. Se ele tiver, dá para pôr no rodapé.
 
 ## Como editar
@@ -256,21 +291,29 @@ navegador guarda fotos e vídeos por uma semana, e sem isso quem já visitou o s
 
 ## O formulário
 
-Hoje o botão *Send my request* abre o app de e-mail **do visitante** com o pedido já escrito para `br.remodelingwa@gmail.com`
-(a constante `EMAIL` no topo do `assets/js/app.js`), e *or text it to us* abre o SMS para o telefone da empresa. O pedido só
-chega se o visitante apertar "enviar" no app dele; quem não tem e-mail configurado no celular fica sem jeito de mandar.
+O botão *Send my request* manda o pedido para `/api/estimate`, no `worker.js`, que repassa por e-mail pela **Resend**, sem o
+visitante precisar abrir o e-mail dele. O *reply to* já vem com o e-mail do cliente, e o assunto traz o serviço, a cidade e o nome.
+O Worker tem um campo escondido e um tempo mínimo contra robôs e não guarda os pedidos. *or text it to us* continua abrindo o SMS.
 
-Para o pedido cair direto no e-mail do Gabriel, o site precisa de um serviço que receba o formulário e repasse por e-mail.
-Os dados de quem pede orçamento (nome, telefone, e-mail) passam por esse serviço, então a escolha é do Lucas e do Gabriel:
+**Para ligar (só falta isto):**
 
-- **FormSubmit** (formsubmit.co): grátis e sem conta. No primeiro envio, chega um e-mail para o Gabriel com um botão
-  "Activate Form"; depois disso, todo pedido chega na caixa dele.
-- **Web3Forms** (web3forms.com): grátis até 250 pedidos por mês. O Gabriel gera uma chave com o e-mail dele no site deles.
-- **Formspree** (formspree.io): grátis até 50 pedidos por mês, com painel para ver os pedidos. Precisa criar conta.
+1. Criar a conta na [Resend](https://resend.com) e adicionar o domínio `send.blackrockfloors.com` (subdomínio, para não mexer no resto do e-mail do domínio).
+2. Colocar no Cloudflare os registros de DNS que a Resend mostrar. Depois de publicar o DNS, clicar em verificar **uma vez só**: repetir reinicia a verificação.
+3. Gerar a API key e guardar no Worker, na conta do Lucas: `npx wrangler@4 secret put RESEND_API_KEY --name blackrockfloors`.
+4. Mandar um pedido de teste e conferir no e-mail do Gabriel.
 
-Com o serviço escolhido, é trocar o envio no `assets/js/app.js` (o trecho do formulário) e manter o e-mail/SMS como plano B.
+Quem recebe (`MAIL_TO`) e o remetente (`MAIL_FROM`) ficam no workflow, em `vars`, e também no `tools/preview.sh`.
+
+**Enquanto a chave não existir**, o `/api/estimate` responde 503 e a página abre o e-mail do visitante com o pedido já escrito,
+como antes. Nada quebra, mas o pedido só chega se ele apertar enviar.
+
+**Aviso no celular:** a notificação do Gmail resolve no começo. SMS de verdade (Twilio ou parecido) dá para somar no mesmo
+`/api/estimate`, mas custa por mês e exige registro de operadora nos EUA.
 
 ## O vídeo do topo
+
+**Desde a nona rodada, o topo da home não usa estes vídeos:** a foto da cozinha está no lugar, à espera do vídeo de cozinha. Para
+voltar a ter vídeo, troque os clipes do script e devolva o `<video>` e o botão de pausa ao topo do `index.html` (estão no histórico do git).
 
 Os arquivos em `assets/video/` saem do script `tools/make-hero-video.sh` (precisa de `ffmpeg`):
 
@@ -312,6 +355,10 @@ e rode `bash tools/make-hero-video.sh`.
 
 ## Publicar
 
+**Cuidado:** push neste branch que mexa em `black-rock-floors/` publica direto em `blackrockfloors.com`. Para mostrar ao
+Gabriel antes, use a prévia separada, que não mexe no domínio: `bash tools/preview.sh` publica em
+<https://blackrock-remodeling-preview.lucassouzalima10.workers.dev> (com `noindex`), na conta do Lucas.
+
 O workflow `.github/workflows/deploy-black-rock-floors.yml` publica o site no Cloudflare a cada push que mexe em
 `black-rock-floors/` (no `main` ou no branch `claude/practical-goldberg-vyf1zm`). Vai como **Worker** chamado
 `blackrockfloors`, no mesmo esquema da The Berry Coffee, porque a conta já chegou ao limite de projetos do Cloudflare Pages.
@@ -320,7 +367,7 @@ No ar em <https://blackrockfloors.com> (o domínio do Gabriel) e, como prévia, 
 - Usa o mesmo secret dos outros sites: `CLOUDFLARE_API_TOKEN` (e `CLOUDFLARE_ACCOUNT_ID`, opcional).
 - Na publicação, o workflow coloca o endereço completo no `og:image` (o WhatsApp exige), o `canonical` e o `og:url` em cada página, e gera o `sitemap.xml` e o `robots.txt`.
 - O README, a pasta `tools/` e o `worker.js` não vão para o ar como arquivos.
-- O `worker.js` é o script do Worker e só roda em dois casos (`run_worker_first` e `not_found_handling: "none"` no
+- O `worker.js` também recebe o formulário em `/api/estimate`. Fora isso, é o script do Worker e só roda em dois casos (`run_worker_first` e `not_found_handling: "none"` no
   `wrangler.jsonc` que o workflow monta): nos vídeos, para entregar o pedaço que o navegador pede (`Range`), sem o qual
   o iPhone não toca o vídeo; e em endereços que não existem, para responder a página 404 **sem cache**. Isso importa
   logo depois de publicar: uma foto nova leva menos de um minuto para chegar a todos os servidores do Cloudflare, e
@@ -383,19 +430,11 @@ python3 -m http.server 8000
 # abra http://localhost:8000
 ```
 
-Para ver do jeito que fica no Cloudflare, com o `worker.js` (precisa para o vídeo tocar no Safari e no iPhone), monte a pasta
-como o workflow faz e rode o `wrangler dev`, a partir da raiz do repositório:
+Para ver do jeito que fica no Cloudflare, com o `worker.js` (precisa para o vídeo tocar no Safari e no iPhone e para o formulário):
 
 ```bash
-mkdir -p /tmp/brf && cp -R black-rock-floors/. /tmp/brf/_site && cp black-rock-floors/worker.js /tmp/brf/
-rm -rf /tmp/brf/_site/README.md /tmp/brf/_site/tools /tmp/brf/_site/worker.js
-cat > /tmp/brf/wrangler.jsonc <<'EOF'
-{ "name": "blackrockfloors", "main": "./worker.js", "compatibility_date": "2025-10-01",
-  "assets": { "directory": "./_site", "binding": "ASSETS", "not_found_handling": "none",
-              "html_handling": "auto-trailing-slash", "run_worker_first": ["/assets/video/*"] } }
-EOF
-cd /tmp/brf && npx wrangler@4 dev --ip 0.0.0.0 --port 8787
-# abra http://localhost:8787 (ou, no celular na mesma rede, http://<ip do computador>:8787)
+bash black-rock-floors/tools/preview.sh --dev
+# abra http://localhost:8787
 ```
 
 ## Estrutura
@@ -403,18 +442,25 @@ cd /tmp/brf && npx wrangler@4 dev --ip 0.0.0.0 --port 8787
 ```
 black-rock-floors/
 ├── index.html                       página inicial
-├── <serviço>/index.html             6 páginas de serviço
-├── other-services/index.html        reformas: pintura, cozinha, banheiro, deck e cerca, construção nova (a "aba" de outros serviços)
+├── flooring/ e <tipo de piso>/      página geral de piso e os 6 tipos
+├── <reforma>/                       cozinha, banheiro, pintura, decks e cercas, construção nova
+├── flooring-contractor-<cidade>-wa/ 8 páginas de cidade
+├── <reforma>-<cidade>/              4 páginas de cozinha e banheiro por cidade
 ├── 404.html                         página "não encontrada"
 ├── _headers                         cabeçalhos do Cloudflare (noindex na prévia, cache)
-├── worker.js                        Worker: vídeos por pedaço (para o iPhone tocar) e a 404 sem cache
+├── _redirects                       /other-services/ vai para a lista de serviços da home
+├── worker.js                        Worker: formulário, vídeos por pedaço (para o iPhone tocar) e a 404 sem cache
 ├── assets/css/styles.css            visual (cores e fonte no topo)
-├── assets/js/app.js                 comportamento (vídeo, faixas, menu, mapa, formulário)
+├── assets/js/app.js                 comportamento (faixas, menu, mapa, formulário)
 ├── assets/fonts/                    fontes (Archivo e Cormorant Garamond)
-├── assets/img/                      logo (SVG), favicon, og-image, fotos de serviços, projetos e outros serviços, tábuas
-├── assets/video/                    vídeo do topo (MP4 e WebM) e o primeiro quadro
+├── assets/img/                      logo (SVG), favicon, og-image, foto do topo, fotos de serviços e projetos, tábuas
+├── assets/video/                    vídeos de piso, fora de uso desde a nona rodada
+├── tools/service-pages.py           gera as páginas a partir do index.html e dos textos
+├── tools/pages_content.py           textos da página de piso, das reformas e das cidades
+├── tools/make-logo.py               adapta o logo antigo para Remodeling
+├── tools/og-image.html              imagem de compartilhamento do link
+├── tools/preview.sh                 publica a prévia separada, ou testa no computador com --dev
 ├── tools/make-hero-video.sh         monta o vídeo do topo a partir dos clipes
-├── tools/service-pages.py           gera as páginas de serviço e a Other services a partir do index.html
 └── tools/PROMPTS.md                 prompts para gerar clipes de piso por IA
 ```
 

@@ -1,4 +1,4 @@
-// Worker do site. Roda só em dois casos (veja "run_worker_first" e "not_found_handling" no workflow de publicação);
+// Worker do site. Roda só em três casos (veja "run_worker_first" e "not_found_handling" no workflow de publicação);
 // o resto do site sai direto dos arquivos estáticos, sem passar por aqui:
 //
 // 1. Vídeos do topo. O iPhone (Safari e qualquer navegador no iOS) e o Safari do Mac só tocam vídeo se o servidor
@@ -9,13 +9,85 @@
 //    ainda não chegou a todos os servidores do Cloudflare logo depois de publicar (leva menos de um minuto) ficava
 //    "não encontrada" por uma semana no navegador de quem abriu o site naquele minuto (as fotos ficam uma semana no
 //    cache, veja o _headers).
+// 3. Formulário de orçamento (/api/estimate). Manda o pedido para o e-mail do Gabriel pela Resend. Precisa do segredo
+//    RESEND_API_KEY e das variáveis MAIL_TO e MAIL_FROM (veja "O formulário" no README). Sem o segredo, responde 503
+//    e a página abre o e-mail do visitante com o pedido já escrito, como antes.
 
 export default {
   async fetch(request, env) {
-    if (new URL(request.url).pathname.startsWith('/assets/video/')) return video(request, env);
+    const { pathname } = new URL(request.url);
+    if (pathname === '/api/estimate') return estimate(request, env);
+    if (pathname.startsWith('/assets/video/')) return video(request, env);
     return notFound(request, env);
   },
 };
+
+// Limites de cada campo: o bastante para um pedido de verdade, pouco para quem quer abusar
+const LIMITS = { name: 120, phone: 40, email: 160, city: 80, service: 80, message: 4000, page: 120 };
+
+function reply(status, body) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' },
+  });
+}
+
+async function estimate(request, env) {
+  if (request.method !== 'POST') return reply(405, { ok: false, error: 'method' });
+  const origin = request.headers.get('Origin');
+  if (origin && new URL(origin).host !== new URL(request.url).host) return reply(403, { ok: false, error: 'origin' });
+
+  const raw = await request.text();
+  if (raw.length > 8000) return reply(413, { ok: false, error: 'size' });
+  let input;
+  try { input = JSON.parse(raw); } catch (err) { return reply(400, { ok: false, error: 'json' }); }
+  if (!input || typeof input !== 'object') return reply(400, { ok: false, error: 'json' });
+
+  // Robô: preencheu o campo escondido ou mandou em menos de 2 segundos. Responde "ok" e não manda nada.
+  if (input.website || Number(input.elapsed) < 2000) return reply(200, { ok: true });
+
+  // Só a mensagem pode ter várias linhas
+  const field = (k) => {
+    const v = String(input[k] ?? '').trim().slice(0, LIMITS[k]);
+    return k === 'message' ? v : v.replace(/\s+/g, ' ');
+  };
+  const data = Object.fromEntries(Object.keys(LIMITS).map((k) => [k, field(k)]));
+  if (data.name.length < 2) return reply(422, { ok: false, error: 'name' });
+  if (data.phone.replace(/\D/g, '').length < 7) return reply(422, { ok: false, error: 'phone' });
+  if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) return reply(422, { ok: false, error: 'email' });
+
+  if (!env.RESEND_API_KEY || !env.MAIL_TO || !env.MAIL_FROM) return reply(503, { ok: false, error: 'not_configured' });
+
+  const subject = `New estimate request: ${data.service || 'Website'}${data.city ? ` in ${data.city}` : ''} (${data.name})`;
+  const text = [
+    'New request from the website.',
+    '',
+    `Name: ${data.name}`,
+    `Phone: ${data.phone}`,
+    data.email && `Email: ${data.email}`,
+    data.city && `City: ${data.city}`,
+    data.service && `Service: ${data.service}`,
+    data.message && `\nMessage:\n${data.message}`,
+    data.page && `\nSent from: ${new URL(request.url).origin}${data.page}`,
+  ].filter(Boolean).join('\n');
+
+  const sent = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from: env.MAIL_FROM,
+      to: env.MAIL_TO.split(',').map((s) => s.trim()).filter(Boolean),
+      subject,
+      text,
+      ...(data.email ? { reply_to: data.email } : {}),
+    }),
+  });
+  if (!sent.ok) {
+    console.error('Resend respondeu', sent.status);
+    return reply(502, { ok: false, error: 'send' });
+  }
+  return reply(200, { ok: true });
+}
 
 async function video(request, env) {
   const res = await env.ASSETS.fetch(request);

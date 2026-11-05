@@ -1,0 +1,30 @@
+<!doctype html>
+<!-- A imagem que aparece quando o link é compartilhado (assets/img/og-image.jpg, 1200 x 630).
+     Para refazer: abra este arquivo no Chrome em 1200 x 630, tire um print e salve como JPG. -->
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<title>Imagem de compartilhamento</title>
+<style>
+  @font-face { font-family: Cormorant; src: url(../assets/fonts/cormorant-500.woff2) format("woff2"); }
+  @font-face { font-family: Archivo; src: url(../assets/fonts/archivo-latin.woff2) format("woff2"); font-weight: 100 900; font-stretch: 62% 125%; }
+  * { box-sizing: border-box; margin: 0; }
+  body { position: relative; width: 1200px; height: 630px; overflow: hidden; background: #0e0e0d; color: #fff; }
+  .photo { position: absolute; inset: 0 0 0 auto; width: 760px; height: 100%; object-fit: cover; object-position: 60% 50%; }
+  .shade { position: absolute; inset: 0; background: linear-gradient(90deg, #0e0e0d 37%, rgba(14, 14, 13, 0.92) 46%, rgba(14, 14, 13, 0.4) 62%, rgba(14, 14, 13, 0) 80%); }
+  .copy { position: absolute; left: 64px; top: 0; bottom: 0; width: 760px; display: flex; flex-direction: column; justify-content: center; gap: 26px; }
+  .logo { width: 210px; }
+  h1 { font: 500 58px/1.04 Cormorant, serif; letter-spacing: 0.01em; text-transform: uppercase; }
+  p { font: 500 19px/1.4 Archivo, sans-serif; color: rgba(255, 255, 255, 0.88); max-width: 470px; }
+</style>
+</head>
+<body>
+  <img class="photo" src="../assets/img/hero-kitchen.webp" alt="">
+  <div class="shade"></div>
+  <div class="copy">
+    <img class="logo" src="../assets/img/logo-white.svg" alt="">
+    <h1>Remodeling services<br>&amp; flooring specialists<br>in Seattle, WA</h1>
+    <p>Free estimates across King &amp; Snohomish County.</p>
+  </div>
+</body>
+</html>

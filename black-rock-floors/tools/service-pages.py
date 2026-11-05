@@ -1,13 +1,16 @@
-# Gera as 6 páginas de serviço e a página "Other services" a partir das partes comuns do index.html
+# Gera as páginas de serviço, de piso e de cidade a partir das partes comuns do index.html
 # (cabeçalho, menu, formulário, projetos, rodapé...). Saída: <site>/<slug>/index.html, HTML estático.
 #
 # Uso: python3 tools/service-pages.py
 # Rode de novo sempre que mudar o cabeçalho, o menu, o formulário ou o rodapé do index.html, para as outras
-# páginas acompanharem. Os textos de cada página ficam aqui (SERVICES e OTHER): edite aqui, não no HTML gerado,
-# senão a próxima rodada apaga a mudança.
+# páginas acompanharem. Os textos ficam aqui (SERVICES, os seis tipos de piso) e no tools/pages_content.py (a página
+# geral de piso, as reformas e as cidades): edite lá, não no HTML gerado, senão a próxima rodada apaga a mudança.
 import re, json, html, pathlib
 
+from pages_content import FLOORING, REMODEL, CITIES, LOCAL, REMODEL_NEXT, REMODEL_LEAD
+
 SITE = pathlib.Path(__file__).resolve().parent.parent
+BRAND = 'Black Rock Remodeling'
 index = (SITE / 'index.html').read_text()
 
 def block(pattern):
@@ -15,13 +18,16 @@ def block(pattern):
     assert m, pattern
     return m.group(0)
 
+PAGE_SLUGS = ['hardwood-floor-installation', 'luxury-vinyl-plank', 'laminate-flooring', 'tile-installation', 'hardwood-floor-refinishing', 'stair-treads',
+              FLOORING['slug'], *[s['slug'] for s in REMODEL], *[c['slug'] for c in CITIES], *[l['slug'] for l in LOCAL]]
+
 def relink(s):
     """Ajusta os caminhos para uma página um nível abaixo da raiz."""
     s = re.sub(r'(src|href)="assets/', r'\1="../assets/', s)
     s = re.sub(r'(srcset)="([^"]+)"', lambda m: m.group(1) + '="' + re.sub(r'(^|, )assets/', r'\1../assets/', m.group(2)) + '"', s)
     s = s.replace('href="./"', 'href="../"')
     s = re.sub(r'(?<!use )href="#(?!contact"|main")([a-z-]+)"', r'href="../#\1"', s)
-    for slug in ['hardwood-floor-installation', 'luxury-vinyl-plank', 'laminate-flooring', 'tile-installation', 'hardwood-floor-refinishing', 'stair-treads', 'other-services']:
+    for slug in PAGE_SLUGS:
         s = s.replace(f'href="{slug}/"', f'href="../{slug}/"')
     return s
 
@@ -225,311 +231,29 @@ SERVICES = [
 def esc(s):
     return html.escape(s, quote=False)
 
-def page(svc):
-    others = [o for o in SERVICES if o['slug'] != svc['slug']]
-    ld = {
-        "@context": "https://schema.org",
-        "@graph": [
-            {
-                "@type": "Service",
-                "name": svc['h1'],
-                "serviceType": svc['h1'],
-                "description": svc['desc'],
-                "areaServed": COUNTIES,
-                "provider": {"@type": "HomeAndConstructionBusiness", "name": "Black Rock Floors", "telephone": "+1-425-543-4667", "url": "/"},
-            },
-            {
-                "@type": "BreadcrumbList",
-                "itemListElement": [
-                    {"@type": "ListItem", "position": 1, "name": "Home", "item": "/"},
-                    {"@type": "ListItem", "position": 2, "name": "Services", "item": "/#services"},
-                    {"@type": "ListItem", "position": 3, "name": svc['h1']},
-                ],
-            },
-            {
-                "@type": "FAQPage",
-                "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in svc['faq']],
-            },
-        ],
-    }
-    included = '\n'.join(f'            <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>{esc(t)}</li>' for t in svc['included'])
-    know = '\n'.join(f'          <div class="know-item" data-reveal><dt>{esc(t)}</dt><dd>{esc(d)}</dd></div>' for t, d in svc['know'])
-    faq = '\n'.join(
-        f'          <details class="qa">\n            <summary><span>{esc(q)}</span><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg></summary>\n            <div class="qa-body"><p>{esc(a)}</p></div>\n          </details>'
-        for q, a in svc['faq'])
-    more = '\n'.join(
-        f'        <a class="more-card" href="../{o["slug"]}/"><img src="../assets/img/services/{o["img"]}-640.webp?v=4" width="640" height="800" alt="" loading="lazy"><span>{esc(o["short"])}<svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></span></a>'
-        for o in others)
-    form = contact.replace(f'<option>{svc["option"]}</option>', f'<option selected>{svc["option"]}</option>')
-    assert 'selected' in form, svc['option']
-    hero_img = f'''<picture>
-            <source media="(max-aspect-ratio: 4/5)" srcset="../assets/img/services/{svc['img']}.webp?v=4" width="1000" height="1250">
-            <img class="hero-poster" src="../assets/img/services/{svc['img']}-wide.webp?v=4" width="1600" height="1000" alt="{esc(svc['alt'])}" fetchpriority="high">
-          </picture>'''
-    title = f"{svc['title']} · Black Rock Floors"
-    # Título em duas linhas, como no topo da home: a primeira em maiúsculas, o final em itálico
-    h1a, h1b = ('Stair treads', 'and risers.') if svc['h1'] == 'Stair treads and risers' else (svc['h1'].rsplit(' ', 1)[0], svc['h1'].rsplit(' ', 1)[1] + '.')
+ARROW = '<svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg>'
+CHECK = '<svg class="i" aria-hidden="true"><use href="#i-check"/></svg>'
+PHONE_ICON = '<svg class="i" aria-hidden="true"><use href="#i-phone"/></svg>'
+PROVIDER = {"@type": "HomeAndConstructionBusiness", "name": BRAND, "telephone": "+1-425-543-4667", "url": "/"}
+ALL_FLOOR_PAGES = SERVICES
+
+def breadcrumb(*items):
+    """Cada item: (nome, endereço) ou (nome,) no último."""
+    out = []
+    for i, it in enumerate(items, 1):
+        el = {"@type": "ListItem", "position": i, "name": it[0]}
+        if len(it) > 1:
+            el["item"] = it[1]
+        out.append(el)
+    return {"@type": "BreadcrumbList", "itemListElement": out}
+
+def faq_ld(faq):
+    return {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faq]}
+
+def doc(title, desc, og_title, ld, main):
+    """A página inteira: o <head>, o cabeçalho e o rodapé são os mesmos em todas."""
+    ld = {"@context": "https://schema.org", "@graph": ld}
     return f'''<!doctype html>
-<html lang="en-US">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>{esc(title)}</title>
-  <meta name="description" content="{html.escape(svc['desc'])}">
-  <meta name="theme-color" content="#0e0e0d">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Black Rock Floors">
-  <meta property="og:title" content="{html.escape(svc['h1'])} · Black Rock Floors">
-  <meta property="og:description" content="{html.escape(svc['desc'])}">
-  <meta property="og:image" content="../assets/img/og-image.jpg">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:locale" content="en_US">
-  <meta name="twitter:card" content="summary_large_image">
-  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
-  <link rel="preload" href="../assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="../assets/fonts/cormorant-500.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="../assets/fonts/cormorant-italic-450.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/css/styles.css">
-  <script>document.documentElement.classList.add('js')</script>
-  <script type="application/ld+json">
-  {json.dumps(ld, ensure_ascii=False, indent=2).replace(chr(10), chr(10) + '  ')}
-  </script>
-</head>
-<body>
-  <a class="skip-link" href="#main">Skip to content</a>
-
-  <svg class="sprite" aria-hidden="true" focusable="false">
-    <defs>
-      {icons}
-    </defs>
-  </svg>
-
-  {topbar}
-
-  {header}
-
-  {menu}
-
-  <main id="main">
-    <section class="hero hero--page" aria-labelledby="hero-title">
-      <div class="hero-panel">
-        <div class="hero-media">
-          {hero_img}
-        </div>
-        <div class="hero-content">
-          <ol class="crumbs" role="list" aria-label="Breadcrumb">
-            <li><a href="../">Home</a></li>
-            <li><a href="../#services">Services</a></li>
-            <li aria-current="page">{esc(svc['short'])}</li>
-          </ol>
-          <h1 class="hero-title" id="hero-title"><span class="line"><span>{esc(h1a)}</span></span> <span class="line"><span><em>{esc(h1b)}</em></span></span></h1>
-          <p class="hero-sub">{esc(svc['sub'])}</p>
-          <div class="hero-actions">
-            <a class="btn btn--square" href="#contact">Get a free estimate<svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-            <a class="hero-link" href="tel:+14255434667"><svg class="i" aria-hidden="true"><use href="#i-phone"/></svg>(425) 543-4667</a>
-          </div>
-        </div>
-        {rating}
-      </div>
-    </section>
-
-    <section class="included section" aria-labelledby="included-title">
-      <div class="wrap included-grid">
-        <div class="included-copy">
-          <p class="eyebrow">Service {svc['num']} · King &amp; Snohomish County</p>
-          <h2 class="h2" id="included-title" data-reveal>{esc(svc['included_h2'])}</h2>
-          <p class="lead" data-reveal>Every job is measured, quoted in writing and installed by the same crew, start to finish.</p>
-          <ul class="checklist" role="list">
-{included}
-          </ul>
-        </div>
-        <div class="next-card" data-reveal>
-          <p class="eyebrow eyebrow--light">Next step</p>
-          <p class="next-card-title">A free, <em class="nowrap">no-pressure</em> estimate.</p>
-          <ul class="next-card-list" role="list">
-            <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>We measure every room and check the subfloor.</li>
-            <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Written proposal, usually within 24 hours.</li>
-            <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>The number you approve is the number you pay.</li>
-          </ul>
-          <div class="next-card-actions">
-            <a class="btn btn--red" href="#contact">Get a free estimate<svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-            <a class="next-card-phone" href="tel:+14255434667"><svg class="i" aria-hidden="true"><use href="#i-phone"/></svg>(425) 543-4667</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="know section" aria-labelledby="know-title">
-      <div class="wrap">
-        <div class="section-head">
-          <p class="eyebrow">Good to know</p>
-          <h2 class="h2" id="know-title" data-reveal>{esc(svc['know_h2'])}</h2>
-        </div>
-        <dl class="know-grid">
-{know}
-        </dl>
-        {steps}
-      </div>
-    </section>
-
-    {work}
-
-    <section class="faq section" id="faq" aria-labelledby="faq-title">
-      <div class="wrap faq-grid">
-        <div class="faq-intro">
-          <p class="eyebrow">FAQ</p>
-          <h2 class="h2" id="faq-title" data-reveal>{esc(svc['short'])} questions</h2>
-          <p class="lead" data-reveal>Still wondering about something? Call or text <a href="tel:+14255434667">(425) 543-4667</a> and you’ll get a straight answer.</p>
-        </div>
-        <div class="faq-list">
-{faq}
-        </div>
-      </div>
-    </section>
-
-    <section class="more section" aria-labelledby="more-title">
-      <div class="wrap">
-        <div class="section-head">
-          <p class="eyebrow eyebrow--light">More services</p>
-          <h2 class="h2" id="more-title" data-reveal>Every floor. <em>One accountable crew.</em></h2>
-        </div>
-        <div class="more-grid">
-{more}
-        </div>
-      </div>
-    </section>
-
-    {form}
-  </main>
-
-  {footer}
-
-  {actionbar}
-
-  {lightbox}
-
-  <script src="../assets/js/app.js" defer></script>
-</body>
-</html>
-'''
-
-
-# ---------- Página "Other services": a aba de reformas que o Gabriel pediu (16/10) ----------
-# A introdução é do próprio Gabriel (WhatsApp, 16/10 15:21: "essa aí seria a introdução dessa página").
-# As fotos dos 6 serviços e dos trabalhos com a cidade também são dele (16/10, 15:31 a 15:35), e ele pediu que
-# ficassem "como lá na outra parte, de LVP, laminada" (a lista de serviços da home) e "tipo nossos trabalhos, com a
-# cidade" (a faixa de projetos da home). As frases de cada serviço foram escritas por nós: pedir para ele conferir.
-OTHER_INTRO = dict(
-    p1='At Black Rock Remodeling LLC, we specialize in residential remodeling and new construction finishing. We are committed '
-       'to providing reliable service, exceptional attention to detail, and clear communication with every client.',
-    p2='Our services include interior and exterior painting, kitchen and bathroom remodeling, drywall installation and repair, '
-       'finish carpentry, door and window installation, baseboards, trim, flooring, and more.',
-    tagline='Quality craftsmanship, reliable service, and excellent communication from start to finish.',
-)
-# Serviços com foto, na mesma lista da home. img = assets/img/other/services/<img>.webp (819 px) e <img>-640.webp.
-# pick = opção do formulário que o link já deixa escolhida; ld = nome nos dados para o Google, quando diferente do título.
-OTHER_SERVICES = [
-    dict(name='Exterior painting', img='exterior-painting', pick='Painting (interior or exterior)', link='Get a painting estimate',
-         desc='Siding, trim and doors, washed, scraped, caulked and primed before the first coat, so the finish stands up to Northwest rain.',
-         tags=['Siding', 'Trim', 'Doors', 'Prep and priming'],
-         alt='Two-story house with white siding, a dark board-and-batten gable, black windows and a wood-trimmed entry'),
-    dict(name='Interior painting', img='interior-painting', pick='Painting (interior or exterior)', link='Get a painting estimate',
-         desc='Walls, ceilings, trim and doors. Holes and dents patched, floors and furniture covered, cut lines kept sharp.',
-         tags=['Walls', 'Ceilings', 'Trim and doors', 'Drywall patching'],
-         alt='Freshly painted empty living room with white trim, large windows and a wood-look floor'),
-    dict(name='Kitchen remodeling', img='kitchen', pick='Kitchen remodeling', link='Get a kitchen estimate',
-         desc='From a cabinet and backsplash refresh to a full remodel, planned as one project, with the floor included.',
-         tags=['Cabinets', 'Backsplash', 'Trim', 'Flooring'],
-         alt='Kitchen with white cabinets, a dark wood island with stools, black pendant lights and a wood-look floor'),
-    dict(name='Bathroom remodeling', img='bathroom', pick='Bathroom remodeling', link='Get a bathroom estimate',
-         desc='Updates and full remodels: tile, vanity and finishes, with a floor that’s made for water.',
-         tags=['Tile', 'Vanities', 'Paint', 'Flooring'],
-         alt='Bathroom with a glass shower, a freestanding tub, a double vanity and a large tile floor'),
-    dict(name='Decks & fences', img='decks-fences', pick='Decks and fences', link='Get a deck or fence estimate',
-         desc='New decks, railings and fences, built square, fastened right and sealed against the weather.',
-         tags=['Decks', 'Railings', 'Fences', 'Stain and seal'],
-         alt='Covered deck with wood-look boards and a black railing, looking out on a fenced lawn'),
-    dict(name='New construction', ld='New construction finishing', img='new-construction', pick='New construction finishing', link='Get a finishing estimate',
-         desc='The finish work on new homes and additions: drywall, doors, trim, baseboards, paint and floors, from bare framing to move-in ready.',
-         tags=['Drywall', 'Doors and windows', 'Trim and baseboards', 'Finish carpentry'],
-         alt='New house framed in wood, with a staircase and tall windows, ready for the finish work'),
-]
-# Os outros serviços da lista do Gabriel, em cartões sem foto
-OTHER_MORE = [
-    ('Drywall installation & repair', 'New walls hung and finished, and repairs that disappear under paint.'),
-    ('Finish carpentry', 'The detail work that makes a room look finished.'),
-    ('Door & window installation', 'New doors and windows, installed, trimmed out and sealed.'),
-    ('Baseboards & trim', 'Cut tight at every corner and finished clean against the floor.'),
-]
-# Trabalhos reais, com a cidade (assets/img/other/work/<img>.webp, 720x900)
-OTHER_WORK = [
-    ('kirkland-kitchen', 'Kirkland', 'Kitchen with white cabinets, a marble-look island and dark wood-look floors in a Kirkland home'),
-    ('seattle-stairs', 'Seattle', 'Staircase with dark treads and white risers in a Seattle home'),
-    ('lynnwood-home', 'Lynnwood', 'New home with white siding and black trim in Lynnwood, with the Black Rock van out front'),
-    ('bothell-bathroom', 'Bothell', 'Bathroom with green walls, green wall tile, a freestanding tub and a gray tile floor in a Bothell home'),
-    ('seattle-framing', 'Seattle', 'Room framed and insulated, ready for drywall, on a job in Seattle'),
-    ('bellevue-landing', 'Bellevue', 'Upstairs landing with carpet and a black metal railing in a Bellevue home'),
-]
-
-def other_page():
-    desc = ('Painting inside and out, kitchen and bathroom remodeling, decks and fences, and new construction finishing '
-            'from Black Rock Remodeling LLC, across King & Snohomish County, WA.')
-    provider = {"@type": "HomeAndConstructionBusiness", "name": "Black Rock Floors", "telephone": "+1-425-543-4667", "url": "/"}
-    plain = lambda name: name.replace('&', 'and')
-    ld = {
-        "@context": "https://schema.org",
-        "@graph": [
-            *[{"@type": "Service", "name": plain(s.get('ld', s['name'])), "serviceType": plain(s.get('ld', s['name'])), "description": s['desc'],
-               "areaServed": COUNTIES, "provider": provider} for s in OTHER_SERVICES],
-            *[{"@type": "Service", "name": plain(name), "serviceType": plain(name), "description": text,
-               "areaServed": COUNTIES, "provider": provider} for name, text in OTHER_MORE],
-            {
-                "@type": "BreadcrumbList",
-                "itemListElement": [
-                    {"@type": "ListItem", "position": 1, "name": "Home", "item": "/"},
-                    {"@type": "ListItem", "position": 2, "name": "Other services"},
-                ],
-            },
-        ],
-    }
-    arrow = '<svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg>'
-    svcs = '\n'.join(
-        f"""            <li class="svc{' is-active' if i == 1 else ''}" data-svc>
-              <figure class="svc-media">
-                <img src="../assets/img/other/services/{s['img']}-640.webp" srcset="../assets/img/other/services/{s['img']}-640.webp 640w, ../assets/img/other/services/{s['img']}.webp 819w" sizes="(min-width: 700px) 40vw, 92vw" width="640" height="800" alt="{html.escape(s['alt'])}" loading="lazy">
-              </figure>
-              <div class="svc-body">
-                <span class="svc-num">{i:02d}</span>
-                <h3 class="svc-name">{esc(s['name'])}</h3>
-                <div class="svc-more">
-                  <div class="svc-more-inner">
-                    <p class="svc-desc">{esc(s['desc'])}</p>
-                    <ul class="tags" role="list">{''.join(f'<li>{esc(t)}</li>' for t in s['tags'])}</ul>
-                    <a class="link-arrow" href="#contact" data-pick="{html.escape(s['pick'])}">{esc(s['link'])}{arrow}</a>
-                  </div>
-                </div>
-              </div>
-            </li>"""
-        for i, s in enumerate(OTHER_SERVICES, 1))
-    first = len(OTHER_SERVICES)
-    cards = '\n'.join(
-        f"""          <article class="other-card" data-reveal>
-            <span class="other-num">{i:02d}</span>
-            <h3 class="other-name">{esc(name)}</h3>
-            <p>{esc(text)}</p>
-          </article>"""
-        for i, (name, text) in enumerate(OTHER_MORE, first + 1))
-    projects = '\n'.join(
-        f'          <button class="project" type="button" data-project><img src="../assets/img/other/work/{img}.webp" width="720" height="900" alt="{html.escape(alt)}" loading="lazy"><span class="project-meta"><span class="project-city">{esc(city)}</span></span></button>'
-        for img, city, alt in OTHER_WORK)
-    more = '\n'.join(
-        f'        <a class="more-card" href="../{o["slug"]}/"><img src="../assets/img/services/{o["img"]}-640.webp?v=4" width="640" height="800" alt="" loading="lazy"><span>{esc(o["short"])}{arrow}</span></a>'
-        for o in SERVICES)
-    n_flooring = first + len(OTHER_MORE) + 1
-    title = 'Home Remodeling & Painting in King & Snohomish County, WA · Black Rock Floors'
-    return f"""<!doctype html>
 <html lang="en-US">
 <head>
   <meta charset="utf-8">
@@ -538,8 +262,8 @@ def other_page():
   <meta name="description" content="{html.escape(desc)}">
   <meta name="theme-color" content="#0e0e0d">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Black Rock Floors">
-  <meta property="og:title" content="More than flooring · Black Rock Floors">
+  <meta property="og:site_name" content="{BRAND}">
+  <meta property="og:title" content="{html.escape(og_title)}">
   <meta property="og:description" content="{html.escape(desc)}">
   <meta property="og:image" content="../assets/img/og-image.jpg">
   <meta property="og:image:width" content="1200">
@@ -573,135 +297,7 @@ def other_page():
   {menu}
 
   <main id="main">
-    <section class="hero hero--page" aria-labelledby="hero-title">
-      <div class="hero-panel">
-        <div class="hero-media">
-          <picture>
-            <source media="(max-aspect-ratio: 4/5)" srcset="../assets/img/other/bathroom.webp" width="1000" height="1250">
-            <img class="hero-poster" src="../assets/img/other/bathroom-wide.webp" width="1088" height="680" alt="Bathroom with a glass shower, a freestanding tub and a porcelain tile floor" fetchpriority="high">
-          </picture>
-        </div>
-        <div class="hero-content">
-          <ol class="crumbs" role="list" aria-label="Breadcrumb">
-            <li><a href="../">Home</a></li>
-            <li aria-current="page">Other services</li>
-          </ol>
-          <h1 class="hero-title" id="hero-title"><span class="line"><span>More than</span></span> <span class="line"><span><em>flooring.</em></span></span></h1>
-          <p class="hero-sub">Complete home remodeling services from Black Rock Remodeling LLC, across King &amp; Snohomish County.</p>
-          <div class="hero-actions">
-            <a class="btn btn--square" href="#contact">Get a free estimate{arrow}</a>
-            <a class="hero-link" href="tel:+14255434667"><svg class="i" aria-hidden="true"><use href="#i-phone"/></svg>(425) 543-4667</a>
-          </div>
-        </div>
-        {rating}
-      </div>
-    </section>
-
-    <!-- Introdução: o texto que o Gabriel mandou, sem mudar nada -->
-    <section class="other-intro section" aria-labelledby="intro-title">
-      <div class="wrap other-intro-grid">
-        <div class="section-head">
-          <p class="eyebrow">Black Rock Remodeling LLC</p>
-          <h2 class="h2" id="intro-title" data-reveal>Complete home remodeling <em>services.</em></h2>
-        </div>
-        <div class="other-intro-copy">
-          <p class="lead" data-reveal>{esc(OTHER_INTRO['p1'])}</p>
-          <p class="lead" data-reveal>{esc(OTHER_INTRO['p2'])}</p>
-          <p class="other-tagline" data-reveal>{esc(OTHER_INTRO['tagline'])}</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Serviços com as fotos do Gabriel, no mesmo formato da lista de pisos da home -->
-    <section class="services section" id="remodeling" aria-labelledby="services-title">
-      <div class="wrap">
-        <div class="services-head">
-          <div class="section-head">
-            <p class="eyebrow eyebrow--light">Remodeling services</p>
-            <h2 class="h2" id="services-title" data-reveal>Inside and out, <em>start to finish.</em></h2>
-          </div>
-          <p class="lead" data-reveal>Painting, kitchens, bathrooms, decks and new construction. Every project starts with a free visit and a written proposal, and ends with a walkthrough.</p>
-        </div>
-
-        <div class="svc-layout" data-services>
-          <ol class="svc-list" role="list">
-{svcs}
-          </ol>
-
-          <!-- No computador, a foto do serviço ativo fica fixa ao lado da lista -->
-          <div class="svc-stage" aria-hidden="true">
-            <div class="svc-stage-photo" data-stage-photo></div>
-            <p class="svc-stage-cap"><span data-stage-num>01</span><span data-stage-name>{esc(OTHER_SERVICES[0]['name'])}</span></p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Trabalhos reais, com a cidade, como na home -->
-    <section class="work section" id="work" aria-labelledby="work-title">
-      <div class="wrap work-head">
-        <div class="section-head">
-          <p class="eyebrow">Our work</p>
-          <h2 class="h2" id="work-title" data-reveal>Recent projects, <em>city by city.</em></h2>
-        </div>
-        <p class="lead" data-reveal>Real jobs from across King and Snohomish County. Tap a photo to see it bigger.</p>
-      </div>
-      <div class="marquee marquee--work" data-marquee data-speed="36">
-        <div class="marquee-track">
-{projects}
-        </div>
-      </div>
-    </section>
-
-    <section class="other-list section" aria-labelledby="other-title">
-      <div class="wrap">
-        <div class="section-head">
-          <p class="eyebrow">More we do</p>
-          <h2 class="h2" id="other-title" data-reveal>The details that <em>finish a home.</em></h2>
-        </div>
-        <div class="other-grid">
-{cards}
-          <article class="other-card" data-reveal>
-            <span class="other-num">{n_flooring:02d}</span>
-            <h3 class="other-name">Flooring</h3>
-            <p>Hardwood, LVP, laminate, tile, refinishing and stairs: what we do every day.</p>
-            <a class="link-arrow" href="#flooring">Flooring services{arrow}</a>
-          </article>
-          <article class="other-card other-card--cta" data-reveal>
-            <span class="other-num">{n_flooring + 1:02d}</span>
-            <h3 class="other-name">And more.</h3>
-            <p>Have a project that isn’t on this list? Call or text and tell us about it. If it’s not something we do, we’ll tell you that too.</p>
-            <div class="next-card-actions">
-              <a class="btn btn--red" href="#contact">Get a free estimate{arrow}</a>
-              <a class="next-card-phone" href="tel:+14255434667"><svg class="i" aria-hidden="true"><use href="#i-phone"/></svg>(425) 543-4667</a>
-            </div>
-          </article>
-        </div>
-        <div class="process">
-          <h3 class="process-title" data-reveal>How it works</h3>
-          <ol class="steps" role="list">
-            <li class="step" data-reveal><span class="step-num">01</span><h4>Call or text</h4><p>Tell us about the room, what you want to change and your timeline.</p></li>
-            <li class="step" data-reveal><span class="step-num">02</span><h4>Free in-home visit</h4><p>We look at the space, take measurements and talk through the options with you.</p></li>
-            <li class="step" data-reveal><span class="step-num">03</span><h4>Written proposal</h4><p>Scope, materials, price and schedule on paper before any work starts.</p></li>
-            <li class="step" data-reveal><span class="step-num">04</span><h4>Work and walkthrough</h4><p>We do the work, clean up every day and walk through it with you before we call it done.</p></li>
-          </ol>
-        </div>
-      </div>
-    </section>
-
-    <section class="more section" id="flooring" aria-labelledby="more-title">
-      <div class="wrap">
-        <div class="section-head">
-          <p class="eyebrow eyebrow--light">Flooring</p>
-          <h2 class="h2" id="more-title" data-reveal>And the floors, <em>of course.</em></h2>
-        </div>
-        <div class="more-grid more-grid--6">
-{more}
-        </div>
-      </div>
-    </section>
-
-    {contact}
+{main}
   </main>
 
   {footer}
@@ -713,15 +309,323 @@ def other_page():
   <script src="../assets/js/app.js" defer></script>
 </body>
 </html>
-"""
+'''
 
-for svc in SERVICES:
-    out = SITE / svc['slug'] / 'index.html'
+def hero(tall, wide, alt, crumbs, h1a, h1b, sub):
+    trail = '\n'.join(
+        f'            <li><a href="{href}">{esc(name)}</a></li>' if href else f'            <li aria-current="page">{esc(name)}</li>'
+        for name, href in crumbs)
+    return f'''    <section class="hero hero--page" aria-labelledby="hero-title">
+      <div class="hero-panel">
+        <div class="hero-media">
+          <picture>
+            <source media="(max-aspect-ratio: 4/5)" srcset="{tall}" width="1000" height="1250">
+            <img class="hero-poster" src="{wide}" width="1600" height="1000" alt="{html.escape(alt)}" fetchpriority="high">
+          </picture>
+        </div>
+        <div class="hero-content">
+          <ol class="crumbs" role="list" aria-label="Breadcrumb">
+{trail}
+          </ol>
+          <h1 class="hero-title" id="hero-title"><span class="line"><span>{esc(h1a)}</span></span> <span class="line"><span><em>{esc(h1b)}</em></span></span></h1>
+          <p class="hero-sub">{esc(sub)}</p>
+          <div class="hero-actions">
+            <a class="btn btn--square" href="#contact">Get a free estimate{ARROW}</a>
+            <a class="hero-link" href="tel:+14255434667">{PHONE_ICON}(425) 543-4667</a>
+          </div>
+        </div>
+        {rating}
+      </div>
+    </section>'''
+
+def next_card(lines):
+    items = '\n'.join(f'            <li>{CHECK}{esc(t)}</li>' for t in lines)
+    return f'''        <div class="next-card" data-reveal>
+          <p class="eyebrow eyebrow--light">Next step</p>
+          <p class="next-card-title">A free, <em class="nowrap">no-pressure</em> estimate.</p>
+          <ul class="next-card-list" role="list">
+{items}
+          </ul>
+          <div class="next-card-actions">
+            <a class="btn btn--red" href="#contact">Get a free estimate{ARROW}</a>
+            <a class="next-card-phone" href="tel:+14255434667">{PHONE_ICON}(425) 543-4667</a>
+          </div>
+        </div>'''
+
+FLOOR_NEXT = ['We measure every room and check the subfloor.', 'Written proposal, usually within 24 hours.', 'The number you approve is the number you pay.']
+
+def checklist(items):
+    return '\n'.join(f'            <li>{CHECK}{esc(t)}</li>' for t in items)
+
+def know_items(know):
+    """(título, texto) ou (título, texto, endereço, nome do link)."""
+    out = []
+    for item in know:
+        link = f'<a class="link-arrow" href="{item[2]}">{esc(item[3])}{ARROW}</a>' if len(item) > 2 else ''
+        out.append(f'          <div class="know-item" data-reveal><dt>{esc(item[0])}</dt><dd>{esc(item[1])}{link}</dd></div>')
+    return '\n'.join(out)
+
+def faq_section(heading, faq):
+    items = '\n'.join(
+        f'          <details class="qa">\n            <summary><span>{esc(q)}</span><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg></summary>\n            <div class="qa-body"><p>{esc(a)}</p></div>\n          </details>'
+        for q, a in faq)
+    return f'''    <section class="faq section" id="faq" aria-labelledby="faq-title">
+      <div class="wrap faq-grid">
+        <div class="faq-intro">
+          <p class="eyebrow">FAQ</p>
+          <h2 class="h2" id="faq-title" data-reveal>{esc(heading)}</h2>
+          <p class="lead" data-reveal>Still wondering about something? Call or text <a href="tel:+14255434667">(425) 543-4667</a> and you’ll get a straight answer.</p>
+        </div>
+        <div class="faq-list">
+{items}
+        </div>
+      </div>
+    </section>'''
+
+def card(o):
+    """Cartão com foto para a faixa "More services"."""
+    d, q = o.get('dir', 'services'), o.get('q', '?v=4')
+    return f'        <a class="more-card" href="../{o["slug"]}/"><img src="../assets/img/{d}/{o["img"]}-640.webp{q}" width="640" height="800" alt="" loading="lazy"><span>{esc(o["short"])}{ARROW}</span></a>'
+
+def form_for(option=None, city=None):
+    out = contact
+    if option:
+        assert f'<option>{option}</option>' in out, option
+        out = out.replace(f'<option>{option}</option>', f'<option selected>{option}</option>')
+    if city:
+        out = out.replace('placeholder="Bellevue"', f'value="{city}" placeholder="Bellevue"')
+    return out
+
+def page(svc):
+    """Página de um serviço: os seis tipos de piso, a página geral de piso e as reformas."""
+    d, q = svc.get('dir', 'services'), svc.get('q', '?v=4')
+    remodel = svc.get('kind') == 'remodeling'
+    is_hub = svc['slug'] == FLOORING['slug']
+    wide = svc.get('wide_path') or f"{d}/{svc['img']}{'' if d != 'services' else '-wide'}"
+    if is_hub:
+        others, parent, trail = SERVICES, ('Services', '../#services'), []
+    elif remodel:
+        others = [FLOORING] + [o for o in REMODEL if o['slug'] != svc['slug']]
+        parent, trail = ('Services', '../#services'), []
+    else:
+        others = [FLOORING] + [o for o in SERVICES if o['slug'] != svc['slug']]
+        parent, trail = ('Flooring', '../flooring/'), []
+    ld = [
+        {"@type": "Service", "name": svc['h1'], "serviceType": svc['h1'], "description": svc['desc'], "areaServed": COUNTIES, "provider": PROVIDER},
+        breadcrumb(('Home', '/'), (parent[0], parent[1].replace('..', '')), (svc['h1'],)),
+        faq_ld(svc['faq']),
+    ]
+    if 'h1a' in svc:
+        h1a, h1b = svc['h1a'], svc['h1b']
+    elif svc['h1'] == 'Stair treads and risers':
+        h1a, h1b = 'Stair treads', 'and risers.'
+    else:
+        h1a, h1b = svc['h1'].rsplit(' ', 1)[0], svc['h1'].rsplit(' ', 1)[1] + '.'
+    if is_hub or not remodel:
+        more_head = ('More flooring', 'Every floor. <em>One accountable crew.</em>')
+        label = 'Flooring'
+    else:
+        more_head = ('More services', 'Every project. <em>One accountable crew.</em>')
+        label = 'Remodeling'
+    more = '\n'.join(card(o) for o in others)
+    main = f'''{hero(f"../assets/img/{d}/{svc['img']}.webp{q}", f"../assets/img/{wide}.webp{q}", svc['alt'], [('Home', '../'), parent, (svc['short'], None)], h1a, h1b, svc['sub'])}
+
+    <section class="included section" aria-labelledby="included-title">
+      <div class="wrap included-grid">
+        <div class="included-copy">
+          <p class="eyebrow">{label} · King &amp; Snohomish County</p>
+          <h2 class="h2" id="included-title" data-reveal>{esc(svc['included_h2'])}</h2>
+          <p class="lead" data-reveal>{esc(REMODEL_LEAD if remodel else 'Every job is measured, quoted in writing and installed by the same crew, start to finish.')}</p>
+          <ul class="checklist" role="list">
+{checklist(svc['included'])}
+          </ul>
+        </div>
+{next_card(REMODEL_NEXT if remodel else FLOOR_NEXT)}
+      </div>
+    </section>
+
+    <section class="know section" aria-labelledby="know-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">Good to know</p>
+          <h2 class="h2" id="know-title" data-reveal>{esc(svc['know_h2'])}</h2>
+        </div>
+        <dl class="know-grid">
+{know_items(svc['know'])}
+        </dl>
+        {steps}
+      </div>
+    </section>
+
+    {work}
+
+{faq_section(f"{svc['short']} questions", svc['faq'])}
+
+    <section class="more section" aria-labelledby="more-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow eyebrow--light">{more_head[0]}</p>
+          <h2 class="h2" id="more-title" data-reveal>{more_head[1]}</h2>
+        </div>
+        <div class="more-grid more-grid--6">
+{more}
+        </div>
+      </div>
+    </section>
+
+    {form_for(svc['option'])}'''
+    return doc(f"{svc['title']} · {BRAND}", svc['desc'], f"{svc['h1']} · {BRAND}", ld, main)
+
+
+def city_work(city, photos):
+    """Os trabalhos reais daquela cidade. Sem foto da cidade, mostra a faixa geral de projetos."""
+    if not photos:
+        return work
+    btns = '\n'.join(
+        f'          <button class="project" type="button" data-project><img src="../assets/img/{d}/{img}.webp" width="720" height="900" alt="{html.escape(alt)}" loading="lazy"><span class="project-meta"><span class="project-city">{esc(city)}</span></span></button>'
+        for d, img, alt in photos)
+    return f'''<section class="city-work section" id="work" aria-labelledby="work-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">Recent work</p>
+          <h2 class="h2" id="work-title" data-reveal>Our work in <em>{esc(city)}.</em></h2>
+        </div>
+        <div class="city-work-grid">
+{btns}
+        </div>
+      </div>
+    </section>'''
+
+def near_section(title, groups):
+    cols = '\n'.join(
+        f'''          <div>
+            <h3 class="near-title">{esc(head)}</h3>
+            <div class="near-links">{''.join(f'<a href="{h}">{esc(n)}</a>' for n, h in links)}</div>
+          </div>'''
+        for head, links in groups)
+    return f'''    <section class="near section" aria-labelledby="near-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow eyebrow--light">Keep looking</p>
+          <h2 class="h2" id="near-title" data-reveal>{title}</h2>
+        </div>
+        <div class="near-grid">
+{cols}
+        </div>
+      </div>
+    </section>'''
+
+CITY_BY_NAME = {c['name']: c for c in CITIES}
+SERVICE_LINKS = [(s['short'], f"../{s['slug']}/") for s in [FLOORING] + REMODEL]
+
+def city_page(c):
+    name = c['name']
+    area = {"@type": "City", "name": f"{name}, WA"}
+    ld = [
+        {"@type": "Service", "name": f"Flooring installation in {name}, WA", "serviceType": "Flooring installation", "description": c['desc'], "areaServed": area, "provider": PROVIDER},
+        breadcrumb(('Home', '/'), ('Service area', '/#area'), (name,)),
+        faq_ld(c['faq']),
+    ]
+    intro = '\n'.join(f'          <p class="lead" data-reveal>{esc(t)}</p>' for t in c['intro'])
+    near = [(n, f"../{CITY_BY_NAME[n]['slug']}/") for n in c['near']]
+    local = [(f"{l['service']} in {name}", f"../{l['slug']}/") for l in LOCAL if l['city'] == name]
+    main = f'''{hero(f"../assets/img/services/{c['img']}.webp?v=4", f"../assets/img/services/{c['wide']}.webp?v=4", f"New floor in a {name} home", [('Home', '../'), ('Service area', '../#area'), (name, None)], 'Flooring contractor', f'in {name}, WA.', c['sub'])}
+
+    <section class="included section" aria-labelledby="included-title">
+      <div class="wrap included-grid">
+        <div class="included-copy">
+          <p class="eyebrow">Flooring installation · {esc(c['county'])}</p>
+          <h2 class="h2" id="included-title" data-reveal>{esc(c['intro_h2'])}</h2>
+{intro}
+          <ul class="checklist" role="list">
+{checklist(c['checklist'])}
+          </ul>
+        </div>
+{next_card(FLOOR_NEXT)}
+      </div>
+    </section>
+
+    <section class="know section" aria-labelledby="know-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">Good to know</p>
+          <h2 class="h2" id="know-title" data-reveal>{esc(c['know_h2'])}</h2>
+        </div>
+        <dl class="know-grid">
+{know_items(c['know'])}
+        </dl>
+        {steps}
+      </div>
+    </section>
+
+    {city_work(name, c['photos'])}
+
+{faq_section(f'Flooring questions in {name}', c['faq'])}
+
+{near_section(f'Flooring company near <em>{esc(name)}.</em>', [('Nearby cities', near), (f'Services in {name}', local + SERVICE_LINKS)])}
+
+    {form_for('Flooring (not sure which type)', name)}'''
+    return doc(f'Flooring Contractor in {name}, WA · {BRAND}', c['desc'], f'Flooring contractor in {name}, WA · {BRAND}', ld, main)
+
+def local_page(l):
+    base = next(s for s in REMODEL if s['slug'] == l['base'])
+    city, service = l['city'], l['service']
+    wide = base.get('wide_path') or f"{base['dir']}/{base['img']}"
+    ld = [
+        {"@type": "Service", "name": f"{service} in {city}, WA", "serviceType": service, "description": l['desc'], "areaServed": {"@type": "City", "name": f"{city}, WA"}, "provider": PROVIDER},
+        breadcrumb(('Home', '/'), (service, f"/{base['slug']}/"), (city,)),
+        faq_ld(l['faq']),
+    ]
+    intro = '\n'.join(f'          <p class="lead" data-reveal>{esc(t)}</p>' for t in l['intro'])
+    siblings = [(f"{x['service']} in {x['city']}", f"../{x['slug']}/") for x in LOCAL if x['slug'] != l['slug']]
+    main = f'''{hero(f"../assets/img/{base['dir']}/{base['img']}.webp", f"../assets/img/{wide}.webp", base['alt'], [('Home', '../'), (service, f"../{base['slug']}/"), (city, None)], service, f'in {city}, WA.', l['sub'])}
+
+    <section class="included section" aria-labelledby="included-title">
+      <div class="wrap included-grid">
+        <div class="included-copy">
+          <p class="eyebrow">{esc(service)} · {esc(l['county'])}</p>
+          <h2 class="h2" id="included-title" data-reveal>{esc(l['intro_h2'])}</h2>
+{intro}
+          <ul class="checklist" role="list">
+{checklist(l['checklist'])}
+          </ul>
+        </div>
+{next_card(REMODEL_NEXT)}
+      </div>
+    </section>
+
+    <section class="know section" aria-labelledby="know-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">Good to know</p>
+          <h2 class="h2" id="know-title" data-reveal>{esc(l['know_h2'])}</h2>
+        </div>
+        <dl class="know-grid">
+{know_items(l['know'])}
+        </dl>
+        {steps}
+      </div>
+    </section>
+
+    {work}
+
+{faq_section(f'{service} questions in {city}', l['faq'])}
+
+{near_section(f'More in <em>{esc(city)}</em> and nearby.', [(f'In {city}', [(f'Flooring in {city}', f"../{l['flooring']}/"), (service, f"../{base['slug']}/")]), ('More pages', siblings)])}
+
+    {form_for(service, city)}'''
+    return doc(f"{l['title']} · {BRAND}", l['desc'], f"{service} in {city}, WA · {BRAND}", ld, main)
+
+
+def write(slug, content):
+    out = SITE / slug / 'index.html'
     out.parent.mkdir(exist_ok=True)
-    out.write_text(page(svc))
-    print(out.relative_to(SITE), len(out.read_text()))
+    out.write_text(content)
+    print(out.relative_to(SITE), len(content))
 
-out = SITE / 'other-services' / 'index.html'
-out.parent.mkdir(exist_ok=True)
-out.write_text(other_page())
-print(out.relative_to(SITE), len(out.read_text()))
+for svc in [*SERVICES, FLOORING, *REMODEL]:
+    write(svc['slug'], page(svc))
+for c in CITIES:
+    write(c['slug'], city_page(c))
+for l in LOCAL:
+    write(l['slug'], local_page(l))
