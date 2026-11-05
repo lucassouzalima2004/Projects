@@ -36,7 +36,7 @@ export default {
   // 07575 206135 (iPhone da loja)  →  '447575206135'
   whatsapp: '447575206135',
   instagram: 'artwithlovebylulu',   // usuário sem @
-  email: '',                        // ex.: 'hello@artwithlovebylulu.co.uk' (vazio = não aparece)
+  email: 'artwithloveuk@gmail.com',  // vazio = não aparece
 
   currency: 'GBP',
 
@@ -51,7 +51,7 @@ export default {
      freeOver ... compras a partir deste valor têm a entrega padrão grátis
      ------------------------------------------------------------------------- */
   shipping: {
-    freeOver: 35,
+    freeOver: 50,
     countries: ['GB'],               // países aceitos no checkout
     dispatch: '1–2 working days',    // prazo para postar
     options: [
@@ -245,25 +245,37 @@ export default {
   /* ---------------------------------------------------------------------------
      LANÇAMENTO DA SEMANA (página inicial, logo abaixo da faixa de fitas)
      -------------------------------------------------------------------------
-     A ilustração da menina fica fixa; toda semana troca só o laço no cabelo.
-     art ....... ilustração (artSmall = versão menor para celular)
-     bow ....... foto do laço recortada, com fundo transparente (WebP/PNG)
-     bowAt ..... onde o laço fica, em % da ilustração: x e y = centro do laço,
-                 width = largura, rotate = inclinação em graus
-     image ..... opcional: uma foto já montada, no lugar de art + bow
-     product ... id do produto do laço (o botão "Shop this bow" leva até ele)
-     Sem art/bow e sem image, a seção some.
+     looks: até 3 ilustrações de menina, cada uma com um laço da semana.
+       art ........ ilustração (artSmall = versão menor para celular)
+       bow ........ foto do laço recortada, com fundo transparente (WebP/PNG)
+       bowAt ...... onde o laço fica, em % da ilustração: x e y = centro do laço,
+                    width = largura, rotate = inclinação em graus
+       image ...... opcional: uma foto já montada, no lugar de art + bow
+       product .... id do produto (o cartão leva até ele)
+       collection . ou o id de uma coleção (ex.: 'baby-headbands')
+       label ...... etiqueta no canto da imagem
+     Sem nenhum look, a seção some.
      ------------------------------------------------------------------------- */
   launch: {
-    art: 'assets/img/launch/girl-ponytail.webp',
-    artSmall: 'assets/img/launch/girl-ponytail-640.webp',
-    bow: 'assets/img/launch/bow-red-velvet.webp',
-    bowAt: { x: 39.5, y: 16, width: 22, rotate: -18 },
-    image: '',
-    product: 'red-velvet-bow-pair',
     eyebrow: 'New this week',
     title: 'The Winter launch',
-    text: 'Plush red velvet wrapped in a band of rhinestones: the first bow of the season, made for Christmas parties and winter days out.',
+    text: 'New bows and headbands, fresh from the studio this week.',
+    looks: [
+      {
+        art: 'assets/img/launch/girl-ponytail.webp', artSmall: 'assets/img/launch/girl-ponytail-640.webp',
+        bow: 'assets/img/launch/bow-red-velvet.webp', bowAt: { x: 39.5, y: 16, width: 22, rotate: -18 },
+        product: 'red-velvet-bow-pair', label: 'New bow',
+      },
+      {
+        art: 'assets/img/launch/baby-curls.webp', artSmall: 'assets/img/launch/baby-curls-640.webp',
+        bow: 'assets/img/launch/bow-lion-cub.webp', bowAt: { x: 31, y: 18, width: 32, rotate: -22 },
+        product: 'safari-lion-cub-bow', label: 'Big bows',
+      },
+      {
+        art: 'assets/img/launch/baby-headband.webp', artSmall: 'assets/img/launch/baby-headband-640.webp',
+        collection: 'baby-headbands', label: 'Headbands',
+      },
+    ],
   },
 
   /* ---------------------------------------------------------------------------
@@ -274,7 +286,8 @@ export default {
      Ex.: { src: 'assets/img/made-to-order/unicorn-candle.webp', alt: 'Unicorn birthday candle in cold porcelain' },
      ------------------------------------------------------------------------- */
   madeToOrder: {
-    leadTime: '2–3 weeks',
+    // Antecedência mínima para encomendar, contada até a data do evento
+    notice: { names: '10 days', candles: '2 months' },
     gallery: [],
   },
 };

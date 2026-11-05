@@ -93,13 +93,40 @@ def hang_card(canvas, photo, cx, top, w, angle):
     ImageDraw.Draw(shadow).rounded_rectangle([pad, pad + 18, pad + w, pad + h + 18], w // 16, fill=INK + (110,))
     layer = Image.alpha_composite(layer, shadow.filter(ImageFilter.GaussianBlur(18)))
     layer.alpha_composite(card, (pad, pad))
-    peg = Image.new("RGBA", (16, 44), (0, 0, 0, 0))
-    pd = ImageDraw.Draw(peg)
-    pd.rounded_rectangle([0, 0, 15, 43], 4, fill=(240, 226, 208))
-    pd.rectangle([3, 17, 12, 20], fill=(184, 156, 126))
-    layer.alpha_composite(peg, (pad + w // 2 - 8, pad - 24))
+    clip = butterfly(max(26, w // 7))
+    layer.alpha_composite(clip, (pad + w // 2 - clip.width // 2, pad - clip.height // 2))
     layer = layer.rotate(angle, resample=Image.BICUBIC, expand=False, center=(pad + w // 2, pad))
     canvas.paste(layer, (cx - w // 2 - pad, top - pad), layer)
+
+
+GOLD = [(251, 239, 196), (226, 185, 87), (183, 133, 44), (242, 216, 138)]
+
+
+def butterfly(size):
+    """Borboleta dourada que prende a cartela (a mesma do site)."""
+    k = 8
+    S = size * k
+    mask = Image.new("L", (S, S), 0)
+    d = ImageDraw.Draw(mask)
+    cx, cy = S / 2, S / 2
+    for side in (-1, 1):  # asas de cima (maiores) e de baixo
+        up = Image.new("L", (S, S), 0)
+        ImageDraw.Draw(up).ellipse([cx - S * .2, cy - S * .42, cx + S * .2, cy + S * .02], fill=255)
+        mask.paste(255, (0, 0), up.rotate(side * 52, center=(cx, cy + S * .02), resample=Image.BICUBIC))
+        lo = Image.new("L", (S, S), 0)
+        ImageDraw.Draw(lo).ellipse([cx - S * .14, cy - S * .02, cx + S * .14, cy + S * .34], fill=255)
+        mask.paste(255, (0, 0), lo.rotate(side * -38, center=(cx, cy), resample=Image.BICUBIC))
+    out = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+    out.paste(holo_gradient(S, S, GOLD).rotate(-35, resample=Image.BICUBIC), (0, 0), mask)
+    dd = ImageDraw.Draw(out)
+    dd.rounded_rectangle([cx - S * .025, cy - S * .2, cx + S * .025, cy + S * .26], S * .02, fill=(110, 74, 16, 255))
+    out = out.resize((size, size), Image.LANCZOS).rotate(-8, resample=Image.BICUBIC)
+    shadow = Image.new("RGBA", out.size, (0, 0, 0, 0))
+    shadow.putalpha(out.getchannel("A").point(lambda v: v * 0.35))
+    base = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    base.alpha_composite(Image.merge("RGBA", (*[Image.new("L", out.size, 36)] * 3, shadow.getchannel("A"))).filter(ImageFilter.GaussianBlur(1.2)), (0, 2))
+    base.alpha_composite(out)
+    return base
 
 
 def ribbon(canvas, x0, x1, y, sag):
@@ -131,9 +158,9 @@ def logo(canvas, x, y, size, center=False):
     art = art.resize((round(art.width * h / art.height), h), Image.LANCZOS)
     x0 = int(x - art.width / 2) if center else int(x)
     canvas.paste(art, (x0, int(y)), art)
-    by = font("Jost.ttf", max(12, size // 4), wght=500)
-    sub = "BY LULU  ·  LONDON"
-    spacing = size // 14
+    by = font("Jost.ttf", max(14, int(size * .3)), wght=500)
+    sub = "By Lulu - London"
+    spacing = 1
     sw = sum(d.textlength(c, font=by) + spacing for c in sub) - spacing
     sx = x - sw / 2 if center else x0 + 6
     for c in sub:

@@ -35,7 +35,7 @@ export const maxQty = (p) => (typeof p.stock === 'number' ? Math.min(p.stock, MA
 export const lowStock = (p) => typeof p.stock === 'number' && p.stock > 0 && p.stock <= 3;
 
 export const altText = (p, v, n = 1) =>
-  `${p.name}${v ? ` in ${v.name}` : ''}${n > 1 ? `, photo ${n}` : ''}, shown with a ruler for size`;
+  `${p.name}${v ? ` in ${v.name}` : ''}${n > 1 ? `, photo ${n}` : ''}`;
 
 /* ---------------------------------------------------------------- entrega --- */
 export const shipping = SHOP.shipping;

@@ -10,8 +10,8 @@ direto e as funções pequenas em `functions/` cuidam do checkout, das prévias 
 
 ## O que tem na loja
 
-- **Início**: título animado, "varal" com as cartelas dos laços balançando, coleções, vitrine, a parte da régua
-  ("Every bow is shown with a ruler", ideia dela), seleções especiais, velas sob encomenda e Instagram.
+- **Início**: faixa de fitas com o logo, lançamento da semana, título animado, "varal" com as cartelas presas por
+  borboletas douradas, coleções, vitrine, seleções especiais, velas sob encomenda e Instagram.
 - **Loja** (`/shop` e `/shop/<coleção>`): filtros e ordenação sem recarregar a página, contagem de peças.
 - **Produto** (`/product/<id>`): galeria com miniaturas, deslizar no celular e foto ampliada, cores com fotos
   próprias, quantidade, aviso de estoque baixo, perguntas pelo WhatsApp, detalhes, tamanho, entrega e segurança,
@@ -33,15 +33,15 @@ O conteúdo foi montado a partir das conversas do WhatsApp. Confirme e troque em
 
 - [ ] **Preços** de todos os produtos (os atuais são de exemplo, entre £9 e £16)
 - [ ] **Frete**: ela vai mandar por e-mail as regras novas de entrega (hoje: Royal Mail £3.50 / £4.95, grátis acima
-      de £35, só Reino Unido). Muda em `shipping` no `catalog.js` e no texto de `help` em `views.js`
+      de £50, só Reino Unido). Muda em `shipping` no `catalog.js` e no texto de `help` em `views.js`
 - [x] **Logo**: o original dela está em `public/assets/img/logo.webp` (e `logo-light.webp`, branco, para o rodapé).
       Para trocar, substitua esses dois arquivos e `tools/logo.png` (usado nas prévias de link).
 - [ ] Nomes e descrições dos produtos (escritos a partir das legendas que ela mandou)
 - [ ] Estoque: peças únicas ganham `stock: 1`; esgotadas, `stock: 0`
-- [ ] Prazo das encomendas (`madeToOrder.leadTime`, hoje "2–3 weeks")
+- [x] Prazos das encomendas (`madeToOrder.notice`): nomes 10 dias antes do evento, velas 2 meses antes
 - [ ] Fotos das velas que ela já fez: ela perguntou se pode mostrar as já vendidas. Pode: entram em
       `madeToOrder.gallery` como "Past custom orders"
-- [ ] E-mail da loja (`email`), se ela tiver um
+- [x] E-mail da loja: artwithloveuk@gmail.com
 - [ ] Textos de "Our story" (`about` em `views.js`): falam da técnica brasileira do biscuit
 - [ ] Política de devolução e privacidade (`help` e `legal` em `views.js`): seguem as regras do Reino Unido para
       quem vende pela internet. A lei pede também nome e endereço comercial do vendedor
@@ -55,13 +55,14 @@ a marca da Disney na loja. A foto do caderno com a senha do Instagram ficou fora
 - **Faixa de fitas**: a foto que ela escolheu (`public/assets/img/ribbons-1200.webp` e `ribbons-2400.webp`) com o logo
   numa cartela por cima. Ela mandou um print do celular (940 px), que foi ampliado com IA para ficar nítido. Se tiver
   o arquivo original, troque esses dois arquivos.
-- **Lançamento da semana**: ilustração fixa de uma menina (`public/assets/img/launch/girl-ponytail*.webp`, uma das
-  imagens de exemplo que ela mandou, ampliada) com o laço da semana preso no rabo de cavalo. Para trocar o laço:
+- **Lançamento da semana**: até 3 ilustrações de meninas (`public/assets/img/launch/`, a partir dos exemplos que ela
+  mandou, ampliados), cada uma com um laço da semana por cima. Hoje: rabo de cavalo com o Red Velvet, bebê de cachos
+  com o Lion Cub (laço grande) e bebê de tiara levando às Baby Headbands. Para trocar um laço:
   1. peça a ela uma foto do laço sozinho, num fundo liso e claro;
   2. recorte o fundo (PNG/WebP transparente) e salve em `public/assets/img/launch/`;
-  3. em `launch` no `catalog.js`, troque `bow`, `product` (o laço à venda), `title` ("The Winter launch",
-     "The Summer launch"…) e `text`. Se o laço ficar fora do lugar, ajuste `bowAt` (x, y, largura e inclinação).
-  Também dá para usar uma foto já montada por ela em `image`. Sem laço e sem foto, a seção some.
+  3. em `launch.looks` no `catalog.js`, troque `bow`, `product` e `label`; ajuste `bowAt` (x, y, largura e
+     inclinação) se o laço ficar fora do lugar. `title` e `text` ficam em `launch`.
+  Também dá para usar uma foto já montada por ela em `image`. Sem nenhum look, a seção some.
 
 ## Como editar
 
@@ -84,7 +85,8 @@ preço pelo navegador.
 
 ### Produto novo
 
-1. Fotos com a régua, como ela já faz. Na pasta `art-with-love`:
+1. Fotos do produto (ela decidiu não usar mais a régua: a medida vai na descrição, em `summary` ou `details`).
+   Na pasta `art-with-love`:
 
    ```bash
    python3 tools/prepare_images.py foto1.jpg foto2.jpg --name unicorn-bow

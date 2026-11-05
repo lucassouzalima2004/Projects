@@ -100,35 +100,45 @@ function candleArt() {
 }
 
 /* ------------------------------------------------- lançamento da semana --- */
-// Ilustração da menina com o laço da semana no cabelo (ou uma foto já montada, em launch.image).
-// Some enquanto não houver nem ilustração com laço nem foto.
+// Ilustrações das meninas com os laços da semana (launch.looks no catálogo).
+// Cada look: ilustração + laço recortado por cima, ou uma foto já montada (image).
+const asset = (path) => `/${String(path).replace(/^\//, '')}`;
+
+function lookCard(look, i) {
+  const p = productById.get(look.product);
+  const c = collectionById.get(look.collection);
+  const name = p ? p.name : c ? c.name : '';
+  const alt = esc(look.alt || (name ? `Illustration of a little girl wearing the ${name}` : 'This week’s new piece'));
+  const at = look.bowAt || {};
+  const art = look.image
+    ? `<img class="launch__img" src="${asset(look.image)}" alt="${alt}" loading="lazy">`
+    : `<img class="launch__img" src="${asset(look.art)}"${look.artSmall ? ` srcset="${asset(look.artSmall)} 640w, ${asset(look.art)} 1200w" sizes="(max-width: 760px) 80vw, 30vw"` : ''} alt="${alt}" loading="lazy">
+       ${look.bow ? `<img class="launch__bow" src="${asset(look.bow)}" alt="" loading="lazy" style="--x:${at.x ?? 50}%;--y:${at.y ?? 20}%;--w:${at.width ?? 20}%;--r:${at.rotate ?? 0}deg">` : ''}`;
+  const href = p ? productUrl(p) : c ? `/shop/${c.id}` : '';
+  const tag = href ? 'a' : 'div';
+  return `
+    <${tag} class="look" ${href ? `href="${href}"` : ''} data-reveal style="--d:${i * 0.1}s">
+      <figure class="launch__art">${art}${look.label ? `<span class="launch__tag">${esc(look.label)}</span>` : ''}</figure>
+      <span class="look__body">
+        <strong>${esc(name)}</strong>
+        ${p ? priceTag(p) : c ? `<span class="look__more">Shop ${esc(c.name.toLowerCase())} ${icon('arrow')}</span>` : ''}
+      </span>
+    </${tag}>`;
+}
+
 function launchSection() {
   const l = SHOP.launch || {};
-  const p = productById.get(l.product);
-  const src = (path) => `/${String(path).replace(/^\//, '')}`;
-  const alt = esc(l.alt || (p ? `Illustration of a girl wearing the ${p.name}` : 'This week’s new bow'));
-  let art = '';
-  if (l.image) {
-    art = `<img class="launch__img" src="${src(l.image)}" alt="${alt}" loading="lazy">`;
-  } else if (l.art && l.bow) {
-    const at = l.bowAt || {};
-    art = `
-      <img class="launch__img" src="${src(l.art)}"${l.artSmall ? ` srcset="${src(l.artSmall)} 640w, ${src(l.art)} 1200w" sizes="(max-width: 860px) 92vw, 46vw"` : ''} alt="${alt}" loading="lazy">
-      <img class="launch__bow" src="${src(l.bow)}" alt="" loading="lazy" style="--x:${at.x ?? 50}%;--y:${at.y ?? 20}%;--w:${at.width ?? 20}%;--r:${at.rotate ?? 0}deg">`;
-  } else return '';
+  const looks = (l.looks || []).filter((x) => x.image || x.art);
+  if (!looks.length) return '';
   return `
     <section class="section launch" aria-labelledby="launch-title">
-      <div class="wrap split">
-        <div class="split__media" data-reveal>
-          <figure class="launch__art">${art}<span class="launch__tag">${esc(l.eyebrow || 'New this week')}</span></figure>
-        </div>
-        <div class="split__copy" data-reveal style="--d:.1s">
-          <p class="eyebrow eyebrow--spark">${esc(l.eyebrow || 'New this week')}</p>
-          <h2 id="launch-title">${l.title ? esc(l.title).replace(/^(.*?)(\S+)$/, '$1<em>$2</em>') : 'The new <em>bow</em>'}</h2>
-          ${l.text ? `<p class="lead">${esc(l.text)}</p>` : ''}
-          ${p ? `<p class="launch__product"><strong>${esc(p.name)}</strong> ${priceTag(p)}</p>
-          <a class="btn btn--primary" href="${productUrl(p)}">Shop this bow ${icon('arrow', 'btn__arrow')}</a>` : ''}
-        </div>
+      <div class="wrap">
+        ${sectionHead({
+          eyebrow: esc(l.eyebrow || 'New this week'),
+          title: `<span id="launch-title">${l.title ? esc(l.title).replace(/^(.*?)(\S+)$/, '$1<em>$2</em>') : 'The new <em>bows</em>'}</span>`,
+          lead: l.text ? esc(l.text) : '',
+        })}
+        <div class="looks">${looks.map(lookCard).join('')}</div>
       </div>
     </section>`;
 }
@@ -153,11 +163,9 @@ export function home() {
   const title = words.map((x) => (x === '<br>' ? '<br>' : `<span class="word" style="--w:${w++}">${x}</span>`)).join(' ');
 
   const marquee = [
-    'Handmade in London', 'Cold porcelain details', 'Every bow shown with a ruler',
-    `Free UK delivery over ${freeOver}`, 'Arrives on its signature card', 'Birthday candles made to order',
+    'Handmade in London', 'Cold porcelain details', `Free UK delivery over ${freeOver}`,
+    'Birthday candles made to order', 'Bespoke bows on request',
   ].map((t) => `<span>${t}</span>${icon('spark')}`).join('');
-
-  const rulerProduct = productById.get('lollipop-bow') || featured[0];
 
   return {
     title: 'Luxury handmade hair bows, London',
@@ -168,7 +176,7 @@ export function home() {
         <div class="strass strass--glints" aria-hidden="true">${GLINTS.map(([x, y, sz, m], i) => `<i style="--x:${x}%;--y:${y}%;--s:${sz}px;--d:${(i * 0.9) % 5}s"${m ? '' : " data-m='0'"}></i>`).join('')}</div>
         <div class="ribbons__brand" id="brand-tag">
           <img class="ribbons__logo" src="/assets/img/logo.webp" srcset="/assets/img/logo.webp 640w, /assets/img/logo-1154.webp 1154w" sizes="(max-width: 700px) 86vw, 50vw" alt="Art with Love" width="640" height="144">
-          <span class="ribbons__by">by Lulu · London</span>
+          <span class="ribbons__by">By Lulu - London</span>
         </div>
       </section>
 
@@ -188,7 +196,7 @@ export function home() {
           <svg class="line__ribbon" viewBox="0 0 1000 110" preserveAspectRatio="none" aria-hidden="true"><path d="M0 30 Q500 150 1000 30"/></svg>
           ${picks.map((p, i) => `
             <a class="hang" href="${productUrl(p)}" data-n="${i}" style="--i:${i};--sway:${5 + (i % 3) * 1.4}s;--r0:${i % 2 ? -10 : 10}deg">
-              <span class="hang__peg" aria-hidden="true"></span>
+              <svg class="hang__clip" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-clip"/></svg>
               <span class="hang__card foil"><img src="${photo(p, p.variants?.[0], 1)}" alt="${esc(altText(p, p.variants?.[0]))}" width="480" height="640" ${i === 2 ? 'fetchpriority="high"' : 'loading="lazy"'}></span>
               <span class="hang__tag"><span class="hang__name">${esc(p.name)}</span> <b>${money(p.price)}</b></span>
             </a>`).join('')}
@@ -224,27 +232,6 @@ export function home() {
           ${sectionHead({ eyebrow: 'Fresh from the studio', title: '<span id="new-title">New <em>favourites</em></span>' })}
           ${grid(featured)}
           <div class="section-foot"><a class="btn btn--ghost" href="/shop">Shop all ${products.length} pieces ${icon('arrow', 'btn__arrow')}</a></div>
-        </div>
-      </section>
-
-      <section class="section" style="padding-top:0" aria-labelledby="ruler-title">
-        <div class="wrap split">
-          <div class="split__media" data-reveal>
-            <div class="ruler-shot">
-              <div class="ruler-shot__img"><img src="${photo(rulerProduct, null, 1, 'l')}" srcset="${photo(rulerProduct, null, 1, 's')} 480w, ${photo(rulerProduct, null, 1, 'l')} 960w" sizes="(max-width: 860px) 90vw, 460px" alt="${esc(altText(rulerProduct))}" loading="lazy" width="960" height="1280"></div>
-              <p class="ruler-shot__note">${icon('ruler')}<span>See the true size in every photo</span></p>
-            </div>
-          </div>
-          <div class="split__copy" data-reveal style="--d:.1s">
-            <p class="eyebrow eyebrow--spark">No guesswork</p>
-            <h2 id="ruler-title">Every bow is shown <em>with a ruler</em></h2>
-            <p class="lead">Lulu photographs each piece next to a ruler, so you can see exactly how big it is before it arrives. No surprises, just the bow you fell for.</p>
-            <ul class="ticks">
-              <li>${icon('check')}<span>Real photos of the real piece, taken in the studio</span></li>
-              <li>${icon('check')}<span>Arrives on its signature Art with Love card</span></li>
-              <li>${icon('check')}<span>Dispatched within ${esc(shipping.dispatch)}</span></li>
-            </ul>
-          </div>
         </div>
       </section>
 
@@ -346,6 +333,7 @@ const SORTS = {
   name: { label: 'Name, A to Z', fn: (a, b) => a.name.localeCompare(b.name) },
 };
 
+const SHOP_LEAD = 'Every piece is handmade in London, one bow at a time.';
 const EMPTY_SHOP = '<div class="empty"><p>Nothing here just yet. New pieces are on their way.</p><a class="btn btn--ghost" href="/shop">See everything</a></div>';
 
 function shopList(c, sort) {
@@ -371,7 +359,7 @@ export function shop(id, url) {
       <section class="wrap page-head">
         <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/shop">Shop</a>${c ? `<span>/</span><span>${esc(c.name)}</span>` : ''}</nav>
         <h1 id="shop-title">${c ? esc(c.name) : 'Shop <em>all</em>'}</h1>
-        <p class="lead" id="shop-lead">${esc(c ? c.blurb : 'Every piece is handmade in London and shown next to a ruler, so you know its true size.')}</p>
+        <p class="lead" id="shop-lead">${esc(c ? c.blurb : SHOP_LEAD)}</p>
       </section>
       <div class="toolbar">
         <div class="wrap toolbar__inner">
@@ -396,7 +384,7 @@ export function shop(id, url) {
         gridEl.firstElementChild.classList.add('is-filtering');
         root.querySelector('#shop-count').textContent = plural(l.length, 'piece');
         root.querySelector('#shop-title').innerHTML = current ? esc(current.name) : 'Shop <em>all</em>';
-        root.querySelector('#shop-lead').textContent = current ? current.blurb : 'Every piece is handmade in London and shown next to a ruler, so you know its true size.';
+        root.querySelector('#shop-lead').textContent = current ? current.blurb : SHOP_LEAD;
         root.querySelectorAll('.chip').forEach((a) => {
           if (a.dataset.chip === (current ? current.id : '')) a.setAttribute('aria-current', 'page');
           else a.removeAttribute('aria-current');
@@ -457,7 +445,6 @@ export function product(id, url) {
             <div class="gallery__thumbs" id="thumbs">${thumbs(v)}</div>
             <div class="gallery__main">
               <div class="gallery__track" id="track">${slides(v)}</div>
-              <span class="gallery__hint">${icon('ruler')} Shown with a ruler for size</span>
               <span class="gallery__dots" id="dots" aria-hidden="true">${dots(v)}</span>
             </div>
           </div>
@@ -505,10 +492,6 @@ export function product(id, url) {
               <details class="acc" open>
                 <summary>Details ${icon('plus')}</summary>
                 <div class="acc__body"><ul>${(p.details || []).map((d) => `<li>${esc(d)}</li>`).join('')}</ul></div>
-              </details>
-              <details class="acc">
-                <summary>Size ${icon('plus')}</summary>
-                <div class="acc__body"><p>Every photo shows this piece next to a ruler in centimetres, so you can see its real size at a glance. Tap a photo to see it larger.</p></div>
               </details>
               <details class="acc">
                 <summary>Delivery &amp; returns ${icon('plus')}</summary>
@@ -635,9 +618,18 @@ export function product(id, url) {
 }
 
 /* --------------------------------------------------------- sob encomenda --- */
+// Prazos mínimos das encomendas (madeToOrder.notice no catálogo)
+function noticeText() {
+  const n = SHOP.madeToOrder.notice || {};
+  const parts = [
+    n.names && `personalised names at least ${n.names} before your event`,
+    n.candles && `personalised birthday candles at least ${n.candles} before`,
+  ].filter(Boolean);
+  return parts.length ? `Please order ${parts.join(', and ')}.` : '';
+}
 export function madeToOrder() {
   const gallery = SHOP.madeToOrder.gallery || [];
-  const lead = SHOP.madeToOrder.leadTime;
+  const notice = noticeText();
   return {
     title: 'Made to order · Birthday candles and bespoke bows',
     description: 'Themed cold porcelain birthday candles and bespoke bows, made to order in London.',
@@ -683,7 +675,7 @@ export function madeToOrder() {
 
       <section class="night section" id="how" aria-labelledby="how-title" style="margin-top:clamp(56px,8vw,104px)">
         <div class="wrap">
-          ${sectionHead({ eyebrow: 'How it works', title: `<span id="how-title">From idea to <em>keepsake</em></span>`, lead: lead ? `Please allow around ${esc(lead)} from confirmation. Need it sooner? Just ask.` : '' })}
+          ${sectionHead({ eyebrow: 'How it works', title: `<span id="how-title">From idea to <em>keepsake</em></span>`, lead: esc(notice) })}
           <ol class="steps">
             <li data-reveal><h3>Share your idea</h3><p>Send the theme, colours, name and date using the form below.</p></li>
             <li data-reveal style="--d:.06s"><h3>Get a quote</h3><p>Lulu replies on WhatsApp with ideas and a price.</p></li>
@@ -717,7 +709,7 @@ export function madeToOrder() {
               <button class="btn btn--wa" type="submit">${icon('wa')} Send on WhatsApp</button>
               ${SHOP.instagram ? `<a class="link" href="${igLink()}" target="_blank" rel="noopener">or message on Instagram ${icon('arrow')}</a>` : ''}
             </div>
-            <p class="form__fine">Lulu usually replies the same day.</p>
+            <p class="form__fine">${esc(notice)} Lulu usually replies the same day.</p>
           </form>
         </div>
       </section>`,
@@ -784,7 +776,6 @@ export function about() {
             <h2 style="margin-top:0">One bow at a <em>time</em></h2>
             <p>Every piece is made by hand: the ribbon cut and folded, the layers built up, the pearls, pompoms and characters added one by one. Nothing is mass-produced, so each bow has its own small personality.</p>
             <p>Lulu brings the Brazilian tradition of <strong>biscuit</strong>, modelling in cold porcelain, to her London studio. It is how the little mermaids, teddies and dolls on her bows come to life, and how her birthday candles become keepsakes.</p>
-            <p>Each piece is photographed next to a ruler, so you always know exactly what you are getting, and it arrives on its signature Art with Love card, ready to give.</p>
             <a class="btn btn--primary" href="/shop" style="width:fit-content">Shop the collection ${icon('arrow', 'btn__arrow')}</a>
           </div>
         </div>
@@ -793,7 +784,7 @@ export function about() {
         <div class="wrap">
           <ol class="steps" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
             <li data-reveal><h3>Handmade</h3><p>Cut, folded and finished by hand in London.</p></li>
-            <li data-reveal style="--d:.06s"><h3>Honest sizing</h3><p>Every photo has a ruler. What you see is what arrives.</p></li>
+            <li data-reveal style="--d:.06s"><h3>Made for you</h3><p>Custom colours, names and themes on request.</p></li>
             <li data-reveal style="--d:.12s"><h3>Small batches</h3><p>Many pieces are one of a kind. When they are gone, they are gone.</p></li>
           </ol>
         </div>
@@ -826,7 +817,7 @@ export function help() {
           ${shipping.options.map((o) => `<li><strong>${esc(o.name)}</strong>: ${money(o.price)}${o.days ? `, usually ${o.days[0]}–${o.days[1]} working days after dispatch` : ''}</li>`).join('')}
           <li><strong>Free ${esc(shipping.options[0].name)}</strong> on orders over ${freeOver}</li>
         </ul>
-        <p>Made-to-order pieces are posted as soon as they are ready. We will agree a date with you before we start.</p>
+        <p>Made-to-order pieces are posted as soon as they are ready. ${esc(noticeText())} We will agree a date with you before we start.</p>
 
         <h2 id="returns">Returns</h2>
         <p>If you change your mind, you can cancel your order within 14 days of receiving it. Let us know, then send the pieces back unused and on their original card within a further 14 days. We will refund the item price and your original standard delivery within 14 days of getting them back. Return postage is paid by you unless the item is faulty.</p>
