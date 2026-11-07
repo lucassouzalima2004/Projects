@@ -976,7 +976,7 @@ a.contact-v:hover { text-decoration: underline; }
 
 .hero--home .hero-panel { background: var(--ink); }
 .hero--home .hero-media { left: auto; width: 68%; }
-.hero--home .hero-poster { object-position: 60% 50%; }
+.hero--home .hero-poster, .hero--home .hero-video { object-position: 60% 50%; }
 .hero--home .hero-panel::after {
   background: linear-gradient(90deg, var(--ink) 34%, rgba(14, 14, 13, 0.96) 40%, rgba(14, 14, 13, 0.78) 47%, rgba(14, 14, 13, 0.42) 56%, rgba(14, 14, 13, 0.12) 66%, rgba(14, 14, 13, 0) 74%);
 }
@@ -1009,9 +1009,14 @@ a.contact-v:hover { text-decoration: underline; }
 .hero--home .hero-rating .stars { color: #f5b301; }
 
 @media (max-width: 899.98px), (max-aspect-ratio: 4/5) {
-  .hero--home .hero-media { width: 100%; }
+  /* O vídeo fica na parte de cima do painel, acima do texto, e some no escuro embaixo */
+  .hero--home .hero-media {
+    width: 100%; bottom: auto; height: 46%;
+    -webkit-mask-image: linear-gradient(180deg, #000 58%, transparent 100%); mask-image: linear-gradient(180deg, #000 58%, transparent 100%);
+  }
+  .hero--home .hero-poster, .hero--home .hero-video { object-position: 50% 50%; }
   .hero--home .hero-panel::after {
-    background: linear-gradient(180deg, rgba(14, 14, 13, 0.2) 0%, rgba(14, 14, 13, 0.62) 34%, rgba(14, 14, 13, 0.93) 62%, var(--ink) 100%);
+    background: linear-gradient(180deg, rgba(14, 14, 13, 0.08) 0%, rgba(14, 14, 13, 0) 12%, rgba(14, 14, 13, 0.3) 24%, rgba(14, 14, 13, 0.82) 34%, rgba(14, 14, 13, 0.97) 42%, var(--ink) 46%);
   }
   .hero--home .hero-content { width: 100%; justify-content: flex-end; padding: 24px var(--hero-inset) 24px; }
   .hero--home .hero-actions { flex-direction: column; align-items: stretch; width: 100%; }

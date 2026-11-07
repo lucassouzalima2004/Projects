@@ -1,7 +1,7 @@
 # Prompts para gerar clipes de piso por IA
 
-O vídeo do topo hoje usa 3 clipes gratuitos (veja o `README.md`). Para ter um vídeo só da Black Rock Floors, dá para
-gerar clipes num gerador de vídeo por IA (Veo, Kling, Runway, Sora…) e montar com o `tools/make-hero-video.sh`.
+O vídeo do topo hoje usa um clipe gratuito de cozinha (veja o `README.md`). Estes prompts são da época do vídeo de piso.
+Dá para gerar clipes num gerador de vídeo por IA (Veo, Kling, Runway, Sora…) e montar com o `tools/make-hero-video.py`.
 O Gabriel pediu **"vídeo de piso mesmo, passando"**: câmera andando devagar, rente ao piso, sem carpintaria.
 
 ## Regras que funcionam
@@ -55,18 +55,8 @@ O Gabriel pediu **"vídeo de piso mesmo, passando"**: câmera andando devagar, r
 
 ## Montar o vídeo
 
-1. Salve os clipes em `tools/clips/` (por exemplo `oak.mp4`, `herringbone.mp4`, `kitchen.mp4`).
-2. No começo do `tools/make-hero-video.sh`, troque a lista `CLIPS`. Cada linha é
-   `nome | arquivo | segundo onde começa | duração | centro do recorte em pé (0 a 1) | recorte opcional`:
-
-   ```bash
-   CLIPS=(
-     "oak|tools/clips/oak.mp4|0.5|5|0.5"
-     "herringbone|tools/clips/herringbone.mp4|0.5|4.5|0.5"
-     "kitchen|tools/clips/kitchen.mp4|0.5|4.5|0.4"
-   )
-   ```
-
-3. Rode `bash tools/make-hero-video.sh`. Ele grava as 3 versões (computador, telas médias e celular) em MP4 e WebM,
+1. Salve o clipe em `tools/clips/`.
+2. No começo do `tools/make-hero-video.py`, troque `CLIP`, `URL` e `TALL_CENTER` (centro do recorte em pé, de 0 a 1).
+3. Rode `python3 -E tools/make-hero-video.py`. Ele grava as 3 versões (computador, telas médias e celular) em MP4 e WebM,
    e o primeiro quadro, em `assets/video/`.
-4. Abra o site e confira o texto do topo sobre cada cena, no computador e no celular.
+4. Abra o site e confira o texto do topo, no computador e no celular.

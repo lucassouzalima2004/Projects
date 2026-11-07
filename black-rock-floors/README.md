@@ -216,9 +216,9 @@ O Gabriel viu o site no domínio e escreveu "de resto tá tudo perfeito". Pediu:
 - **Cidades:** "acrescente as outras". Entraram as 15 que faltavam do mapa dele, no total 23 com página. Marysville e Monroe
   não estão no mapa dele: seguem na lista, sem página. Só Redmond tem foto real entre as novas.
 - **Formulário:** "o que mais está me incomodando". Confirmou o e-mail br.remodelingwa@gmail.com. Falta só a chave da Resend: veja [O formulário](#o-formulário).
-- **Vídeo de cozinha:** continua preferindo vídeo a foto. A cozinha do desenho dele parece imagem gerada por IA, então não deve existir vídeo dela: a saída é um clipe de banco de imagens.
+- **Vídeo de cozinha:** continua preferindo vídeo a foto. A cozinha do desenho dele parece imagem gerada por IA, então não deve existir vídeo dela. O topo agora usa um clipe de banco de imagens, escolhido pelo Lucas: veja [O vídeo do topo](#o-vídeo-do-topo).
 - **Domínio:** quer um com Remodeling. `blackrockremodeling.com` já tem dono (GoDaddy, até 12/2027). A recomendação é `blackrockremodelingwa.com`, comprado no nome dele, com `blackrockfloors.com` redirecionando para o novo. Hospedagem segue na Cloudflare: o site é código e não roda no Wix.
-- **Blog:** disse em 06/11 que "vai querer assinar". Falta o Lucas definir o que é isso.
+- **Blog:** disse em 06/11 que "vai querer assinar". É a Soro (trysoro.com), segundo o Lucas em 07/11. O site não é WordPress nem Wix, então a ligação seria pelo webhook da Soro, recebendo os artigos no `worker.js`. Depende da conta e do formato do webhook, que só aparece lá dentro.
 
 ## O que tem no site
 
@@ -273,7 +273,7 @@ maiúsculas espaçadas, ecoa o "F L O O R S" do logo).
 - [x] **Link do perfil do Google**: no botão "See us on Google" e no `sameAs` dos dados estruturados (07/11).
 - [x] **Nota**: 5 estrelas e a palavra Google, sem número, como ele pediu em 02/11. O perfil mostra 5,0 com 31 avaliações (07/11).
 - [ ] **Logo**: adaptação provisória, feita por nós. Trocar pelo arquivo dele, se tiver.
-- [ ] **Vídeo de cozinha** no topo: falta escolher (veja a nona rodada).
+- [x] **Vídeo de cozinha** no topo: clipe de banco de imagens, escolhido pelo Lucas em 07/11 (veja [O vídeo do topo](#o-vídeo-do-topo)). Se o Gabriel tiver um vídeo de uma cozinha dele, é melhor trocar.
 - [x] **Lista final de cidades**: as 22 do mapa dele mais Snohomish (06/11).
 - [ ] **Textos novos** (`tools/pages_content.py`): escritos por nós, com os bairros e os tipos de casa de cada cidade. O Gabriel precisa ler e dizer se atende mesmo cada lugar e se faz tudo o que está na lista de cada serviço. A página de Everett e a de Kenmore precisam de fotos.
 - [ ] **Licensed, Bonded, Insured**: vieram do desenho dele. Confirmar no nome da Remodeling.
@@ -302,7 +302,7 @@ O conteúdo fica direto no HTML (é o que o Google lê). Cada seção do `index.
 | Telefone, e-mail | Estão em todas as páginas: use "buscar e substituir" na pasta inteira (`4255434667`, `543-4667`, `br.remodelingwa@gmail.com`) e em `assets/js/app.js` (`PHONE`, `EMAIL`) |
 | Horário | Texto nas páginas e `HOURS` no topo do `assets/js/app.js` (é ele que calcula o "Open now") |
 | Cores e fontes | Topo do `assets/css/styles.css` |
-| Vídeo do topo | `tools/make-hero-video.sh` (veja abaixo) |
+| Vídeo do topo | `tools/make-hero-video.py` (veja abaixo) |
 
 Todas as fotos estão em WebP, já no tamanho certo. Ao trocar uma foto, mantenha o mesmo formato (4:5 para projetos e serviços).
 **Trocou uma foto ou o vídeo mantendo o mesmo nome de arquivo?** Aumente o número do `?v=` no endereço dela (no `index.html`
@@ -332,26 +332,16 @@ como antes. Nada quebra, mas o pedido só chega se ele apertar enviar.
 
 ## O vídeo do topo
 
-**Desde a nona rodada, o topo da home não usa estes vídeos:** a foto da cozinha está no lugar, à espera do vídeo de cozinha. Para
-voltar a ter vídeo, troque os clipes do script e devolva o `<video>` e o botão de pausa ao topo do `index.html` (estão no histórico do git).
+O topo da home usa um **clipe de banco de imagens, que não é obra do Gabriel**: [A kitchen with black cabinets and stainless steel appliances](https://www.pexels.com/video/a-kitchen-with-black-cabinets-and-stainless-steel-appliances-19228420/), de Curtis Adams, na Pexels (uso comercial liberado, sem crédito obrigatório). O Lucas escolheu em 07/11. A cozinha do desenho do Gabriel parece imagem gerada por IA e não tem vídeo. O site não diz que é um trabalho da empresa.
 
-Os arquivos em `assets/video/` saem do script `tools/make-hero-video.sh` (precisa de `ffmpeg`):
+Os arquivos em `assets/video/` saem do script `tools/make-hero-video.py` (precisa de PyAV, numpy e Pillow; roda com `python3 -E`):
 
-- 3 clipes só de piso, emendados com fusão e com um escurecimento rápido perto do fim, onde o loop volta para a primeira
-  cena (14,6 s no total). O arquivo começa já com o piso na tela, no mesmo quadro do pôster;
-- a mesma cor nos três: clara e natural, como as fotos do Gabriel (ele achou a primeira versão escura), com um tom quente
-  e os brancos só um pouco mais baixos para a janela não estourar. A leitura do texto fica por conta da camada leve por
-  cima (mais escura só atrás do texto) e da sombra do texto, no `assets/css/styles.css`;
-- três versões: `hero-1080` (computador), `hero-720` (telas médias) e `hero-tall` (celular em pé), cada uma em **MP4**
+- os brancos ficam um pouco mais baixos, para a parede e a bancada não estourarem ao lado do painel escuro;
+- o fim emenda no começo com 1 s de fusão, então o loop não dá pulo (17,25 s no total). O arquivo começa no mesmo quadro do pôster;
+- três versões: `hero-1080` (computador), `hero-720` (telas médias) e `hero-tall` (celular em pé, um recorte mais largo que fica só na parte de cima do painel), cada uma em **MP4**
   (toca em tudo, inclusive iPhone) e em **WebM** (para navegadores sem H.264). O site escolhe sozinho.
 
-Clipes de hoje (uso comercial liberado, sem crédito obrigatório):
-
-| Cena | Fonte | Licença |
-| --- | --- | --- |
-| Sol sobre piso de carvalho | [Coverr: A shadow on a wooden floor](https://coverr.co/videos/a-shadow-on-a-wooden-floor-04otusifny) (recortado para o sapato não aparecer) | Coverr License |
-| Câmera passando pela sala vazia com piso de madeira | [Coverr: Empty room with a window](https://coverr.co/videos/empty-room-with-a-window-peegts0hp9) (recortado para o ventilador de teto não aparecer) | Coverr License |
-| Veios da madeira de perto | [Mixkit: Detailed tour of the surface of a wooden board](https://mixkit.co/free-stock-video/detailed-tour-of-the-surface-of-a-wooden-board-34496/) | Mixkit Stock Video Free License |
+Depois de trocar o vídeo, aumente o `?v=` nos caminhos do topo do `index.html`, para quem já visitou não ficar com o antigo.
 
 Como o vídeo se comporta (o começo no script logo depois do `<video>` no `index.html`, o resto no `assets/js/app.js`):
 
@@ -368,10 +358,7 @@ O iPhone só toca vídeo se o servidor responder aos pedidos por pedaço (`Range
 `worker.js` (veja [Publicar](#publicar)). Para testar no iPhone ou no Safari pelo computador, use o `npx wrangler dev`
 (veja [Ver no computador](#ver-no-computador)): o `python3 -m http.server` não aceita esses pedidos.
 
-**Para usar as filmagens do Gabriel** (ou um vídeo gerado por IA, com os prompts de `tools/PROMPTS.md`): grave clipes
-deitados (de preferência 4K ou 1080p, câmera andando devagar rente ao piso), coloque em `tools/clips/`, troque a lista
-`CLIPS` no começo do script (cada linha diz o arquivo, onde o trecho começa, quanto dura e onde recortar a versão em pé)
-e rode `bash tools/make-hero-video.sh`.
+**Para usar uma filmagem do Gabriel** (um trabalho real é melhor que o clipe de banco): grave um clipe deitado, de preferência 4K ou 1080p, com a câmera andando devagar, coloque em `tools/clips/`, troque `CLIP`, `URL` e `TALL_CENTER` no começo do script e rode `python3 -E tools/make-hero-video.py`.
 
 ## Publicar
 
@@ -480,7 +467,7 @@ black-rock-floors/
 ├── tools/make-logo.py               adapta o logo antigo para Remodeling
 ├── tools/og-image.html              imagem de compartilhamento do link
 ├── tools/preview.sh                 publica a prévia separada, ou testa no computador com --dev
-├── tools/make-hero-video.sh         monta o vídeo do topo a partir dos clipes
+├── tools/make-hero-video.py         monta o vídeo do topo a partir do clipe
 └── tools/PROMPTS.md                 prompts para gerar clipes de piso por IA
 ```
 
