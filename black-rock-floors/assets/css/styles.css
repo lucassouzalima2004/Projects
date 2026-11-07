@@ -1068,6 +1068,14 @@ a.contact-v:hover { text-decoration: underline; }
 .near-links a:hover { border-color: #fff; color: #fff; }
 @media (max-width: 699.98px) { .near-grid { grid-template-columns: minmax(0, 1fr); } }
 
+/* Menu e rodapé com as 23 cidades; nota das avaliações reais */
+.nav-drop-panel--cities { left: -150px; width: 480px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.footer-grid { grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.75fr) minmax(0, 1.4fr) minmax(0, 1.1fr); }
+.footer-cities { columns: 2; column-gap: 20px; }
+.footer-cities li { break-inside: avoid; }
+.marquee-foot--note { justify-content: space-between; align-items: center; gap: 20px; }
+.marquee-note { font-size: 0.82rem; color: var(--on-light-muted); }
+
 /* ---------- Telas menores ---------- */
 
 @media (max-width: 1180px) {
@@ -1144,6 +1152,7 @@ a.contact-v:hover { text-decoration: underline; }
   .more-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .stat dt { letter-spacing: 0.12em; font-stretch: 110%; }
   .map-city text { font-size: 18px; }
+  .map-city--tight text { display: none; } /* no celular, os nomes do miolo se sobrepõem: ficam só na lista ao lado */
   .map-grid text, .map-scale text, .map-north text, .map-county text { font-size: 13px; }
 }
 

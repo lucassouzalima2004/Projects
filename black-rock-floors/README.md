@@ -200,7 +200,25 @@ O que ele pediu e o que foi feito:
 - **Páginas de piso:** ficaram, ligadas à nova `/flooring/`, porque a lista de SEO dele (05/11) pede LVP, hardwood, laminate e tile.
 - **Formulário:** agora manda direto para o e-mail: veja [O formulário](#o-formulário). SMS de verdade ficou de fora por
   enquanto: custa por mês e exige registro de operadora nos EUA, que pode estourar o prazo.
-- **Horário:** segunda a sábado, das 8h às 18h. Falta o **link do perfil do Google** (hoje o botão abre uma busca).
+- **Horário:** segunda a sábado, das 8h às 18h.
+
+### Décima rodada (05 a 07/11): ajustes depois de ver o site no ar
+
+O Gabriel viu o site no domínio e escreveu "de resto tá tudo perfeito". Pediu:
+
+- **Avaliações:** perguntou se as de exemplo prejudicam o SEO e disse que tem umas 30 reais. As 8 de exemplo saíram e entraram
+  27 das 31 reais do perfil dele no Google (nota 5,0 em 07/11), com o texto literal, encurtado com "…" nas longas, nome e inicial do sobrenome. A
+  cidade e o serviço de cada cartão vêm do texto da própria avaliação. O botão "See us on Google" abre o perfil. A nota **não**
+  entra nos dados estruturados: o Google trata nota do próprio site sobre si mesmo como self-serving. Ficaram de fora: Junior
+  Olimpio (mesmo sobrenome do Gabriel; pode ser parente), Omar Vazquez (tradução automática de 3 palavras), Mairla Vitória
+  (escrita antes do fim da obra) e bulls 14 (nome de perfil).
+- **FAQ:** "muito flooring". Agora abre com os serviços, cozinha, banheiro e pintura. Saiu a pergunta sobre laje; ela segue nas páginas de piso.
+- **Cidades:** "acrescente as outras". Entraram as 15 que faltavam do mapa dele, no total 23 com página. Marysville e Monroe
+  não estão no mapa dele: seguem na lista, sem página. Só Redmond tem foto real entre as novas.
+- **Formulário:** "o que mais está me incomodando". Confirmou o e-mail br.remodelingwa@gmail.com. Falta só a chave da Resend: veja [O formulário](#o-formulário).
+- **Vídeo de cozinha:** continua preferindo vídeo a foto. A cozinha do desenho dele parece imagem gerada por IA, então não deve existir vídeo dela: a saída é um clipe de banco de imagens.
+- **Domínio:** quer um com Remodeling. `blackrockremodeling.com` já tem dono (GoDaddy, até 12/2027). A recomendação é `blackrockremodelingwa.com`, comprado no nome dele, com `blackrockfloors.com` redirecionando para o novo. Hospedagem segue na Cloudflare: o site é código e não roda no Wix.
+- **Blog:** disse em 06/11 que "vai querer assinar". Falta o Lucas definir o que é isso.
 
 ## O que tem no site
 
@@ -216,7 +234,7 @@ O que ele pediu e o que foi feito:
 - **Projetos recentes passando**: fotos reais dos trabalhos do Gabriel (pisos e reformas), com o nome da cidade. Clicar abre a foto grande.
 - **Why homeowners choose us** (os 4 itens do site antigo) e **How it works** (4 passos).
 - **More we do**: o resto da lista dele (drywall, carpintaria, portas e janelas, rodapés).
-- **Área atendida**: as cidades e o **mapa**; as 8 cidades com página própria viram link.
+- **Área atendida**: as cidades e o **mapa**; as 23 cidades com página própria viram link.
 - **FAQ** e **pedido de orçamento**, que chega direto no e-mail.
 - **Rodapé** com a faixa "Trust the local experts.", os serviços e as cidades.
 - Barra fixa no celular (ligar, mandar texto, orçamento).
@@ -251,19 +269,19 @@ maiúsculas espaçadas, ecoa o "F L O O R S" do logo).
 
 ## Antes de mostrar ao Gabriel: o que é exemplo e precisa confirmar
 
-- [ ] **Avaliações do Google**: as 8 que aparecem são **exemplos escritos por nós**. Já estão no domínio e precisam ser trocadas pelas reais o quanto antes (`index.html`, seção 3). Texto inventado apresentado como avaliação real é proibido pela FTC nos EUA. O Gabriel disse em 05/11 que manda os prints; **não apagar as faixas sem falar com ele** (em 17/10 ele reclamou quando elas saíram).
-- [ ] **Link do perfil do Google**: trocar nos dois lugares em que aparece a busca `google.com/search?q=Black+Rock+Remodeling` (Google Maps → Compartilhar).
-- [ ] **Nota**: o site mostra 5 estrelas e a palavra Google, sem número. Conferir no perfil dele se é isso mesmo. O site antigo dizia 4.9, ele escreveu "5 estrelas" e o desenho dele diz "5.0, 30+ Reviews".
+- [x] **Avaliações do Google**: agora são as reais do perfil dele (07/11). Vale ele confirmar que todas são de clientes de verdade: avaliação de parente, funcionário ou escrita por encomenda também é problema para a FTC.
+- [x] **Link do perfil do Google**: no botão "See us on Google" e no `sameAs` dos dados estruturados (07/11).
+- [x] **Nota**: 5 estrelas e a palavra Google, sem número, como ele pediu em 02/11. O perfil mostra 5,0 com 31 avaliações (07/11).
 - [ ] **Logo**: adaptação provisória, feita por nós. Trocar pelo arquivo dele, se tiver.
 - [ ] **Vídeo de cozinha** no topo: falta escolher (veja a nona rodada).
-- [ ] **Lista final de cidades**: 8 feitas; as outras do mapa dele dependem de ele confirmar.
+- [x] **Lista final de cidades**: as 22 do mapa dele mais Snohomish (06/11).
 - [ ] **Textos novos** (`tools/pages_content.py`): escritos por nós, com os bairros e os tipos de casa de cada cidade. O Gabriel precisa ler e dizer se atende mesmo cada lugar e se faz tudo o que está na lista de cada serviço. A página de Everett e a de Kenmore precisam de fotos.
 - [ ] **Licensed, Bonded, Insured**: vieram do desenho dele. Confirmar no nome da Remodeling.
 - [x] **Fotos dos projetos**: fotos reais dele, com a cidade de cada trabalho (16/10).
 - [x] **Fotos dos serviços**: fotos reais dele (16/10).
 - [ ] **Fotos dos 6 serviços de reforma**: parecem imagens geradas por IA (todas em 1536 × 1024, o tamanho padrão do ChatGPT; as fotos Refinish e Tile dos pisos também). Servem de ilustração do serviço, e por isso os trabalhos reais ficam separados, em *Our work*, com a cidade. Se ele tiver fotos reais desses serviços, é só trocar (mesmo nome de arquivo em `assets/img/other/services/` e um `?v=` no endereço).
 - [ ] **Número de registro na L&I**: em Washington, a lei (RCW 18.27.100) pede o número de registro de empreiteiro na propaganda que mostra o nome da empresa, e o site conta como propaganda (vale confirmar com a L&I). Pedir o número e colocar no rodapé; também passa confiança.
-- [ ] **E-mail** `br.remodelingwa@gmail.com`: confirmar que continua sendo o dele.
+- [x] **E-mail** `br.remodelingwa@gmail.com`: confirmado em 06/11.
 - [ ] **Respostas do FAQ** e **textos das páginas de serviço** (o que está incluído, prazos, mover móveis, tipos de acabamento): escritos por nós com base nas práticas comuns do mercado. Pedir para ele ler.
 - [ ] **Números**: "6 services in-house", "24h quote turnaround", "100% free estimates" (do site antigo).
 - [ ] **Instagram, Facebook, Yelp…**: o site antigo não mostrava. Se ele tiver, dá para pôr no rodapé.

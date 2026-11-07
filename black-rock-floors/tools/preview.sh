@@ -13,7 +13,7 @@ OUT=_site
 rm -rf "$OUT"
 mkdir -p "$OUT"
 rsync -a --exclude _site --exclude .wrangler --exclude tools --exclude README.md --exclude .gitignore \
-  --exclude worker.js --exclude __pycache__ --exclude wrangler.preview.jsonc ./ "$OUT"/
+  --exclude .claude --exclude worker.js --exclude __pycache__ --exclude wrangler.preview.jsonc ./ "$OUT"/
 
 # O mesmo que o deploy faz em cada página: endereço completo no og:image, canonical e og:url
 python3 -E - "$OUT" "$SITE_URL" <<'PY'

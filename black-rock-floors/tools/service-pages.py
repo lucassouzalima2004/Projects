@@ -520,16 +520,17 @@ SERVICE_LINKS = [(s['short'], f"../{s['slug']}/") for s in [FLOORING] + REMODEL]
 
 def city_page(c):
     name = c['name']
+    prep = c.get('prep', 'in')
     area = {"@type": "City", "name": f"{name}, WA"}
     ld = [
-        {"@type": "Service", "name": f"Flooring installation in {name}, WA", "serviceType": "Flooring installation", "description": c['desc'], "areaServed": area, "provider": PROVIDER},
+        {"@type": "Service", "name": f"Flooring installation {prep} {name}, WA", "serviceType": "Flooring installation", "description": c['desc'], "areaServed": area, "provider": PROVIDER},
         breadcrumb(('Home', '/'), ('Service area', '/#area'), (name,)),
         faq_ld(c['faq']),
     ]
     intro = '\n'.join(f'          <p class="lead" data-reveal>{esc(t)}</p>' for t in c['intro'])
     near = [(n, f"../{CITY_BY_NAME[n]['slug']}/") for n in c['near']]
     local = [(f"{l['service']} in {name}", f"../{l['slug']}/") for l in LOCAL if l['city'] == name]
-    main = f'''{hero(f"../assets/img/services/{c['img']}.webp?v=4", f"../assets/img/services/{c['wide']}.webp?v=4", f"New floor in a {name} home", [('Home', '../'), ('Service area', '../#area'), (name, None)], 'Flooring contractor', f'in {name}, WA.', c['sub'])}
+    main = f'''{hero(f"../assets/img/services/{c['img']}.webp?v=4", f"../assets/img/services/{c['wide']}.webp?v=4", f"New floor in a {name} home", [('Home', '../'), ('Service area', '../#area'), (name, None)], 'Flooring contractor', f'{prep} {name}, WA.', c['sub'])}
 
     <section class="included section" aria-labelledby="included-title">
       <div class="wrap included-grid">
@@ -560,12 +561,12 @@ def city_page(c):
 
     {city_work(name, c['photos'])}
 
-{faq_section(f'Flooring questions in {name}', c['faq'])}
+{faq_section(f'Flooring questions {prep} {name}', c['faq'])}
 
-{near_section(f'Flooring company near <em>{esc(name)}.</em>', [('Nearby cities', near), (f'Services in {name}', local + SERVICE_LINKS)])}
+{near_section(f'Flooring company near <em>{esc(name)}.</em>', [('Nearby cities', near), (f'Services {prep} {name}', local + SERVICE_LINKS)])}
 
     {form_for('Flooring (not sure which type)', name)}'''
-    return doc(f'Flooring Contractor in {name}, WA · {BRAND}', c['desc'], f'Flooring contractor in {name}, WA · {BRAND}', ld, main)
+    return doc(f'Flooring Contractor {prep} {name}, WA · {BRAND}', c['desc'], f'Flooring contractor {prep} {name}, WA · {BRAND}', ld, main)
 
 def local_page(l):
     base = next(s for s in REMODEL if s['slug'] == l['base'])
