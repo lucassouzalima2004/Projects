@@ -79,6 +79,11 @@ for (const f of fs.readdirSync(path.join(THEME, 'assets'))) {
 }
 write('preview/shim.js', fs.readFileSync(path.join(here, 'static/shim.js')));
 write('preview/og.jpg', fs.readFileSync(path.join(here, 'static/og.jpg')));
+// página de ideias para a capa, à parte do tema (/conceitos/)
+const conceitosDir = path.join(here, 'static/conceitos');
+if (fs.existsSync(conceitosDir)) {
+  for (const f of fs.readdirSync(conceitosDir)) write(`conceitos/${f}`, fs.readFileSync(path.join(conceitosDir, f)));
+}
 // vídeos da capa (quando houver), referenciados nos templates como shopify://files/videos/<arquivo>
 const videosDir = path.join(here, 'static/videos');
 if (fs.existsSync(videosDir)) {

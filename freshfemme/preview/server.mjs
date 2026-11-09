@@ -34,6 +34,13 @@ const send = (res, code, body, type = 'text/html; charset=utf-8') => {
 http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   try {
+    if (url.pathname === '/conceitos' || url.pathname.startsWith('/conceitos/')) {
+      const name = path.basename(url.pathname) === 'conceitos' || url.pathname.endsWith('/') ? 'index.html' : path.basename(url.pathname);
+      const file = path.join(path.dirname(fileURLToPath(import.meta.url)), 'static/conceitos', name);
+      if (!fs.existsSync(file)) return send(res, 404, 'not found', 'text/plain');
+      const type = { '.html': 'text/html; charset=utf-8', '.webp': 'image/webp', '.jpg': 'image/jpeg', '.png': 'image/png' }[path.extname(file)] || 'application/octet-stream';
+      return send(res, 200, fs.readFileSync(file), type);
+    }
     if (url.pathname.startsWith('/preview/videos/')) {
       const file = path.join(path.dirname(fileURLToPath(import.meta.url)), 'static/videos', path.basename(url.pathname));
       if (!fs.existsSync(file)) return send(res, 404, 'not found', 'text/plain');

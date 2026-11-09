@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Capa: novas ideias</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brand: #26a69e; --brand-deep: #127a74; --mint: #e8f6f4; --ice: #67e0ff;
+    --ink: #1e2a2d; --muted: #5c6b6e; --night: #07090f; --paper: #ffffff;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { font-family: 'Bricolage Grotesque', system-ui, sans-serif; color: var(--ink); background: var(--paper); line-height: 1.5; }
+  img { display: block; max-width: 100%; }
+  .wrap { width: min(1200px, 100% - 32px); margin-inline: auto; }
+
+  .intro { padding: 56px 0 40px; }
+  .intro h1 { font-size: clamp(30px, 4.4vw, 52px); line-height: 1.02; letter-spacing: -0.04em; font-weight: 700; }
+  .intro p { margin-top: 14px; max-width: 640px; color: var(--muted); font-size: 1.05rem; }
+
+  .idea { padding: 28px 0 64px; }
+  .idea__head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; margin-bottom: 18px; }
+  .idea__tag { font-size: 0.9rem; font-weight: 600; color: var(--brand-deep); }
+  .idea__title { font-size: clamp(24px, 2.8vw, 34px); line-height: 1.08; letter-spacing: -0.03em; font-weight: 700; }
+  .idea__text { margin-top: 6px; max-width: 640px; color: var(--muted); }
+  .replay {
+    display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 18px; border-radius: 999px;
+    border: 1px solid #d6dfe0; background: #fff; font: inherit; font-weight: 600; font-size: 0.92rem; cursor: pointer; color: var(--ink);
+  }
+  .replay:hover { border-color: var(--ink); }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px; height: 52px; padding: 0 26px; border-radius: 999px;
+    font-weight: 600; text-decoration: none; transition: background-color 0.6s, color 0.6s;
+  }
+
+  /* ---------------- Ideia A: o frasco é o herói ---------------- */
+  .ca { position: relative; height: 580px; border-radius: 28px; overflow: hidden; isolation: isolate; background: #1a0606; }
+  .ca-warm, .ca-cold, .ca-mist { position: absolute; inset: 0; }
+  .ca-warm { background: radial-gradient(70% 90% at 70% 40%, #5b1209 0%, #2a0707 55%, #140404 100%); }
+  .ca-glow { position: absolute; border-radius: 50%; filter: blur(40px); mix-blend-mode: screen; animation: drift 9s ease-in-out infinite alternate; }
+  .ca-glow.g1 { width: 46%; height: 70%; left: 48%; top: 10%; background: radial-gradient(circle, rgb(255 120 30 / 0.75), transparent 70%); }
+  .ca-glow.g2 { width: 36%; height: 55%; left: 20%; top: 45%; background: radial-gradient(circle, rgb(230 40 40 / 0.55), transparent 70%); animation-duration: 11s; }
+  .ca-glow.g3 { width: 30%; height: 45%; left: 62%; top: 55%; background: radial-gradient(circle, rgb(255 190 60 / 0.5), transparent 70%); animation-duration: 7s; }
+  .ca-haze { position: absolute; inset: -10%; filter: url(#haze); opacity: 0.9; }
+  @keyframes drift { to { transform: translate(-4%, 3%) scale(1.08); } }
+  .ca-cold {
+    background:
+      radial-gradient(60% 80% at var(--nx, 70%) var(--ny, 20%), #ffffff 0%, #dff8f5 30%, #b7ece6 62%, #8fd9d3 100%);
+    clip-path: circle(var(--r, 0px) at var(--nx, 70%) var(--ny, 20%));
+  }
+  .ca-frost {
+    position: absolute; inset: 0; opacity: 0.55;
+    background-image: radial-gradient(circle, rgb(255 255 255 / 0.95) 0 1px, transparent 1.6px), radial-gradient(circle, rgb(255 255 255 / 0.7) 0 1px, transparent 1.4px);
+    background-size: 46px 46px, 73px 73px; background-position: 0 0, 21px 33px;
+    animation: twinkle 3s ease-in-out infinite alternate;
+  }
+  @keyframes twinkle { to { opacity: 0.25; } }
+  .ca-copy { position: absolute; left: 6%; top: 50%; transform: translateY(-50%); width: min(500px, 46%); color: #fff; transition: color 0.8s var(--ease); z-index: 3; }
+  .ca-temp { display: flex; align-items: baseline; gap: 10px; font-size: 0.85rem; letter-spacing: 0.02em; opacity: 0.85; }
+  .ca-temp b { font-size: clamp(44px, 5.4vw, 72px); font-weight: 400; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .ca-copy h2 { margin-top: 14px; font-size: clamp(32px, 4vw, 54px); line-height: 1.02; letter-spacing: -0.04em; font-weight: 700; }
+  .ca-copy h2 em { font-style: normal; color: #ffb35a; transition: color 0.8s; }
+  .ca-copy p { margin-top: 14px; font-size: 1.02rem; opacity: 0.85; max-width: 420px; }
+  .ca-copy .btn { margin-top: 24px; background: #fff; color: var(--ink); }
+  .ca.is-cold .ca-copy { color: var(--ink); }
+  .ca.is-cold .ca-copy h2 em { color: var(--brand-deep); }
+  .ca.is-cold .ca-copy .btn { background: var(--brand-deep); color: #fff; }
+  .ca-bottle {
+    position: absolute; z-index: 2; right: 18%; bottom: 6%; height: 76%; width: auto;
+    filter: drop-shadow(0 30px 40px rgb(0 0 0 / 0.45));
+    transform-origin: 50% 90%; animation: float 5s ease-in-out infinite;
+  }
+  .ca.is-press .ca-bottle { animation: press 0.5s var(--ease); }
+  @keyframes float { 50% { transform: translateY(-10px); } }
+  @keyframes press { 40% { transform: translateY(6px) rotate(-3deg); } }
+  .ca-mist { z-index: 2; pointer-events: none; }
+  @media (max-width: 749px) {
+    .ca { height: 680px; border-radius: 22px; }
+    .ca-bottle { right: auto; left: 50%; bottom: auto; top: 9%; height: 42%; translate: -50% 0; }
+    .ca-copy { left: 6%; right: 6%; top: auto; bottom: 7%; transform: none; width: auto; }
+    .ca-copy h2 { font-size: 34px; }
+  }
+
+  /* ---------------- Ideia B: lente térmica sobre uma mulher de verdade ---------------- */
+  .cb { position: relative; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); align-items: center; gap: 32px;
+        padding: 40px; border-radius: 28px; background: var(--mint); overflow: hidden; }
+  .cb-copy h2 { font-size: clamp(30px, 3.6vw, 48px); line-height: 1.04; letter-spacing: -0.04em; font-weight: 700; }
+  .cb-copy h2 em { font-style: normal; color: var(--brand-deep); }
+  .cb-copy p { margin-top: 14px; color: var(--muted); max-width: 420px; }
+  .cb-copy .btn { margin-top: 24px; background: var(--brand-deep); color: #fff; }
+  .cb-hint { margin-top: 16px; font-size: 0.85rem; color: var(--muted); }
+  @media (hover: none) { .cb-hint { display: none; } }
+  .cb-photo { position: relative; aspect-ratio: 610 / 500; border-radius: 22px; overflow: hidden; cursor: crosshair; touch-action: pan-y; }
+  .cb-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .cb-thermal { position: absolute; inset: 0; clip-path: circle(var(--r, 0px) at var(--x, 58%) var(--y, 60%)); }
+  .cb-cold { opacity: 0; transition: opacity 1.4s var(--ease); }
+  .cb.is-cold .cb-cold { opacity: 1; }
+  .cb-ring {
+    position: absolute; left: var(--x, 58%); top: var(--y, 60%); width: calc(var(--r, 0px) * 2); height: calc(var(--r, 0px) * 2);
+    translate: -50% -50%; border-radius: 50%; border: 2px solid rgb(255 255 255 / 0.9);
+    box-shadow: 0 0 0 6px rgb(255 255 255 / 0.18), 0 18px 40px rgb(0 0 0 / 0.25); pointer-events: none;
+  }
+  .cb-label {
+    position: absolute; left: 50%; top: 100%; translate: -50% 10px; white-space: nowrap;
+    padding: 6px 12px; border-radius: 999px; background: rgb(7 9 15 / 0.75); color: #fff; font-size: 0.8rem; font-weight: 500;
+    font-variant-numeric: tabular-nums; backdrop-filter: blur(6px);
+  }
+  @media (max-width: 849px) {
+    .cb { grid-template-columns: 1fr; padding: 22px; border-radius: 22px; }
+    .cb-photo { order: -1; }
+  }
+
+  /* ---------------- Ideia C ---------------- */
+  .cc { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .cc-card { border: 1px solid #dfe7e8; border-radius: 22px; padding: 26px; }
+  .cc-card h3 { font-size: 1.15rem; letter-spacing: -0.02em; }
+  .cc-card p { margin-top: 8px; color: var(--muted); }
+  .cc-card a { color: var(--brand-deep); font-weight: 600; }
+
+  footer { padding: 32px 0 56px; color: var(--muted); font-size: 0.9rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ca-glow, .ca-bottle, .ca-frost { animation: none; }
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="haze">
+    <feTurbulence type="fractalNoise" baseFrequency="0.008 0.03" numOctaves="2" seed="3">
+      <animate attributeName="baseFrequency" dur="12s" values="0.008 0.03;0.01 0.045;0.008 0.03" repeatCount="indefinite"/>
+    </feTurbulence>
+    <feDisplacementMap in="SourceGraphic" scale="40"/>
+  </filter>
+</svg>
+
+<header class="wrap intro">
+  <h1>Capa da FreshFemme: três caminhos</h1>
+  <p>Em vez de desenhar uma mulher inteira em cores falsas (que sempre fica estranho), estas ideias mostram o efeito do spray de outro jeito. As duas primeiras estão funcionando: cada uma repete sozinha e tem o botão "Ver de novo".</p>
+</header>
+
+<section class="wrap idea">
+  <div class="idea__head">
+    <div>
+      <p class="idea__tag">Ideia A</p>
+      <h2 class="idea__title">O frasco é o herói</h2>
+      <p class="idea__text">Sem pessoa. A capa começa quente; o spray dispara e uma onda de frio toma a tela, que vira o verde-água da marca. O frescor tem a cor da FreshFemme.</p>
+    </div>
+    <button class="replay" type="button" data-replay="a">↻ Ver de novo</button>
+  </div>
+  <div class="ca" data-ca>
+    <div class="ca-warm"><div class="ca-haze"><div class="ca-glow g1"></div><div class="ca-glow g2"></div><div class="ca-glow g3"></div></div></div>
+    <div class="ca-cold"><div class="ca-frost"></div></div>
+    <canvas class="ca-mist" data-mist></canvas>
+    <img class="ca-bottle" src="frasco.webp" alt="Spray Refrescante FreshFemme" data-bottle>
+    <div class="ca-copy">
+      <p class="ca-temp"><b data-temp>38,4</b>°C · temperatura da pele</p>
+      <h2>Do calor ao <em>frescor</em> em segundos.</h2>
+      <p>O original e inovador Spray Refrescante FreshFemme. Natural, vegano e aprovado pela Anvisa.</p>
+      <a class="btn" href="/products/spray-refrescante-para-calores-menopausa-freshfemme">Quero o spray →</a>
+    </div>
+  </div>
+</section>
+
+<section class="wrap idea">
+  <div class="idea__head">
+    <div>
+      <p class="idea__tag">Ideia B</p>
+      <h2 class="idea__title">Lente de câmera térmica numa mulher de verdade</h2>
+      <p class="idea__text">A foto real da campanha continua real (ela está viva, sorrindo). Só a lente mostra o calor, e no pescoço, onde ela borrifa, fica azul. No computador a lente segue o mouse.</p>
+    </div>
+    <button class="replay" type="button" data-replay="b">↻ Ver de novo</button>
+  </div>
+  <div class="cb" data-cb>
+    <div class="cb-copy">
+      <h2>Veja o calor <em>ir embora</em>.</h2>
+      <p>Pela câmera térmica, a temperatura da pele cai na hora em que ela aplica o spray no pescoço, como um colar.</p>
+      <a class="btn" href="/products/spray-refrescante-para-calores-menopausa-freshfemme">Quero o spray →</a>
+      <p class="cb-hint">Passe o mouse pela foto.</p>
+    </div>
+    <div class="cb-photo" data-photo>
+      <img src="mulher.jpg" alt="Mulher aplicando o Spray FreshFemme no pescoço">
+      <div class="cb-thermal" aria-hidden="true">
+        <img src="termica-quente.jpg" alt="">
+        <img class="cb-cold" src="termica-fria.jpg" alt="">
+      </div>
+      <div class="cb-ring" aria-hidden="true"><span class="cb-label">câmera térmica · <b data-temp>38,4</b>°C</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap idea">
+  <div class="idea__head">
+    <div>
+      <p class="idea__tag">Ideia C</p>
+      <h2 class="idea__title">Banners no topo e a prova real logo abaixo</h2>
+      <p class="idea__text">O caminho mais simples e o que a Mariah pediu na reunião.</p>
+    </div>
+  </div>
+  <div class="cc">
+    <div class="cc-card"><h3>No topo</h3><p>Só os banners de promoção girando (Natal, Ano Novo, kits), como todo e-commerce grande faz. Já estão prontos no tema.</p></div>
+    <div class="cc-card"><h3>Logo abaixo</h3><p>Uma faixa "Veja pela câmera térmica" com o vídeo real do Shark Tank ou o reel que o Fabiano mandou, e o termômetro 38,4 → 31,2 °C. Nada gerado por IA: é a prova de verdade.</p></div>
+    <div class="cc-card"><h3>Dá para combinar</h3><p>A ideia A ou B pode virar essa faixa abaixo dos banners, em vez de ficar na capa. <a href="/">Ver a prévia atual</a></p></div>
+  </div>
+</section>
+
+<footer class="wrap">Prévia de conceitos para a nova loja FreshFemme. Os textos e botões são os do site.</footer>
+
+<script>
+(() => {
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fmt = (v) => v.toFixed(1).replace('.', ',');
+  const ease = (t) => 1 - Math.pow(1 - Math.min(Math.max(t, 0), 1), 3);
+
+  /* Ideia A: calor → borrifo → onda de frio a partir do bico do frasco */
+  const ca = document.querySelector('[data-ca]');
+  const bottle = ca.querySelector('[data-bottle]');
+  const mist = ca.querySelector('[data-mist]');
+  const ctx = mist.getContext('2d');
+  const tempA = ca.querySelector('[data-temp]');
+  const copy = ca.querySelector('.ca-copy');
+  let startA = 0, particles = [], nozzle = { x: 0, y: 0 }, maxR = 0, copyDist = 0;
+  const measureA = () => {
+    const r = ca.getBoundingClientRect(), b = bottle.getBoundingClientRect(), c = copy.getBoundingClientRect();
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    mist.width = r.width * dpr; mist.height = r.height * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    nozzle = { x: b.left - r.left + b.width * 0.5, y: b.top - r.top + b.height * 0.03 };
+    ca.style.setProperty('--nx', nozzle.x + 'px'); ca.style.setProperty('--ny', nozzle.y + 'px');
+    maxR = Math.hypot(Math.max(nozzle.x, r.width - nozzle.x), Math.max(nozzle.y, r.height - nozzle.y)) + 60;
+    copyDist = Math.hypot(c.left - r.left + c.width * 0.4 - nozzle.x, c.top - r.top + c.height * 0.5 - nozzle.y);
+  };
+  const burst = () => {
+    for (let i = 0; i < 260; i++) {
+      const ang = Math.PI * (0.93 + Math.random() * 0.2);   // para a esquerda, em leque, em direção ao texto
+      const sp = 6 + Math.random() * 9;
+      particles.push({ x: nozzle.x, y: nozzle.y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp * 0.7, life: 1, size: 1.5 + Math.random() * 6, delay: Math.random() * 24 });
+    }
+  };
+  let pressed = false, burstDone = false, runA = 0;
+  const loopA = (id) => (now) => {
+    if (id !== runA) return; // um "Ver de novo" começou outra rodada
+    if (!startA) startA = now;
+    const t = (now - startA) / 1000;
+    if (t > 0.8 && !pressed) { pressed = true; ca.classList.add('is-press'); setTimeout(() => ca.classList.remove('is-press'), 520); }
+    if (t > 0.95 && !burstDone) { burstDone = true; burst(); }
+    const wave = ease((t - 1.7) / 2.4);
+    const radius = wave * maxR;
+    ca.style.setProperty('--r', radius + 'px');
+    ca.classList.toggle('is-cold', radius > copyDist);
+    tempA.textContent = fmt(t < 1.7 ? 38.4 + Math.sin(t * 3) * 0.06 : 38.4 - 7.2 * ease((t - 1.7) / 2.6));
+    ctx.clearRect(0, 0, mist.width, mist.height);
+    particles = particles.filter((p) => p.life > 0);
+    for (const p of particles) {
+      if (p.delay > 0) { p.delay--; continue; }
+      p.x += p.vx; p.y += p.vy; p.vx *= 0.972; p.vy = p.vy * 0.972 + 0.03; p.size *= 1.025; p.life -= 0.014;
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(232, 252, 255, ${Math.max(p.life, 0) * 0.7})`;
+      ctx.shadowColor = 'rgba(150, 235, 255, 0.9)'; ctx.shadowBlur = 8;
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+    }
+    if (t > 8.2) { restartA(); return; }
+    requestAnimationFrame(loopA(id));
+  };
+  const restartA = () => { runA++; startA = 0; pressed = false; burstDone = false; particles = []; measureA(); requestAnimationFrame(loopA(runA)); };
+  bottle.complete ? measureA() : bottle.addEventListener('load', measureA);
+  addEventListener('resize', measureA);
+  if (reduced) { measureA(); ca.style.setProperty('--r', maxR + 'px'); ca.classList.add('is-cold'); tempA.textContent = '31,2'; }
+  else restartA();
+
+  /* Ideia B: lente térmica */
+  const cb = document.querySelector('[data-cb]');
+  const photo = cb.querySelector('[data-photo]');
+  const tempB = cb.querySelector('[data-temp]');
+  let startB = 0, follow = null, lens = { x: 58, y: 60 };
+  const setLens = (x, y, r) => {
+    cb.style.setProperty('--x', x + '%'); cb.style.setProperty('--y', y + '%');
+    if (r != null) cb.style.setProperty('--r', r + 'px');
+  };
+  photo.addEventListener('pointermove', (e) => {
+    if (e.pointerType !== 'mouse') return;
+    const r = photo.getBoundingClientRect();
+    follow = { x: ((e.clientX - r.left) / r.width) * 100, y: ((e.clientY - r.top) / r.height) * 100 };
+  });
+  photo.addEventListener('pointerleave', () => { follow = null; });
+  const frameB = (now) => {
+    if (!startB) startB = now;
+    const t = (now - startB) / 1000;
+    const base = Math.min(photo.clientWidth, photo.clientHeight);
+    const r = base * (0.22 + 0.04 * ease(t / 1.2));
+    // sem mouse, a lente passeia pelo rosto e pescoço
+    const target = follow || { x: 57 + Math.sin(t * 0.7) * 6, y: 52 + Math.cos(t * 0.55) * 9 };
+    lens.x += (target.x - lens.x) * 0.08; lens.y += (target.y - lens.y) * 0.08;
+    setLens(lens.x, lens.y, r);
+    const cold = t > 1.8;
+    cb.classList.toggle('is-cold', cold);
+    tempB.textContent = fmt(cold ? 38.4 - 7.2 * ease((t - 1.8) / 2) : 38.4 + Math.sin(t * 3) * 0.06);
+    if (t > 9) startB = 0;
+    requestAnimationFrame(frameB);
+  };
+  requestAnimationFrame(frameB);
+
+  document.querySelectorAll('[data-replay]').forEach((btn) => btn.addEventListener('click', () => {
+    if (btn.dataset.replay === 'a') restartA(); else startB = 0;
+  }));
+})();
+</script>
+</body>
+</html>
