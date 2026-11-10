@@ -216,9 +216,21 @@ O Gabriel viu o site no domínio e escreveu "de resto tá tudo perfeito". Pediu:
 - **Cidades:** "acrescente as outras". Entraram as 15 que faltavam do mapa dele, no total 23 com página. Marysville e Monroe
   não estão no mapa dele: seguem na lista, sem página. Só Redmond tem foto real entre as novas.
 - **Formulário:** "o que mais está me incomodando". Confirmou o e-mail br.remodelingwa@gmail.com. Falta só a chave da Resend: veja [O formulário](#o-formulário).
-- **Vídeo de cozinha:** continua preferindo vídeo a foto. A cozinha do desenho dele parece imagem gerada por IA, então não deve existir vídeo dela. O topo agora usa um clipe de banco de imagens, escolhido pelo Lucas: veja [O vídeo do topo](#o-vídeo-do-topo).
+- **Vídeo de cozinha:** continua preferindo vídeo a foto. A cozinha do desenho dele parece imagem gerada por IA, então não deve existir vídeo dela. O topo passou a usar um clipe de banco de imagens, escolhido pelo Lucas (trocado na rodada seguinte): veja [O vídeo do topo](#o-vídeo-do-topo).
 - **Domínio:** quer um com Remodeling. `blackrockremodeling.com` já tem dono (GoDaddy, até 12/2027). A recomendação é `blackrockremodelingwa.com`, comprado no nome dele, com `blackrockfloors.com` redirecionando para o novo. Hospedagem segue na Cloudflare: o site é código e não roda no Wix.
 - **Blog:** disse em 06/11 que "vai querer assinar". É a Soro (trysoro.com), segundo o Lucas em 07/11. O site não é WordPress nem Wix, então a ligação seria pelo webhook da Soro, recebendo os artigos no `worker.js`. Depende da conta e do formato do webhook, que só aparece lá dentro.
+
+### Décima primeira rodada (07 a 09/11): o vídeo de cozinha de novo
+
+Em dois áudios de 07/11, depois de ver o vídeo novo no ar, o Gabriel disse que só faltavam o vídeo e o orçamento indo direto
+para o e-mail dele:
+
+- **Vídeo:** o clipe estava "muito perto da cozinha" e "quase parado". Ele queria algo como a foto de antes: uma cozinha vista
+  de longe, que pareça uma casa, mostrando piso e cozinha, e passando "um pouquinho mais rápido". O Lucas escolheu em 09/11,
+  entre 3 opções da Pexels, um plano aberto da mesma casa (ilha, sala com lareira, piso de madeira), tocado no dobro da
+  velocidade. Veja [O vídeo do topo](#o-vídeo-do-topo).
+- **Avaliações:** confirmou que são todas de clientes de verdade.
+- **Blog:** pediu para o Lucas explicar como funciona e como ele acessa. Continua dependendo da assinatura dele na Soro.
 
 ## O que tem no site
 
@@ -269,11 +281,11 @@ maiúsculas espaçadas, ecoa o "F L O O R S" do logo).
 
 ## Antes de mostrar ao Gabriel: o que é exemplo e precisa confirmar
 
-- [x] **Avaliações do Google**: agora são as reais do perfil dele (07/11). Vale ele confirmar que todas são de clientes de verdade: avaliação de parente, funcionário ou escrita por encomenda também é problema para a FTC.
+- [x] **Avaliações do Google**: agora são as reais do perfil dele (07/11). Ele confirmou no mesmo dia que todas são de clientes de verdade (avaliação de parente, funcionário ou escrita por encomenda também é problema para a FTC).
 - [x] **Link do perfil do Google**: no botão "See us on Google" e no `sameAs` dos dados estruturados (07/11).
 - [x] **Nota**: 5 estrelas e a palavra Google, sem número, como ele pediu em 02/11. O perfil mostra 5,0 com 31 avaliações (07/11).
 - [ ] **Logo**: adaptação provisória, feita por nós. Trocar pelo arquivo dele, se tiver.
-- [x] **Vídeo de cozinha** no topo: clipe de banco de imagens, escolhido pelo Lucas em 07/11 (veja [O vídeo do topo](#o-vídeo-do-topo)). Se o Gabriel tiver um vídeo de uma cozinha dele, é melhor trocar.
+- [x] **Vídeo de cozinha** no topo: clipe de banco de imagens, trocado em 09/11 por um plano mais aberto e mais rápido, como o Gabriel pediu (veja [O vídeo do topo](#o-vídeo-do-topo)). Se ele tiver um vídeo de uma cozinha dele, é melhor trocar.
 - [x] **Lista final de cidades**: as 22 do mapa dele mais Snohomish (06/11).
 - [ ] **Textos novos** (`tools/pages_content.py`): escritos por nós, com os bairros e os tipos de casa de cada cidade. O Gabriel precisa ler e dizer se atende mesmo cada lugar e se faz tudo o que está na lista de cada serviço. A página de Everett e a de Kenmore precisam de fotos.
 - [ ] **Licensed, Bonded, Insured**: vieram do desenho dele. Confirmar no nome da Remodeling.
@@ -332,13 +344,18 @@ como antes. Nada quebra, mas o pedido só chega se ele apertar enviar.
 
 ## O vídeo do topo
 
-O topo da home usa um **clipe de banco de imagens, que não é obra do Gabriel**: [A kitchen with black cabinets and stainless steel appliances](https://www.pexels.com/video/a-kitchen-with-black-cabinets-and-stainless-steel-appliances-19228420/), de Curtis Adams, na Pexels (uso comercial liberado, sem crédito obrigatório). O Lucas escolheu em 07/11. A cozinha do desenho do Gabriel parece imagem gerada por IA e não tem vídeo. O site não diz que é um trabalho da empresa.
+O topo da home usa um **clipe de banco de imagens, que não é obra do Gabriel**: [A kitchen with a large island and hardwood floors](https://www.pexels.com/video/a-kitchen-with-a-large-island-and-hardwood-floors-19228171/), de Curtis Adams, na Pexels (uso comercial liberado, sem crédito obrigatório). O Lucas escolheu em 09/11. A cozinha do desenho do Gabriel parece imagem gerada por IA e não tem vídeo. O site não diz que é um trabalho da empresa.
+
+Antes dele, de 07 a 09/11, o topo usou outro clipe da mesma casa ([19228420](https://www.pexels.com/video/a-kitchen-with-black-cabinets-and-stainless-steel-appliances-19228420/)). O Gabriel achou
+"muito perto da cozinha" e "quase parado". Por isso o atual é um plano aberto, com a sala e o piso, e toca no dobro da velocidade.
+O arquivo "1080p" dessa filmagem na Pexels na verdade é 720p: o script usa o de 1440p.
 
 Os arquivos em `assets/video/` saem do script `tools/make-hero-video.py` (precisa de PyAV, numpy e Pillow; roda com `python3 -E`):
 
+- usa 1 quadro a cada 2 (`STEP`), o que dobra a velocidade do clipe;
 - os brancos ficam um pouco mais baixos, para a parede e a bancada não estourarem ao lado do painel escuro;
-- o fim emenda no começo com 1 s de fusão, então o loop não dá pulo (17,25 s no total). O arquivo começa no mesmo quadro do pôster;
-- três versões: `hero-1080` (computador), `hero-720` (telas médias) e `hero-tall` (celular em pé, um recorte mais largo que fica só na parte de cima do painel), cada uma em **MP4**
+- o fim emenda no começo com 1 s de fusão, então o loop não dá pulo (9,9 s no total). O arquivo começa no mesmo quadro do pôster;
+- três versões: `hero-1080` (computador), `hero-720` (telas médias) e `hero-tall` (celular em pé: um recorte sem o teto, porque no celular só a parte de cima do vídeo fica livre do texto), cada uma em **MP4**
   (toca em tudo, inclusive iPhone) e em **WebM** (para navegadores sem H.264). O site escolhe sozinho.
 
 Depois de trocar o vídeo, aumente o `?v=` nos caminhos do topo do `index.html`, para quem já visitou não ficar com o antigo.
@@ -358,7 +375,7 @@ O iPhone só toca vídeo se o servidor responder aos pedidos por pedaço (`Range
 `worker.js` (veja [Publicar](#publicar)). Para testar no iPhone ou no Safari pelo computador, use o `npx wrangler dev`
 (veja [Ver no computador](#ver-no-computador)): o `python3 -m http.server` não aceita esses pedidos.
 
-**Para usar uma filmagem do Gabriel** (um trabalho real é melhor que o clipe de banco): grave um clipe deitado, de preferência 4K ou 1080p, com a câmera andando devagar, coloque em `tools/clips/`, troque `CLIP`, `URL` e `TALL_CENTER` no começo do script e rode `python3 -E tools/make-hero-video.py`.
+**Para usar uma filmagem do Gabriel** (um trabalho real é melhor que o clipe de banco): grave um clipe deitado, de preferência 4K ou 1080p, com a câmera andando devagar, coloque em `tools/clips/`, troque `CLIP`, `URL`, `STEP` e o recorte do celular (`TALL_CENTER`, `TALL_TOP`, `TALL_WIDTH`) no começo do script e rode `python3 -E tools/make-hero-video.py`.
 
 ## Publicar
 

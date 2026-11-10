@@ -1,4 +1,4 @@
-# Clipes de origem do vídeo do topo (baixados/gerados pelo tools/make-hero-video.sh)
+# Clipes de origem do vídeo do topo (baixados/gerados pelo tools/make-hero-video.py)
 tools/clips/
 
 # Montagem local do site e arquivos do wrangler
