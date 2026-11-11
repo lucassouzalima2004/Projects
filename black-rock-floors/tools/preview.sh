@@ -46,7 +46,7 @@ cat > wrangler.preview.jsonc <<EOF
     "binding": "ASSETS",
     "not_found_handling": "none",
     "html_handling": "auto-trailing-slash",
-    "run_worker_first": ["/assets/video/*", "/api/*"]
+    "run_worker_first": ["/", "/*/", "/robots.txt", "/sitemap.xml", "/assets/video/*", "/api/*"]
   }
 }
 EOF

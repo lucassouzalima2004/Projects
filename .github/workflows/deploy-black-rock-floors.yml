@@ -4,9 +4,10 @@
 #
 # O site vai como Worker com arquivos estáticos (Workers Static Assets), como a The Berry Coffee,
 # e não como projeto do Cloudflare Pages: a conta já tem 100 projetos no Pages, o limite do Cloudflare.
-# O script do Worker (black-rock-floors/worker.js) só roda em dois casos: nos vídeos, para entregar o pedaço do
-# arquivo que o navegador pede (cabeçalho Range), sem o qual o iPhone e o Safari não tocam o vídeo do topo; e em
-# endereços que não existem, para responder a página 404 sem cache.
+# O script do Worker (black-rock-floors/worker.js) roda nas páginas (para mandar www e http:// ao endereço oficial),
+# nos vídeos (para entregar o pedaço do arquivo que o navegador pede, cabeçalho Range, sem o qual o iPhone e o Safari
+# não tocam o vídeo do topo), no formulário e em endereços que não existem (página 404 sem cache). Fotos, CSS, JS e
+# fontes saem direto dos arquivos, sem passar pelo Worker: veja o run_worker_first em "Montar o site".
 #
 # O formulário (/api/estimate) precisa do segredo RESEND_API_KEY no próprio Worker: veja "O formulário" no README.
 # Usa os mesmos secrets dos outros sites do repositório (Settings → Secrets and variables → Actions):
@@ -165,7 +166,7 @@ jobs:
               "binding": "ASSETS",
               "not_found_handling": "none",
               "html_handling": "auto-trailing-slash",
-              "run_worker_first": ["/assets/video/*", "/api/*"]
+              "run_worker_first": ["/", "/*/", "/robots.txt", "/sitemap.xml", "/assets/video/*", "/api/*"]
             }
           }
           EOF
@@ -206,6 +207,18 @@ jobs:
                 echo "Endereço que não existe: 404 sem cache."
               else
                 echo "::warning title=404 com cache::Um endereço que não existe não respondeu 404 com Cache-Control no-store. Confira o worker.js e o not_found_handling."
+              fi
+              # www e http:// têm que levar ao endereço oficial (301), senão o Google indexa a mesma página duas vezes
+              if [ "$SITE_URL" = "${FINAL_URL%/}" ]; then
+                bare="${FINAL_URL#https://}"
+                for from in "https://www.$bare/flooring/" "http://$bare/flooring/"; do
+                  to=$(curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' --max-time 20 "$from" || true)
+                  if [ "$to" = "301 $FINAL_URL/flooring/" ]; then
+                    echo "$from → 301 para o endereço oficial."
+                  else
+                    echo "::warning title=Sem redirecionamento::$from respondeu \"$to\" em vez de 301 para $FINAL_URL/flooring/. Confira o officialUrl no worker.js e o run_worker_first."
+                  fi
+                done
               fi
               exit 0
             fi

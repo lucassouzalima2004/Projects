@@ -1,6 +1,10 @@
-// Worker do site. Roda só em três casos (veja "run_worker_first" e "not_found_handling" no workflow de publicação);
-// o resto do site sai direto dos arquivos estáticos, sem passar por aqui:
+// Worker do site. Roda nas páginas, nos vídeos, no formulário e em endereço que não existe (veja "run_worker_first" e
+// "not_found_handling" no workflow de publicação). Fotos, CSS, JS e fontes saem direto dos arquivos estáticos, sem
+// passar por aqui.
 //
+// 0. Endereço oficial. www.blackrockfloors.com e http:// levam para https://blackrockfloors.com no mesmo caminho
+//    (301). Sem isso o Google indexava a mesma página duas ou três vezes (www, http e a certa), como apareceu no
+//    Search Console em 11/11. O .workers.dev e o computador (localhost) ficam como estão.
 // 1. Vídeos do topo. O iPhone (Safari e qualquer navegador no iOS) e o Safari do Mac só tocam vídeo se o servidor
 //    entregar o pedaço do arquivo que eles pedem (cabeçalho Range, resposta 206). Os arquivos estáticos do Cloudflare
 //    sempre vêm inteiros (resposta 200), então aqui o Worker corta o pedaço pedido e responde do jeito certo.
@@ -15,12 +19,25 @@
 
 export default {
   async fetch(request, env) {
-    const { pathname } = new URL(request.url);
-    if (pathname === '/api/estimate') return estimate(request, env);
-    if (pathname.startsWith('/assets/video/')) return video(request, env);
-    return notFound(request, env);
+    const url = new URL(request.url);
+    const official = officialUrl(url);
+    // 301 para quem só lê (visitante, Google); 308 mantém um envio de formulário como envio
+    if (official) return Response.redirect(official, ['GET', 'HEAD'].includes(request.method) ? 301 : 308);
+    if (url.pathname === '/api/estimate') return estimate(request, env);
+    if (url.pathname.startsWith('/assets/video/')) return video(request, env);
+    const res = await env.ASSETS.fetch(request);
+    return res.status === 404 ? notFound(request, env) : res;
   },
 };
+
+// O mesmo endereço sem www e com https, ou null se já estiver certo
+function officialUrl(url) {
+  const host = url.hostname;
+  if (host === 'localhost' || host === '127.0.0.1' || host.endsWith('.workers.dev')) return null;
+  const bare = host.replace(/^www\./, '');
+  if (bare === host && url.protocol === 'https:') return null;
+  return `https://${bare}${url.pathname}${url.search}`;
+}
 
 // Limites de cada campo: o bastante para um pedido de verdade, pouco para quem quer abusar
 const LIMITS = { name: 120, phone: 40, email: 160, city: 80, service: 80, message: 4000, page: 120 };

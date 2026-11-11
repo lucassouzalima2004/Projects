@@ -232,6 +232,13 @@ para o e-mail dele:
 - **Avaliações:** confirmou que são todas de clientes de verdade.
 - **Blog:** pediu para o Lucas explicar como funciona e como ele acessa. Continua dependendo da assinatura dele na Soro.
 
+### Décima segunda rodada (11/11): indexação no Google
+
+O Lucas ligou o Search Console (propriedade de domínio `blackrockfloors.com`, na conta dele) e pediu a indexação completa.
+O que tinha lá e o que foi feito está em [Google Search Console e acesso do Gabriel](#google-search-console-e-acesso-do-gabriel).
+O Google tinha indexado a mesma página com www e com `http://`, então o `worker.js` passou a levar esses endereços para o
+oficial com 301 (veja [O domínio do Gabriel](#o-domínio-do-gabriel-blackrockfloorscom)).
+
 ## O que tem no site
 
 **Página inicial** (`index.html`):
@@ -391,14 +398,18 @@ No ar em <https://blackrockfloors.com> (o domínio do Gabriel) e, como prévia, 
 - Usa o mesmo secret dos outros sites: `CLOUDFLARE_API_TOKEN` (e `CLOUDFLARE_ACCOUNT_ID`, opcional).
 - Na publicação, o workflow coloca o endereço completo no `og:image` (o WhatsApp exige), o `canonical` e o `og:url` em cada página, e gera o `sitemap.xml` e o `robots.txt`.
 - O README, a pasta `tools/` e o `worker.js` não vão para o ar como arquivos.
-- O `worker.js` também recebe o formulário em `/api/estimate`. Fora isso, é o script do Worker e só roda em dois casos (`run_worker_first` e `not_found_handling: "none"` no
-  `wrangler.jsonc` que o workflow monta): nos vídeos, para entregar o pedaço que o navegador pede (`Range`), sem o qual
-  o iPhone não toca o vídeo; e em endereços que não existem, para responder a página 404 **sem cache**. Isso importa
+- O `worker.js` é o script do Worker. Roda só onde precisa (`run_worker_first` e `not_found_handling: "none"` no
+  `wrangler.jsonc` que o workflow monta): nas páginas, no `robots.txt` e no `sitemap.xml`, para levar www e `http://`
+  ao endereço oficial; no formulário (`/api/estimate`); nos vídeos, para entregar o pedaço que o navegador pede
+  (`Range`), sem o qual o iPhone não toca o vídeo; e em endereços que não existem, para responder a página 404
+  **sem cache**. O `run_worker_first` lista só esses caminhos de propósito: uma regra negativa (`!/assets/img/*`)
+  manda o pedido direto para os arquivos, e aí uma foto que não existe volta a responder 404 com o cache de uma
+  semana (visto no teste de 11/11). Isso importa
   logo depois de publicar: uma foto nova leva menos de um minuto para chegar a todos os servidores do Cloudflare, e
   antes disso responde "não encontrada"; com o cache de uma semana das fotos, quem abrisse o site nesse minuto ficaria
   com a foto quebrada por uma semana (aconteceu num teste em 16/10, só no navegador de teste). O resto do site sai
-  direto dos arquivos, sem passar pelo script e sem contar no limite de pedidos do plano grátis. No fim, o workflow
-  confere o vídeo (206) e a 404 (sem cache).
+  direto dos arquivos (fotos, CSS, JS, fontes), sem passar pelo script e sem contar no limite de pedidos do plano
+  grátis. No fim, o workflow confere o vídeo (206), a 404 (sem cache) e o 301 do www e do `http://`.
 - No endereço `.workers.dev`, o site vai com `noindex` (arquivo `_headers`): o Google não indexa a prévia.
 
 ### O domínio do Gabriel: `blackrockfloors.com`
@@ -410,17 +421,17 @@ No ar em <https://blackrockfloors.com> (o domínio do Gabriel) e, como prévia, 
   painel (Workers & Pages → blackrockfloors → Settings → Domains & Routes). O deploy não mexe nesses domínios: o
   Wrangler só publica domínios que estejam no `wrangler.jsonc`, e o workflow não põe nenhum lá.
 - **Endereço oficial:** `https://blackrockfloors.com`, sem www, que é o que o Gabriel e o Lucas usam. É o `FINAL_URL`
-  do workflow: o canonical, o `og:url`, a prévia do link, o `sitemap.xml` e o `robots.txt` usam esse endereço. O www
-  abre o mesmo site, com o canonical apontando para o sem www. O `.workers.dev` continua como prévia, com `noindex`.
+  do workflow: o canonical, o `og:url`, a prévia do link, o `sitemap.xml` e o `robots.txt` usam esse endereço.
+  Desde 11/11, `www.blackrockfloors.com` e `http://` levam para ele no mesmo caminho, com 301 (função `officialUrl` do
+  `worker.js`). Antes o www e o `http://` abriam o mesmo site, e o Google indexou 9 páginas nessas versões, além das
+  certas. Fotos, CSS e JS no www ainda abrem direto (não passam pelo Worker), o que não atrapalha: as páginas que
+  apontam para eles já estão no endereço oficial. O `.workers.dev` continua como prévia, com `noindex`.
 - **E-mail:** o domínio não tem (nenhum registro MX). Se o Gabriel quiser um e-mail @blackrockfloors.com, o Cloudflare
   Email Routing encaminha de graça para o Gmail dele.
 
-Recomendado no Cloudflare (precisa do login):
-
-1. **SSL/TLS → Edge Certificates → Always Use HTTPS**: ligar. Hoje o endereço com `http://` também abre o site, sem
-   levar para o `https://`.
-2. **Rules → Redirect Rules**: levar o www para o endereço sem www (301). O canonical já resolve isso para o Google;
-   o redirecionamento deixa o endereço da barra igual para todo mundo.
+O redirecionamento de www e `http://` fica no código, e não no painel do Cloudflare (Always Use HTTPS, Redirect Rules),
+para valer também no domínio novo, se o Gabriel trocar, sem precisar de login. O workflow confere os dois depois de
+cada publicação.
 
 Para publicar de novo sem mudar nada: GitHub → **Actions → Deploy Black Rock Floors** → abra a última execução →
 **Re-run all jobs**. O botão "Run workflow" não aparece porque o workflow não está no branch padrão do repositório.
@@ -440,6 +451,26 @@ O jeito certo é uma **propriedade de domínio**, que cobre o domínio inteiro (
 Outro jeito, sem mexer no DNS: propriedade **Prefixo do URL** (`https://blackrockfloors.com/`) com o método **Tag
 HTML**. O Gabriel manda a tag `<meta name="google-site-verification" content="…">`, ela entra no `<head>` do
 `index.html` e o site é publicado de novo.
+
+**Estado em 11/11:** a propriedade de domínio `blackrockfloors.com` está verificada na conta Google do Lucas
+(lucassouzalima10@gmail.com), junto da genialup.com. Para o Gabriel ver também: **Configurações → Usuários e
+permissões → Adicionar usuário**.
+
+- **Sitemap** `https://blackrockfloors.com/sitemap.xml` enviado em 11/11: processado, 41 páginas.
+- **Antes do sitemap** (dados de 05 e 06/11): 25 das 41 páginas indexadas no endereço certo. Outras 9 estavam
+  indexadas só com www ou `http://`, e 7 apareciam como "Página alternativa com tag canônica adequada" (também www e
+  `http://`, o que é normal). Por isso o 301 do www e do `http://` no `worker.js`.
+- **Indexação pedida à mão** (Inspeção de URL → Solicitar indexação) em 11/11, para as 11 cidades novas que ainda não
+  estavam no Google: Redmond, Renton, Sammamish, Issaquah, Edmonds, Shoreline, Mercer Island, Woodinville, Mukilteo,
+  Burien e Mill Creek. Aí bateu a cota diária do Google (cerca de 10 por dia).
+- **Faltam pedir** (dia seguinte, se quiser acelerar): Snohomish (só estava indexada com www), Newcastle, Mountlake
+  Terrace, Lake Forest Park e Brier. Mesmo sem pedir, o Google acha pelo sitemap e pelos links do rodapé de todas
+  as páginas; o pedido só adianta.
+- Para quem faz isso pela extensão do Chrome: a barra de busca do topo do Search Console não aceita o Enter vindo da
+  extensão. Funcionou abrir **Indexação → Páginas → Ver dados sobre páginas indexadas**, trocar o `data-value` do
+  ícone de inspecionar de uma linha pelo endereço desejado e clicar nele. À mão, a barra funciona normalmente.
+- Uma ou duas semanas depois do 301, as versões www e `http://` devem sair do relatório de páginas indexadas (passam
+  para "Página com redirecionamento", o que é o esperado).
 
 **Acesso do Gabriel ao domínio:** no Cloudflare, **Members → Invite members** → e-mail do Gabriel → na permissão,
 escolher só o domínio `blackrockfloors.com` e a função **Domain Administrator** → **Invite members**. Ele passa a
