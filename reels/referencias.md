@@ -12,3 +12,4 @@ Os links estão sem os parâmetros de rastreamento (`?psln=`, `?obrf=`).
 | 5 | https://www.instagram.com/reel/De2KQV_Kz46/ | 2026-11-11 | — | — | |
 | 6 | https://www.instagram.com/reel/DfadfshCi_f/ | 2026-11-11 | — | — | |
 | 7 | https://www.instagram.com/reel/Dbl9W-iBmrC/ | 2026-11-11 | — | — | |
+| 8 | https://www.instagram.com/reel/Dep_vKaPsSO/ | 2026-11-11 | — | — | |
