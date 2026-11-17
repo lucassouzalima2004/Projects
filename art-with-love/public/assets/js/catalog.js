@@ -245,12 +245,12 @@ export default {
   /* ---------------------------------------------------------------------------
      LANÇAMENTO DA SEMANA (página inicial, logo abaixo da faixa de fitas)
      -------------------------------------------------------------------------
-     looks: até 3 ilustrações de menina, cada uma com um laço da semana.
-       art ........ ilustração (artSmall = versão menor para celular)
-       bow ........ foto do laço recortada, com fundo transparente (WebP/PNG)
-       bowAt ...... onde o laço fica, em % da ilustração: x e y = centro do laço,
-                    width = largura, rotate = inclinação em graus
-       image ...... opcional: uma foto já montada, no lugar de art + bow
+     looks: as ilustrações de meninas, cada uma com os laços da semana.
+       art ........ ilustração quadrada (artSmall = versão menor para celular)
+       bows ....... laços recortados (fundo transparente) por cima da ilustração:
+                    src = arquivo; x e y = centro do laço em % da ilustração;
+                    width = largura em %; rotate = inclinação em graus
+       image ...... opcional: uma foto já montada, no lugar de art + bows
        product .... id do produto (o cartão leva até ele)
        collection . ou o id de uma coleção (ex.: 'baby-headbands')
        label ...... etiqueta no canto da imagem
@@ -262,18 +262,30 @@ export default {
     text: 'New bows and headbands, fresh from the studio this week.',
     looks: [
       {
-        art: 'assets/img/launch/girl-ponytail.webp', artSmall: 'assets/img/launch/girl-ponytail-640.webp',
-        bow: 'assets/img/launch/bow-red-velvet.webp', bowAt: { x: 39.5, y: 16, width: 22, rotate: -18 },
-        product: 'red-velvet-bow-pair', label: 'New bow',
+        art: 'assets/img/launch/girl-pigtails-dark.webp', artSmall: 'assets/img/launch/girl-pigtails-dark-560.webp',
+        bows: [
+          { src: 'assets/img/launch/bow-red-velvet.webp', x: 25, y: 13, width: 19, rotate: -24 },
+          { src: 'assets/img/launch/bow-red-velvet.webp', x: 74, y: 13, width: 19, rotate: 22 },
+        ],
+        product: 'red-velvet-bow-pair', label: 'Pairs',
       },
       {
-        art: 'assets/img/launch/baby-curls.webp', artSmall: 'assets/img/launch/baby-curls-640.webp',
-        bow: 'assets/img/launch/bow-lion-cub.webp', bowAt: { x: 31, y: 18, width: 32, rotate: -22 },
+        art: 'assets/img/launch/girl-back-dark.webp', artSmall: 'assets/img/launch/girl-back-dark-560.webp',
+        bows: [{ src: 'assets/img/launch/bow-lilac-organza.webp', x: 50, y: 18, width: 34, rotate: -3 }],
+        product: 'lilac-organza-bow', label: 'Statement bow',
+      },
+      {
+        art: 'assets/img/launch/baby-pink.webp', artSmall: 'assets/img/launch/baby-pink-560.webp',
+        collection: 'baby-headbands', label: 'Headbands',
+      },
+      {
+        art: 'assets/img/launch/girl-back-light.webp', artSmall: 'assets/img/launch/girl-back-light-560.webp',
+        bows: [{ src: 'assets/img/launch/bow-lion-cub.webp', x: 50, y: 18, width: 30, rotate: 4 }],
         product: 'safari-lion-cub-bow', label: 'Big bows',
       },
       {
-        art: 'assets/img/launch/baby-headband.webp', artSmall: 'assets/img/launch/baby-headband-640.webp',
-        collection: 'baby-headbands', label: 'Headbands',
+        art: 'assets/img/launch/girl-pigtails-light.webp', artSmall: 'assets/img/launch/girl-pigtails-light-560.webp',
+        collection: 'sets-and-pairs', label: 'Sets & pairs',
       },
     ],
   },

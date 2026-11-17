@@ -109,11 +109,12 @@ function lookCard(look, i) {
   const c = collectionById.get(look.collection);
   const name = p ? p.name : c ? c.name : '';
   const alt = esc(look.alt || (name ? `Illustration of a little girl wearing the ${name}` : 'This week’s new piece'));
-  const at = look.bowAt || {};
+  // um ou mais laços por cima da ilustração (ex.: um em cada maria-chiquinha)
+  const bows = look.bows || (look.bow ? [{ src: look.bow, ...(look.bowAt || {}) }] : []);
+  const bowImgs = bows.map((b) => `<img class="launch__bow" src="${asset(b.src)}" alt="" loading="lazy" style="--x:${b.x ?? 50}%;--y:${b.y ?? 20}%;--w:${b.width ?? 20}%;--r:${b.rotate ?? 0}deg">`).join('');
   const art = look.image
     ? `<img class="launch__img" src="${asset(look.image)}" alt="${alt}" loading="lazy">`
-    : `<img class="launch__img" src="${asset(look.art)}"${look.artSmall ? ` srcset="${asset(look.artSmall)} 640w, ${asset(look.art)} 1200w" sizes="(max-width: 760px) 80vw, 30vw"` : ''} alt="${alt}" loading="lazy">
-       ${look.bow ? `<img class="launch__bow" src="${asset(look.bow)}" alt="" loading="lazy" style="--x:${at.x ?? 50}%;--y:${at.y ?? 20}%;--w:${at.width ?? 20}%;--r:${at.rotate ?? 0}deg">` : ''}`;
+    : `<img class="launch__img" src="${asset(look.art)}"${look.artSmall ? ` srcset="${asset(look.artSmall)} 560w, ${asset(look.art)} 1000w" sizes="(max-width: 760px) 80vw, 30vw"` : ''} alt="${alt}" loading="lazy" width="1000" height="1000">${bowImgs}`;
   const href = p ? productUrl(p) : c ? `/shop/${c.id}` : '';
   const tag = href ? 'a' : 'div';
   return `
@@ -677,10 +678,10 @@ export function madeToOrder() {
         <div class="wrap">
           ${sectionHead({ eyebrow: 'How it works', title: `<span id="how-title">From idea to <em>keepsake</em></span>`, lead: esc(notice) })}
           <ol class="steps">
-            <li data-reveal><h3>Share your idea</h3><p>Send the theme, colours, name and date using the form below.</p></li>
+            <li data-reveal><h3>Share your idea</h3><p>Send the theme, colours, name and date, using the form below.</p></li>
             <li data-reveal style="--d:.06s"><h3>Get a quote</h3><p>Lulu replies on WhatsApp with ideas and a price.</p></li>
-            <li data-reveal style="--d:.12s"><h3>Confirm</h3><p>Once you are happy with the design, your piece goes into the diary.</p></li>
-            <li data-reveal style="--d:.18s"><h3>Made by hand</h3><p>Sculpted, finished and posted to you, ready for the big day.</p></li>
+            <li data-reveal style="--d:.12s"><h3>Confirm your order</h3><p>Once you’re happy with the design, I’ll confirm it and book it in.</p></li>
+            <li data-reveal style="--d:.18s"><h3>Made by hand</h3><p>Your piece will be lovingly sculpted, carefully finished and sent to you, ready for your special day.</p></li>
           </ol>
         </div>
       </section>

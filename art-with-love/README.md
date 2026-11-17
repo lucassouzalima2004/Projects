@@ -55,13 +55,13 @@ a marca da Disney na loja. A foto do caderno com a senha do Instagram ficou fora
 - **Faixa de fitas**: a foto que ela escolheu (`public/assets/img/ribbons-1200.webp` e `ribbons-2400.webp`) com o logo
   numa cartela por cima. Ela mandou um print do celular (940 px), que foi ampliado com IA para ficar nítido. Se tiver
   o arquivo original, troque esses dois arquivos.
-- **Lançamento da semana**: até 3 ilustrações de meninas (`public/assets/img/launch/`, a partir dos exemplos que ela
-  mandou, ampliados), cada uma com um laço da semana por cima. Hoje: rabo de cavalo com o Red Velvet, bebê de cachos
-  com o Lion Cub (laço grande) e bebê de tiara levando às Baby Headbands. Para trocar um laço:
+- **Lançamento da semana**: as 5 ilustrações de meninas que ela mandou em 17/11 (`public/assets/img/launch/`, originais
+  baixados dos links do ChatGPT), com os laços da semana por cima. Hoje: maria-chiquinha morena com o par de Red Velvet,
+  morena de costas com o Lilac Organza, loira de costas com o Lion Cub; a bebê leva às Baby Headbands e a outra
+  maria-chiquinha a Sets & Pairs (ainda sem laço). Para trocar ou pôr um laço:
   1. peça a ela uma foto do laço sozinho, num fundo liso e claro;
   2. recorte o fundo (PNG/WebP transparente) e salve em `public/assets/img/launch/`;
-  3. em `launch.looks` no `catalog.js`, troque `bow`, `product` e `label`; ajuste `bowAt` (x, y, largura e
-     inclinação) se o laço ficar fora do lugar. `title` e `text` ficam em `launch`.
+  3. em `launch.looks` no `catalog.js`, ajuste `bows` (arquivo, x, y, largura e inclinação), `product` e `label`.
   Também dá para usar uma foto já montada por ela em `image`. Sem nenhum look, a seção some.
 
 ## Como editar
