@@ -1,24 +1,26 @@
-# Publica o site da Black Rock Remodeling no Cloudflare, sempre no mesmo link:
-#   https://blackrockfloors.<subdomínio da conta>.workers.dev  (o endereço exato aparece no resumo da execução)
-# Cada push que mexe em black-rock-floors/ (no main ou no branch claude/practical-goldberg-vyf1zm) atualiza esse link.
+# Publica o site da Black Rock Remodeling no Cloudflare a cada push que mexe em black-rock-floors/ (no main ou no
+# branch claude/practical-goldberg-vyf1zm).
 #
-# O site vai como Worker com arquivos estáticos (Workers Static Assets), como a The Berry Coffee,
-# e não como projeto do Cloudflare Pages: a conta já tem 100 projetos no Pages, o limite do Cloudflare.
-# O script do Worker (black-rock-floors/worker.js) roda nas páginas (para mandar www e http:// ao endereço oficial),
-# nos vídeos (para entregar o pedaço do arquivo que o navegador pede, cabeçalho Range, sem o qual o iPhone e o Safari
-# não tocam o vídeo do topo), no formulário e em endereços que não existem (página 404 sem cache). Fotos, CSS, JS e
-# fontes saem direto dos arquivos, sem passar pelo Worker: veja o run_worker_first em "Montar o site".
+# Desde 16/11 o site mora na conta Cloudflare do Gabriel, no domínio dele, blackrockremod.com (registrado no próprio
+# Cloudflare). O Lucas entra nessa conta como membro (Administrator). São dois Workers:
+#   blackrockremod   conta do Gabriel   o site: black-rock-floors/ + worker.js, em blackrockremod.com e www
+#   blackrockfloors  conta do Lucas     o domínio antigo: black-rock-floors/redirect-worker.js leva cada endereço de
+#                                       blackrockfloors.com e www para o mesmo caminho no domínio novo (301)
+# O redirecionamento só é publicado depois que o domínio novo responde com o site. Se a publicação nova falhar, o
+# domínio antigo continua como estava.
 #
-# O formulário (/api/estimate) precisa do segredo RESEND_API_KEY no próprio Worker: veja "O formulário" no README.
-# Usa os mesmos secrets dos outros sites do repositório (Settings → Secrets and variables → Actions):
-#   CLOUDFLARE_API_TOKEN   token do Cloudflare que pode publicar Workers (obrigatório)
-#   CLOUDFLARE_ACCOUNT_ID  ID da conta (opcional: sem ele, o workflow descobre a conta pelo token)
-# O endereço oficial é o domínio do Gabriel sem www (FINAL_URL, logo abaixo), que é o que ele e o Lucas usam.
-# O domínio e o www foram ligados ao Worker pelo painel do Cloudflare (17/10); o deploy não mexe nisso.
-# Se o domínio deixar de abrir este site, o canonical, o sitemap e a prévia do link voltam a usar o .workers.dev.
-# Para forçar outro endereço, crie a variável (mesma tela, aba Variables):
-#   BLACKROCK_SITE_URL     ex.: https://blackrockfloors.com
-# Enquanto o token não existir, o workflow só avisa e não falha.
+# Vai como Worker com arquivos estáticos (Workers Static Assets), e não como Cloudflare Pages. O worker.js roda nas
+# páginas (para mandar www e http:// ao endereço oficial), nos vídeos (pedaço por Range, sem o qual o iPhone e o Safari
+# não tocam o vídeo do topo), no formulário (e-mail pelo Email Routing do próprio Cloudflare, ligação EMAIL) e em
+# endereços que não existem (página 404 sem cache). Fotos, CSS, JS e fontes saem direto dos arquivos.
+#
+# Secrets (Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN            token do Lucas, o mesmo dos outros sites (obrigatório)
+#   BLACKROCK_CLOUDFLARE_API_TOKEN  token com acesso à conta do Gabriel (opcional: sem ele, usa o CLOUDFLARE_API_TOKEN,
+#                                   que serve se tiver sido criado para todas as contas do Lucas)
+# Variables (mesma tela, aba Variables):
+#   BLACKROCK_ACCOUNT_ID   ID da conta do Gabriel
+#   LUCAS_ACCOUNT_ID       ID da conta do Lucas
 name: Deploy Black Rock Floors (Cloudflare)
 
 on:
@@ -37,10 +39,14 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  WORKER: blackrockfloors
-  FINAL_URL: https://blackrockfloors.com
-  # Texto que só existe neste site. O nome antigo continua na lista: no primeiro deploy, é ele que ainda está no ar.
-  SITE_MARK: 'Floors done right|Remodeling [Ss]ervices'
+  SITE_WORKER: blackrockremod
+  OLD_WORKER: blackrockfloors
+  SITE_URL: https://blackrockremod.com
+  OLD_URL: https://blackrockfloors.com
+  MAIL_TO: br.remodelingwa@gmail.com
+  MAIL_FROM: Black Rock Website <estimates@blackrockremod.com>
+  # Texto que só existe neste site
+  SITE_MARK: 'Remodeling [Ss]ervices'
 
 jobs:
   check:
@@ -48,92 +54,44 @@ jobs:
     outputs:
       ready: ${{ steps.creds.outputs.ready }}
     steps:
-      - name: Conferir o token do Cloudflare
+      - name: Conferir token e contas
         id: creds
         env:
           TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          SITE_ACCOUNT: ${{ vars.BLACKROCK_ACCOUNT_ID }}
+          OLD_ACCOUNT: ${{ vars.LUCAS_ACCOUNT_ID }}
         run: |
-          if [ -n "$TOKEN" ]; then
+          if [ -n "$TOKEN" ] && [ -n "$SITE_ACCOUNT" ] && [ -n "$OLD_ACCOUNT" ]; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::warning title=Cloudflare sem credenciais::Falta o secret CLOUDFLARE_API_TOKEN. Cadastre em Settings → Secrets and variables → Actions e rode de novo (abra a execução em Actions → Re-run all jobs)."
+            echo "::warning title=Faltam credenciais::Precisa do secret CLOUDFLARE_API_TOKEN e das variables BLACKROCK_ACCOUNT_ID e LUCAS_ACCOUNT_ID (Settings → Secrets and variables → Actions)."
           fi
 
-  deploy:
+  site:
     needs: check
     if: needs.check.outputs.ready == 'true'
     runs-on: ubuntu-latest
+    outputs:
+      live: ${{ steps.live.outputs.live }}
     env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      ACCOUNT_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID }}
-      SITE_VAR: ${{ vars.BLACKROCK_SITE_URL }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.BLACKROCK_CLOUDFLARE_API_TOKEN || secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.BLACKROCK_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v4
 
+      - name: Esconder o ID da conta no log
+        run: echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
+
       - name: Instalar o wrangler
         run: npm install --no-save --no-audit --no-fund --include=optional wrangler@4
-
-      - name: Conta do Cloudflare
-        run: |
-          id="$ACCOUNT_SECRET"
-          if [ -z "$id" ]; then
-            # Sem o secret, descobre a conta pelo próprio token
-            auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
-            id=$(curl -sS -H "$auth" "https://api.cloudflare.com/client/v4/accounts?per_page=50" | jq -r '.result[]?.id')
-            if [ -z "$id" ]; then
-              id=$(curl -sS -H "$auth" "https://api.cloudflare.com/client/v4/memberships?per_page=50" | jq -r '.result[]?.account.id')
-            fi
-            count=$(printf '%s\n' "$id" | grep -c . || true)
-            if [ "$count" != "1" ]; then
-              echo "::error title=Conta do Cloudflare::O token dá acesso a $count contas. Cadastre o secret CLOUDFLARE_ACCOUNT_ID com o ID da conta certa (Cloudflare → Workers & Pages → Account ID)."
-              exit 1
-            fi
-            echo "::add-mask::$id"
-            echo "Conta encontrada pelo token."
-          fi
-          echo "CLOUDFLARE_ACCOUNT_ID=$id" >> "$GITHUB_ENV"
-
-      - name: Endereço do site e conferência do nome
-        run: |
-          acc="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID"
-          auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
-          sub=$(curl -sS -H "$auth" "$acc/workers/subdomain" | jq -r '.result.subdomain // empty')
-          if [ -z "$sub" ]; then
-            echo "::error title=workers.dev::A conta não tem subdomínio workers.dev. Crie em Cloudflare → Workers & Pages → (lado direito) Subdomain e rode de novo."
-            exit 1
-          fi
-          url="https://$WORKER.$sub.workers.dev"
-          echo "WORKERS_URL=$url" >> "$GITHUB_ENV"
-          site="$SITE_VAR"
-          if [ -z "$site" ]; then
-            # O domínio só vira o endereço oficial quando já abre este site (antes disso, ele mostra outra coisa)
-            final=$(curl -fsS --max-time 20 "$FINAL_URL/" 2>/dev/null || true)
-            if grep -Eq "$SITE_MARK" <<< "$final"; then
-              site="$FINAL_URL"
-            else
-              site="$url"
-            fi
-          fi
-          echo "SITE_URL=${site%/}" >> "$GITHUB_ENV"
-          # Não sobrescreve um Worker com o mesmo nome que não seja este site
-          if curl -sS -H "$auth" "$acc/workers/scripts/$WORKER/settings" | jq -e '.success' > /dev/null; then
-            if curl -fsS --max-time 20 "$url/" | grep -Eq "Black Rock (Floors|Remodeling)"; then
-              echo "O Worker $WORKER já é este site: vai ser atualizado."
-            else
-              echo "::error title=Nome em uso::Já existe um Worker chamado $WORKER nesta conta que não é este site. Apague ou renomeie esse Worker, ou troque WORKER no topo deste workflow."
-              exit 1
-            fi
-          else
-            echo "Primeira publicação: o Worker $WORKER vai ser criado."
-          fi
 
       - name: Montar o site
         run: |
           mkdir -p _site
           cp -R black-rock-floors/. _site/
-          # Anotações internas, o script do vídeo e o do Worker não vão para o ar como arquivos
-          rm -rf _site/README.md _site/tools _site/.gitignore _site/worker.js
+          # Anotações internas, os scripts e os Workers não vão para o ar como arquivos
+          rm -rf _site/README.md _site/tools _site/.gitignore _site/worker.js _site/redirect-worker.js
           today=$(date -u +%F)
           : > pages.txt
           # Em cada página: endereço completo no og:image (o WhatsApp exige), canonical e og:url
@@ -153,14 +111,20 @@ jobs:
           } > _site/sitemap.xml
           printf 'User-agent: *\nAllow: /\n\nSitemap: %s/sitemap.xml\n' "$SITE_URL" > _site/robots.txt
           cat _site/sitemap.xml
+          host="${SITE_URL#https://}"
           cat > wrangler.jsonc <<EOF
           {
-            "name": "$WORKER",
+            "name": "$SITE_WORKER",
             "main": "./black-rock-floors/worker.js",
             "compatibility_date": "2025-10-01",
-            "workers_dev": true,
+            "workers_dev": false,
             "preview_urls": false,
-            "vars": { "MAIL_TO": "br.remodelingwa@gmail.com", "MAIL_FROM": "Black Rock Website <estimates@send.blackrockfloors.com>" },
+            "routes": [
+              { "pattern": "$host", "custom_domain": true },
+              { "pattern": "www.$host", "custom_domain": true }
+            ],
+            "vars": { "MAIL_TO": "$MAIL_TO", "MAIL_FROM": "$MAIL_FROM" },
+            "send_email": [{ "name": "EMAIL", "destination_address": "$MAIL_TO" }],
             "assets": {
               "directory": "./_site",
               "binding": "ASSETS",
@@ -171,58 +135,93 @@ jobs:
           }
           EOF
 
-      - name: Publicar
-        run: npx wrangler deploy --config wrangler.jsonc
-
-      - name: Conferir o site no ar
+      - name: Publicar na conta do Gabriel
         run: |
-          for i in 1 2 3 4 5 6; do
-            if curl -fsS --max-time 20 "$WORKERS_URL/" | grep -q "Remodeling services"; then
-              echo "Site no ar: $WORKERS_URL"
-              echo "### Site no ar: $WORKERS_URL" >> "$GITHUB_STEP_SUMMARY"
-              if [ "$SITE_URL" != "$WORKERS_URL" ]; then
-                echo "Endereço oficial (canonical e sitemap): $SITE_URL" >> "$GITHUB_STEP_SUMMARY"
-              fi
-              # O domínio do Gabriel já abre o site?
-              final=$(curl -fsS --max-time 20 "$FINAL_URL/" 2>/dev/null || true)
-              if grep -Eq "$SITE_MARK" <<< "$final"; then
-                echo "Domínio no ar: $FINAL_URL" >> "$GITHUB_STEP_SUMMARY"
-                if [ "$SITE_URL" != "${FINAL_URL%/}" ]; then
-                  echo "::notice title=Domínio ligado::$FINAL_URL já abre o site. Rode a publicação de novo (Re-run all jobs) para o canonical e o sitemap passarem a usar o domínio."
-                fi
-              else
-                echo "Domínio $FINAL_URL ainda não abre este site (veja \"Ligar o domínio\" no README)." >> "$GITHUB_STEP_SUMMARY"
-              fi
+          if ! npx wrangler deploy --config wrangler.jsonc; then
+            echo "::error title=Sem acesso à conta do Gabriel::O token não publicou na conta do Gabriel. Crie lá um token (Workers Scripts e Workers Routes: Edit; Zone e DNS: Read) e cadastre como secret BLACKROCK_CLOUDFLARE_API_TOKEN."
+            exit 1
+          fi
+
+      - name: Conferir o domínio novo
+        id: live
+        run: |
+          # O certificado do domínio novo pode levar alguns minutos na primeira vez
+          for i in $(seq 1 30); do
+            if curl -fsS --max-time 20 "$SITE_URL/" 2>/dev/null | grep -Eq "$SITE_MARK"; then
+              echo "live=true" >> "$GITHUB_OUTPUT"
+              echo "### Site no ar: $SITE_URL" >> "$GITHUB_STEP_SUMMARY"
               # O vídeo precisa responder com um pedaço (206), senão o iPhone não toca
-              code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 -H 'Range: bytes=0-1' "$WORKERS_URL/assets/video/hero-tall.mp4" || true)
+              code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 -H 'Range: bytes=0-1' "$SITE_URL/assets/video/hero-tall.mp4" || true)
               if [ "$code" = "206" ]; then
                 echo "Vídeo responde por pedaço (206): toca no iPhone."
               else
                 echo "::warning title=Vídeo sem Range::O vídeo respondeu $code em vez de 206 a um pedido por pedaço. O iPhone pode não tocar o vídeo do topo: confira o worker.js e o run_worker_first."
               fi
-              # Endereço que não existe: página 404 sem cache (o worker.js responde), para uma foto nova que ainda
-              # não chegou a todos os servidores não ficar "não encontrada" por uma semana no navegador de alguém
-              nf=$(curl -sS -o /dev/null -D - --max-time 20 "$WORKERS_URL/assets/img/nao-existe-$(date +%s).webp" | tr -d '\r' || true)
+              # Endereço que não existe: 404 sem cache, para uma foto nova que ainda não chegou a todos os servidores
+              # não ficar "não encontrada" por uma semana no navegador de alguém
+              nf=$(curl -sS -o /dev/null -D - --max-time 20 "$SITE_URL/assets/img/nao-existe-$(date +%s).webp" | tr -d '\r' || true)
               if echo "$nf" | grep -q '^HTTP/[0-9.]* 404' && echo "$nf" | grep -qi '^cache-control: no-store'; then
                 echo "Endereço que não existe: 404 sem cache."
               else
                 echo "::warning title=404 com cache::Um endereço que não existe não respondeu 404 com Cache-Control no-store. Confira o worker.js e o not_found_handling."
               fi
               # www e http:// têm que levar ao endereço oficial (301), senão o Google indexa a mesma página duas vezes
-              if [ "$SITE_URL" = "${FINAL_URL%/}" ]; then
-                bare="${FINAL_URL#https://}"
-                for from in "https://www.$bare/flooring/" "http://$bare/flooring/"; do
-                  to=$(curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' --max-time 20 "$from" || true)
-                  if [ "$to" = "301 $FINAL_URL/flooring/" ]; then
-                    echo "$from → 301 para o endereço oficial."
-                  else
-                    echo "::warning title=Sem redirecionamento::$from respondeu \"$to\" em vez de 301 para $FINAL_URL/flooring/. Confira o officialUrl no worker.js e o run_worker_first."
-                  fi
-                done
-              fi
+              host="${SITE_URL#https://}"
+              for from in "https://www.$host/flooring/" "http://$host/flooring/"; do
+                to=$(curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' --max-time 20 "$from" || true)
+                if [ "$to" = "301 $SITE_URL/flooring/" ]; then
+                  echo "$from → 301 para o endereço oficial."
+                else
+                  echo "::warning title=Sem redirecionamento::$from respondeu \"$to\" em vez de 301 para $SITE_URL/flooring/."
+                fi
+              done
               exit 0
             fi
             sleep 10
           done
-          echo "::warning title=Site ainda não respondeu::A publicação terminou, mas $WORKERS_URL ainda não respondeu. Tente abrir de novo em alguns minutos."
-          echo "### Publicado em: $WORKERS_URL (ainda carregando)" >> "$GITHUB_STEP_SUMMARY"
+          echo "live=false" >> "$GITHUB_OUTPUT"
+          echo "::warning title=Domínio novo ainda não responde::A publicação terminou, mas $SITE_URL ainda não mostra o site. O domínio antigo não foi mexido. Rode de novo (Re-run all jobs) em alguns minutos."
+
+  old-domain:
+    needs: site
+    if: needs.site.outputs.live == 'true'
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.LUCAS_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Esconder o ID da conta no log
+        run: echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
+
+      - name: Instalar o wrangler
+        run: npm install --no-save --no-audit --no-fund --include=optional wrangler@4
+
+      - name: Publicar o redirecionamento do domínio antigo
+        run: |
+          # Os domínios blackrockfloors.com e www foram ligados a este Worker pelo painel (17/10); o deploy não mexe neles
+          cat > wrangler.redirect.jsonc <<EOF
+          {
+            "name": "$OLD_WORKER",
+            "main": "./black-rock-floors/redirect-worker.js",
+            "compatibility_date": "2025-10-01",
+            "workers_dev": true,
+            "preview_urls": false,
+            "vars": { "TARGET": "$SITE_URL" }
+          }
+          EOF
+          npx wrangler deploy --config wrangler.redirect.jsonc
+
+      - name: Conferir o domínio antigo
+        run: |
+          for i in 1 2 3 4 5 6; do
+            to=$(curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' --max-time 20 "$OLD_URL/flooring/" || true)
+            if [ "$to" = "301 $SITE_URL/flooring/" ]; then
+              echo "$OLD_URL/flooring/ → 301 para $SITE_URL/flooring/"
+              echo "Domínio antigo: $OLD_URL leva para $SITE_URL" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::warning title=Domínio antigo sem redirecionamento::$OLD_URL/flooring/ respondeu \"$to\" em vez de 301 para $SITE_URL/flooring/."

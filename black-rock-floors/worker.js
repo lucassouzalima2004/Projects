@@ -2,9 +2,10 @@
 // "not_found_handling" no workflow de publicação). Fotos, CSS, JS e fontes saem direto dos arquivos estáticos, sem
 // passar por aqui.
 //
-// 0. Endereço oficial. www.blackrockfloors.com e http:// levam para https://blackrockfloors.com no mesmo caminho
+// 0. Endereço oficial. www.blackrockremod.com e http:// levam para https://blackrockremod.com no mesmo caminho
 //    (301). Sem isso o Google indexava a mesma página duas ou três vezes (www, http e a certa), como apareceu no
-//    Search Console em 11/11. O .workers.dev e o computador (localhost) ficam como estão.
+//    Search Console em 11/11. O .workers.dev e o computador (localhost) ficam como estão. O domínio antigo,
+//    blackrockfloors.com, é outro Worker, na conta do Lucas: veja redirect-worker.js.
 // 1. Vídeos do topo. O iPhone (Safari e qualquer navegador no iOS) e o Safari do Mac só tocam vídeo se o servidor
 //    entregar o pedaço do arquivo que eles pedem (cabeçalho Range, resposta 206). Os arquivos estáticos do Cloudflare
 //    sempre vêm inteiros (resposta 200), então aqui o Worker corta o pedaço pedido e responde do jeito certo.
@@ -13,9 +14,12 @@
 //    ainda não chegou a todos os servidores do Cloudflare logo depois de publicar (leva menos de um minuto) ficava
 //    "não encontrada" por uma semana no navegador de quem abriu o site naquele minuto (as fotos ficam uma semana no
 //    cache, veja o _headers).
-// 3. Formulário de orçamento (/api/estimate). Manda o pedido para o e-mail do Gabriel pela Resend. Precisa do segredo
-//    RESEND_API_KEY e das variáveis MAIL_TO e MAIL_FROM (veja "O formulário" no README). Sem o segredo, responde 503
-//    e a página abre o e-mail do visitante com o pedido já escrito, como antes.
+// 3. Formulário de orçamento (/api/estimate). Manda o pedido para o e-mail do Gabriel pelo próprio Cloudflare (Email
+//    Routing do blackrockremod.com, ligação EMAIL no wrangler.jsonc), sem serviço de fora e sem segredo. Precisa das
+//    variáveis MAIL_TO e MAIL_FROM e do MAIL_TO confirmado em Email Routing → Destination addresses (veja "O formulário"
+//    no README). Sem isso, responde 503 e a página abre o e-mail do visitante com o pedido já escrito.
+
+import { EmailMessage } from 'cloudflare:email';
 
 export default {
   async fetch(request, env) {
@@ -73,12 +77,11 @@ async function estimate(request, env) {
   if (data.phone.replace(/\D/g, '').length < 7) return reply(422, { ok: false, error: 'phone' });
   if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) return reply(422, { ok: false, error: 'email' });
 
-  if (!env.RESEND_API_KEY || !env.MAIL_TO || !env.MAIL_FROM) return reply(503, { ok: false, error: 'not_configured' });
+  if (!env.EMAIL || !env.MAIL_TO || !env.MAIL_FROM) return reply(503, { ok: false, error: 'not_configured' });
 
   const subject = `New estimate request: ${data.service || 'Website'}${data.city ? ` in ${data.city}` : ''} (${data.name})`;
   const text = [
-    'New request from the website.',
-    '',
+    'New request from the website.\n',
     `Name: ${data.name}`,
     `Phone: ${data.phone}`,
     data.email && `Email: ${data.email}`,
@@ -88,22 +91,42 @@ async function estimate(request, env) {
     data.page && `\nSent from: ${new URL(request.url).origin}${data.page}`,
   ].filter(Boolean).join('\n');
 
-  const sent = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      from: env.MAIL_FROM,
-      to: env.MAIL_TO.split(',').map((s) => s.trim()).filter(Boolean),
-      subject,
-      text,
-      ...(data.email ? { reply_to: data.email } : {}),
-    }),
-  });
-  if (!sent.ok) {
-    console.error('Resend respondeu', sent.status);
+  // MAIL_FROM vem como 'Nome <endereco@dominio>'; o envelope usa só o endereço
+  const fromAddress = (/<([^>]+)>/.exec(env.MAIL_FROM) || [, env.MAIL_FROM])[1].trim();
+  const raw822 = mimeText({ from: env.MAIL_FROM, fromAddress, to: env.MAIL_TO, replyTo: data.email, subject, text });
+  try {
+    await env.EMAIL.send(new EmailMessage(fromAddress, env.MAIL_TO, raw822));
+  } catch (err) {
+    console.error('O Cloudflare não mandou o e-mail:', err && err.message);
     return reply(502, { ok: false, error: 'send' });
   }
   return reply(200, { ok: true });
+}
+
+// E-mail simples em texto (RFC 5322), em UTF-8: o nome do cliente pode ter acento
+function mimeText({ from, fromAddress, to, replyTo, subject, text }) {
+  const b64 = (s) => {
+    let bin = '';
+    for (const byte of new TextEncoder().encode(s)) bin += String.fromCharCode(byte);
+    return btoa(bin);
+  };
+  // Assunto só com ASCII vai como está; com acento, em pedaços codificados, cada um numa linha
+  const encodedSubject = /^[\x20-\x7e]*$/.test(subject)
+    ? subject
+    : (subject.match(/.{1,30}/gsu) || ['']).map((part) => `=?UTF-8?B?${b64(part)}?=`).join('\r\n ');
+  const headers = [
+    `From: ${from}`,
+    `To: ${to}`,
+    replyTo && `Reply-To: ${replyTo}`,
+    `Subject: ${encodedSubject}`,
+    `Date: ${new Date().toUTCString()}`,
+    `Message-ID: <${crypto.randomUUID()}@${fromAddress.split('@')[1]}>`,
+    'MIME-Version: 1.0',
+    'Content-Type: text/plain; charset=utf-8',
+    'Content-Transfer-Encoding: base64',
+  ].filter(Boolean);
+  const body = b64(text.replace(/\r?\n/g, '\r\n')).replace(/.{76}/g, '$&\r\n');
+  return `${headers.join('\r\n')}\r\n\r\n${body}\r\n`;
 }
 
 async function video(request, env) {

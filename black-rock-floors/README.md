@@ -237,7 +237,7 @@ para o e-mail dele:
 O Lucas ligou o Search Console (propriedade de domínio `blackrockfloors.com`, na conta dele) e pediu a indexação completa.
 O que tinha lá e o que foi feito está em [Google Search Console e acesso do Gabriel](#google-search-console-e-acesso-do-gabriel).
 O Google tinha indexado a mesma página com www e com `http://`, então o `worker.js` passou a levar esses endereços para o
-oficial com 301 (veja [O domínio do Gabriel](#o-domínio-do-gabriel-blackrockfloorscom)).
+oficial com 301 (veja [O domínio do Gabriel](#os-domínios)).
 
 ## O que tem no site
 
@@ -330,21 +330,29 @@ navegador guarda fotos e vídeos por uma semana, e sem isso quem já visitou o s
 
 ## O formulário
 
-O botão *Send my request* manda o pedido para `/api/estimate`, no `worker.js`, que repassa por e-mail pela **Resend**, sem o
-visitante precisar abrir o e-mail dele. O *reply to* já vem com o e-mail do cliente, e o assunto traz o serviço, a cidade e o nome.
-O Worker tem um campo escondido e um tempo mínimo contra robôs e não guarda os pedidos. *or text it to us* continua abrindo o SMS.
+O botão *Send my request* manda o pedido para `/api/estimate`, no `worker.js`, que manda por e-mail **pelo próprio
+Cloudflare** (Email Routing do `blackrockremod.com`, na conta do Gabriel), sem o visitante precisar abrir o e-mail dele
+e sem serviço de fora nem chave secreta. Chega em `br.remodelingwa@gmail.com` (`MAIL_TO`), de
+`estimates@blackrockremod.com` (`MAIL_FROM`). O *reply to* já vem com o e-mail do cliente, e o assunto traz o serviço,
+a cidade e o nome. O Worker tem um campo escondido e um tempo mínimo contra robôs e não guarda os pedidos. *or text it to
+us* continua abrindo o SMS.
 
-**Para ligar (só falta isto):**
+Como está montado (16/11):
 
-1. Criar a conta na [Resend](https://resend.com) e adicionar o domínio `send.blackrockfloors.com` (subdomínio, para não mexer no resto do e-mail do domínio).
-2. Colocar no Cloudflare os registros de DNS que a Resend mostrar. Depois de publicar o DNS, clicar em verificar **uma vez só**: repetir reinicia a verificação.
-3. Gerar a API key e guardar no Worker, na conta do Lucas: `npx wrangler@4 secret put RESEND_API_KEY --name blackrockfloors`.
-4. Mandar um pedido de teste e conferir no e-mail do Gabriel.
+- Na conta do Gabriel → **Email Service → Email Routing** → `blackrockremod.com`: registros MX, SPF e DKIM adicionados
+  pelo próprio painel, e `br.remodelingwa@gmail.com` cadastrado em **Destination addresses**.
+- **O destino precisa estar confirmado** (status *Verified*): o Cloudflare manda um link para esse Gmail e o Gabriel
+  clica. Enquanto estiver *Pending*, o envio falha e a página cai no plano B.
+- No `wrangler.jsonc` que o workflow monta: a ligação `send_email` chamada `EMAIL`, presa a esse destino, e as
+  variáveis `MAIL_TO` e `MAIL_FROM`. O `tools/preview.sh --dev` tem a mesma ligação: no computador, o wrangler grava o
+  e-mail em `.wrangler/tmp/email/` em vez de mandar.
+- Mandar para endereço que não está confirmado na conta exige o plano pago de Workers. Para avisar só o Gabriel, o plano
+  grátis basta.
+- Antes (até 16/11) o envio era pela Resend, que precisava de conta e chave e nunca foi ligada.
 
-Quem recebe (`MAIL_TO`) e o remetente (`MAIL_FROM`) ficam no workflow, em `vars`, e também no `tools/preview.sh`.
-
-**Enquanto a chave não existir**, o `/api/estimate` responde 503 e a página abre o e-mail do visitante com o pedido já escrito,
-como antes. Nada quebra, mas o pedido só chega se ele apertar enviar.
+**Se o envio falhar** (destino não confirmado, Email Routing desligado), o `/api/estimate` responde 503 ou 502 e a página
+abre o e-mail do visitante com o pedido já escrito. Nada quebra, mas o pedido só chega se ele apertar enviar. Foi isso que
+o Gabriel viu em 12/11 ("fica aparecendo ainda para o cliente botar o e-mail dele").
 
 **Aviso no celular:** a notificação do Gmail resolve no começo. SMS de verdade (Twilio ou parecido) dá para somar no mesmo
 `/api/estimate`, mas custa por mês e exige registro de operadora nos EUA.
@@ -386,52 +394,62 @@ O iPhone só toca vídeo se o servidor responder aos pedidos por pedaço (`Range
 
 ## Publicar
 
-**Cuidado:** push neste branch que mexa em `black-rock-floors/` publica direto em `blackrockfloors.com`. Para mostrar ao
+**Cuidado:** push neste branch que mexa em `black-rock-floors/` publica direto em `blackrockremod.com`. Para mostrar ao
 Gabriel antes, use a prévia separada, que não mexe no domínio: `bash tools/preview.sh` publica em
-<https://blackrock-remodeling-preview.lucassouzalima10.workers.dev> (com `noindex`), na conta do Lucas.
+<https://blackrock-remodeling-preview.lucassouzalima10.workers.dev> (com `noindex`), na conta do Lucas. Na prévia o
+formulário cai no plano B, porque o e-mail só existe na conta do Gabriel.
 
-O workflow `.github/workflows/deploy-black-rock-floors.yml` publica o site no Cloudflare a cada push que mexe em
-`black-rock-floors/` (no `main` ou no branch `claude/practical-goldberg-vyf1zm`). Vai como **Worker** chamado
-`blackrockfloors`, no mesmo esquema da The Berry Coffee, porque a conta já chegou ao limite de projetos do Cloudflare Pages.
-No ar em <https://blackrockfloors.com> (o domínio do Gabriel) e, como prévia, em <https://blackrockfloors.lucassouzalima10.workers.dev> (o endereço também aparece no resumo de cada execução, em **Actions**).
+O workflow `.github/workflows/deploy-black-rock-floors.yml` publica a cada push que mexe em `black-rock-floors/` (no
+`main` ou no branch `claude/practical-goldberg-vyf1zm`). Desde 16/11 são **dois Workers, em duas contas**:
 
-- Usa o mesmo secret dos outros sites: `CLOUDFLARE_API_TOKEN` (e `CLOUDFLARE_ACCOUNT_ID`, opcional).
-- Na publicação, o workflow coloca o endereço completo no `og:image` (o WhatsApp exige), o `canonical` e o `og:url` em cada página, e gera o `sitemap.xml` e o `robots.txt`.
-- O README, a pasta `tools/` e o `worker.js` não vão para o ar como arquivos.
+| Worker | Conta | O que faz |
+| --- | --- | --- |
+| `blackrockremod` | do Gabriel (o Lucas entra como membro, *Administrator*) | o site, em `blackrockremod.com` e `www.blackrockremod.com` (*custom domains* no `wrangler.jsonc`) |
+| `blackrockfloors` | do Lucas | só o domínio antigo: `redirect-worker.js` leva cada endereço de `blackrockfloors.com` e www para o mesmo caminho no novo (301) |
+
+- O redirecionamento só é publicado depois que o domínio novo responde com o site. Se a publicação nova falhar, o
+  domínio antigo continua como estava.
+- Credenciais (GitHub → Settings → Secrets and variables → Actions): secret `CLOUDFLARE_API_TOKEN` (o do Lucas, dos
+  outros sites) e as variables `BLACKROCK_ACCOUNT_ID` (conta do Gabriel) e `LUCAS_ACCOUNT_ID`. Se o token do Lucas não
+  tiver acesso à conta do Gabriel, o job do site falha com o aviso: aí é criar na conta do Gabriel um token com
+  *Workers Scripts* e *Workers Routes* em Edit e cadastrar como secret `BLACKROCK_CLOUDFLARE_API_TOKEN`.
+- Vai como **Worker** com arquivos estáticos (Workers Static Assets), e não como Cloudflare Pages.
+- Na publicação, o workflow coloca o endereço completo no `og:image` (o WhatsApp exige), o `canonical` e o `og:url` em
+  cada página, e gera o `sitemap.xml` e o `robots.txt`, todos com `https://blackrockremod.com` (`SITE_URL`).
+- O README, a pasta `tools/`, o `worker.js` e o `redirect-worker.js` não vão para o ar como arquivos.
 - O `worker.js` é o script do Worker. Roda só onde precisa (`run_worker_first` e `not_found_handling: "none"` no
   `wrangler.jsonc` que o workflow monta): nas páginas, no `robots.txt` e no `sitemap.xml`, para levar www e `http://`
   ao endereço oficial; no formulário (`/api/estimate`); nos vídeos, para entregar o pedaço que o navegador pede
   (`Range`), sem o qual o iPhone não toca o vídeo; e em endereços que não existem, para responder a página 404
   **sem cache**. O `run_worker_first` lista só esses caminhos de propósito: uma regra negativa (`!/assets/img/*`)
   manda o pedido direto para os arquivos, e aí uma foto que não existe volta a responder 404 com o cache de uma
-  semana (visto no teste de 11/11). Isso importa
-  logo depois de publicar: uma foto nova leva menos de um minuto para chegar a todos os servidores do Cloudflare, e
-  antes disso responde "não encontrada"; com o cache de uma semana das fotos, quem abrisse o site nesse minuto ficaria
-  com a foto quebrada por uma semana (aconteceu num teste em 16/10, só no navegador de teste). O resto do site sai
-  direto dos arquivos (fotos, CSS, JS, fontes), sem passar pelo script e sem contar no limite de pedidos do plano
-  grátis. No fim, o workflow confere o vídeo (206), a 404 (sem cache) e o 301 do www e do `http://`.
-- No endereço `.workers.dev`, o site vai com `noindex` (arquivo `_headers`): o Google não indexa a prévia.
+  semana (visto no teste de 11/11). Isso importa logo depois de publicar: uma foto nova leva menos de um minuto para
+  chegar a todos os servidores do Cloudflare, e antes disso responde "não encontrada"; com o cache de uma semana das
+  fotos, quem abrisse o site nesse minuto ficaria com a foto quebrada por uma semana (aconteceu num teste em 16/10).
+  O resto do site sai direto dos arquivos (fotos, CSS, JS, fontes), sem passar pelo script.
+- No fim, o workflow confere no domínio novo o vídeo (206), a 404 (sem cache) e o 301 do www e do `http://`, e no
+  antigo o 301 para o novo.
+- **Vídeo no iPhone:** o site não usa o kit `video-ios.js` da Genial Up. Ele tem o próprio plano B no `assets/js/app.js`
+  (`playAsImage`: se o iPhone recusar o autoplay, o MP4 vira uma `<img>` animada). Em 16/11 o `pouca-energia.mjs` passou
+  ("todos animam no Modo Pouca Energia") e o `verifica.mjs` confirmou 206 e H.264 nos três vídeos. O `verifica.mjs`
+  ainda acusa "sem o kit video-ios.js", mas é só a checagem de presença do arquivo. O `corrige.mjs` também não serve
+  aqui: ele lê o site como Cloudflare Pages e criaria `functions/_middleware.js`, e pôr o kit junto faria os dois
+  brigarem pelo mesmo vídeo.
 
-### O domínio do Gabriel: `blackrockfloors.com`
+### Os domínios
 
-- **Registro:** no Wix, na conta do Gabriel (desde 12/10; renova em 11/10/2027). No Wix ele aparece como
-  "Gerenciado externamente / Não atribuído a um site", e isso é o normal: o DNS está no Cloudflare.
-- **DNS e hospedagem:** na conta do Cloudflare do Lucas (a mesma do genialup.com). Os *nameservers* foram trocados no
-  Wix em 17/10, e o Lucas ligou `blackrockfloors.com` e `www.blackrockfloors.com` ao Worker `blackrockfloors` pelo
-  painel (Workers & Pages → blackrockfloors → Settings → Domains & Routes). O deploy não mexe nesses domínios: o
-  Wrangler só publica domínios que estejam no `wrangler.jsonc`, e o workflow não põe nenhum lá.
-- **Endereço oficial:** `https://blackrockfloors.com`, sem www, que é o que o Gabriel e o Lucas usam. É o `FINAL_URL`
-  do workflow: o canonical, o `og:url`, a prévia do link, o `sitemap.xml` e o `robots.txt` usam esse endereço.
-  Desde 11/11, `www.blackrockfloors.com` e `http://` levam para ele no mesmo caminho, com 301 (função `officialUrl` do
-  `worker.js`). Antes o www e o `http://` abriam o mesmo site, e o Google indexou 9 páginas nessas versões, além das
-  certas. Fotos, CSS e JS no www ainda abrem direto (não passam pelo Worker), o que não atrapalha: as páginas que
-  apontam para eles já estão no endereço oficial. O `.workers.dev` continua como prévia, com `noindex`.
-- **E-mail:** o domínio não tem (nenhum registro MX). Se o Gabriel quiser um e-mail @blackrockfloors.com, o Cloudflare
-  Email Routing encaminha de graça para o Gmail dele.
-
-O redirecionamento de www e `http://` fica no código, e não no painel do Cloudflare (Always Use HTTPS, Redirect Rules),
-para valer também no domínio novo, se o Gabriel trocar, sem precisar de login. O workflow confere os dois depois de
-cada publicação.
+- **`blackrockremod.com` (o oficial desde 16/11):** comprado pelo Gabriel em 12/11 no Cloudflare Registrar, na conta
+  dele. Ele pediu para "deixar tudo no Cloudflare" (estava metade no Cloudflare e metade no Wix). O DNS é feito pelo
+  próprio deploy (*custom domains*) e pelo Email Routing (MX, SPF e DKIM).
+- **`blackrockfloors.com` (o antigo):** registro no Wix, na conta do Gabriel (desde 12/10; renova em 11/10/2027). DNS na
+  conta do Cloudflare do Lucas, com `blackrockfloors.com` e `www` ligados ao Worker `blackrockfloors` pelo painel
+  (17/10). Agora esse Worker só redireciona para o novo. Vale manter o domínio pago por pelo menos um ano, até o Google
+  passar tudo para o endereço novo.
+- **www e `http://`:** levam para `https://blackrockremod.com` no mesmo caminho, com 301 (função `officialUrl` do
+  `worker.js`). Antes de 11/11 o www e o `http://` abriam o mesmo site, e o Google indexou 9 páginas nessas versões.
+  O redirecionamento fica no código, e não no painel do Cloudflare, para não depender de login.
+- **E-mail:** `blackrockremod.com` tem Email Routing. Dá para criar, por exemplo, `contact@blackrockremod.com`
+  encaminhando para o Gmail dele (Email Routing → Routing rules).
 
 Para publicar de novo sem mudar nada: GitHub → **Actions → Deploy Black Rock Floors** → abra a última execução →
 **Re-run all jobs**. O botão "Run workflow" não aparece porque o workflow não está no branch padrão do repositório.

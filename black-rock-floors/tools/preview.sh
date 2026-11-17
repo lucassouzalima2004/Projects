@@ -13,7 +13,7 @@ OUT=_site
 rm -rf "$OUT"
 mkdir -p "$OUT"
 rsync -a --exclude _site --exclude .wrangler --exclude tools --exclude README.md --exclude .gitignore \
-  --exclude .claude --exclude worker.js --exclude __pycache__ --exclude wrangler.preview.jsonc ./ "$OUT"/
+  --exclude .claude --exclude worker.js --exclude redirect-worker.js --exclude __pycache__ --exclude wrangler.preview.jsonc ./ "$OUT"/
 
 # O mesmo que o deploy faz em cada página: endereço completo no og:image, canonical e og:url
 python3 -E - "$OUT" "$SITE_URL" <<'PY'
@@ -33,6 +33,14 @@ urls = ''.join(f'  <url><loc>{site}{p}</loc></url>\n' for p in paths)
 print(len(paths), 'páginas')
 PY
 
+# O e-mail do formulário só existe no computador (o wrangler dev grava a mensagem num arquivo, sem mandar) e na conta
+# do Gabriel, onde está o Email Routing do blackrockremod.com. A prévia na conta do Lucas fica sem: o formulário cai
+# no plano B (abre o e-mail do visitante).
+EMAIL_BINDING=''
+if [ "${1:-}" = "--dev" ]; then
+  EMAIL_BINDING='"send_email": [{ "name": "EMAIL", "destination_address": "br.remodelingwa@gmail.com" }],'
+fi
+
 cat > wrangler.preview.jsonc <<EOF
 {
   "name": "$WORKER",
@@ -40,7 +48,8 @@ cat > wrangler.preview.jsonc <<EOF
   "compatibility_date": "2025-10-01",
   "workers_dev": true,
   "preview_urls": false,
-  "vars": { "MAIL_TO": "br.remodelingwa@gmail.com", "MAIL_FROM": "Black Rock Website <estimates@send.blackrockfloors.com>" },
+  "vars": { "MAIL_TO": "br.remodelingwa@gmail.com", "MAIL_FROM": "Black Rock Website <estimates@blackrockremod.com>" },
+  $EMAIL_BINDING
   "assets": {
     "directory": "./$OUT",
     "binding": "ASSETS",
