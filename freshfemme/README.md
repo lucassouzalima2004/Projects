@@ -1,8 +1,8 @@
 # FreshFemme Thermal — tema Shopify
 
 Tema novo para a loja [freshfemme.com.br](https://freshfemme.com.br), feito do zero para a Shopify (Online Store 2.0).
-A capa é uma câmera térmica em 3D: uma mulher aparece em vermelho/laranja (o fogacho), borrifa o spray no
-pescoço e o azul gelado vai descendo pelo corpo, com a temperatura caindo no visor.
+A capa mostra o corpo de uma mulher como um holograma translúcido, todo vermelho por dentro e por fora (o
+fogacho); o spray chega ao pescoço e o azul gelado vai descendo pela pele, com a temperatura caindo no visor.
 
 O resto segue a identidade e a estrutura da loja atual: uma fonte só, a **Bricolage Grotesque** que a loja já usa
 (nada serifado), fundo branco, o verde-água dos botões da marca, logo no centro com o menu embaixo e a home na
@@ -59,12 +59,16 @@ site não aparece no Google. Para gerar localmente: `npm run build` e `npm run s
 - **Vídeo da mulher na capa** (quando estiver pronto): em *Capa térmica → Vídeo da mulher*, escolha o vídeo
   16:9 (computador) e o 9:16 (celular), com fundo preto e sem texto. Ele entra no lugar da animação 3D e toca
   uma vez antes dos banners. Marque o segundo em que ela borrifa e o segundo em que termina de gelar: o
-  termômetro e a palavra calor → frescor acompanham esses tempos. Os vídeos atuais (`preview/static/videos/`)
-  são uma silhueta térmica: só o contorno do corpo, preenchido de calor, sem rosto nem pele (o Fabiano achou o
-  rosto realista "parecendo morto"). Saíram do primeiro vídeo do Flow (fundo preto, laranja → azul, commit
-  `2251c10`) com `python3 preview/tools/silhueta.py entrada.mp4 saida.mp4`, que também gera a capa `.jpg`.
-  Para um vídeo que vier como foto colorida e deva parecer câmera térmica de verdade, use
-  `preview/tools/termico.py`. Fundos que não são pretos somem num degradê nas bordas da capa.
+  termômetro e a palavra calor → frescor acompanham esses tempos. Os vídeos atuais (`preview/static/videos/`,
+  borrifo aos 2 s, frio aos 6 s) são o corpo holográfico que o Fabiano pediu, no estilo do short "Your Body Can
+  Boil Water": corpo de mulher translúcido com esqueleto, coração e veias, todo vermelho no calor; o jato de
+  névoa chega ao pescoço e a pele de fora fica azul, descendo até os pés, enquanto o interior continua quente.
+  Os quadros quente e frio foram gerados no Higgsfield (`preview/tools/holograma/`) e a animação entre eles é
+  feita por `preview/tools/holograma.py` (os comandos estão no início do arquivo), que também gera a capa
+  `.jpg`. Os geradores de vídeo do Higgsfield recusam o corpo anatômico (filtro de nudez), por isso a animação
+  é montada no código. As versões anteriores saem de `preview/tools/silhueta.py` (silhueta térmica) e
+  `preview/tools/termico.py` (foto colorida com cara de câmera térmica). Fundos que não são pretos somem num
+  degradê nas bordas da capa.
 - **Vídeos de prova**: na seção *Vídeo e provas reais*, cada bloco *Vídeo de prova* aceita um link do YouTube,
   um vídeo enviado para a Shopify (bom para vídeos baixados do Instagram) ou o link de um reel. Já vêm os
   vídeos de depoimentos e de TV que estão nas páginas da loja.
