@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Capa FreshFemme: A ou B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night: #05070c; --panel: #0b0f17; --line: rgb(255 255 255 / 0.09);
+    --text: #f2f5f7; --muted: #9aa6b2; --hot: #ff7a2f; --ice: #67e0ff; --brand: #26a69e;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { font-family: 'Bricolage Grotesque', system-ui, sans-serif; background: var(--night); color: var(--text); line-height: 1.5; }
+  a { color: inherit; }
+  .wrap { width: min(1200px, 100% - 32px); margin-inline: auto; }
+
+  .intro { padding: 56px 0 24px; }
+  .intro h1 { font-size: clamp(32px, 5vw, 58px); line-height: 1; letter-spacing: -0.04em; font-weight: 700; }
+  .intro h1 .h { color: var(--hot); }
+  .intro h1 .c { color: var(--ice); }
+  .intro p { margin-top: 16px; max-width: 660px; color: var(--muted); font-size: 1.05rem; }
+
+  .opt { padding: 40px 0; border-top: 1px solid var(--line); }
+  .opt:first-of-type { border-top: 0; }
+  .opt__head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; margin-bottom: 22px; }
+  .opt__tag {
+    display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+    background: var(--text); color: var(--night); font-weight: 700; font-size: 1.2rem; margin-bottom: 12px;
+  }
+  .opt__title { font-size: clamp(24px, 3vw, 36px); line-height: 1.05; letter-spacing: -0.03em; font-weight: 700; }
+  .opt__text { margin-top: 8px; max-width: 620px; color: var(--muted); }
+  .opt__ref { margin-top: 6px; font-size: 0.9rem; color: var(--muted); }
+  .opt__ref a { color: var(--text); text-underline-offset: 3px; }
+  .live {
+    display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 999px;
+    background: var(--text); color: var(--night); font-weight: 600; text-decoration: none; white-space: nowrap;
+  }
+  .live::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #2fd27a; }
+  .soon { color: var(--muted); font-size: 0.95rem; }
+
+  .screens { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 20px; align-items: start; }
+  .screen { position: relative; background: #000; border: 1px solid var(--line); overflow: hidden; }
+  .screen--phone { border-radius: 30px; aspect-ratio: 9 / 16; }
+  .screen--desk { border-radius: 16px; aspect-ratio: 16 / 9; }
+  .screen video { display: block; width: 100%; height: 100%; object-fit: cover; background: #000; }
+  .screen__label {
+    position: absolute; left: 14px; top: 12px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em;
+    text-transform: uppercase; color: rgb(255 255 255 / 0.6);
+  }
+
+  .how { padding: 32px 0 72px; color: var(--muted); font-size: 0.95rem; border-top: 1px solid var(--line); }
+  .how ol { margin-top: 10px; padding-left: 20px; display: grid; gap: 4px; }
+  .how b { color: var(--text); font-weight: 600; }
+  .note { margin-top: 18px; font-size: 0.8rem; }
+
+  @media (max-width: 749px) {
+    .intro { padding-top: 36px; }
+    .screens { grid-template-columns: 1fr; }
+    .screen--phone { width: min(100%, 340px); margin-inline: auto; }
+  }
+</style>
+</head>
+<body>
+  <header class="intro wrap">
+    <h1>Capa da FreshFemme:<br>do <span class="h">calor</span> ao <span class="c">frescor</span></h1>
+    <p>Duas versões no estilo dos vídeos que você mandou. Nas duas o corpo começa todo vermelho, por fora e por
+      dentro (o fogacho); o spray chega ao pescoço e a pele de fora fica azul, descendo pelo corpo, enquanto o
+      interior continua quente. É só escolher A ou B.</p>
+  </header>
+
+  <main class="wrap">
+    <section class="opt" aria-labelledby="a-title">
+      <div class="opt__head">
+        <div>
+          <span class="opt__tag" aria-hidden="true">A</span>
+          <h2 class="opt__title" id="a-title">De frente, corpo inteiro</h2>
+          <p class="opt__text">O corpo todo à mostra: esqueleto, coração e veias. O jato de névoa toca o pescoço e o
+            azul desce até os pés.</p>
+          <p class="opt__ref">Referência: <a href="https://youtube.com/shorts/e27Zlce8Moc" target="_blank" rel="noopener">Your Body Can Boil Water</a></p>
+        </div>
+        <a class="live" href="/">Ver no site, já no ar</a>
+      </div>
+      <div class="screens">
+        <div class="screen screen--phone"><span class="screen__label">Celular</span>
+          <video muted loop playsinline preload="none" poster="/preview/videos/freshfemme-capa-celular.jpg" data-src="/preview/videos/freshfemme-capa-celular.mp4" aria-label="Versão A no celular"></video>
+        </div>
+        <div class="screen screen--desk"><span class="screen__label">Computador</span>
+          <video muted loop playsinline preload="none" poster="/preview/videos/freshfemme-capa-desktop.jpg" data-src="/preview/videos/freshfemme-capa-desktop.mp4" aria-label="Versão A no computador"></video>
+        </div>
+      </div>
+    </section>
+
+    <section class="opt" aria-labelledby="b-title">
+      <div class="opt__head">
+        <div>
+          <span class="opt__tag" aria-hidden="true">B</span>
+          <h2 class="opt__title" id="b-title">De costas, spray na nuca</h2>
+          <p class="opt__text">Mais perto: cabeça, nuca e costas, com a coluna e os nervos brilhando. O jato bate na nuca,
+            onde a cliente usa o spray, e o azul desce pelas costas.</p>
+          <p class="opt__ref">Referência: <a href="https://youtube.com/shorts/u6bCx3JDzB4" target="_blank" rel="noopener">Como o corpo regula nossa temperatura?</a></p>
+        </div>
+        <span class="soon">Entra no site se for a escolhida</span>
+      </div>
+      <div class="screens">
+        <div class="screen screen--phone"><span class="screen__label">Celular</span>
+          <video muted loop playsinline preload="none" poster="/preview/videos/freshfemme-capa-b-celular.jpg" data-src="/preview/videos/freshfemme-capa-b-celular.mp4" aria-label="Versão B no celular"></video>
+        </div>
+        <div class="screen screen--desk"><span class="screen__label">Computador</span>
+          <video muted loop playsinline preload="none" poster="/preview/videos/freshfemme-capa-b-desktop.jpg" data-src="/preview/videos/freshfemme-capa-b-desktop.mp4" aria-label="Versão B no computador"></video>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="how wrap">
+    <p><b>No site, a capa faz assim:</b></p>
+    <ol>
+      <li>0 s: o corpo está todo vermelho e o termômetro marca 38,4 °C, "calor".</li>
+      <li>2 s: o jato de névoa chega ao pescoço.</li>
+      <li>2 a 6 s: a pele de fora fica azul, descendo pelo corpo; o termômetro cai para 31,2 °C, "frescor".</li>
+      <li>Depois a capa passa para os banners de promoção.</li>
+    </ol>
+    <p class="note">*Representação artística do efeito refrescante.</p>
+  </footer>
+
+<script>
+  // só baixa e toca o vídeo que está na tela (economiza dados no celular)
+  (() => {
+    const videos = document.querySelectorAll('video[data-src]');
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const start = (v) => {
+      if (!v.src) { v.src = v.dataset.src; v.preload = 'auto'; }
+      if (!reduced) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+    };
+    if (!('IntersectionObserver' in window)) { videos.forEach(start); return; }
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (e.isIntersecting) start(e.target); else e.target.pause();
+    }), { threshold: 0.35 });
+    videos.forEach((v) => io.observe(v));
+  })();
+</script>
+</body>
+</html>

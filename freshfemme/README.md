@@ -66,7 +66,11 @@ site não aparece no Google. Para gerar localmente: `npm run build` e `npm run s
   Os quadros quente e frio foram gerados no Higgsfield (`preview/tools/holograma/`) e a animação entre eles é
   feita por `preview/tools/holograma.py` (os comandos estão no início do arquivo), que também gera a capa
   `.jpg`. Os geradores de vídeo do Higgsfield recusam o corpo anatômico (filtro de nudez), por isso a animação
-  é montada no código. As versões anteriores saem de `preview/tools/silhueta.py` (silhueta térmica) e
+  é montada no código. Há uma versão B, de costas e em close com o spray na nuca (no estilo do short "Como o
+  corpo regula nossa temperatura?"), em `freshfemme-capa-b-desktop.mp4` e `freshfemme-capa-b-celular.mp4`
+  (borrifo aos 2 s, frio aos 6 s, quadros `holograma/*-costas-*.jpg`, nuca em `--neck 0.5,0.431` no
+  computador e `--neck 0.498,0.32` no celular). A página `/capa/` da prévia mostra A e B lado a lado para o
+  cliente escolher; para usar a B, envie esses dois arquivos no lugar dos da A. As versões anteriores saem de `preview/tools/silhueta.py` (silhueta térmica) e
   `preview/tools/termico.py` (foto colorida com cara de câmera térmica). Fundos que não são pretos somem num
   degradê nas bordas da capa.
 - **Vídeos de prova**: na seção *Vídeo e provas reais*, cada bloco *Vídeo de prova* aceita um link do YouTube,

@@ -34,9 +34,11 @@ const send = (res, code, body, type = 'text/html; charset=utf-8') => {
 http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   try {
-    if (url.pathname === '/conceitos' || url.pathname.startsWith('/conceitos/')) {
-      const name = path.basename(url.pathname) === 'conceitos' || url.pathname.endsWith('/') ? 'index.html' : path.basename(url.pathname);
-      const file = path.join(path.dirname(fileURLToPath(import.meta.url)), 'static/conceitos', name);
+    // páginas soltas para o cliente, fora do tema: /conceitos/ (ideias) e /capa/ (versões da capa)
+    const loose = ['conceitos', 'capa'].find((d) => url.pathname === `/${d}` || url.pathname.startsWith(`/${d}/`));
+    if (loose) {
+      const name = path.basename(url.pathname) === loose || url.pathname.endsWith('/') ? 'index.html' : path.basename(url.pathname);
+      const file = path.join(path.dirname(fileURLToPath(import.meta.url)), 'static', loose, name);
       if (!fs.existsSync(file)) return send(res, 404, 'not found', 'text/plain');
       const type = { '.html': 'text/html; charset=utf-8', '.webp': 'image/webp', '.jpg': 'image/jpeg', '.png': 'image/png' }[path.extname(file)] || 'application/octet-stream';
       return send(res, 200, fs.readFileSync(file), type);
