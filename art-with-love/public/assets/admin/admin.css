@@ -101,9 +101,16 @@ code { background: var(--milk); padding: 2px 6px; border-radius: 6px; }
 .editor { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 18px; align-items: start; }
 .editor__stage { position: sticky; top: 70px; display: grid; gap: 8px; }
 .editor__side { display: grid; gap: 14px; }
+/* no celular a bonequinha fica presa no topo enquanto ela mexe nos controles embaixo */
 @media (max-width: 760px) {
   .editor { grid-template-columns: none; }
-  .editor__stage { position: static; }
+  .editor__stage {
+    top: 55px; z-index: 5; margin: 0 -16px; padding: 8px 16px 6px; gap: 4px;
+    background: rgba(249, 242, 240, .96); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .editor__stage .stage { width: min(100%, 38vh); margin: 0 auto; }
+  .editor__stage .hint { font-size: .85rem; }
 }
 .library { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 10px; }
 .lib {
@@ -119,8 +126,11 @@ code { background: var(--milk); padding: 2px 6px; border-radius: 6px; }
 
 /* laço novo */
 .modal { position: fixed; inset: 0; z-index: 30; background: rgba(21, 16, 23, .5); display: grid; place-items: center; padding: 16px; }
-.modal__card { width: min(520px, 100%); max-height: 92vh; overflow: auto; background: var(--paper); border-radius: 22px; padding: 20px; display: grid; gap: 10px; }
-.checker { width: 100%; height: auto; max-height: 46vh; object-fit: contain; border-radius: 14px; background: repeating-conic-gradient(#f3eef0 0 25%, #fff 0 50%) 50% / 20px 20px; }
+.modal__card { width: min(520px, 100%); max-height: 92vh; overflow: auto; background: var(--paper); border-radius: 22px; padding: 20px 20px 0; display: grid; gap: 10px; }
+/* os botões ficam sempre à vista, mesmo em celular pequeno */
+.modal__card > .row { position: sticky; bottom: 0; background: var(--paper); padding: 10px 0 20px; }
+.modal__card > .row .btn { flex: 1; }
+.checker { width: 100%; height: auto; max-height: 30vh; object-fit: contain; border-radius: 14px; background: repeating-conic-gradient(#f3eef0 0 25%, #fff 0 50%) 50% / 20px 20px; }
 
 /* produtos */
 .products { display: grid; gap: 12px; }
@@ -144,9 +154,10 @@ code { background: var(--milk); padding: 2px 6px; border-radius: 6px; }
 .steps li::marker { font-weight: 700; color: var(--raspberry); }
 
 .toast {
-  position: fixed; left: 50%; bottom: 96px; z-index: 40; transform: translate(-50%, 160%);
+  position: fixed; left: 50%; bottom: 96px; z-index: 40; transform: translate(-50%, 24px); opacity: 0; visibility: hidden;
   background: var(--ink); color: #fff; padding: 14px 20px; border-radius: 16px; box-shadow: var(--shadow);
-  font-weight: 500; max-width: calc(100% - 32px); transition: transform .4s cubic-bezier(.2, .7, .1, 1);
+  font-weight: 500; max-width: calc(100% - 32px);
+  transition: transform .4s cubic-bezier(.2, .7, .1, 1), opacity .3s, visibility 0s .4s;
 }
-.toast.is-on { transform: translate(-50%, 0); }
+.toast.is-on { transform: translate(-50%, 0); opacity: 1; visibility: visible; transition: transform .4s cubic-bezier(.2, .7, .1, 1), opacity .3s; }
 .toast[data-kind="error"] { background: var(--raspberry); }

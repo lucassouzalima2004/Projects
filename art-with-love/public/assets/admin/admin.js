@@ -154,6 +154,7 @@ async function publish() {
 function editor(i) {
   const look = state.launch.looks[i];
   if (!look) return (location.hash = '#/lacos');
+  if (!Array.isArray(look.bows)) look.bows = []; // bonequinha que ainda não tem laço
   let sel = look.bows.length ? 0 : -1;
 
   const options = `
