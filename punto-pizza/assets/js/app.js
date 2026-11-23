@@ -20,7 +20,6 @@ const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-let lenis = null;
 
 /* ---------- Aperto / chiuso (sempre na hora de Verona) ---------- */
 
@@ -58,7 +57,7 @@ function paintStatus() {
   $$('.orari tr[data-day]').forEach(tr => tr.classList.toggle('today', +tr.dataset.day === s.day));
 }
 
-/* ---------- Rolagem suave (Lenis) ---------- */
+/* ---------- Rolagem (nativa) ---------- */
 
 function headerOffset(extra = 16) {
   const tools = $('.menu-tools');
@@ -67,16 +66,10 @@ function headerOffset(extra = 16) {
 
 function scrollToEl(el, offset) {
   const top = el.getBoundingClientRect().top + window.scrollY - (offset ?? headerOffset());
-  if (lenis) lenis.scrollTo(top, { duration: 1.2 });
-  else window.scrollTo({ top, behavior: reduceMotion ? 'auto' : 'smooth' });
+  window.scrollTo({ top, behavior: reduceMotion ? 'auto' : 'smooth' });
 }
 
 function initSmooth() {
-  if (!reduceMotion && window.Lenis) {
-    lenis = new window.Lenis({ lerp: 0.11, smoothWheel: true, wheelMultiplier: 1 });
-    const raf = t => { lenis.raf(t); requestAnimationFrame(raf); };
-    requestAnimationFrame(raf);
-  }
   // Links para âncoras da mesma página: rolagem suave, descontando o cabeçalho
   document.addEventListener('click', e => {
     const a = e.target.closest('a[href^="#"]');
@@ -109,12 +102,10 @@ function initHeader() {
   const close = () => {
     document.body.classList.remove('menu-open');
     toggle.setAttribute('aria-expanded', 'false');
-    if (lenis) lenis.start();
   };
   toggle.addEventListener('click', () => {
     const open = document.body.classList.toggle('menu-open');
     toggle.setAttribute('aria-expanded', String(open));
-    if (lenis) open ? lenis.stop() : lenis.start();
     onScroll();
   });
   $$('.nav a').forEach(a => a.addEventListener('click', close));
@@ -199,7 +190,15 @@ function initScrollFx() {
   update();
 }
 
-/* ---------- Números que contam (4,6 · 340) ---------- */
+/* ---------- Animações em loop: só rodam com a seção na tela ---------- */
+
+function initLoops() {
+  if (reduceMotion || !('IntersectionObserver' in window)) return;
+  const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('loop-off', !e.isIntersecting)), { rootMargin: '80px 0px' });
+  $$('.hero-stage, .ticker, .marquee').forEach(el => io.observe(el));
+}
+
+/* ---------- Números que contam (4,6 · 411) ---------- */
 
 function initCounters() {
   const els = $$('[data-count]');
@@ -398,6 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initHeader();
   initReveal();
   initScrollFx();
+  initLoops();
   initCounters();
   initRails();
   initStory();

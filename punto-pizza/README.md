@@ -1,8 +1,7 @@
 # Punto Pizza Verona · site
 
 Site novo da **Punto Pizza**, pizzaria de entrega e retirada do **Carlos** em Verona (Itália), na Via Albere 117.
-O site é em italiano, porque o público é de Verona. É HTML, CSS e JavaScript puros: sem build. A única biblioteca é a
-[Lenis](https://github.com/darkroomengineering/lenis) (rolagem suave), que fica dentro do projeto em `assets/js/vendor/`.
+O site é em italiano, porque o público é de Verona. É HTML, CSS e JavaScript puros: sem build e sem bibliotecas.
 
 ## O pedido
 
@@ -18,7 +17,7 @@ Pela conversa no WhatsApp e pelos áudios de 14/10:
 Depois da primeira prévia (15/10):
 
 - **"Você tá pegando o menu do Just Eat? Não consegue fazer pela minha app?"** Ele mandou o menu completo do app:
-  <https://wbpp.it/s/?vNtG>. O menu do site agora é o do app: os mesmos 60 itens, nomes, descrições, preços, selos e fotos.
+  <https://wbpp.it/s/?vNtG>. O menu do site agora é o do app: os mesmos itens (60 em outubro, 59 sem a Porchettina), nomes, descrições, preços, selos e fotos.
 - **"O logo tem como deixar o meu original? Só um em toda parte?"** Agora há um logo só (`assets/img/logo.svg`, vermelho e grafite,
   sem o "VERONA"), igual em todas as páginas, no rodapé e na prévia do WhatsApp. O cabeçalho e o rodapé são claros (agora areia clara) para ele aparecer como é.
 - **"E usa essa pizza na parte inicial"**: a margherita da foto que ele mandou está no topo (na v2 abria o vídeo; agora gira à direita do texto) e ganhou uma seção logo abaixo
@@ -73,6 +72,20 @@ Em 18/10 ele mostrou o site para a **responsável da AIC**, que pediu três muda
 E pediu para **tirar o preço da etiqueta da Margherita no topo** (agora: "San Marzano DOP e fiordilatte"). O preço continua
 na seção da Margherita e no menu.
 
+Em 23/11 ele pediu duas mudanças:
+
+- **"Essa pizza saiu do cardápio"**: a **Porchettina** saiu do carrossel da home, do menu e dos dados para o Google. Ela também flutuava
+  na chamada "Hai fame?" da home e da consegna: entraram a Svolta e a Estiva. As fotos saíram de `assets/img/` (estão no histórico do Git
+  e em `tools/src/`, se a pizza voltar).
+- **"Arrumar o número das recensioni, que são mais de 411 agora"**: o "più di 340" virou **"più di 411"** no topo e na seção Recensioni.
+
+Na mesma publicação, a rolagem foi acertada (medida com `_ferramentas/scroll-fluido/mede.mjs`, que reprovava o site que estava no ar):
+
+- Rolagem nativa no lugar da Lenis.
+- Os loops do topo, da faixa vermelha e das avaliações **pausam fora da tela** (`initLoops` no `app.js`, classe `loop-off`).
+- O pontinho do "Aperto ora" pulsa 4 vezes e para: em loop, repintava o cabeçalho o tempo todo (25% de quadros ruins com a pizzaria aberta).
+- Depois: computador 1,8% e celular 2,5% na home; as outras páginas entre 1,6% e 4,8%.
+
 ## O que tem no site
 
 **Home** (`index.html`):
@@ -84,7 +97,7 @@ na seção da Margherita e no menu.
    No celular, a pizza fica em cima e o texto embaixo.
 2. Faixa vermelha correndo com os diferenciais (impasto 24 ore, San Marzano DOP, fiordilatte artigianale...).
 3. **La Margherita come si deve**: a foto inteira da pizza do Carlos, com o fundo original, os 4 ingredientes do app e o preço.
-4. **Le nostre pizze**: carrossel com 12 pizzas e as **fotos reais do app** (dá para arrastar com o mouse, usar as setas ou o dedo), com os selos do app (Novità, Eccellenza, Più venduto...).
+4. **Le nostre pizze**: carrossel com 11 pizzas e as **fotos reais do app** (dá para arrastar com o mouse, usar as setas ou o dedo), com os selos do app (Novità, Eccellenza, Più venduto...).
 5. **Fatta come si deve**: o método em 4 passos; no computador a foto da esquerda fica parada e troca conforme o passo que está na tela.
 6. **Senza glutine. Con tutto il resto.**: o selo da **AIC Alimentazione Fuori Casa**, a pizza Luna recortada e a avaliação da Ilaria por cima.
 7. **Como pedir em 3 passos**, os botões da App Store e do Google Play e o **QR code** do app para quem está no computador.
@@ -92,7 +105,7 @@ na seção da Margherita e no menu.
 9. **Horários** (o dia de hoje marcado), **"Consegniamo da te?"** (as zonas de entrega) e endereço.
 10. Chamada final vermelha "Hai fame?" com duas pizzas flutuando.
 
-**Menu** (`menu/`): o menu do app com **foto de cada item**: Pizze classiche (31), Le nostre specialità (8), Pizze baby (4),
+**Menu** (`menu/`): o menu do app com **foto de cada item**: Pizze classiche (30), Le nostre specialità (8), Pizze baby (4),
 Fritti, Bibite e Birre. No topo, as 4 massas (classico, integrale, carbone vegetale con cereali e senza glutine). Abas fixas com a "pílula" que desliza até a seção da tela, filtros (**Consigliate**, Vegetariane, Piccanti),
 busca por ingrediente ("porcini", "bufala"...) e o botão **"Scegli per me"**, que sorteia uma pizza e gira a foto.
 No computador são cartões com foto grande; no celular, linhas com a foto ao lado, como num app de delivery.
@@ -106,7 +119,7 @@ No computador são cartões com foto grande; no celular, linhas com a foto ao la
 
 **Em todo o site:**
 
-- **Rolagem suave** (Lenis) e **transição suave entre as páginas** (navegadores que suportam, como Chrome, Edge e Safari recentes).
+- **Rolagem nativa** (a Lenis saiu em 23/11 porque segurava a rolagem) e **transição suave entre as páginas** (navegadores que suportam, como Chrome, Edge e Safari recentes).
 - Seções que entram ao rolar, títulos palavra por palavra, pizzas recortadas flutuando e girando com a rolagem, botões que
   "puxam" levemente o mouse, cards que sobem ao passar o mouse e fotos que giram de leve.
 - Tudo desliga sozinho para quem ativou "reduzir movimento" no celular ou no computador.
@@ -142,7 +155,7 @@ filtros, busca, "Scegli per me", abas, as zonas de entrega, nenhum link para o J
 - [x] **Zona de entrega**: as zonas que o Carlos listou (17/10). Falta saber: tem taxa de entrega e pedido mínimo? (hoje o site não fala disso)
 - [ ] **Fotos do método** (massa, farinha, molho): são quadros de clipes gratuitos do Mixkit, não da cozinha dele. A pizza de mortadela do passo 4 é dos anúncios dele, mas não está no menu do app. Se ele mandar vídeos ou fotos da cozinha, troca.
 - [ ] **Promoção de 5 €** no primeiro pedido pelo app: continua valendo?
-- [ ] **Nota do Google**: "4,6 · più di 340 recensioni" (do banner dele). Atualizar quando ligar o domínio.
+- [x] **Nota do Google**: "4,6 · più di 411 recensioni" (número que ele passou em 23/11). Fica em dois lugares da `index.html`: no topo (`class="trust"`) e no `data-count` da seção Recensioni.
 - [ ] **Avaliações**: as 6 são reais, do banner de avaliações do site antigo; sobrenomes abreviados.
 - [ ] **"Chi siamo"**: texto curto feito só com o que sabemos. Pedir a história dele e, se quiser, uma foto dele.
 - [ ] **Facebook** `facebook.com/puntopizzadaCarlo` (de um guia para celíacos) e **Instagram** `@puntopizzaverona`: confirmar.
@@ -250,7 +263,6 @@ punto-pizza/
 ├── _headers                      cabeçalhos do Cloudflare (noindex na prévia, cache)
 ├── assets/css/styles.css         visual (cores e fontes no topo)
 ├── assets/js/app.js              horário, rolagem, animações, carrossel, filtros, mapa
-├── assets/js/vendor/lenis.min.js rolagem suave (MIT)
 ├── assets/fonts/                 Bricolage Grotesque e Instrument Serif (só os caracteres usados)
 ├── assets/img/                   logo, logo da AIC, favicon, QR do app, og-image, a foto da Margherita
 │   ├── hero/                     a margherita que gira no topo e as folhas de manjericão
@@ -260,7 +272,7 @@ punto-pizza/
 └── tools/make-hero-pizza.py      gera a pizza do topo (fotos de origem em tools/src/)
 ```
 
-Créditos: fontes Bricolage Grotesque e Instrument Serif (SIL Open Font License); Lenis (MIT); fotos do método tiradas de clipes do
+Créditos: fontes Bricolage Grotesque e Instrument Serif (SIL Open Font License); fotos do método tiradas de clipes do
 [Mixkit](https://mixkit.co/license/) (Mixkit Stock Video Free License): [farinha na massa](https://mixkit.co/free-stock-video/a-chef-covering-dough-with-flour-1669/),
 [sovando](https://mixkit.co/free-stock-video/hands-of-a-baker-kneading-a-dough-42467/),
 [abrindo a pizza](https://mixkit.co/free-stock-video/chef-shaping-a-pizza-42469/) e

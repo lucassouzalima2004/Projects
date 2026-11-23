@@ -85,10 +85,8 @@ html {
   text-size-adjust: 100%;
   scroll-padding-top: calc(var(--header-h) + 16px);
 }
-/* Rolagem suave (Lenis): estilos que a biblioteca pede */
-html.lenis, html.lenis body { height: auto; }
-.lenis.lenis-smooth { scroll-behavior: auto !important; }
-.lenis.lenis-stopped { overflow: clip; }
+/* Loops infinitos param fora da tela (app.js, initLoops): senão gastam quadros enquanto a pessoa rola o resto da página */
+.loop-off .plate img, .loop-off .leaf, .loop-off .ticker-track, .loop-off .marquee-row { animation-play-state: paused !important; }
 
 body {
   margin: 0;
@@ -257,12 +255,9 @@ h2.display + .lead { margin-top: .7em; }
 }
 .status::before { content: ''; width: 9px; height: 9px; border-radius: 50%; background: #a0968d; flex: none; }
 .status.is-open { color: var(--ink); }
-.status.is-open::before { background: #22b350; animation: pulse 2.2s infinite; }
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(34, 179, 80, .55); }
-  70% { box-shadow: 0 0 0 9px rgba(34, 179, 80, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(34, 179, 80, 0); }
-}
+/* Pulsa 4 vezes e para: com box-shadow em loop, o cabeçalho era repintado o tempo todo e a rolagem travava */
+.status.is-open::before { background: #22b350; animation: pulse 2.2s ease-in-out 4; }
+@keyframes pulse { 50% { transform: scale(1.5); opacity: .45; } }
 .status:empty { display: none; }
 .header-cta .status { width: 15em; justify-content: flex-end; }
 .header-cta .status:empty { display: inline-flex; visibility: hidden; }
@@ -303,6 +298,7 @@ h2.display + .lead { margin-top: .7em; }
   .js .nav a { padding: 16px 4px; font-size: 1.35rem; font-weight: 650; color: var(--ink); border-bottom: 1px solid var(--linea); border-radius: 0; }
   .js .nav a::after { left: auto; right: 6px; top: 50%; bottom: auto; margin-top: -3px; }
   .menu-open .nav { clip-path: inset(0 0 0 0); visibility: visible; transition: clip-path .45s var(--ease-out); }
+  html:has(.menu-open) { overflow: hidden; } /* a página não rola atrás do menu aberto */
   .nav .status-mobile { display: inline-flex; padding: 18px 4px 0; }
 }
 @media (max-width: 420px) {
