@@ -111,7 +111,7 @@ function lookCard(look, i) {
   const alt = esc(look.alt || (name ? `Illustration of a little girl wearing the ${name}` : 'This week’s new piece'));
   // um ou mais laços por cima da ilustração (ex.: um em cada maria-chiquinha)
   const bows = look.bows || (look.bow ? [{ src: look.bow, ...(look.bowAt || {}) }] : []);
-  const bowImgs = bows.map((b) => `<img class="launch__bow" src="${asset(b.src)}" alt="" loading="lazy" style="--x:${b.x ?? 50}%;--y:${b.y ?? 20}%;--w:${b.width ?? 20}%;--r:${b.rotate ?? 0}deg">`).join('');
+  const bowImgs = bows.map((b) => `<img class="launch__bow" src="${asset(b.src)}" alt="" loading="lazy" style="--x:${b.x ?? 50}%;--y:${b.y ?? 20}%;--w:${b.width ?? 20}%;--r:${b.rotate ?? 0}deg;--sx:${b.flip ? -1 : 1}">`).join('');
   const art = look.image
     ? `<img class="launch__img" src="${asset(look.image)}" alt="${alt}" loading="lazy">`
     : `<img class="launch__img" src="${asset(look.art)}"${look.artSmall ? ` srcset="${asset(look.artSmall)} 560w, ${asset(look.art)} 1000w" sizes="(max-width: 760px) 80vw, 30vw"` : ''} alt="${alt}" loading="lazy" width="1000" height="1000">${bowImgs}`;

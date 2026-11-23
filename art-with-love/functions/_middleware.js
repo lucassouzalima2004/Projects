@@ -3,9 +3,9 @@
  * e o Google leem (eles não rodam o JavaScript da loja).
  * Endereços que não existem recebem o status 404. */
 import SHOP from '../public/assets/js/catalog.js';
+import { loadShop } from './lib/store.js';
 
 const BRAND = 'Art with Love by Lulu';
-const products = new Map(SHOP.products.map((p) => [p.id, p]));
 const collections = new Map(SHOP.collections.map((c) => [c.id, c]));
 const money = (n) => `£${Number.isInteger(n) ? n : n.toFixed(2)}`;
 const attr = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
@@ -26,7 +26,7 @@ const PAGES = {
   '/thank-you': { title: `Thank you · ${BRAND}`, noindex: true },
 };
 
-function metaFor(url, origin) {
+function metaFor(url, origin, products) {
   const path = url.pathname.replace(/\/+$/, '') || '/';
   if (PAGES[path]) return { ...DEFAULT, ...PAGES[path] };
 
@@ -75,7 +75,7 @@ function metaFor(url, origin) {
   return { ...DEFAULT, title: `Page not found · ${BRAND}`, noindex: true, status: 404 };
 }
 
-export async function onRequest({ request, next }) {
+export async function onRequest({ request, env, next }) {
   const url = new URL(request.url);
   if (request.method !== 'GET' || url.pathname.startsWith('/api/') || /\.[a-z0-9]+$/i.test(url.pathname)) return next();
 
@@ -83,7 +83,9 @@ export async function onRequest({ request, next }) {
   if (!(res.headers.get('content-type') || '').includes('text/html')) return res;
 
   const origin = (SHOP.siteUrl || url.origin).replace(/\/$/, '');
-  const meta = metaFor(url, origin);
+  // preço e estoque podem ter mudado pelo painel: só as páginas de produto precisam ler
+  const list = url.pathname.startsWith('/product/') ? (await loadShop(env)).products : SHOP.products;
+  const meta = metaFor(url, origin, new Map(list.map((p) => [p.id, p])));
   const set = (name, value) => ({ element(e) { e.setAttribute(name, value); } });
 
   const out = new HTMLRewriter()

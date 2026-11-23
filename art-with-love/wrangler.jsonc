@@ -11,5 +11,7 @@
     // fotos, CSS e JS saem direto, sem passar pelo código (mais rápido e não gasta cota)
     "run_worker_first": ["/*", "!/assets/*", "!/site.webmanifest"]
   },
+  // Painel da Lulu (/admin): lançamento da semana, preços, estoque, fotos dos laços e chave do Stripe
+  "kv_namespaces": [{ "binding": "CMS", "id": "24360393bcf144debe0ce7b327e6dd26" }],
   "observability": { "enabled": true }
 }

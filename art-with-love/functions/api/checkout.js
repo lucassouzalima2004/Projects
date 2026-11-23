@@ -4,26 +4,23 @@
  * POST /api/checkout  → { url }      (página de pagamento do Stripe)
  *
  * Os preços NUNCA vêm do navegador: cada item é conferido com o catálogo
- * (public/assets/js/catalog.js) aqui no servidor.
+ * (public/assets/js/catalog.js, com os preços e o estoque do painel) aqui no servidor.
  *
- * Variáveis do Worker (npx wrangler secret put, ou Settings → Variables and Secrets no Cloudflare):
- *   STRIPE_SECRET_KEY  chave secreta do Stripe (sk_live_… ou sk_test_… para testar)
+ * Chave do Stripe: a que a Lulu conecta no painel (/admin → Pagamentos), ou
+ *   STRIPE_SECRET_KEY  secret do Worker (npx wrangler secret put), que tem prioridade
  *   SITE_URL           opcional: endereço final, ex. https://artwithlovebylulu.co.uk
  */
-import SHOP from '../../public/assets/js/catalog.js';
+import { loadShop, stripeKey, json } from '../lib/store.js';
 
 const MAX_QTY = 10;
-const products = new Map(SHOP.products.map((p) => [p.id, p]));
 
-const json = (data, status = 200) => new Response(JSON.stringify(data), {
-  status,
-  headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' },
-});
-
-export const onRequestGet = ({ env }) => json({ enabled: Boolean(env.STRIPE_SECRET_KEY) });
+export const onRequestGet = async ({ env }) => json({ enabled: Boolean(await stripeKey(env)) });
 
 export async function onRequestPost({ request, env }) {
-  if (!env.STRIPE_SECRET_KEY) return json({ error: 'Online payment is not set up yet.', fallback: true }, 503);
+  const key = await stripeKey(env);
+  if (!key) return json({ error: 'Online payment is not set up yet.', fallback: true }, 503);
+  const SHOP = await loadShop(env);
+  const products = new Map(SHOP.products.map((p) => [p.id, p]));
 
   let body;
   try {
@@ -116,7 +113,7 @@ export async function onRequestPost({ request, env }) {
   const res = await fetch('https://api.stripe.com/v1/checkout/sessions', {
     method: 'POST',
     headers: {
-      authorization: `Bearer ${env.STRIPE_SECRET_KEY}`,
+      authorization: `Bearer ${key}`,
       'content-type': 'application/x-www-form-urlencoded',
     },
     body: form,

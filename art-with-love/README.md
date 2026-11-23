@@ -50,6 +50,33 @@ O conteúdo foi montado a partir das conversas do WhatsApp. Confirme e troque em
 Observação: o tema "Lion King" virou **The Savannah Edit** (Warthog, Lion Cub e Monkey Branch Bow) para não usar
 a marca da Disney na loja. A foto do caderno com a senha do Instagram ficou fora do repositório.
 
+## Painel da Lulu (/admin)
+
+Em `/admin` (ex.: <https://artwithlove-by-lulu.lucassouzalima10.workers.dev/admin>) ela entra com uma senha e,
+pelo celular, sem mexer em código:
+
+- **Lacinhos nas bonequinhas**: escolhe a bonequinha, sobe a foto de um laço (o fundo claro sai sozinho, com uma
+  barrinha "Limpar o fundo" para ajustar), arrasta o laço para o cabelo, muda tamanho, giro e espelho, escolhe o
+  produto ou coleção do link e a etiqueta. Também muda o título e o texto da seção. "Salvar e publicar" vale na hora.
+- **Preços e estoque**: muda o preço e marca À venda, Poucas peças (com quantidade) ou Esgotado.
+- **Pagamentos**: passo a passo do Stripe e o campo para colar a Secret key. O painel confere a chave no Stripe e
+  guarda só no servidor; a chave nunca volta para o navegador.
+
+Como funciona: tudo fica no KV `ARTWITHLOVE_CMS` (binding `CMS`). O `catalog.js` continua sendo a base; o que ela
+salva no painel vale por cima (`merge.js`, usado pelo site e pelo checkout, então o preço cobrado é o do painel).
+As fotos dos laços ficam no KV e saem em `/media/<id>`. Uma `STRIPE_SECRET_KEY` posta no Cloudflare tem prioridade
+sobre a chave colada no painel.
+
+Senha: secret `ADMIN_PASSWORD`. Para trocar, na pasta `art-with-love`:
+
+```bash
+npx wrangler secret put ADMIN_PASSWORD
+```
+
+O login dura 30 dias (cookie assinado com o secret `SESSION_SECRET`; trocar esse secret desconecta todo mundo).
+Depois de 10 senhas erradas, o painel espera 15 minutos. Para testar no computador, ponha `ADMIN_PASSWORD` e
+`SESSION_SECRET` no `.dev.vars`.
+
 ## Topo e lançamento da semana
 
 - **Faixa de fitas**: a foto que ela escolheu (`public/assets/img/ribbons-1200.webp` e `ribbons-2400.webp`) com o logo
@@ -58,11 +85,8 @@ a marca da Disney na loja. A foto do caderno com a senha do Instagram ficou fora
 - **Lançamento da semana**: as 5 ilustrações de meninas que ela mandou em 17/11 (`public/assets/img/launch/`, originais
   baixados dos links do ChatGPT), com os laços da semana por cima. Hoje: maria-chiquinha morena com o par de Red Velvet,
   morena de costas com o Lilac Organza, loira de costas com o Lion Cub; a bebê leva às Baby Headbands e a outra
-  maria-chiquinha a Sets & Pairs (ainda sem laço). Para trocar ou pôr um laço:
-  1. peça a ela uma foto do laço sozinho, num fundo liso e claro;
-  2. recorte o fundo (PNG/WebP transparente) e salve em `public/assets/img/launch/`;
-  3. em `launch.looks` no `catalog.js`, ajuste `bows` (arquivo, x, y, largura e inclinação), `product` e `label`.
-  Também dá para usar uma foto já montada por ela em `image`. Sem nenhum look, a seção some.
+  maria-chiquinha a Sets & Pairs (ainda sem laço). Ela mesma troca os laços pelo **Painel da Lulu**. O que está em
+  `launch.looks` no `catalog.js` é só o ponto de partida, usado enquanto ela não salvar nada no painel.
 
 ## Como editar
 
@@ -108,8 +132,8 @@ Precisa de Python com Pillow (`pip install pillow`) e do Node.
 1. Crie a conta em <https://dashboard.stripe.com/register> com os dados dela (país: United Kingdom).
 2. Em **Developers → API keys**, copie a **Secret key** (`sk_live_…`). Para testar antes, use a `sk_test_…`
    e o cartão `4242 4242 4242 4242`.
-3. Na pasta `art-with-love`, rode `npx wrangler secret put STRIPE_SECRET_KEY` e cole a chave. Ou cadastre no
-   GitHub (**Settings → Secrets and variables → Actions**, nome `STRIPE_SECRET_KEY`) e o workflow guarda sozinho.
+3. Ela cola a chave no **Painel da Lulu → Pagamentos** e toca em Conectar. Ou, pelo terminal, na pasta
+   `art-with-love`: `npx wrangler secret put STRIPE_SECRET_KEY` (essa tem prioridade sobre a do painel).
 
 Na hora o botão da sacola vira **Checkout** (não precisa publicar de novo).
 
@@ -170,6 +194,8 @@ art-with-love/
 │   ├── assets/js/views.js       páginas (início, loja, produto, encomendas, ajuda…)
 │   ├── assets/js/app.js         rotas, sacola, checkout, busca, animações
 │   ├── assets/js/lib.js         sacola salva no aparelho e funções comuns
+│   ├── assets/js/store.js       lê o que ela salvou no painel (merge.js junta com o catálogo)
+│   ├── admin/, assets/admin/    Painel da Lulu
 │   ├── assets/css/shop.css      visual (cores e fontes no topo)
 │   ├── assets/products/         fotos dos produtos (WebP) e miniaturas do checkout
 │   ├── assets/og/               prévias de link de cada produto
@@ -178,6 +204,9 @@ art-with-love/
 ├── functions/
 │   ├── api/checkout.js          confere a sacola e abre o pagamento no Stripe
 │   ├── api/order.js             resumo do pedido na página "Thank you"
+│   ├── api/admin.js             painel: login, lançamento, preços, fotos dos laços, chave do Stripe
+│   ├── api/store.js             o que ela salvou no painel, para o site
+│   ├── lib/store.js             leitura do KV e da chave do Stripe
 │   ├── _middleware.js           título, prévia e 404 certos em cada endereço
 │   ├── sitemap.xml.js, robots.txt.js
 └── tools/

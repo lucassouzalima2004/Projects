@@ -1,4 +1,5 @@
 /* Catálogo, sacola e utilidades compartilhadas pelas páginas. */
+import './store.js'; // aplica antes de tudo o que a Lulu mudou pelo painel
 import SHOP from './catalog.js';
 
 export { SHOP };

@@ -424,11 +424,11 @@ p { margin: 0; }
 .launch__img { display: block; width: 100%; height: auto; }
 .launch__bow {
   position: absolute; left: var(--x); top: var(--y); width: var(--w); height: auto;
-  transform: translate(-50%, -50%) rotate(var(--r));
+  transform: translate(-50%, -50%) rotate(var(--r)) scaleX(var(--sx, 1));
   filter: drop-shadow(0 4px 5px rgba(36, 22, 38, .35));
 }
 [data-reveal].is-in .launch__bow { animation: clip-in .9s var(--ease-spring) both .35s; }
-@keyframes clip-in { from { opacity: 0; transform: translate(-50%, -90%) rotate(calc(var(--r) - 25deg)) scale(.6); } }
+@keyframes clip-in { from { opacity: 0; transform: translate(-50%, -90%) rotate(calc(var(--r) - 25deg)) scaleX(var(--sx, 1)) scale(.6); } }
 .launch__tag {
   position: absolute; right: 16px; bottom: 16px;
   padding: 8px 14px; border-radius: 999px;
