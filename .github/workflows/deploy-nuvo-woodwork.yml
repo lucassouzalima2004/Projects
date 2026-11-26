@@ -1,5 +1,7 @@
-# Publica o site da NUVO Woodwork no Cloudflare Pages (https://nuvo-woodwork.pages.dev). Com a conta no limite de
-# projetos do Pages, publica como Worker: https://nuvo-woodwork.lucassouzalima10.workers.dev
+# Publica o site da NUVO Woodwork como Worker do Cloudflare: https://nuvo-woodwork.lucassouzalima10.workers.dev
+# (o endereço que o cliente tem). Antes ele tentava o Cloudflare Pages primeiro e só caía no Worker com a conta no
+# limite de projetos do Pages; em 26/11/2026 a conta teve vaga, o Pages foi criado e o site novo foi para
+# nuvo-woodwork.pages.dev em vez do endereço de sempre. Agora é sempre o Worker.
 #
 # Usa os secrets dos outros sites (Settings → Secrets and variables → Actions):
 #   CLOUDFLARE_API_TOKEN   token do Cloudflare com a permissão "Account · Cloudflare Pages · Edit" (obrigatório)
@@ -73,31 +75,10 @@ jobs:
       - name: Instalar o wrangler
         run: npm install --no-save --no-audit --no-fund --include=optional wrangler@4
 
-      - name: Criar o projeto no Cloudflare Pages (só na primeira vez)
+      - name: Endereço do Worker
         run: |
-          api="https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/pages/projects"
-          auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
-          if ! curl -fsS -o /dev/null -H "$auth" "$api/$PROJECT"; then
-            res=$(curl -sS -X POST -H "$auth" -H "Content-Type: application/json" \
-              --data "{\"name\":\"$PROJECT\",\"production_branch\":\"${{ github.event.repository.default_branch }}\"}" "$api")
-            if ! jq -e '.success' <<<"$res" >/dev/null; then
-              echo "$res"
-              # Conta no limite de projetos do Pages: publica como Worker (endereço .workers.dev)
-              if jq -e '.errors[]? | select(.code == 8000027)' <<<"$res" >/dev/null; then
-                echo "::warning title=Limite de projetos do Pages::A conta já tem o máximo de projetos do Cloudflare Pages. O site vai como Worker, no endereço .workers.dev. Para usar o .pages.dev, apague um projeto antigo do Pages e rode o workflow de novo."
-                sub=$(curl -sS -H "$auth" "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/workers/subdomain" | jq -r '.result.subdomain // empty' || true)
-                echo "TARGET=workers" >> "$GITHUB_ENV"
-                if [ -n "$sub" ]; then echo "DOMAIN=$PROJECT.$sub.workers.dev" >> "$GITHUB_ENV"; fi
-                exit 0
-              fi
-              exit 1
-            fi
-          fi
-          project=$(curl -fsS -H "$auth" "$api/$PROJECT")
-          echo "TARGET=pages" >> "$GITHUB_ENV"
-          echo "DOMAIN=$(jq -r '.result.subdomain' <<<"$project")" >> "$GITHUB_ENV"
-          # Publica sempre como produção, seja qual for o branch do git, para o endereço principal mostrar a última versão
-          echo "PROD_BRANCH=$(jq -r '.result.production_branch' <<<"$project")" >> "$GITHUB_ENV"
+          sub=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/workers/subdomain" | jq -r '.result.subdomain // empty' || true)
+          if [ -n "$sub" ]; then echo "DOMAIN=$PROJECT.$sub.workers.dev" >> "$GITHUB_ENV"; fi
 
       - name: Montar o site
         run: |
@@ -115,14 +96,10 @@ jobs:
       - name: Publicar
         run: |
           set -o pipefail
-          if [ "$TARGET" = workers ]; then
-            CLOUDFLARE_ACCOUNT_ID="$ACCOUNT_ID" npx wrangler deploy --name="$PROJECT" --assets=_site --compatibility-date=2026-10-01 | tee deploy.log
-            # Endereço que o wrangler informou (vale mais que o calculado)
-            url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | head -n 1 || true)
-            if [ -n "$url" ]; then echo "DOMAIN=${url#https://}" >> "$GITHUB_ENV"; fi
-          else
-            CLOUDFLARE_ACCOUNT_ID="$ACCOUNT_ID" npx wrangler pages deploy _site --project-name="$PROJECT" --branch="$PROD_BRANCH" --commit-dirty=true
-          fi
+          CLOUDFLARE_ACCOUNT_ID="$ACCOUNT_ID" npx wrangler deploy --name="$PROJECT" --assets=_site --compatibility-date=2026-10-01 | tee deploy.log
+          # Endereço que o wrangler informou (vale mais que o calculado)
+          url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | head -n 1 || true)
+          if [ -n "$url" ]; then echo "DOMAIN=${url#https://}" >> "$GITHUB_ENV"; fi
 
       - name: Endereço do site
         run: |
