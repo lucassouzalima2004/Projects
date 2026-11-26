@@ -93,4 +93,30 @@
     request();
     if (history.pushState) history.pushState(null, '', '#' + id);
   });
+
+  // Chegando de outra página com âncora (o "Free 3D design" das páginas internas leva a /#contact): sozinho, o
+  // navegador ficava no topo, na caminhada. Aqui a página desce de uma vez até a seção e, se ela mudar de lugar
+  // até o fim do carregamento (fontes), acerta de novo, a não ser que a pessoa já tenha rolado.
+  const target = () => {
+    const id = decodeURIComponent(location.hash.slice(1));
+    const el = id && id !== 'tour' && document.getElementById(id);
+    return el || null;
+  };
+  let landed = -1;
+  function toHash() {
+    const el = target();
+    if (!el) return;
+    if (landed >= 0 && Math.abs(window.scrollY - landed) > 4) return; // a pessoa já rolou
+    if (lenis) {
+      lenis.scrollTo(el, { immediate: true, force: true });
+      request();
+    } else {
+      el.scrollIntoView({ behavior: 'instant', block: 'start' });
+    }
+    landed = window.scrollY;
+  }
+  if (target()) {
+    requestAnimationFrame(toHash);
+    if (document.readyState !== 'complete') window.addEventListener('load', toHash, { once: true });
+  }
 })();

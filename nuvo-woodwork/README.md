@@ -41,6 +41,7 @@ O site é em inglês (o público é americano).
 - **Processo** em 6 passos (como cotas de desenho técnico) e as marcas de ferragem/máquinas.
 - **Depoimentos** do Google (copiados do widget do site atual).
 - **Contato** com formulário (cidade e ambientes), telefone, e-mail, endereço da oficina e horário.
+- **Projetos recentes** (3 cartões) e links para as páginas internas: veja "As páginas internas" abaixo.
 - Prévia bonita do link no WhatsApp (`og-image.jpg`), favicon e ícone do iPhone com o monograma, dados estruturados
   para o Google, e respeito ao "reduzir movimento".
 
@@ -212,6 +213,37 @@ e role pelo filme: um painel no canto mostra, a cada segundo, como o filme está
 Para comparar os dois modos no mesmo aparelho: `?video&film=video` força o `<video>` e `?video&film=canvas` força o
 canvas (dá para juntar: `?video&debug&film=video`).
 
+## As páginas internas (projetos, produtos, journal, about)
+
+Todo o conteúdo do site antigo (nuvowoodwork.com), trazido em 26/11/2026 a pedido do Guilherme ("trazer tudo que tem
+de informação lá para esse site novo, numa biblioteca melhor"):
+
+- **`/projects/`**: a biblioteca dos 11 projetos, e uma página para cada um (`/projects/<projeto>/`) com a capa, a
+  galeria (77 fotos no total) e mais três projetos no fim.
+- **`/products/`**: os 8 ambientes (cozinhas, closets, salas de TV, bares, escritórios, foyers, lavanderias e millwork),
+  com os textos, a lista do que entra em cada um e as fotos. A barra de ambientes fica presa embaixo do cabeçalho.
+  O botão "Plan your kitchen" leva ao formulário da home já com o ambiente marcado (`/?room=Kitchen#contact`).
+- **`/journal/`** e os 2 posts (`/hearthline-media-wall-delray-beach/` e `/white-cedar-estate-delray-beach/`).
+- **`/about-us/`**: a história do Eduardo e da Renata, os números, a visão, a missão, os valores e o que diferencia a Nuvo.
+- Toda foto abre em tela cheia (`assets/js/pages.js`): setas, teclado, arrastar para o lado no celular, Esc fecha.
+
+Os endereços são **os mesmos do site antigo**, para os links do Google continuarem valendo quando o domínio vier para
+cá. Os que mudaram (`/completed-projects/`, `/contact/`, `/contact-us-now-for-a-free-quote/`) redirecionam pelo
+`_redirects`.
+
+**As páginas são geradas** (HTML pronto, nada de build no deploy). Para mudar um texto, uma foto ou a ordem:
+
+1. Edite `tools/pages/content.mjs` (os textos e, de cada foto, o nome e a descrição).
+2. Rode `node tools/make-pages.mjs` dentro de `nuvo-woodwork/`. Ele reescreve as páginas e os 3 cartões de projetos
+   da home (a lista fica em `HOME_PROJECTS`, no próprio script). O logo, os ícones e o rodapé ele copia do `index.html`.
+
+**Foto nova:** `python3 tools/make-photos.py ~/Downloads/foto.jpg` (precisa do Pillow) cria a versão grande (1800 px,
+para a tela cheia) e a de 900 px (as grades) em `assets/img/library/`; depois é usar o nome dela no `content.mjs`.
+
+**Fotos de banco de imagem ficaram de fora:** o site antigo usava 10 fotos de banco (closets e lavanderias de outras
+empresas). Aqui só entram fotos de trabalho da Nuvo, por isso closets e lavanderias têm poucas fotos (2 e 1). Vale
+pedir ao Guilherme fotos reais desses ambientes.
+
 ## Como editar
 
 | O quê | Onde |
@@ -222,6 +254,8 @@ canvas (dá para juntar: `?video&debug&film=video`).
 | Títulos do filme em vídeo (`?video`) e em que segundo entram | `assets/js/content.js` → `scenes` e `tour` |
 | Telefone, e-mail e endereço do formulário | `assets/js/content.js` → `contact` (e no `index.html`) |
 | Ambientes, estúdio, processo, depoimentos, contato e rodapé | `index.html` |
+| Projetos, produtos, journal e about (textos e fotos) | `tools/pages/content.mjs`, depois `node tools/make-pages.mjs` |
+| Os 3 projetos recentes da home | `HOME_PROJECTS` em `tools/make-pages.mjs` |
 | Fotos dos projetos | `assets/img/work/` (índice, estúdio e cards das cenas); fotos das cenas em `assets/img/scenes/` |
 | Cores e fontes | topo do `assets/css/styles.css` |
 
@@ -252,7 +286,8 @@ Tudo veio do site atual da Nuvo (textos, fotos, depoimentos, telefone, e-mail e 
 
 ## Ver no computador
 
-Abra o `index.html` no navegador, ou rode um servidor local nesta pasta:
+Rode um servidor local nesta pasta (as páginas internas usam endereços a partir da raiz, como `/assets/...`, então
+abrir o arquivo direto no navegador só funciona para a home):
 
 ```bash
 python3 -m http.server 8000
@@ -279,15 +314,24 @@ publica o site como Worker, no endereço `https://nuvo-woodwork.<sua-conta>.work
 resumo da execução, em Actions). Para usar o `nuvo-woodwork.pages.dev`, apague um projeto antigo do Pages
 (Workers & Pages → projeto → Settings → Delete project) e rode o workflow de novo.
 
-A prévia está fora do Google (`<meta name="robots" content="noindex">` no `index.html`), para não competir com o site
-atual. Quando o site for para o domínio da Nuvo: apague essa linha, aponte o domínio em Cloudflare → Workers & Pages →
-nuvo-woodwork → Custom domains, e o `og:image` já sai com o endereço certo.
+A prévia está fora do Google (`<meta name="robots" content="noindex">` no `index.html` e em `tools/make-pages.mjs`),
+para não competir com o site atual. Quando o site for para o domínio da Nuvo: apague essa linha nos dois lugares, rode
+`node tools/make-pages.mjs`, aponte o domínio em Cloudflare → Workers & Pages → nuvo-woodwork → Custom domains, e o
+`og:image` já sai com o endereço certo. O e-mail da Nuvo está no Google Workspace: se o DNS mudar de conta, copie
+todos os registros (MX, SPF e as verificações).
+
+**Segurança:** o `_headers` manda os cabeçalhos de segurança (só roda script e carrega arquivo do próprio site; a
+página não abre dentro de outro site). Se um dia entrar um serviço de fora (Formspree no formulário, Google Analytics,
+um mapa), ele precisa ser liberado ali, senão o navegador bloqueia. O laboratório 3D (`lab/`) fica fora da regra.
 
 ## Estrutura
 
 ```
 nuvo-woodwork/
 ├── index.html               página (logo vetorizado embutido)
+├── projects/ products/ journal/ about-us/ e os 2 posts   páginas internas (geradas por tools/make-pages.mjs)
+├── _headers                 cabeçalhos de segurança (o Cloudflare lê no deploy)
+├── _redirects               endereços do site antigo que mudaram
 ├── PROMPTS.md               prompts das fotos das cenas (Flow) e dos vídeos
 ├── assets/css/styles.css    visual
 ├── assets/js/content.js     cenas do topo, trechos do filme em vídeo e contato
@@ -298,11 +342,17 @@ nuvo-woodwork/
 ├── assets/js/scroll.js      rolagem suave no computador e links internos
 ├── assets/js/vendor/        Lenis 1.3.26 (rolagem suave, licença MIT)
 ├── assets/js/app.js         menu, índice de ambientes, formulário
+├── assets/js/boot.js        roda no <head>: avisa o CSS que há JavaScript e escolhe a versão do topo
+├── assets/js/pages.js       páginas internas: foto em tela cheia e a barra de ambientes dos produtos
+├── assets/img/library/      fotos dos projetos, produtos e journal (geradas pelo make-photos.py)
 ├── assets/video/            vídeos do filme + manifest.js (gerados pelo script)
 ├── assets/img/scenes/       fotos das cenas do topo (geradas pelo make-scenes.sh)
 ├── assets/img/              fotos, favicon, ícone do iPhone e prévia do link
 ├── assets/fonts/            fontes
 ├── tools/make-scenes.sh     imagens do Flow → assets/img/scenes/
 ├── tools/make-tour-videos.sh vídeos gerados → mini vídeos da visita (ida e volta, computador e celular)
-└── tools/make-videos.sh     videos/ → assets/video/
+├── tools/make-videos.sh     videos/ → assets/video/
+├── tools/make-photos.py     fotos → assets/img/library/ (duas larguras)
+├── tools/make-pages.mjs     tools/pages/content.mjs → páginas internas
+└── tools/pages/content.mjs  textos e fotos das páginas internas
 ```

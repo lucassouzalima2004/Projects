@@ -157,6 +157,13 @@
     if (chip) chip.checked = true;
   });
 
+  // Vindo de outra página (o "Plan your kitchen" de /products/ leva a /?room=Kitchen#contact), o ambiente já chega marcado
+  const askedRoom = new URLSearchParams(location.search).get('room');
+  if (askedRoom) {
+    const chip = $$('.chips input').find((x) => x.value === askedRoom);
+    if (chip) chip.checked = true;
+  }
+
   const form = $('[data-contact-form]');
   if (form) {
     const note = $('[data-form-note]', form);

@@ -29,7 +29,7 @@
   <link rel="preload" as="image" href="assets/img/scenes/real-foyer.webp" media="(min-aspect-ratio: 1/1)" fetchpriority="high">
   <link rel="preload" as="image" href="assets/img/scenes/real-foyer-tall.webp" media="(max-aspect-ratio: 1/1)" fetchpriority="high">
   <link rel="stylesheet" href="assets/css/styles.css">
-  <script>document.documentElement.classList.add('js');</script>
+  <script src="assets/js/boot.js"></script>
 
   <script type="application/ld+json">
   {
@@ -86,10 +86,10 @@
       <svg class="logo" width="148" height="41" viewBox="0 0 147.6 40.5" aria-hidden="true"><use href="#logo"/></svg>
     </a>
     <nav class="header__nav" aria-label="Main">
-      <a href="#rooms">Rooms</a>
-      <a href="#studio">Studio</a>
-      <a href="#process">Process</a>
-      <a href="#reviews">Reviews</a>
+      <a href="/projects/">Projects</a>
+      <a href="/products/">Products</a>
+      <a href="/about-us/">About</a>
+      <a href="/journal/">Journal</a>
     </nav>
     <a class="btn btn--line btn--small header__cta" href="#contact">Free 3D design</a>
     <button class="header__menu" type="button" aria-expanded="false" aria-controls="menu" data-menu-btn>
@@ -102,9 +102,10 @@
     <nav aria-label="Menu">
       <a href="#tour">The house</a>
       <a href="#rooms">Rooms</a>
-      <a href="#studio">Studio</a>
-      <a href="#process">Process</a>
-      <a href="#reviews">Reviews</a>
+      <a href="/projects/">Projects</a>
+      <a href="/products/">Products</a>
+      <a href="/about-us/">About</a>
+      <a href="/journal/">Journal</a>
       <a href="#contact">Contact</a>
     </nav>
     <p class="menu__foot">
@@ -212,6 +213,7 @@
             </a>
           </li>
         </ol>
+        <a class="link-arrow rooms__all" href="/products/">Every product, room by room<svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
       </div>
     </section>
 
@@ -223,6 +225,7 @@
           <p class="studio__lead">NUVO is led by master craftsman Eduardo Ramos: of Italian descent, born in Brazil and raised in a family of carpenters in Belo Horizonte.</p>
           <p>After more than three decades at the bench, he brought that heritage to South Florida in 2015. Today Eduardo and his partner Renata run a team that pairs CNC precision with old-world hand finishing, and works side by side with architects, designers, builders and homeowners.</p>
           <p>Every project is founder-led, from the first visit to the final hinge.</p>
+          <a class="link-arrow" href="/about-us/">Our story<svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
         </div>
         <div class="mosaic" data-reveal>
           <figure class="mosaic__a">
@@ -246,6 +249,62 @@
           <div class="stat"><dt>Month warranty on our work</dt><dd>36</dd></div>
           <div class="stat"><dt>3D design consultation</dt><dd>Free</dd></div>
         </dl>
+      </div>
+    </section>
+
+    <!-- Projetos recentes: o bloco entre as marcas é escrito por tools/make-pages.mjs (a lista fica lá, em HOME_PROJECTS) -->
+    <section class="recent on-light" id="projects" aria-labelledby="recent-title">
+      <div class="wrap">
+        <header class="more__head">
+          <div class="section-head">
+            <p class="eyebrow">Recent projects</p>
+            <h2 class="h2" id="recent-title">Homes we've <em>finished.</em></h2>
+          </div>
+          <a class="link-arrow" href="/projects/">All projects<svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        </header>
+        <!-- projetos:inicio -->
+        <ol class="work-grid work-grid--three">
+          <li class="work-card">
+            <a href="/projects/parkland-club-residence/">
+              <div class="work-card__img"><img src="/assets/img/library/parkland-club-residence-sm.webp" srcset="/assets/img/library/parkland-club-residence-sm.webp 900w, /assets/img/library/parkland-club-residence.webp 1199w" sizes="(max-width: 760px) 100vw, 440px" width="900" height="1351" alt="Living room with an arched, backlit shelving wall" loading="lazy" decoding="async"></div>
+              <div class="work-card__cap">
+                <span class="work-card__num">05</span>
+                <div class="work-card__text">
+                  <h3 class="work-card__name">Parkland Club Residence</h3>
+                  <span class="work-card__meta">Parkland · Residence · 9 photos</span>
+                </div>
+                <span class="work-card__go">View<svg aria-hidden="true"><use href="#i-arrow"/></svg></span>
+              </div>
+            </a>
+          </li>
+          <li class="work-card">
+            <a href="/projects/delray-1/">
+              <div class="work-card__img"><img src="/assets/img/library/ceiling-1-sm.webp" srcset="/assets/img/library/ceiling-1-sm.webp 900w, /assets/img/library/ceiling-1.webp 1400w" sizes="(max-width: 760px) 100vw, 440px" width="900" height="1157" alt="Living room under a coffered, backlit ceiling" loading="lazy" decoding="async"></div>
+              <div class="work-card__cap">
+                <span class="work-card__num">09</span>
+                <div class="work-card__text">
+                  <h3 class="work-card__name">Delray Beach Custom Residence</h3>
+                  <span class="work-card__meta">Delray Beach · Residence · 16 photos</span>
+                </div>
+                <span class="work-card__go">View<svg aria-hidden="true"><use href="#i-arrow"/></svg></span>
+              </div>
+            </a>
+          </li>
+          <li class="work-card">
+            <a href="/projects/camino-real-signature-house/">
+              <div class="work-card__img"><img src="/assets/img/library/camino-real-signature-house-sm.webp" srcset="/assets/img/library/camino-real-signature-house-sm.webp 900w, /assets/img/library/camino-real-signature-house.webp 1800w" sizes="(max-width: 760px) 100vw, 440px" width="900" height="600" alt="Dining room with a backlit oak bar wall and a floating staircase" loading="lazy" decoding="async"></div>
+              <div class="work-card__cap">
+                <span class="work-card__num">01</span>
+                <div class="work-card__text">
+                  <h3 class="work-card__name">Camino Real Signature House</h3>
+                  <span class="work-card__meta">Residence · 9 photos</span>
+                </div>
+                <span class="work-card__go">View<svg aria-hidden="true"><use href="#i-arrow"/></svg></span>
+              </div>
+            </a>
+          </li>
+        </ol>
+        <!-- projetos:fim -->
       </div>
     </section>
 
@@ -410,6 +469,15 @@
         <p><a href="tel:+15617702595">(561) 770-2595</a><br><a href="mailto:info@nuvowoodwork.com">info@nuvowoodwork.com</a></p>
       </div>
       <div>
+        <h3>Explore</h3>
+        <ul class="footer__links">
+          <li><a href="/projects/">Projects</a></li>
+          <li><a href="/products/">Products</a></li>
+          <li><a href="/about-us/">About</a></li>
+          <li><a href="/journal/">Journal</a></li>
+        </ul>
+      </div>
+      <div>
         <h3>Follow</h3>
         <ul class="social">
           <li><a href="https://www.instagram.com/nuvowoodwork" rel="noopener" target="_blank"><svg aria-hidden="true"><use href="#i-instagram"/></svg>Instagram</a></li>
@@ -430,14 +498,8 @@
 
   <script src="assets/js/content.js"></script>
   <script src="assets/video/manifest.js"></script>
-  <script>
-    // O topo do site: a caminhada pela casa real (tour.js): uma rolada toca o vídeo, liso, até o próximo
-    // cômodo. Com ?video, o filme preso ao scroll (film.js); com ?scenes, as cenas com parallax (chapters.js).
-    window.NUVO_FILM_MODE = (function (q) {
-      const has = (k) => new RegExp('(^|&)' + k + '(=|&|$)').test(q);
-      return has('video') ? 'video' : has('scenes') ? 'chapters' : 'tour';
-    })(location.search.slice(1));
-  </script>
+  <!-- O topo do site: a caminhada pela casa real (tour.js); com ?video, o filme preso ao scroll (film.js); com
+       ?scenes, as cenas com parallax (chapters.js). Quem escolhe é o boot.js, no <head>. -->
   <script src="assets/js/vendor/lenis.min.js"></script>
   <script src="assets/js/scroll.js"></script>
   <script src="assets/js/film-decoder.js"></script>

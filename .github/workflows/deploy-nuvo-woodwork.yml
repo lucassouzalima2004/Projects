@@ -108,6 +108,8 @@ jobs:
           # O WhatsApp só mostra a imagem da prévia do link com o endereço completo
           if [ -n "${DOMAIN:-}" ]; then
             sed -i "s#content=\"assets/img/og-image.jpg\"#content=\"https://$DOMAIN/assets/img/og-image.jpg\"#" _site/index.html
+            # nas páginas internas (projetos, produtos, journal, about) o endereço começa com /
+            find _site -name index.html -exec sed -i "s#property=\"og:image\" content=\"/#property=\"og:image\" content=\"https://$DOMAIN/#" {} +
           fi
 
       - name: Publicar

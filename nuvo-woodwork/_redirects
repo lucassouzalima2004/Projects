@@ -1,0 +1,8 @@
+# Endereços do site antigo (WordPress) que mudaram: quando o domínio vier para cá, os links do Google continuam
+# levando ao lugar certo. Os outros (/projects/..., /products/, /journal/, /about-us/ e os posts) são os mesmos.
+/completed-projects/ /projects/ 301
+/completed-projects /projects/ 301
+/contact/ /#contact 301
+/contact /#contact 301
+/contact-us-now-for-a-free-quote/ /#contact 301
+/contact-us-now-for-a-free-quote /#contact 301

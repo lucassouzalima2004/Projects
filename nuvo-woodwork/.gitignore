@@ -1,2 +1,5 @@
 videos/
 lab/_*.spz
+.env
+.env.*
+.claude/
