@@ -437,7 +437,7 @@
     if (igUrl()) {
       boards.push(`<article class="board board--seasonal" aria-labelledby="board-seasonal">
         ${boardHead('Seasonal specials', 'New every season', 'board-seasonal')}
-        <p>Chef George brings out new dishes and drinks every season. See what’s on right now on our Instagram.</p>
+        <p>George and Andrea bring out new dishes and drinks every season. See what’s on right now on our Instagram.</p>
         <a class="btn btn--primary" href="${esc(igUrl())}" target="_blank" rel="noopener">${icon('i-ig', 'btn__icon')}<span>See this season’s specials</span></a>
       </article>`);
     }

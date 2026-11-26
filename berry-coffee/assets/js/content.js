@@ -201,7 +201,7 @@ window.SITE = {
       title: 'Lunch',
       items: [
         { name: 'Sourdough Toasties', desc: 'Generously filled and toasted to order.' },
-        { name: 'Signature dishes', desc: 'Ask the team what Chef George is cooking today.' },
+        { name: 'Signature dishes', desc: 'Ask the team what George and Andrea are cooking today.' },
       ],
     },
     {

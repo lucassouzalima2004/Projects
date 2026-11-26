@@ -32,6 +32,7 @@ O site é em inglês, porque o público do café é irlandês. É HTML, CSS e Ja
 - **Topo**: a vitrine da fachada, agora em verde-sálvia, com fotos dos pratos se alternando. A plaquinha pendurada muda sozinha pelo horário da Irlanda: *Open*, *Last orders soon!* ou *Closed*. O selo do prêmio fica no canto e leva até a seção do prêmio.
 - **Faixa verde** com os destaques (Irish breakfast, French toast, açaí, matcha, gift vouchers…).
 - **Pratos em destaque**: uma foto grande do brunch, com os dias e horários, e os 4 pratos principais em pratos canelados claros.
+- **A cozinha**: o George e a Andrea, com a foto e o texto do post deles de 04/09/2026 no Instagram (*The faces behind the flavours*). O Thiago pediu essa parte em 24/11.
 - **Prêmio e avaliações**: o *Exceptional Customer Service Award 2026*, com a foto do Thiago e a frase deles no post do prêmio. Embaixo ficam as avaliações de clientes, com links para avaliar no Google e no Tripadvisor.
 - **Cardápio** do ano todo, sem preços, mais o quadro *Seasonal specials*, que leva para o Instagram.
 - **História e missão**: a missão usa as palavras deles no post do prêmio. Embaixo ficam o recorte do jornal *Independent* e os 3 valores do café.
@@ -79,6 +80,7 @@ As fotos estão em `assets/img/`, em WebP, já no tamanho certo para a web.
 | Fotos da vitrine (topo) | `window` em `content.js` (fotos 4:5, em pé) |
 | Foto grande ao lado dos pratos | `feature` em `content.js` |
 | Pratos em destaque | `favourites` em `content.js` (fotos quadradas, aparecem redondas) |
+| Seção da cozinha (George e Andrea) | `index.html`, seção *Meet the kitchen*. A foto é `assets/img/photos/george-andrea.webp` (3:4, em pé) |
 | Cardápio do ano todo | `menu` em `content.js` |
 | Avaliações | `reviews` em `content.js` |
 | Posts do Instagram (sem Behold) | `instagram.posts` em `content.js` e as imagens em `assets/img/feed/` |

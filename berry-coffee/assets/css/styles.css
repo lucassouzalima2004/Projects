@@ -951,6 +951,27 @@ h2 { font-size: var(--fs-h2); }
 
 .favourites__more { margin-top: clamp(40px, 6vw, 64px); text-align: center; }
 
+/* ---------------------------------------------------------------- Kitchen: George & Andrea */
+.kitchen {
+  padding-block: var(--section);
+  background: var(--paper);
+  overflow: clip;
+}
+
+.kitchen__grid { display: grid; gap: clamp(56px, 7vw, 96px); align-items: center; }
+@media (min-width: 900px) {
+  .kitchen__grid { grid-template-columns: .8fr 1.2fr; }
+}
+
+.print--chefs { width: min(100%, 420px); margin-inline: auto; rotate: -2deg; }
+.print--chefs img { aspect-ratio: 3 / 4; object-fit: cover; }
+
+.kitchen__copy h2 { margin-bottom: 22px; }
+.kitchen__copy p + p { margin-top: 14px; }
+.kitchen__lead { font-size: var(--fs-lead); color: var(--ink); }
+.kitchen__copy p:not(.kitchen__lead):not(.eyebrow) { color: var(--muted); max-width: 52ch; }
+.kitchen__copy .link-arrow { margin-top: 26px; }
+
 /* ---------------------------------------------------------------- Awards */
 .awards {
   position: relative;
