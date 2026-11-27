@@ -116,6 +116,7 @@ jobs:
           cp -R ativa-cleaning/. _site/
           # Anotações internas e a página da imagem de prévia não vão para o ar
           rm -rf _site/README.md _site/tools
+          find _site -name 'LEIA.txt' -delete
           today=$(date -u +%F)
           f=_site/index.html
           # Endereço completo no og:image (o WhatsApp exige), canonical, og:url e dados para o Google

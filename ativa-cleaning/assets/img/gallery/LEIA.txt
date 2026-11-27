@@ -1,0 +1,1 @@
+Pasta das fotos da galeria "From the job sheet" (veja gallery em assets/js/config.js).

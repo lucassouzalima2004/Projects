@@ -492,6 +492,36 @@
     window.addEventListener('resize', update);
     update();
   }
+  // ---------- Galeria "From the job sheet": uma aba por serviço (config.js → gallery) ----------
+  (function gallery() {
+    const tabsEl = $('[data-gallery-tabs]');
+    const track = $('[data-reel-track]');
+    if (!tabsEl || !track) return;
+    const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+    const groups = (cfg.gallery || []).filter(g => g && g.photos && g.photos.length);
+    if (!groups.length) { $('[data-reel]').hidden = true; return; }
+    const show = (i, focus) => {
+      $$('button', tabsEl).forEach((b, j) => {
+        b.setAttribute('aria-selected', String(i === j));
+        b.tabIndex = i === j ? 0 : -1;
+        if (i === j && focus) b.focus();
+      });
+      track.innerHTML = groups[i].photos.map(ph => `<li><figure><img src="${esc(ph.src)}" alt="${esc(groups[i].label)}: ${esc(ph.caption || '')}" loading="lazy"><figcaption>${esc(ph.caption || groups[i].label)}</figcaption></figure></li>`).join('');
+      track.scrollLeft = 0;
+      if (!reduce) { track.classList.toggle('is-swap', false); void track.offsetWidth; track.classList.add('is-swap'); }
+      track.dispatchEvent(new Event('scroll'));
+    };
+    tabsEl.innerHTML = groups.map((g, i) => `<button type="button" role="tab" aria-selected="false" tabindex="-1" data-g="${i}">${esc(g.label)}</button>`).join('');
+    $$('button', tabsEl).forEach((b, i) => {
+      b.addEventListener('click', () => show(i));
+      b.addEventListener('keydown', e => {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        e.preventDefault();
+        show((i + (e.key === 'ArrowRight' ? 1 : groups.length - 1)) % groups.length, true);
+      });
+    });
+    show(0);
+  })();
   scroller($('[data-reel-track]'), $('[data-reel-prev]'), $('[data-reel-next]'));
   scroller($('[data-rev-track]'), $('[data-rev-prev]'), $('[data-rev-next]'));
 
@@ -503,17 +533,17 @@
   const done = $('[data-done]', form);
   const submitBtn = $('button[type="submit"]', form);
   const F = form.elements;
-  const serviceInput = () => $('input[name="service"]:checked', form);
+  const serviceInput = () => F.service.selectedOptions[0];
 
-  // Botões "Quote a ..." dos serviços já escolhem o serviço no formulário
+  // Botões "Get a quote" dos serviços já escolhem o serviço no formulário
   $$('[data-service]').forEach(a => a.addEventListener('click', () => {
-    const r = $(`input[name="service"][data-key="${a.dataset.service}"]`, form);
-    if (r && !r.checked) { r.checked = true; sync(); }
+    const o = $(`option[data-key="${a.dataset.service}"]`, F.service);
+    if (o && !o.selected) { o.selected = true; sync(); }
   }));
 
   // Mostra só as perguntas do serviço escolhido
   function sync() {
-    const key = (serviceInput() || {}).dataset.key || 'windows';
+    const key = (serviceInput() || {}).dataset.key || 'house';
     $$('[data-when]', form).forEach(el => { el.hidden = !el.dataset.when.split(' ').includes(key); });
   }
   form.addEventListener('change', e => { if (e.target.name === 'service') sync(); });
@@ -623,6 +653,52 @@
     const w = window.open(url, '_blank');
     if (w) w.opener = null; else location.href = url;
   });
+
+  // ---------- Política de cancelamento: só aparece quando o PDF existe no site ----------
+  if (cfg.cancellationPdf) {
+    fetch(cfg.cancellationPdf, { method: 'HEAD' }).then(r => {
+      if (!r.ok || !/pdf/i.test(r.headers.get('content-type') || '')) return;
+      $$('[data-cancel-link]').forEach(a => { a.href = cfg.cancellationPdf; });
+      $$('[data-cancel]').forEach(el => { el.hidden = false; });
+    }).catch(() => {});
+  }
+
+  // ---------- Mapa da área atendida (Leaflet, carregado só quando chega perto da tela) ----------
+  (function areaMap() {
+    const el = $('[data-area-map]');
+    const area = cfg.serviceArea;
+    if (!el || !area || !('IntersectionObserver' in window)) return;
+    const load = () => new Promise((ok, fail) => {
+      if (window.L) return ok();
+      const css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      document.head.appendChild(css);
+      const js = document.createElement('script');
+      js.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      js.onload = ok; js.onerror = fail;
+      document.head.appendChild(js);
+    });
+    const draw = () => {
+      const L = window.L;
+      const map = L.map(el, { scrollWheelZoom: false, dragging: !window.matchMedia('(pointer: coarse)').matches }).setView(area.center, 9);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18, className: 'area__tiles',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      }).addTo(map);
+      const circle = L.circle(area.center, { radius: (area.radiusKm || 40) * 1000, color: '#167784', weight: 1.5, fillColor: '#8CF8C5', fillOpacity: .22 }).addTo(map);
+      const pin = cls => L.divIcon({ className: '', html: `<span class="map-pin ${cls}"></span>`, iconSize: [18, 18], iconAnchor: [9, 9] });
+      L.marker(area.center, { icon: pin('map-pin--cbd'), title: 'Adelaide CBD' }).addTo(map).bindTooltip('Adelaide CBD');
+      (area.suburbs || []).forEach(s => { if (s && s.lat && s.lng) L.marker([s.lat, s.lng], { icon: pin(''), title: s.name }).addTo(map).bindTooltip(s.name); });
+      map.fitBounds(circle.getBounds(), { padding: [10, 10] });
+    };
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      load().then(draw).catch(() => { el.hidden = true; });
+    }, { rootMargin: '300px' });
+    io.observe(el);
+  })();
 
   // ---------- Barra fixa no celular: aparece depois do topo, some no formulário ----------
   const dock = $('[data-dock]');
